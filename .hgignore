@@ -1,0 +1,7 @@
+syntax: regexp
+Debug\/
+Release\/
+\.filters$
+\.suo$
+\.sdf$
+\.opensdf$
