@@ -6,7 +6,7 @@ using namespace std;
 int main(int argc, char *argv[]) {
     unsigned long sample_count = 0;
     unsigned long cycle_count = 0;
-    while (sample_count < (44100 * 10)){
+    while (sample_count < (22050 * 10)){
         ++cycle_count;
         if (psg::tick()){
             ++sample_count;

@@ -4,6 +4,7 @@
 // ------------------------------------------
 // --- Software implementation of SN79489 ---
 // ------------------------------------------
+#define VOLUME_L(x) psg::cfg::volume_table[psg::reg::vol[x]]
 using namespace std;
 namespace psg{
     ///PSG emulator configuration
@@ -12,6 +13,10 @@ namespace psg{
         const uint32_t psg_clock_ntsc = 3579545 / 16; ///<-- PSG clock (pal NTSC version)
         const uint32_t psg_clock_pal  = 3546893 / 16; ///<-- PSG clock (pal PAL version)
         uint_fast32_t psg_clock = psg_clock_ntsc;     ///<-- PSG clock
+        const  int volume_table[16] = {
+            32767, 26028, 20675, 16422, 13045, 10362, 8231, 6568,
+            5193, 4125, 3277, 2603, 2067, 1642, 1304, 0
+        };
     }
     
     ///PSG emulator state
@@ -32,18 +37,19 @@ namespace psg{
 
     ///PSG writeable registers
     namespace reg{
-        int_fast8_t  vol[4] = { 0, 15, 15, 15 }; //Full volume.
-        uint_fast16_t tone[4] = { 0xFE, 0xBE, 0xDE, 0xFE }; //440 Hz
+        int_fast8_t  vol[4] = { 15, 15, 0, 0 }; //Full volume.
+        uint_fast16_t tone[4] = { 0, 0, 0xfe, 0xFE }; //440 Hz
     }
 
     ///Generate a sample from the registers (Signed 16bit)
     int16_t make_sample(){
-        int16_t sample = 0;
-        sample += state::channel_polarity[0] ? reg::vol[0] : -reg::vol[0];
-        sample += psg::state::channel_polarity[1] ? psg::reg::vol[1] : -psg::reg::vol[1];
-        sample += psg::state::channel_polarity[2] ? psg::reg::vol[2] : -psg::reg::vol[2];
-        sample += psg::state::channel_polarity[3] ? psg::reg::vol[3] : -psg::reg::vol[3];
-        return sample*128; //4bit volume would be too low, we multiply to make it audible
+        int_fast32_t sample = 0;
+        sample += psg::state::channel_polarity[0] ? VOLUME_L(0) : -VOLUME_L(0);
+        sample += psg::state::channel_polarity[1] ? VOLUME_L(1) : -VOLUME_L(1);
+        sample += psg::state::channel_polarity[2] ? VOLUME_L(2) : -VOLUME_L(2);
+        sample += psg::state::channel_polarity[3] ? VOLUME_L(3) : -VOLUME_L(3);
+        sample = sample / 8;
+        return (int16_t)(sample); //Dividing by two (lose one bit) improves sound quality.
     }
 
     
