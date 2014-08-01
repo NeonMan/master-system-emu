@@ -1,5 +1,10 @@
 #include <cstdio>
-#include "psg.h"
+#include "../psg/psg.h"
+#ifdef _NDEBUG
+#pragma comment(lib, "../Release/psg.lib")
+#else
+#pragma comment(lib, "../Debug/psg.lib")
+#endif
 
 using namespace std;
 //Generate a couple seconds of sound
