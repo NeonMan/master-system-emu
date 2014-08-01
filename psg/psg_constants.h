@@ -4,11 +4,19 @@
 
 namespace psg{
     namespace cfg{
-
+        const uint32_t psg_clock_ntsc = 3579545 / 16; ///<-- PSG clock (pal NTSC version)
+        const uint32_t psg_clock_pal = 3546893 / 16; ///<-- PSG clock (pal PAL version)
     }
     namespace state{
 
     }
+
+    ///Volume LUT.
+    const  int volume_table[16] = {
+        32767, 26028, 20675, 16422, 13045, 10362, 8231, 6568,
+        5193, 4125, 3277, 2603, 2067, 1642, 1304, 0
+    };
+
     const uint16_t lfsr_reset = 1 << 15;
     const unsigned char lfsr[32767] = {
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,

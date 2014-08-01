@@ -4,19 +4,13 @@
 // ------------------------------------------
 // --- Software implementation of SN79489 ---
 // ------------------------------------------
-#define VOLUME_L(x) psg::cfg::volume_table[psg::reg::vol[x]]
+#define VOLUME_L(x) psg::volume_table[psg::reg::vol[x]]
 using namespace std;
 namespace psg{
     ///PSG emulator configuration
     namespace cfg{
         uint_fast32_t sample_rate = 22050;            ///<-- Output sample rate, in Hz
-        const uint32_t psg_clock_ntsc = 3579545 / 16; ///<-- PSG clock (pal NTSC version)
-        const uint32_t psg_clock_pal  = 3546893 / 16; ///<-- PSG clock (pal PAL version)
         uint_fast32_t psg_clock = psg_clock_ntsc;     ///<-- PSG clock
-        const  int volume_table[16] = {
-            32767, 26028, 20675, 16422, 13045, 10362, 8231, 6568,
-            5193, 4125, 3277, 2603, 2067, 1642, 1304, 0
-        };
     }
     
     ///PSG emulator state
@@ -48,7 +42,14 @@ namespace psg{
         uint_fast16_t tone[4] = { 0x3ff, 0x3ff, 0x3ff, 0x7 }; //Largest period
     }
 
-    ///Generate a sample from the registers (Signed 16bit)
+    // -----------------
+    // --- Functions ---
+    // -----------------
+
+    /** @brief Generate a sample from the registers (Signed 16bit).
+     *
+     *  @returns A 16-bit unsigned sound sample.
+     */
     int16_t make_sample(){
         int_fast32_t sample = 0;
         //Tone channels
@@ -74,7 +75,10 @@ namespace psg{
     }
 
     
-    ///Add a clock cycle, return true if there's a new sample ready.
+    /** @brief Add a clock cycle, return true if there's a new sample ready.
+     *
+     *  @returns true if a new sample is ready.
+     */
     bool tick(){
         //Update tone counters #[0-2]
         for (unsigned int i = 0; i < 3; i++){
@@ -116,5 +120,15 @@ namespace psg{
             return true;
         }
         return false;
+    }
+
+    /** @brief Configures the psg emulator for a sample rate.
+     *
+     * 
+     */
+    void set_sample_rate(uint_fast32_t rate){
+        psg::cfg::sample_rate = rate;
+        psg::state::clock_current_ratio = 0;
+        psg::state::clock_ratio = (cfg::psg_clock << 7) / cfg::sample_rate;
     }
 }
