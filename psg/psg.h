@@ -21,6 +21,7 @@ namespace psg{
         extern uint_fast16_t tone[4];
     }
     bool tick();
+    void set_sample_rate(uint_fast32_t rate);
 };
 
 #endif

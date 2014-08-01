@@ -124,11 +124,11 @@ namespace psg{
 
     /** @brief Configures the psg emulator for a sample rate.
      *
-     * 
+     *  @param rate Sample rate in Hz 
      */
     void set_sample_rate(uint_fast32_t rate){
         psg::cfg::sample_rate = rate;
         psg::state::clock_current_ratio = 0;
-        psg::state::clock_ratio = (cfg::psg_clock << 7) / cfg::sample_rate;
+        psg::state::clock_ratio = (cfg::psg_clock << 7) / rate;
     }
 }
