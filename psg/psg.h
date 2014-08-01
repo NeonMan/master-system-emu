@@ -4,6 +4,12 @@
 #include "psg_constants.h"
 #include <stdint.h>
 
+#ifdef _NDEBUG
+#pragma comment(lib, "../Release/psg.lib")
+#else
+#pragma comment(lib, "../Debug/psg.lib")
+#endif
+
 namespace psg{
     namespace cfg{
     }
