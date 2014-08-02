@@ -4,12 +4,23 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 12.0.21005.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sms-emu", "sms-emu\sms-emu.vcxproj", "{6A1D1F73-C36D-42DB-9395-5EB5350A1EF4}"
+	ProjectSection(ProjectDependencies) = postProject
+		{9BCB7C15-FF16-4E68-875E-61363415BFA1} = {9BCB7C15-FF16-4E68-875E-61363415BFA1}
+		{608564A2-A23F-4AA2-A6DF-59AEE808FADB} = {608564A2-A23F-4AA2-A6DF-59AEE808FADB}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "psg", "psg\psg.vcxproj", "{9BCB7C15-FF16-4E68-875E-61363415BFA1}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "psg-play", "psg-play\psg-play.vcxproj", "{B54DEF65-1078-4A3A-A6B8-667A0CE0A8B1}"
 	ProjectSection(ProjectDependencies) = postProject
 		{9BCB7C15-FF16-4E68-875E-61363415BFA1} = {9BCB7C15-FF16-4E68-875E-61363415BFA1}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vdp", "vdp\vdp.vcxproj", "{608564A2-A23F-4AA2-A6DF-59AEE808FADB}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vdp-test", "vdp-test\vdp-test.vcxproj", "{84264EAE-37FC-4714-8D34-153A9F87C501}"
+	ProjectSection(ProjectDependencies) = postProject
+		{608564A2-A23F-4AA2-A6DF-59AEE808FADB} = {608564A2-A23F-4AA2-A6DF-59AEE808FADB}
 	EndProjectSection
 EndProject
 Global
@@ -30,6 +41,14 @@ Global
 		{B54DEF65-1078-4A3A-A6B8-667A0CE0A8B1}.Debug|Win32.Build.0 = Debug|Win32
 		{B54DEF65-1078-4A3A-A6B8-667A0CE0A8B1}.Release|Win32.ActiveCfg = Release|Win32
 		{B54DEF65-1078-4A3A-A6B8-667A0CE0A8B1}.Release|Win32.Build.0 = Release|Win32
+		{608564A2-A23F-4AA2-A6DF-59AEE808FADB}.Debug|Win32.ActiveCfg = Debug|Win32
+		{608564A2-A23F-4AA2-A6DF-59AEE808FADB}.Debug|Win32.Build.0 = Debug|Win32
+		{608564A2-A23F-4AA2-A6DF-59AEE808FADB}.Release|Win32.ActiveCfg = Release|Win32
+		{608564A2-A23F-4AA2-A6DF-59AEE808FADB}.Release|Win32.Build.0 = Release|Win32
+		{84264EAE-37FC-4714-8D34-153A9F87C501}.Debug|Win32.ActiveCfg = Debug|Win32
+		{84264EAE-37FC-4714-8D34-153A9F87C501}.Debug|Win32.Build.0 = Debug|Win32
+		{84264EAE-37FC-4714-8D34-153A9F87C501}.Release|Win32.ActiveCfg = Release|Win32
+		{84264EAE-37FC-4714-8D34-153A9F87C501}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

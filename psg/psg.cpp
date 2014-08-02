@@ -7,16 +7,18 @@
 #define VOLUME_L(x) psg::volume_table[psg::reg::vol[x]]
 using namespace std;
 namespace psg{
-    ///PSG emulator configuration
+
+    //PSG emulator configuration
     namespace cfg{
         uint_fast32_t sample_rate = 22050;            ///<-- Output sample rate, in Hz
         uint_fast32_t psg_clock = psg_clock_ntsc;     ///<-- PSG clock
     }
     
-    ///PSG emulator state
+    //PSG emulator state
     namespace state{
         uint_fast32_t cycle = 0; ///<-- Current clock cycle
-        int16_t next_sample = 0; ///<-- Generated sample
+        //Next sample (see .h)
+        int16_t next_sample = 0;
 
         ///Clock ratio between psg clock and sample rate *128
         uint_fast32_t clock_ratio = (cfg::psg_clock << 7) / cfg::sample_rate;
@@ -36,10 +38,18 @@ namespace psg{
         uint16_t lfsr_state = psg::lfsr_reset;
     }
 
-    ///PSG writeable registers
+    //PSG writeable registers
     namespace reg{
         int_fast8_t  vol[4] = { 15, 15, 15, 15 }; //Silent
         uint_fast16_t tone[4] = { 0x3ff, 0x3ff, 0x3ff, 0x7 }; //Largest period
+    }
+
+    //PSG IO ports
+    namespace bus{
+        uint_fast8_t data  = 0x00;
+        uint_fast8_t n_oe  = 1;
+        uint_fast8_t n_we  = 1;
+        uint_fast8_t ready = 1;
     }
 
     // -----------------
@@ -62,7 +72,7 @@ namespace psg{
             sample += psg::lfsr[psg::state::lfsr_state % sizeof(psg::lfsr)] ? VOLUME_L(3) : -VOLUME_L(3);
         }
         else{ //Pulsed noise
-            const bool duty = psg::state::channel_polarity[3];
+            const bool duty = (psg::state::channel_polarity[3] != 0);
             if (duty){
                 sample += psg::lfsr[psg::state::lfsr_state % sizeof(psg::lfsr)] ? VOLUME_L(3) : -VOLUME_L(3);
             }
@@ -74,11 +84,7 @@ namespace psg{
         return (int16_t)(sample); //Dividing by two (lose one bit) improves sound quality.
     }
 
-    
-    /** @brief Add a clock cycle, return true if there's a new sample ready.
-     *
-     *  @returns true if a new sample is ready.
-     */
+    //Perform a clock cycle (See .h)
     bool tick(){
         //Update tone counters #[0-2]
         for (unsigned int i = 0; i < 3; i++){
@@ -122,10 +128,7 @@ namespace psg{
         return false;
     }
 
-    /** @brief Configures the psg emulator for a sample rate.
-     *
-     *  @param rate Sample rate in Hz 
-     */
+    //Configure sample rate (see .h)
     void set_sample_rate(uint_fast32_t rate){
         psg::cfg::sample_rate = rate;
         psg::state::clock_current_ratio = 0;
