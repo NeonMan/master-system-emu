@@ -4,7 +4,7 @@
 #include "psg_constants.h"
 #include <stdint.h>
 
-#ifdef _NDEBUG
+#ifdef NDEBUG
 #pragma comment(lib, "../Release/psg.lib")
 #else
 #pragma comment(lib, "../Debug/psg.lib")
