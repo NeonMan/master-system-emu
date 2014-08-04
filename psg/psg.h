@@ -13,7 +13,9 @@
 namespace psg{
     //Variables
 
-    ///PSG IO ports
+    ///PSG IO ports.
+    ///@Note since many circuits may share the data bus and/or other lines,
+    ///a pointer to the shared bus variable might be a better option.
     namespace bus{
         extern uint_fast8_t data;  ///<-- Data bus, 8 bit wide (Input)
         extern uint_fast8_t n_oe;  ///<-- ¬Chip enable (Input)

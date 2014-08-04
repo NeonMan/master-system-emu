@@ -131,7 +131,9 @@ namespace psg{
                     case 0:
                     case 1:
                     case 2:
-                        psg::reg::tone[psg::state::selected_reg] = data_tone;
+                        psg::reg::tone[psg::state::selected_reg] = 
+                            (psg::reg::tone[psg::state::selected_reg] & 0x0F)
+                            | data_tone;
                         break;
                     case 3:
                         psg::reg::tone[3] = data_noise;
