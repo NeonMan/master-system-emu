@@ -16,7 +16,7 @@ namespace psg{
     ///PSG IO ports
     namespace bus{
         extern uint_fast8_t data;  ///<-- Data bus, 8 bit wide (Input)
-        extern uint_fast8_t n_oe;  ///<-- ¬Output enable (Input)
+        extern uint_fast8_t n_oe;  ///<-- ¬Chip enable (Input)
         extern uint_fast8_t n_we;  ///<-- ¬Write enable (Input)
         extern uint_fast8_t ready; ///<-- Data read Ready (Output, open collector)
     }
@@ -38,11 +38,19 @@ namespace psg{
 
     //Functions
     /**
-    * @brief Add a clock cycle, return true if there's a new sample ready.
+    * @brief Perform a clock cycle, return true if there's a new sample ready.
+    *        This function bypasses the clock divider.
     *
     * @returns true if a new sample is ready.
     */
     bool tick();
+
+    /**
+    * @brief Perform a clock cycle, return true if a sample is ready.
+    *
+    * @returns true if a sample is ready.
+    */
+    bool clock();
 
     /**
     * @brief Configures the psg emulator for a sample rate.

@@ -8,8 +8,12 @@ int main(int argc, char *argv[]) {
     unsigned long cycle_count = 0;
     const unsigned long rate = 44100;
 
-    psg::reg::vol[3] = 0;
-    psg::reg::tone[3] = 3;
+    psg::reg::vol[0] = 0;
+    psg::reg::vol[1] = 0;
+    psg::reg::vol[2] = 0;
+    psg::reg::tone[0] = 0xFE - 12;
+    psg::reg::tone[1] = 0xFE - 6;
+    psg::reg::tone[2] = 0xFE;
 
     psg::set_sample_rate(rate);
 
