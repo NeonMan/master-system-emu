@@ -51,12 +51,20 @@ namespace psg{
         uint_fast16_t tone[4] = { 0x3ff, 0x3ff, 0x3ff, 0x7 }; //Largest period
     }
 
+    //Default location of bus variables
+    namespace bus_default{
+        uint_fast8_t data = 0x00;
+        uint_fast8_t n_oe = 1;  //
+        uint_fast8_t n_we = 1;  // Write pins disabled by default
+        uint_fast8_t ready = 1;  // Always ready (this may change, hence being declared here)
+    }
+
     //PSG IO ports
     namespace bus{
-        uint_fast8_t data  = 0x00;
-        uint_fast8_t n_oe  = 1;  //
-        uint_fast8_t n_we  = 1;  // Write pins disabled by default
-        uint_fast8_t ready = 1;  // Always ready (this may change, hence being declared here)
+        uint_fast8_t* data = &bus_default::data;  ///<-- Data bus, 8 bit wide (Input)
+        uint_fast8_t* n_oe = &bus_default::n_oe;  ///<-- ¬Chip enable (Input)
+        uint_fast8_t* n_we = &bus_default::n_we;  ///<-- ¬Write enable (Input)
+        uint_fast8_t* ready = &bus_default::ready; ///<-- Data read Ready (Output, open collector)
     }
 
     // -----------------
@@ -94,14 +102,14 @@ namespace psg{
     //Perform a clock cycle, without clock divider (See .h)
     bool tick(){
         //Read IO ports and update the data accordingly
-        if (psg::bus::n_we == 0){ //Write pin is pulled-down
-            if (psg::bus::data & (1 << 7)){ //It is a LATCH/DATA bit
+        if (*psg::bus::n_we == 0){ //Write pin is pulled-down
+            if (*psg::bus::data & (1 << 7)){ //It is a LATCH/DATA bit
                 //Extract the selected reg
-                const uint_fast8_t param_reg = (psg::bus::data & (3 << 5)) >> 5;
+                const uint_fast8_t param_reg = (*psg::bus::data & (3 << 5)) >> 5;
                 //Get the type
-                const uint_fast8_t param_type = (psg::bus::data & (1 << 4));
+                const uint_fast8_t param_type = (*psg::bus::data & (1 << 4));
                 //Get the 4-bit value
-                const uint_fast8_t param_value = (psg::bus::data & 0xF);
+                const uint_fast8_t param_value = (*psg::bus::data & 0xF);
                 //Set the currently selected reg
                 psg::state::selected_reg = param_reg;
                 psg::state::selected_reg_type = param_type;
@@ -116,7 +124,7 @@ namespace psg{
                 }
             }
             else{  //It is a DATA bit
-                const uint_fast16_t param_data = (psg::bus::data & (0x3f));
+                const uint_fast16_t param_data = (*psg::bus::data & (0x3f));
 
                 if (psg::state::selected_reg_type){ //Volume register
                     const uint_fast8_t  data_vol = param_data & 0xF;
