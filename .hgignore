@@ -6,3 +6,5 @@ Release\/
 \.opensdf$
 \.dat$
 \.vgm$
+\.o$
+
