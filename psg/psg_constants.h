@@ -2,17 +2,11 @@
 #define __PSG_CONSTANTS_H
 #include <stdint.h>
 
-namespace psg{
-    namespace cfg{
-        const uint32_t psg_clock_ntsc = 3579545 / 16; ///<-- PSG clock (pal NTSC version)
-        const uint32_t psg_clock_pal = 3546893 / 16; ///<-- PSG clock (pal PAL version)
-    }
-    namespace state{
-
-    }
+    const uint32_t psg_clock_ntsc = 3579545 / 16; ///<-- PSG clock (pal NTSC version)
+    const uint32_t psg_clock_pal = 3546893 / 16; ///<-- PSG clock (pal PAL version)
 
     ///Volume LUT.
-    const  int volume_table[16] = {
+    const  int psg_volume_table[16] = {
         32767, 26028, 20675, 16422, 13045, 10362, 8231, 6568,
         5193, 4125, 3277, 2603, 2067, 1642, 1304, 0
     };
@@ -5489,7 +5483,5 @@ namespace psg{
         0x01, 0x00, 0x01, 0x00, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
         0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01
     };
-
-}
 
 #endif
