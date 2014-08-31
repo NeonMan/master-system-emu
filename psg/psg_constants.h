@@ -2,8 +2,8 @@
 #define __PSG_CONSTANTS_H
 #include <stdint.h>
 
-    const uint32_t psg_clock_ntsc = 3579545 / 16; ///<-- PSG clock (pal NTSC version)
-    const uint32_t psg_clock_pal = 3546893 / 16; ///<-- PSG clock (pal PAL version)
+    #define PSG_CLOCK_NTSC  (3579545 / 16) /*<-- PSG clock (pal NTSC version)*/
+    #define PSG_CLOCK_PAL (3546893 / 16) /*<-- PSG clock (pal PAL version)*/
 
     ///Volume LUT.
     const  int psg_volume_table[16] = {
@@ -12,7 +12,7 @@
     };
 
     ///Reset value for the LFSR state
-    const uint16_t lfsr_reset = 1 << 15;
+    #define PSG_LFSR_RESET  (1 << 15)
 
     ///LFSR output for the noise generator (dedicated revision)
     const unsigned char lfsr[32767] = {

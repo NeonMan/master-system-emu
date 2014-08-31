@@ -1,7 +1,6 @@
 #ifndef __PSG_H
 #define __PSG_H
 
-#include "psg_constants.h"
 #include <stdint.h>
 
 #ifdef NDEBUG
@@ -11,20 +10,18 @@
 #endif
 
     //Variables
-    //PSG IO ports.
-    //@Note since many circuits may share the data bus and/or other lines,
-    //a pointer to the shared bus variable might be a better option.
+
+    //Required Z80 buses and signals (must be declared elsewhere)
     extern uint8_t  z80_data;    ///<-- Data bus, 8 bit wide (Input)
     extern uint16_t z80_address; ///<-- Address bus (bit 7 up selects PSG)
-    extern bool     z80_n_wr;    ///<-- !Write enable (Input)
-    extern bool     psg_ready;   ///<-- Data read Ready (Output, open collector)
+    extern uint8_t     z80_n_wr;    ///<-- !Write enable (Input)
+    extern uint8_t     z80_n_ioreq; ///<-- !IO request
+
+    //PSG IO ports.
+    extern uint8_t psg_ready;   ///<-- Data read Ready (Output, open collector)
 
     //PSG emulator state
     extern int16_t psg_next_sample; ///<-- Generated sample
-
-    ///PSG writeable registers
-    //extern int8_t  vol[4];   ///<-- Atenuation (volume) registers
-    //extern uint16_t tone[4]; ///<-- Tone registers. #3 is the Noise register
 
     //Functions
     /**
@@ -33,14 +30,14 @@
     *
     * @returns true if a new sample is ready.
     */
-    bool tick();
+    uint8_t tick();
 
     /**
     * @brief Perform a clock cycle, return true if a sample is ready.
     *
     * @returns true if a sample is ready.
     */
-    bool clock();
+    uint8_t clock();
 
     /**
     * @brief Configures the psg emulator for a sample rate.
@@ -58,13 +55,7 @@
     *
     * @return A byte ready to send to the PSG
     */
-    inline uint8_t make_latch_data(uint8_t channel, uint8_t volume_ntone, uint8_t data){
-        uint8_t rv = 1 << 7;
-        rv |= (channel & 0x3) << 5;
-        rv |= volume_ntone ? (1 << 4) : 0;
-        rv |= (data & 0x0F);
-        return rv;
-    }
+    uint8_t make_latch_data(uint8_t channel, uint8_t volume_ntone, uint8_t data);
 
     /**
     * @brief Generate a data byte 
@@ -73,8 +64,6 @@
     *
     * @return A byte ready to send to the PSG
     */
-    inline uint8_t make_data(uint8_t data){
-        return (data & 0x3F);
-    }
+    uint8_t make_data(uint8_t data);
 
 #endif

@@ -1,7 +1,7 @@
-#include <cstdio>
+#include <stdio.h>
+#include "fake_z80.h"
 #include "../psg/psg.h"
 
-using namespace std;
 //Generate a couple seconds of sound
 int main(int argc, char *argv[]) {
     unsigned long sample_count = 0;
@@ -13,6 +13,11 @@ int main(int argc, char *argv[]) {
     //Write 0 to the three first volume registers
     //Pull n_we low
     z80_n_wr = 0;
+    //Pull IOREQ down
+    z80_n_ioreq = 0;
+    //Select the correct address (bit 7 high)
+    z80_address = 1 << 6;
+
     for (int i = 0; i < 3; i++){
         z80_data = make_latch_data(i, 1, 0);
         tick();

@@ -15,7 +15,7 @@
     <ClInclude Include="psg_constants.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="psg.cpp" />
+    <ClCompile Include="psg.c" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{9BCB7C15-FF16-4E68-875E-61363415BFA1}</ProjectGuid>

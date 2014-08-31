@@ -76,7 +76,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="psg-play.cpp" />
+    <ClCompile Include="psg-play.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="fake_z80.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -23,7 +23,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="psg.cpp">
+    <ClCompile Include="psg.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -15,7 +15,12 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="psg-play.cpp">
+    <ClInclude Include="fake_z80.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="psg-play.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
