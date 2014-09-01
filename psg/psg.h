@@ -37,7 +37,7 @@
     *
     * @returns true if a sample is ready.
     */
-    uint8_t clock();
+    //uint8_t clock();
 
     /**
     * @brief Configures the psg emulator for a sample rate.

@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <time.h>
+
 #include "fake_z80.h"
 #include "../psg/psg.h"
 
@@ -32,7 +34,11 @@ int main(int argc, char *argv[]) {
     //Pull n_we back up
     z80_n_wr = 1;
 
-    while (sample_count < (rate * 10)){
+
+    //Starting time
+    time_t init_time;
+    time(&init_time);
+    while (sample_count < (rate * 100)){
         ++cycle_count;
         if (tick()){
             ++sample_count;
@@ -40,4 +46,7 @@ int main(int argc, char *argv[]) {
             putchar(*(char*)&(psg_next_sample));
         }
     }
+    time_t end_time;
+    time(&end_time);
+    fprintf(stderr, "\r\n\r\n%d samples in %d ms\r\n\r\n", sample_count, end_time - init_time);
 }
