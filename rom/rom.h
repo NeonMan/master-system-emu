@@ -9,6 +9,7 @@
 #endif
 
 #include <stdint.h>
+#include <stddef.h>
 
 //Required Z80 buses and signals
 // Z80 Buses

@@ -1,4 +1,4 @@
-m-rom: psg.o
+m-rom: rom.o
 
 rom.o: rom.c
 	clang -c -o $@ $?

@@ -9,6 +9,8 @@
 #endif
 #endif
 
+#include <stddef.h>
+
 void ram_tick();
 
 #endif
