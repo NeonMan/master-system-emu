@@ -1,0 +1,10 @@
+syntax: regexp
+Debug\/
+Release\/
+\.suo$
+\.sdf$
+\.opensdf$
+\.dat$
+\.vgm$
+\.o$
+
