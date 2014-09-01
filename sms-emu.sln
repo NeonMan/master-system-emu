@@ -29,6 +29,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test-rom", "test-rom\test-r
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ram", "ram\ram.vcxproj", "{FA89A444-892B-43BD-96E9-C115CB44A302}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "z80", "z80\z80.vcxproj", "{355291F4-8B23-491D-8B19-336C4FB48B0F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -63,6 +65,10 @@ Global
 		{FA89A444-892B-43BD-96E9-C115CB44A302}.Debug|Win32.Build.0 = Debug|Win32
 		{FA89A444-892B-43BD-96E9-C115CB44A302}.Release|Win32.ActiveCfg = Release|Win32
 		{FA89A444-892B-43BD-96E9-C115CB44A302}.Release|Win32.Build.0 = Release|Win32
+		{355291F4-8B23-491D-8B19-336C4FB48B0F}.Debug|Win32.ActiveCfg = Debug|Win32
+		{355291F4-8B23-491D-8B19-336C4FB48B0F}.Debug|Win32.Build.0 = Debug|Win32
+		{355291F4-8B23-491D-8B19-336C4FB48B0F}.Release|Win32.ActiveCfg = Release|Win32
+		{355291F4-8B23-491D-8B19-336C4FB48B0F}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
