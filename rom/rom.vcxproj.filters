@@ -15,7 +15,12 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="vdp-test.cpp">
+    <ClInclude Include="rom.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="rom.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

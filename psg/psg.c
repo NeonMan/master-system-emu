@@ -23,7 +23,7 @@ uint8_t make_data(uint8_t data){
 
     //PSG emulator configuration
     uint32_t psg_sample_rate = 22050;            ///<-- Output sample rate, in Hz
-    uint32_t psg_clock = PSG_CLOCK_NTSC;     ///<-- PSG clock
+    uint32_t psg_clock_f = PSG_CLOCK_NTSC;     ///<-- PSG clock
     
     //PSG emulator state
     //Next sample (see .h)
@@ -33,7 +33,7 @@ uint8_t make_data(uint8_t data){
         uint32_t cycle = 0; ///<-- Current clock cycle
 
         ///Clock ratio between psg clock and sample rate *128
-        uint32_t clock_ratio; // = (psg_clock << 7) / psg_sample_rate;
+        uint32_t clock_ratio; // = (psg_clock_f << 7) / psg_sample_rate;
         
         ///Increased by 128 every clock cycle, if greater than clock_ratio,
         ///a new sample will be generated. The lower 7 bits are used for
@@ -98,7 +98,7 @@ uint8_t make_data(uint8_t data){
     }
 
     //Perform a clock cycle, without clock divider (See .h)
-    uint8_t tick(){
+    uint8_t psg_tick(){
         //Read IO ports and update the data accordingly
 
         //For a write to be valid, Z80's IOREQ and WR must be low
@@ -197,15 +197,15 @@ uint8_t make_data(uint8_t data){
     void set_sample_rate(uint32_t rate){
         psg_sample_rate = rate;
         clock_current_ratio = 0;
-        clock_ratio = (psg_clock << 7) / rate;
+        clock_ratio = (psg_clock_f << 7) / rate;
     }
 
     //Preform a clock cycle (with clock divider) (see .h)
-    uint8_t clock(){
+    uint8_t psg_clock(){
         ++divider_state;
         if (divider_state == 16){
             divider_state = 0;
-            return tick();
+            return psg_tick();
         }
         return 0;
     }

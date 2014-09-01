@@ -8,6 +8,7 @@ psgplay: deps
 deps:
 	$(MAKE) -C psg-play
 	$(MAKE) -C psg
+	$(MAKE) -C rom
 
 clean:
 	-$(MAKE) -C psg-play clean

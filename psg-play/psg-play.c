@@ -22,14 +22,14 @@ int main(int argc, char *argv[]) {
 
     for (int i = 0; i < 3; i++){
         z80_data = make_latch_data(i, 1, 0);
-        tick();
+        psg_tick();
     }
     //Write the tone registers
     for (int i = 0; i < 3; i++){
         z80_data = make_latch_data(i, 0, 0xFE - 6 * i);
-        tick();
+        psg_tick();
         z80_data = make_data(((0xFE - 6 * i) >> 4));
-        tick();
+        psg_tick();
     }
     //Pull n_we back up
     z80_n_wr = 1;
@@ -40,7 +40,7 @@ int main(int argc, char *argv[]) {
     time(&init_time);
     while (sample_count < (rate * 100)){
         ++cycle_count;
-        if (tick()){
+        if (psg_tick()){
             ++sample_count;
             putchar(*((char*)&(psg_next_sample) + 1));
             putchar(*(char*)&(psg_next_sample));

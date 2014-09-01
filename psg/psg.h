@@ -14,8 +14,8 @@
     //Required Z80 buses and signals (must be declared elsewhere)
     extern uint8_t  z80_data;    ///<-- Data bus, 8 bit wide (Input)
     extern uint16_t z80_address; ///<-- Address bus (bit 7 up selects PSG)
-    extern uint8_t     z80_n_wr;    ///<-- !Write enable (Input)
-    extern uint8_t     z80_n_ioreq; ///<-- !IO request
+    extern uint8_t  z80_n_wr;    ///<-- !Write enable (Input)
+    extern uint8_t  z80_n_ioreq; ///<-- !IO request
 
     //PSG IO ports.
     extern uint8_t psg_ready;   ///<-- Data read Ready (Output, open collector)
@@ -30,14 +30,14 @@
     *
     * @returns true if a new sample is ready.
     */
-    uint8_t tick();
+    uint8_t psg_tick();
 
     /**
     * @brief Perform a clock cycle, return true if a sample is ready.
     *
     * @returns true if a sample is ready.
     */
-    //uint8_t clock();
+    uint8_t psg_clock();
 
     /**
     * @brief Configures the psg emulator for a sample rate.

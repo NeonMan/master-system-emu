@@ -10,10 +10,16 @@
       <Platform>Win32</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="rom.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="rom.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{608564A2-A23F-4AA2-A6DF-59AEE808FADB}</ProjectGuid>
+    <ProjectGuid>{A9DD4C84-7CDF-42E6-8FE1-B410F75A2670}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>vdp</RootNamespace>
+    <RootNamespace>rom</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -70,12 +76,6 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClInclude Include="vdp.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="vdp.cpp" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
