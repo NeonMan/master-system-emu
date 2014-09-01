@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="psg-play.c">
+    <ClCompile Include="test-rom.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

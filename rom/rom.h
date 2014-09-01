@@ -1,10 +1,11 @@
 #ifndef __ROM_H
 #define __ROM_H
-
+#ifndef WITHOUT_LIB
 #ifdef NDEBUG
 #pragma comment(lib, "../Release/rom.lib")
 #else
 #pragma comment(lib, "../Debug/rom.lib")
+#endif
 #endif
 
 #include <stdint.h>
@@ -14,11 +15,11 @@
 extern uint8_t  z80_data;     ///<-- Data bus, 8 bit wide (Input/Output)
 extern uint16_t z80_address;  ///<-- Address bus   (Output)
 
-// Z80 output signals
-extern uint8_t  z80_n_rd = 1;   ///<-- !Read enable  (Output)
-extern uint8_t  z80_n_wr = 1;   ///<-- !Write enable (Output)
-extern uint8_t  z80_n_mreq = 1; ///<-- !Memory request (Output)
-extern uint8_t  z80_n_m1 = 1;   ///<-- !Instrunction-one (Output)
+//Constants
+#define ROM_MAX_SIZE (1024*1024*4) /**<-- Largest possible rom is 4M. */
+#define ROM_SLOT0_ADDR 0xFFFD
+#define ROM_SLOT1_ADDR 0xFFFE
+#define ROM_SLOT2_ADDR 0xFFFF
 
 //Functions
 

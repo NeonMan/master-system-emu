@@ -1,6 +1,6 @@
+#include "../z80/z80_externs.h"
+#define WITHOUT_LIB
 #include "rom.h"
-
-#define ROM_MAX_SIZE (1024*1024*4) /**<-- Largest possible rom is 4M. */
 
 uint8_t mapper_slots[3] = {0,1,2}; ///<-- ROM slot selector
 uint8_t mapper_ram = 0; ///<-- RAM slot config @Todo

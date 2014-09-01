@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <time.h>
 
-#include "fake_z80.h"
+#include "../z80/fake_z80.h"
 #include "../psg/psg.h"
 
 //Generate a couple seconds of sound
