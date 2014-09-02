@@ -21,4 +21,3 @@ uint8_t  z80_n_wait = 1;  ///<-- !Wait (Input)
 // Z80 to-be-documented signals
 uint8_t  z80_n_busreq = 1; ///<-- !Bus request (???)
 uint8_t  z80_n_busack = 1; ///<-- !Bus-acknowledge (???)
-

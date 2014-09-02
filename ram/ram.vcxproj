@@ -11,10 +11,10 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ram.cpp" />
+    <ClInclude Include="ram.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ram.h" />
+    <ClCompile Include="ram.c" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{FA89A444-892B-43BD-96E9-C115CB44A302}</ProjectGuid>
