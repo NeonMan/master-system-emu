@@ -52,9 +52,11 @@ struct {
     uint8_t data_latch;
 
     ///Current opcode
-    uint8_t opcode[4]; //without memory blocks, an opcode is at most 4 bytes long
+    uint8_t opcode[4]; //An opcode is at most 4 bytes long
     ///Current opcode byte
     uint8_t opcode_index;
+    ///Expected opcode size
+    uint8_t opcode_size;
 
 } z80 = {   { 0, 0 }, //A
             { 0, 0 }, //F
@@ -70,7 +72,9 @@ struct {
             0, //PC
             0, //data_latch
             { 0, 0, 0, 0 }, //Opcode
-            0 }; //Opcode idx
+            0,  //Opcode idx
+            0   //opcode_size
+            };
 
 //Register macros. *BEWARE* some macros are endianness sensitive!
 //Little endian (x86) is presumed unless noted otherwise.
