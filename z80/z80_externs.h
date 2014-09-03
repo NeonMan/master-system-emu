@@ -2,7 +2,7 @@
 #define __Z80_EXTERNS_H
 
 /**
- * The Z80 buses and signals. for modules using communicating with the Z80.
+ * The Z80 buses and signals. for modules communicating with the Z80.
  */
 
 #include <stdint.h>
