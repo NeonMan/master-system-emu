@@ -14,6 +14,15 @@ add_subdirectory (rom)
 # --- z80
 include_directories ("${PROJECT_SOURCE_DIR}/z80")
 add_subdirectory (z80)
+# --- Peripherial
+include_directories ("${PROJECT_SOURCE_DIR}/peripherial")
+add_subdirectory (peripherial)
+# --- IO
+include_directories ("${PROJECT_SOURCE_DIR}/io")
+add_subdirectory (io)
+# --- VDP
+include_directories ("${PROJECT_SOURCE_DIR}/vdp")
+add_subdirectory (vdp)
 
 # --- The project executables ---
 project (SMS-Emu)

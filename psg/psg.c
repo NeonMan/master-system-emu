@@ -1,4 +1,3 @@
-#define WITHOUT_LIB
 #include "psg.h"
 #include "psg_constants.h"
 #include <stdint.h>
