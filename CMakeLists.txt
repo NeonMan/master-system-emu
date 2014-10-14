@@ -48,3 +48,4 @@ target_link_libraries (psg-play psg)
 # --- test-rom
 add_executable (test-rom test-rom.c)
 target_link_libraries (test-rom rom)
+target_link_libraries (test-rom io)
