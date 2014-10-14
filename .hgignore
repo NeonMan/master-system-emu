@@ -3,10 +3,17 @@ Build\/
 build\/
 Debug\/
 Release\/
+CMakeFiles\/
 \.suo$
 \.sdf$
 \.opensdf$
 \.dat$
 \.vgm$
 \.o$
+\.vcxproj$
+\.cmake$
+\.filters$
+\.stamp$
+\.sln$
 
+CMakeCache\.txt$
