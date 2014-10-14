@@ -4,6 +4,7 @@
 #include "z80/fake_z80.h"
 #include "rom/rom.h"
 #include "io/io.h"
+#include "ram/ram.h"
 
 uint8_t read_byte(uint16_t addr){
     z80_address = addr;
@@ -11,6 +12,7 @@ uint8_t read_byte(uint16_t addr){
     z80_n_rd = 0; //Pull !RD down
     io_tick();
     rom_tick();
+    ram_tick();
     z80_n_rd = 1; //Pull !RD up
     z80_n_mreq = 1;
     return z80_data;
@@ -23,6 +25,7 @@ void write_byte(uint16_t addr, uint8_t b){
     z80_n_wr = 0;
     io_tick();
     rom_tick();
+    ram_tick();
     z80_n_mreq = 1;
     z80_n_wr = 1;
 }
@@ -36,6 +39,11 @@ int main(int argc, char**argv){
         uint8_t rnd_b = rand() & 0xFF;
         full_rom[i] = rnd_b;
     }
+
+    // ----------------------
+    // --- ROM Bank tests ---
+    // ----------------------
+
 
     //Upload the full_rom to the ROM.
     rom_set_image(full_rom, ROM_MAX_SIZE);
@@ -77,9 +85,33 @@ int main(int argc, char**argv){
         }
     }
     if (all_ok)
-        printf("--- All OK ---\n");
+        printf("--- ROM OK ---\n");
     else
-        printf("--- There were errors ---\n");
+        printf("--- ROM: There were errors ---\n");
+
+    // -----------------
+    // --- RAM Tests ---
+    // -----------------
+
+    //Ram is 8K, mirrored twice on the last 16K slot
+
+    //Initialize RAM
+    for (int i = 0xC000; i < 0xE000; i++){
+        write_byte(i, full_rom[i]);
+    }
+
+    //Test RAM
+    int ram_ok = 1;
+    for (int i = 0xC000; i < 0xE000; i++){
+        ram_ok = ram_ok & (read_byte(i) == full_rom[i]);
+        ram_ok = ram_ok & (read_byte(i + 0xE000 - 0xC000) == full_rom[i]);
+    }
+
+    if (ram_ok)
+        printf("--- RAM OK ---\n");
+    else
+        printf("--- RAM Error ---\n");
+
     free(full_rom);
     return 0;
 }

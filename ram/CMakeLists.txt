@@ -1,3 +1,3 @@
 # RAM
-project (ram)
+project(ram)
 add_library(ram ram.c)
