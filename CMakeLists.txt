@@ -2,11 +2,20 @@
 cmake_minimum_required (VERSION 2.8)
 
 # --- Use clang on linux
-
 if (UNIX)
     SET (CMAKE_C_COMPILER "/usr/bin/clang")
     SET (CMAKE_CXX_COMPILER "/usr/bin/clang++")
 endif (UNIX)
+
+# --- Explicitly enable C
+enable_language (C)
+
+# --- Enable OpenMP if available
+find_package(OpenMP)
+if (OPENMP_FOUND)
+    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+endif()
 
 # --- Dependencies ---
 # --- PSG
