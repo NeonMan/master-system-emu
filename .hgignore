@@ -20,6 +20,8 @@ CMakeFiles\/
 \.stamp$
 \.sln$
 \.a$
+\.raw$
+\.wav$
 
 #Other
 Makefile$

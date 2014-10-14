@@ -38,13 +38,51 @@ int main(int argc, char *argv[]) {
     //Starting time
     time_t init_time;
     time(&init_time);
-    FILE* out_f = fopen("psg-out-16ble.raw", "wb");
+    FILE* out_f = fopen("psg-play.wav", "wb");
+
+    //Write WAV header
+    fwrite("RIFF", 4, 1, out_f);
+    fputc(0xbc, out_f);
+    fputc(0x4a, out_f);
+    fputc(0x43, out_f);
+    fputc(0x00, out_f); //File size - 8.
+    fwrite("WAVE", 4, 1, out_f);
+    //Format chunk
+    fwrite("fmt ", 4, 1, out_f); //ID
+    fputc(0x10, out_f);
+    fputc(0x00, out_f);
+    fputc(0x00, out_f);
+    fputc(0x00, out_f); //Size
+    fputc(0x01, out_f);
+    fputc(0x00, out_f); //Compression, PCM
+    fputc(0x01, out_f);
+    fputc(0x00, out_f); //Channels, 1
+    fputc(0x22, out_f);
+    fputc(0x56, out_f);
+    fputc(0x00, out_f);
+    fputc(0x00, out_f);//sample rate
+    fputc(0x44, out_f);
+    fputc(0xAC, out_f);
+    fputc(0x00, out_f);
+    fputc(0x00, out_f);//bitrate
+    fputc(0x02, out_f);
+    fputc(0x00, out_f);//bytes per sample
+    fputc(0x10, out_f);
+    fputc(0x00, out_f);//significant bits
+
+    //All the samples in one huge chunk
+    fwrite("data", 4, 1, out_f);
+    fputc(0x90, out_f);
+    fputc(0x4a, out_f);
+    fputc(0x43, out_f);
+    fputc(0x00, out_f);//size
+
     while (sample_count < (rate * 100)){
         ++cycle_count;
         if (psg_tick()){
             ++sample_count;
-            fputc(*((char*)&(psg_next_sample)+1), out_f);
             fputc(*(char*)&(psg_next_sample), out_f);
+            fputc(*((char*)&(psg_next_sample)+1), out_f);
         }
     }
     fclose(out_f);
