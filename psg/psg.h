@@ -4,14 +4,6 @@
 #include <stdint.h>
 #include "../z80/z80_externs.h"
 
-#ifndef WITHOUT_LIB
-#ifdef NDEBUG
-#pragma comment(lib, "../Release/psg.lib")
-#else
-#pragma comment(lib, "../Debug/psg.lib")
-#endif
-#endif
-
     //Variables
 
     //Required Z80 buses and signals (must be declared elsewhere)
