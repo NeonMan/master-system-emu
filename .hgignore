@@ -1,9 +1,13 @@
 syntax: regexp
+
+#Directories
 Build\/
 build\/
 Debug\/
 Release\/
 CMakeFiles\/
+
+#File types
 \.suo$
 \.sdf$
 \.opensdf$
@@ -15,5 +19,17 @@ CMakeFiles\/
 \.filters$
 \.stamp$
 \.sln$
+\.a$
 
-CMakeCache\.txt$
+#Other
+Makefile$
+
+syntax: glob
+
+#Individual files
+CMakeCache.txt
+
+#Executables
+psg-play
+test-rom
+

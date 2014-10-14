@@ -1,6 +1,13 @@
 # Main
 cmake_minimum_required (VERSION 2.8)
 
+# --- Use clang on linux
+
+if (UNIX)
+    SET (CMAKE_C_COMPILER "/usr/bin/clang")
+    SET (CMAKE_CXX_COMPILER "/usr/bin/clang++")
+endif (UNIX)
+
 # --- Dependencies ---
 # --- PSG
 include_directories ("${PROJECT_SOURCE_DIR}/psg")
