@@ -1,6 +1,7 @@
 #define WITHOUT_LIB
 #include "ram.h"
 #include "../z80/z80_externs.h"
+#include "../io/io_externs.h"
 #include <stdint.h>
 
 #define RAM_SIZE (1024 * 8)
@@ -10,7 +11,8 @@ uint8_t ram_image[RAM_SIZE];
 
 void ram_tick(){
     //If mreq is up or address out of range, return.
-    if (z80_n_mreq) return;
+    //Ammend: MREQ shared using the IO chip, using IO chip signals instead
+    if (io_stat & IO_RAM) return;
     if (z80_address < RAM_BASE_ADDRESS) return;
     else{
         const size_t image_addr = (z80_address - RAM_BASE_ADDRESS) % RAM_SIZE;
