@@ -1,8 +1,8 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "../z80/fake_z80.h"
-#include "../rom/rom.h"
+#include "z80/fake_z80.h"
+#include "rom/rom.h"
 
 uint8_t read_byte(uint16_t addr){
     z80_address = addr;
