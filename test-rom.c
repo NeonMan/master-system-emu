@@ -3,11 +3,13 @@
 #include <stdlib.h>
 #include "z80/fake_z80.h"
 #include "rom/rom.h"
+#include "io/io.h"
 
 uint8_t read_byte(uint16_t addr){
     z80_address = addr;
     z80_n_mreq = 0;
     z80_n_rd = 0; //Pull !RD down
+    io_tick();
     rom_tick();
     z80_n_rd = 1; //Pull !RD up
     z80_n_mreq = 1;
@@ -19,46 +21,65 @@ void write_byte(uint16_t addr, uint8_t b){
     z80_data = b;
     z80_n_mreq = 0;
     z80_n_wr = 0;
+    io_tick();
     rom_tick();
     z80_n_mreq = 1;
     z80_n_wr = 1;
 }
 
-int test_first_k(){
-    //For each slot config
-    for (int j = 0; j < 256; j++){
-        write_byte(ROM_SLOT0_ADDR, j);
-        for (uint32_t i = 0; i < 0x03ff; i += sizeof(uint32_t)){
-            uint32_t v;
-            v = read_byte(i);
-            v += read_byte(i + 1) << 8;
-            v += read_byte(i + 2) << 16;
-            v += read_byte(i + 3) << 24;
-            if (v != (i / 4)){
-                printf("mismatch reading address 0x%X. Found: 0x%X\n", i, v);
-                return 0;
+int main(int argc, char**argv){
+
+    uint8_t* full_rom = (uint8_t*) malloc(ROM_MAX_SIZE);
+
+    //Initialize the full rom
+    for (int i = 0; i < ROM_MAX_SIZE; i++){
+        uint8_t rnd_b = rand() & 0xFF;
+        full_rom[i] = rnd_b;
+    }
+
+    //Upload the full_rom to the ROM.
+    rom_set_image(full_rom, ROM_MAX_SIZE);
+
+    //Test the slots
+    int bank = 0;
+    int all_ok = 1;
+    for (bank = 0; bank < ROM_MAX_SIZE / 1024 / 16; bank++){
+        int slot0_1k_ok = 1;
+        int slot0_ok = 1;
+        int slot1_ok = 1;
+        int slot2_ok = 1;
+
+        //Set the slots
+        write_byte(0xFFFF, bank); //Slot2
+        write_byte(0xFFFE, bank); //Slot1
+        write_byte(0xFFFD, bank); //Slot0
+
+        for (int i = 0; i < (1024 * 16); i++){
+            //Slot0
+            if (i < 1024){
+                //First 1K
+                slot0_1k_ok = slot0_1k_ok && (read_byte(i) == full_rom[i]);
             }
+            else{
+                slot0_ok = slot0_ok && (read_byte(i) == full_rom[i + (bank * 1024 * 16)]);
+            }
+            //Slot1
+            slot1_ok = slot1_ok && (read_byte(i + (16 * 1024)) == full_rom[i + (bank * 1024 * 16)]);
+            //Slot2
+            slot2_ok = slot2_ok && (read_byte(i + (16 * 1024 * 2)) == full_rom[i + (bank * 1024 * 16)]);
+        }
+        if (slot0_ok && slot1_ok && slot2_ok){
+            printf("Bank %d OK\n", bank);
+        }
+        else{
+            all_ok = 0;
+            printf("Bank %d Err. %d(%d) %d %d\n", bank, slot0_ok, slot0_1k_ok, slot1_ok, slot2_ok);
         }
     }
-    return 1;
-}
-
-int main(int argc, char**argv){
-    size_t item_count = ROM_MAX_SIZE / sizeof(uint32_t);
-    uint32_t *rom = malloc(ROM_MAX_SIZE);
-
-    for (uint32_t i = 0; i < item_count; i++){
-        rom[i] = i;
-    }
-    rom_set_image((uint8_t*)rom, ROM_MAX_SIZE);
-
-    //Test the correctness of the SLOT mapping
-    //Unmapped first 1K
-    test_first_k();
-    //ToDo: SLOT0
-    //ToDo: SLOT1
-    //ToDo: SLOT2
-
-    free(rom);
-    return 1;
+    if (all_ok)
+        printf("--- All OK ---\n");
+    else
+        printf("--- There were errors ---\n");
+    free(full_rom);
+    return 0;
 }
