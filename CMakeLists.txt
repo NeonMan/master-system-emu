@@ -18,8 +18,8 @@ add_subdirectory (z80)
 # --- The project executables ---
 project (SMS-Emu)
 # --- psg-play
-add_executable (psg-play psg-play.c psg/psg.c)
-#target_link_libraries (psg-play psg)
+add_executable (psg-play psg-play.c)
+target_link_libraries (psg-play psg)
 # --- test-rom
-add_executable (test-rom test-rom.c rom/rom.c)
-#target_link_libraries (test-rom rom)
+add_executable (test-rom test-rom.c)
+target_link_libraries (test-rom rom)
