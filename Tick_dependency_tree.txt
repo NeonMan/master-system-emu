@@ -1,0 +1,20 @@
+In which order should *_tick() functions be called.
+
+z80
+  -- IO
+      -- RAM
+      -- ROM
+      -- Peripherial
+      -- [Expansion]
+      -- [FM]
+      -- [Card]
+  -- VDP
+  -- PSG
+
+
+
+Posible parallelization:
+
+           IO     RAM
+  z80      VDP    ROM
+           PSG    Peripherial
