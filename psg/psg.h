@@ -6,14 +6,6 @@
 
     //Variables
 
-    //Required Z80 buses and signals (must be declared elsewhere)
-    /*
-    extern uint8_t  z80_data;    ///<-- Data bus, 8 bit wide (Input)
-    extern uint16_t z80_address; ///<-- Address bus (bit 7 up selects PSG)
-    extern uint8_t  z80_n_wr;    ///<-- !Write enable (Input)
-    extern uint8_t  z80_n_ioreq; ///<-- !IO request
-    */
-
     //PSG IO ports.
     extern uint8_t psg_ready;   ///<-- Data read Ready (Output, open collector)
 
