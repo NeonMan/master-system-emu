@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <time.h>
 
-#include "../z80/fake_z80.h"
-#include "../psg/psg.h"
+#include "z80/fake_z80.h"
+#include "psg/psg.h"
 
 //Generate a couple seconds of sound
 int main(int argc, char *argv[]) {
@@ -38,14 +38,16 @@ int main(int argc, char *argv[]) {
     //Starting time
     time_t init_time;
     time(&init_time);
+    FILE* out_f = fopen("psg-out-16ble.raw", "wb");
     while (sample_count < (rate * 100)){
         ++cycle_count;
         if (psg_tick()){
             ++sample_count;
-            putchar(*((char*)&(psg_next_sample) + 1));
-            putchar(*(char*)&(psg_next_sample));
+            fputc(*((char*)&(psg_next_sample)+1), out_f);
+            fputc(*(char*)&(psg_next_sample), out_f);
         }
     }
+    fclose(out_f);
     time_t end_time;
     time(&end_time);
     fprintf(stderr, "\r\n\r\n%d samples in %d ms\r\n\r\n", sample_count, end_time - init_time);
