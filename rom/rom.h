@@ -1,12 +1,5 @@
 #ifndef __ROM_H
 #define __ROM_H
-#ifndef WITHOUT_LIB
-#ifdef NDEBUG
-#pragma comment(lib, "../Release/rom.lib")
-#else
-#pragma comment(lib, "../Debug/rom.lib")
-#endif
-#endif
 
 #include <stdint.h>
 #include <stddef.h>
