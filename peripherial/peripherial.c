@@ -1,3 +1,9 @@
+/**
+ * @file peripherial.c
+ * @brief peripherial ports implementation.
+ *
+ * Implements the master system peripherial ports, usually used by gamepads.
+ */
 #include "peripherial.h"
 
 /**

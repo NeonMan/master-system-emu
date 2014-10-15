@@ -1,9 +1,10 @@
+/** @file z80_externs.h
+ *  @brief The Z80 buses and signals. 
+ * 
+ *  Used by modules communicating with the Z80. (Everyone!)
+ */
 #ifndef __Z80_EXTERNS_H
 #define __Z80_EXTERNS_H
-
-/**
- * The Z80 buses and signals. for modules communicating with the Z80.
- */
 
 #include <stdint.h>
 // Z80 Buses

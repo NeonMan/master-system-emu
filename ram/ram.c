@@ -1,4 +1,10 @@
-#define WITHOUT_LIB
+/**
+ *  @file ram.c
+ *  @brief RAM implementation.
+ *
+ *  Implementation of the 8K ram bank as used in the sega
+ *  master system. Mirrored 8K in the last 16K slot.
+ */
 #include "ram.h"
 #include "../z80/z80_externs.h"
 #include "../io/io_externs.h"

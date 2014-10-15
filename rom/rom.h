@@ -1,3 +1,7 @@
+/**
+ *  @file rom.h
+ *  @brief ROM module functions.
+ */
 #ifndef __ROM_H
 #define __ROM_H
 

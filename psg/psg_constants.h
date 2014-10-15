@@ -1,3 +1,7 @@
+/**
+ *  @file psg_constants.h
+ *  @brief constants required by the PSG implementation.
+ */
 #ifndef __PSG_CONSTANTS_H
 #define __PSG_CONSTANTS_H
 #include <stdint.h>

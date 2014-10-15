@@ -1,3 +1,8 @@
+/** @file z80.c
+ *  @brief z80 implementation.
+ *
+ *  Implementation of a z80 CPU, ideally cycle-perfect.
+ */
 #include "z80.h"
 #include <stdint.h>
 // Z80 Buses

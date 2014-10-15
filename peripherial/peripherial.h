@@ -1,3 +1,7 @@
+/**
+ * @file peripherial.h
+ * @brief Peripherial ports module.
+ */
 #ifndef __PERIPHERIAL_H
 #define __PERIPHERIAL_H
 
