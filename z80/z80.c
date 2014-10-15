@@ -2,6 +2,10 @@
  *  @brief z80 implementation.
  *
  *  Implementation of a z80 CPU, ideally cycle-perfect.
+ *
+ *  Known issues.
+ *  @fixme HI-Impedance is not implemented, no busreq or busack.
+ *  @fixme instruction decode/execute.
  */
 #include "z80.h"
 #include <stdint.h>
@@ -54,7 +58,7 @@ struct {
     uint16_t rPC; ///<-- Program counter
 
     //Latches
-    uint8_t data_latch;
+    uint8_t data_latch; ///<-- When data bus is sampled, it is stored here.
 
     ///Current opcode
     uint8_t opcode[4]; //An opcode is at most 4 bytes long
@@ -84,6 +88,10 @@ struct {
 //Register macros. *BEWARE* some macros are endianness sensitive!
 //Little endian (x86) is presumed unless noted otherwise.
 
+//Address H/L
+#define Z80_ADDRH (*((uint8_t*)(&z80_address)))
+#define Z80_ADDRL (*((uint8_t*)((&z80_address) + 1)))
+
 //A (endianness insensitive)
 #define Z80_A  z80.rA[0]
 #define Z80_Ap z80.rA[1]
@@ -103,32 +111,32 @@ struct {
 #define Z80_C  z80.rBC[0]
 #define Z80_Bp z80.rBC[3]
 #define Z80_Cp z80.rBC[2]
-#define Z80_BC  *((uint16_t*) z80.rBC)
-#define Z80_BCp *((uint16_t*) z80.rBC + 2)
+#define Z80_BC  (*((uint16_t*) z80.rBC))
+#define Z80_BCp (*((uint16_t*) z80.rBC + 2))
 
 //DE
 #define Z80_D  z80.rDE[1]
 #define Z80_E  z80.rDE[0]
 #define Z80_Dp z80.rDE[3]
 #define Z80_Ep z80.rDE[2]
-#define Z80_DE  *((uint16_t*) z80.rDE)
-#define Z80_DEp *((uint16_t*) z80.rDE + 2)
+#define Z80_DE  (*((uint16_t*) z80.rDE))
+#define Z80_DEp (*((uint16_t*) z80.rDE + 2))
 
 //HL
 #define Z80_H  z80.rHL[1]
 #define Z80_L  z80.rHL[0]
 #define Z80_Hp z80.rHL[3]
 #define Z80_Lp z80.rHL[2]
-#define Z80_HL  *((uint16_t*) z80.rHL)
-#define Z80_HLp *((uint16_t*) z80.rHL + 2)
+#define Z80_HL  (*((uint16_t*) z80.rHL))
+#define Z80_HLp (*((uint16_t*) z80.rHL + 2))
 
 //WZ
 #define Z80_W  z80.rWZ[1]
 #define Z80_Z  z80.rWZ[0]
 #define Z80_Wp z80.rWZ[3]
 #define Z80_Zp z80.rWZ[2]
-#define Z80_WZ  *((uint16_t*) z80.rWZ)
-#define Z80_WZp *((uint16_t*) z80.rWZ + 2)
+#define Z80_WZ  (*((uint16_t*) z80.rWZ))
+#define Z80_WZp (*((uint16_t*) z80.rWZ + 2))
 
 //IX (endianness insensitive)
 #define Z80_IX z80.rIX
@@ -150,6 +158,29 @@ void z80_panic(int stat, void* data){
 }
 
 
+///Executes the M2 stage (Instruction decode/execute)
+__inline void z80_stage_m2(){
+    switch (z80.opcode_index){
+    case 0:
+        //No instruction
+        break;
+    case 1:
+        //1 byte
+        break;
+    case 2:
+        //2 bytes
+        break;
+    case 3:
+        //3 bytes
+        break;
+    case 4:
+        //4 bytes
+        break;
+    default:
+        z80_panic(Z80_STAGE_M2, 0);
+    }
+}
+
 ///Executes the M1 stage (Instruction fetch)
 __inline void z80_stage_m1(){
     switch (z80_tick_count){
@@ -159,8 +190,8 @@ __inline void z80_stage_m1(){
         z80_n_m1 = 0;
         //    -RFSH pulled up. @check
         z80_n_rfsh = 1;
-        //    -R register is incremented @check
-        ++Z80_R;
+        //    -R register is incremented (7-bit). 8th bit is kept
+        Z80_R = (Z80_R & (1 << 7)) | ((Z80_R + 1) % (1 << 7));
         break;
         
     case 1:
@@ -203,8 +234,10 @@ __inline void z80_stage_m1(){
 
     case 4:
         //On T3 dn
-        //    -MREQ pulled down
+        //    -MREQ pulled down (Refresh cycle)
         z80_n_mreq = 0;
+        //    -Load I to the high address bus @check
+        Z80_ADDRH = Z80_I;
         break;
 
     case 5:
@@ -216,6 +249,11 @@ __inline void z80_stage_m1(){
         //On T4 dn
         //    -MREQ pulled up
         z80_n_mreq = 1;
+
+        /// @note Identify where on the M1 stage is the (partial) opcode latched
+        /// here we are presuming it is done at the end of M1 stage.
+        z80.opcode[z80.opcode_index] = z80.data_latch;
+        ++z80.opcode_index;
         break;
     default:
         z80_panic(Z80_STAGE_M1, 0);
@@ -237,5 +275,6 @@ __inline void z80_stage_m1(){
  * 
  */
 void z80_tick(){
-
+    z80_stage_m1();
+    z80_stage_m2();
 }
