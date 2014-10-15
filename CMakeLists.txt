@@ -10,10 +10,15 @@ cmake_minimum_required (VERSION 2.8)
 # --- Explicitly enable C
 enable_language (C)
 
-# --- Enable C99
+# --- Enable C99 on GCC
 if (CMAKE_COMPILER_IS_GNUCC)
     SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99")
 endif (CMAKE_COMPILER_IS_GNUCC)
+
+# --- Tell MSVC to shut the fuck up about _CRT_SECURE_NO_WARNINGS
+if (MSVC)
+    add_definitions( -D_CRT_SECURE_NO_WARNINGS )
+endif (MSVC)
 
 # --- Enable OpenMP if available
 find_package(OpenMP)

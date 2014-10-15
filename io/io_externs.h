@@ -1,4 +1,9 @@
-
+/** @file io_externs.h
+ *  @brief Variable declarations for IO module.
+ * 
+ *  Provides the variables needed by code using the IO chip outputs.
+ *
+ */
 #ifndef __IO_EXTERNS_H
 #define __IO_EXTERNS_H
 
@@ -12,6 +17,6 @@
 #define IO_UNK1           (1<<1)
 #define IO_UNK0           (1)
 
-extern uint8_t io_stat;
+extern uint8_t io_stat; ///<-- The exported #CE lines. #MREQ/#IOREQ dependant
 
 #endif

@@ -1,3 +1,10 @@
+/**
+ *  @file psg.c
+ *  @brief PSG implementation.
+ *
+ *  Implements the SN79489 sound generator IC as used
+ *  in the sega master system.
+ */
 #include "psg.h"
 #include "psg_constants.h"
 #include <stdint.h>

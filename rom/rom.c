@@ -1,3 +1,9 @@
+/**
+ *  @file rom.c
+ *  @brief Implementation of ROM cartridge.
+ *
+ *  Implements a master system cartridge emulating a full sega mapper.
+ */
 #include "../z80/z80_externs.h"
 #include "../io/io_externs.h"
 #include <string.h>

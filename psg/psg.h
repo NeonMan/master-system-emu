@@ -1,3 +1,7 @@
+/**
+ *  @file psh.h
+ *  @brief PSG functions and variables.
+ */
 #ifndef __PSG_H
 #define __PSG_H
 

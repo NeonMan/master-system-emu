@@ -1,13 +1,14 @@
 /**
- * io.c
+ * @file io.c
+ * @brief Master System IO mapper.
  *
- * Emulates the behavior of the SMS IO controller chip, accesible using 
- * Port 0x3E
+ * Emulates the behaviour of the SMS IO controller chip, accessible using 
+ * Port 0x3E.
  */
 
 #include "io.h"
 
-uint8_t io_stat = 0xFF; ///<-- The exported #CE lines. #MREQ/#IOREQ dependant
+uint8_t io_stat = 0xFF;
 uint8_t io_reg  = 0;    ///<-- Internal mapper register
 
 void io_tick(){
