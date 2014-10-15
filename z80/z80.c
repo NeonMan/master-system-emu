@@ -271,7 +271,7 @@ __inline void z80_stage_m1(){
 
 int AAA_z80_instruction_decode(){
 
-
+    //Relevant sub-byte divisions, for each of the 4 bytes (max) in an opcode.
     const uint8_t x[4] = { z80.opcode[0] >> 6,         z80.opcode[1] >> 6,         z80.opcode[2] >> 6,         z80.opcode[3] >> 6 };
     const uint8_t y[4] = { (z80.opcode[0] >> 3) & 0x7, (z80.opcode[1] >> 3) & 0x7, (z80.opcode[2] >> 3) & 0x7, (z80.opcode[3] >> 3) & 0x7 };
     const uint8_t z[4] = { z80.opcode[0] & 0x7,        z80.opcode[1] & 0x7,        z80.opcode[2] & 0x7,        z80.opcode[3] & 0x7 };
@@ -283,11 +283,11 @@ int AAA_z80_instruction_decode(){
 
     //First opcode byte
     case 1:
-        if     (z80.opcode[0] == 0xCB){} //0xCB prefixed opcodes
-        else if(z80.opcode[0] == 0xED){} //0xED prefixed opcodes
-        else if(z80.opcode[0] == 0xDD){} //0xDD prefixed opcodes
-        else if(z80.opcode[0] == 0xFD){} //0xFD prefixed opcodes
-        else{                            //Unprefixed opcodes
+        if     (z80.opcode[0] == 0xCB){ /*Need another byte*/ } //0xCB prefixed opcodes
+        else if(z80.opcode[0] == 0xED){ /*Need another byte*/ } //0xED prefixed opcodes
+        else if(z80.opcode[0] == 0xDD){ /*Need another byte HL-->IX*/ } //0xDD prefixed opcodes
+        else if(z80.opcode[0] == 0xFD){ /*Need another byte HL-->IY*/ } //0xFD prefixed opcodes
+        else{                           //Unprefixed opcodes
             //Select by 'x' (2bit: 4 cases)
             switch (x[0]){
             // -------------
@@ -364,7 +364,7 @@ int AAA_z80_instruction_decode(){
             // --- X = 2 ---
             // -------------
             case 2:
-                { /*ALU_REG_MEM(y,r[z])*/ } //<-- y is the operation, r[z] is th eoperand
+                { /*ALU_REG_MEM(y,r[z])*/ } //<-- y is the operation, r[z] is the operand
                 break;
             // -------------
             // --- X = 3 ---
@@ -477,8 +477,36 @@ int AAA_z80_instruction_decode(){
             }
             else{ /*NONI + NOP*/ }
         }
-        else if (z80.opcode[0] == 0xDD){} ///@bug 0xDD prefixed opcodes
-        else if (z80.opcode[0] == 0xFD){} ///@bug 0xFD prefixed opcodes
+        else if (z80.opcode[0] == 0xDD){
+            if      (z80.opcode[1] == 0xDD) z80.opcode_index--; //0xDDDD = 0xDD
+            else if (z80.opcode[1] == 0xFD){
+                //0xFD replaces a previous 0xDD
+                ///@note HL --> IY
+                z80.opcode[0] = 0xFD;
+                z80.opcode_index--;
+            }
+            else if (z80.opcode[1] == 0xED){
+                z80.opcode[0] = 0xED;
+                z80.opcode_index--;
+                ///@bug HL --> HL
+            }
+            ///@bug 0xDD prefixed opcodes
+        } 
+        else if (z80.opcode[0] == 0xFD){
+            if (z80.opcode[0] == 0xFD) z80.opcode_index--;
+            else if (z80.opcode[1] == 0xDD){
+                //0xDD replaces a previous 0xFD
+                ///@note HL --> IX
+                z80.opcode[0] = 0xDD;
+                z80.opcode_index--;
+            }
+            else if (z80.opcode[1] == 0xED){
+                z80.opcode[0] = 0xED;
+                z80.opcode_index--;
+                ///@bug HL --> HL
+            }
+            ///@bug 0xFD prefixed opcodes
+        }
         else{
             ///@bug Insert 2-byte, unprefixed stuff here.
         }
@@ -490,7 +518,9 @@ int AAA_z80_instruction_decode(){
         else if (z80.opcode[0] == 0xED){}
         else if (((z80.opcode[0] == 0xDD) && (z80.opcode[1] == 0xCB)) ||
                 ((z80.opcode[0] == 0xFD) && (z80.opcode[1] == 0xCB)))
-                {}
+                {
+            //All opcodes at this place need an extra byte
+        }
         else if (z80.opcode[0] == 0xDD) {}
         else if (z80.opcode[0] == 0xFD) {}
         else{
