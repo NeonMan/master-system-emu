@@ -9,6 +9,8 @@
  */
 #include "z80.h"
 #include <stdint.h>
+#include <assert.h>
+
 // Z80 Buses
 uint8_t  z80_data;     ///<-- Data bus, 8 bit wide (Input/Output)
 uint16_t z80_address;  ///<-- Address bus   (Output)
@@ -282,7 +284,7 @@ int AAA_z80_instruction_decode(){
     switch (z80.opcode_index){
 
     //First opcode byte
-    case 1:
+    case 0:
         if     (z80.opcode[0] == 0xCB){ /*Need another byte*/ } //0xCB prefixed opcodes
         else if(z80.opcode[0] == 0xED){ /*Need another byte*/ } //0xED prefixed opcodes
         else if(z80.opcode[0] == 0xDD){ /*Need another byte HL-->IX*/ } //0xDD prefixed opcodes
@@ -298,57 +300,57 @@ int AAA_z80_instruction_decode(){
                 switch (z[0]){
                 case 0:
                     //Select by 'y'
-                    if      (z[0] == 0){ /*OP_NOP*/ }
-                    else if (z[0] == 1){ /*OP_EX (AF, AFp)*/ }
-                    else if (z[0] == 2){ /*DJNZ (d)*/ }    //Needs one extra byte
-                    else if (z[0] == 3){ /*JR (d)*/ }      //Needs one extra byte
-                    else               { /*JR (y-4, d)*/ } //Needs one extra byte
+                    if (z[0] == 0) assert(0); /*NOP*/ 
+                    else if (z[0] == 1) assert(0); /*EX (AF, AFp)*/
+                    else if (z[0] == 2) assert(0); /*DJNZ (d)*/    //Needs one extra byte
+                    else if (z[0] == 3) assert(0); /*JR(d)*/       //Needs one extra byte
+                    else                assert(0); /*JR (y-4, d)*/ //Needs one extra byte
                     break;
                 case 1:
                     //Select by q 
-                    if (q[0]){ /*LD (rp[p], nn)*/ } //Needs two extra bytes
-                    else     { /*ADD(HL,rp[p])*/ }
+                    if (q[0]){ assert(0); /*LD (rp[p], nn)*/ } //Needs two extra bytes
+                    else     { assert(0); /*ADD(HL,rp[p])*/ }
                     break;
                 case 2:
                     //Select by q
                     if (!(q[0])){
-                        if      (p[0] == 0) { /*LD((BC),A)*/ }
-                        else if (p[0] == 1) { /*LD((DE),A)*/ }
-                        else if (p[0] == 2) { /*LD((nn),HL)*/ } //Needs two extra bytes
-                        else if (p[0] == 3) { /*LD((nn),A)*/ }  //Needs two extra bytes
+                        if (p[0] == 0) { assert(0); /*LD((BC),A)*/ }
+                        else if (p[0] == 1) { assert(0); /*LD((DE),A)*/ }
+                        else if (p[0] == 2) { assert(0); /*LD((nn),HL)*/ } //Needs two extra bytes
+                        else if (p[0] == 3) { assert(0); /*LD((nn),A)*/ }  //Needs two extra bytes
                     }
                     else{
-                        if      (p[0] == 0) { /*LD(A,(BC))*/ }
-                        else if (p[0] == 1) { /*LD(A,(DE))*/ }
-                        else if (p[0] == 2) { /*LD(HL,(nn))*/ } //Needs two extra bytes
-                        else if (p[0] == 3) { /*LD(A,(nn))*/ }  //Needs two extra bytes
+                        if (p[0] == 0) { assert(0); /*LD(A,(BC))*/ }
+                        else if (p[0] == 1) { assert(0); /*LD(A,(DE))*/ }
+                        else if (p[0] == 2) { assert(0); /*LD(HL,(nn))*/ } //Needs two extra bytes
+                        else if (p[0] == 3) { assert(0); /*LD(A,(nn))*/ }  //Needs two extra bytes
                     }// !q
                     break;
                 case 3:
                     //Select by q
-                    if (!(q[0])){ /*INC(rp[p])*/ }
-                    else        { /*DEC(rp[p])*/ }
+                    if (!(q[0])){ assert(0); /*INC(rp[p])*/ }
+                    else        { assert(0); /*DEC(rp[p])*/ }
                     break;
                 case 4:
-                    { /*INC(r[y])*/ }
+                    { assert(0); /*INC(r[y])*/ }
                     break;
                 case 5:
-                    { /*DEC(r[y])*/ }
+                    { assert(0); /*DEC(r[y])*/ }
                     break;
                 case 6:
-                    { /*LD(r[y],n)*/ } //Needs one extra byte
+                    { assert(0); /*LD(r[y],n)*/ } //Needs one extra byte
                     break;
                 case 7:
                     //Select by 'y'
-                    if      (y[0] == 0) {/*RLCA*/ }
-                    else if (y[0] == 0) {/*RLCA*/ }
-                    else if (y[0] == 1) {/*RRCA*/ }
-                    else if (y[0] == 2) {/*RLA */ }
-                    else if (y[0] == 3) {/*RRA */ }
-                    else if (y[0] == 4) {/*DAA */ }
-                    else if (y[0] == 5) {/*CPL */ }
-                    else if (y[0] == 6) {/*SCF */ }
-                    else                {/*CCF */ }
+                    if (y[0] == 0) { assert(0); /*RLCA*/ }
+                    else if (y[0] == 0) { assert(0); /*RLCA*/ }
+                    else if (y[0] == 1) { assert(0); /*RRCA*/ }
+                    else if (y[0] == 2) { assert(0); /*RLA */ }
+                    else if (y[0] == 3) { assert(0); /*RRA */ }
+                    else if (y[0] == 4) { assert(0); /*DAA */ }
+                    else if (y[0] == 5) { assert(0); /*CPL */ }
+                    else if (y[0] == 6) { assert(0); /*SCF */ }
+                    else                { assert(0); /*CCF */ }
                     break;
                 }//switch (z)
                 break;
@@ -357,14 +359,14 @@ int AAA_z80_instruction_decode(){
             // -------------
             case 1:
                 //Select by 'z'
-                if (z[0] != 6) { /*LD(r[y],r[z])*/ }
-                else           { /*HALT*/ } /// @bug Exception (Replaces LD(HL)(HL)) ?
+                if (z[0] != 6) { assert(0); /*LD(r[y],r[z])*/ }
+                else           { assert(0); /*HALT*/ } /// @bug Exception (Replaces LD(HL)(HL)) ?
                 break;
             // -------------
             // --- X = 2 ---
             // -------------
             case 2:
-                { /*ALU_REG_MEM(y,r[z])*/ } //<-- y is the operation, r[z] is the operand
+                { assert(0); /*ALU_REG_MEM(y,r[z])*/ } //<-- y is the operation, r[z] is the operand
                 break;
             // -------------
             // --- X = 3 ---
@@ -373,47 +375,49 @@ int AAA_z80_instruction_decode(){
                 //Select by 'z'
                 switch (z[0]){
                 case 0:
-                    { /*RET(cc[y])*/ }
+                    { assert(0); /*RET(cc[y])*/ }
                     break;
                 case 1:
-                    if (!(q[0])){ /*POP(rp2[p])*/ }
+                    if (!(q[0])){ assert(0); /*POP(rp2[p])*/ }
                     else   {
-                        if      (p[0] == 0) { /*RET*/ }
-                        else if (p[0] == 1) { /*EXX*/ }
-                        else if (p[0] == 2) { /*JP(HL)*/ }
-                        else if (p[0] == 3) { /*LD(SP,HL)*/ }
+                        if (p[0] == 0) { assert(0); /*RET*/ }
+                        else if (p[0] == 1) { assert(0); /*EXX*/ }
+                        else if (p[0] == 2) { assert(0); /*JP(HL)*/ }
+                        else if (p[0] == 3) { assert(0); /*LD(SP,HL)*/ }
                     }
                     break;
                 case 2:
-                    { /*JP(cc[y], nn)*/ } //Needs two extra bytes
+                    { assert(0); /*JP(cc[y], nn)*/ } //Needs two extra bytes
                     break;
                 case 3:
-                    if      (y[0] == 0) { /*JP nn*/ }      //needs two extra bytes
+                    if (y[0] == 0) { assert(0);  /*JP nn*/ }      //needs two extra bytes
                     //else if (y == 1) { }              //CB prefix
-                    else if (y[0] == 2) { /*OUT((n),A)*/ } //needs one extra byte
-                    else if (y[0] == 3) { /*IN(A,(n))*/ }  //needs one extra byte
-                    else if (y[0] == 4) { /*EX((SP),HL)*/ }
-                    else if (y[0] == 5) { /*EX(DE,HL)*/ }
-                    else if (y[0] == 6) { /*DI*/ }
-                    else if (y[0] == 7) { /*EI*/ }
+                    else if (y[0] == 2) { assert(0);  /*OUT((n),A)*/ } //needs one extra byte
+                    else if (y[0] == 3) { assert(0);  /*IN(A,(n))*/ }  //needs one extra byte
+                    else if (y[0] == 4) { assert(0);  /*EX((SP),HL)*/ }
+                    else if (y[0] == 5) { assert(0);  /*EX(DE,HL)*/ }
+                    else if (y[0] == 6) { assert(0);  /*DI*/ }
+                    else if (y[0] == 7) { assert(0);  /*EI*/ }
+                    else { assert(0); /* Should NEVER get here*/}
                     break;
                 case 4:
-                    { /*CALL(cc[y], nn)*/ } //Needs two extra bytes
+                    { assert(0); /*CALL(cc[y], nn)*/ } //Needs two extra bytes
                     break;
                 case 5:
-                    if (!(q[0])){ /*PUSH(rp2[p])*/ }
+                    if (!(q[0])){ assert(0); /*PUSH(rp2[p])*/ }
                     else   {
-                        if (p[0] == 0) { /*CALL nn*/ } //Needs two extra bytes
+                        if (p[0] == 0) { assert(0); /*CALL nn*/ } //Needs two extra bytes
+                        else { assert(0); /*Should never get here*/ }
                         //p[0] == 1 --> DD prefix
                         //p[0] == 2 --> ED prefix
                         //p[0] == 3 --> FD prefix
                     }
                     break;
                 case 6:
-                    { /*ALU_ACC_INM(y,n)*/ } //Needs one extra byte
+                    { assert(0); /*ALU_ACC_INM(y,n)*/ } //Needs one extra byte
                     break;
                 case 7:
-                    { /*RST(y * 8)*/ }
+                    { assert(0); /*RST(y * 8)*/ }
                     break;
                 }//switch (z)
                 break;
@@ -421,13 +425,13 @@ int AAA_z80_instruction_decode(){
         }//if unprefixed opcode
         break;
     //Second opcode byte
-    case 2:
+    case 1:
         //Test wether this is a prefixed opcode
         if (z80.opcode[0] == 0xCB){  //0xCB prefixed opcodes
-            if      (x[1] == 0) { /*ROT(rot[y], r[z])*/ }
-            else if (x[1] == 1) { /*BIT(y,r[z])*/ }
-            else if (x[1] == 2) { /*RES(y,r[z])*/ }
-            else if (x[1] == 3) { /*SET(y,r[z])*/ }
+            if (x[1] == 0) { assert(0); /*ROT(rot[y], r[z])*/ }
+            else if (x[1] == 1) { assert(0); /*BIT(y,r[z])*/ }
+            else if (x[1] == 2) { assert(0); /*RES(y,r[z])*/ }
+            else if (x[1] == 3) { assert(0); /*SET(y,r[z])*/ }
         }
         else if (z80.opcode[0] == 0xED){ //0xED prefixed opcodes
             //select by 'x'
@@ -435,47 +439,47 @@ int AAA_z80_instruction_decode(){
                 //Select by 'z'
                 switch (z[1]){
                 case 0:
-                    if (y[1] != 6){ /*IN(r[y], C)*/ }
-                    else          { /*IN(C)*/ }
+                    if (y[1] != 6){ assert(0); /*IN(r[y], C)*/ }
+                    else          { assert(0); /*IN(C)*/ }
                     break;
                 case 1:
-                    if (y[1] != 6){ /*OUT(r[y], C)*/ }
-                    else          { /*OUT(C)*/ }
+                    if (y[1] != 6){ assert(0); /*OUT(r[y], C)*/ }
+                    else          { assert(0); /*OUT(C)*/ }
                     break;
                 case 2:
-                    if (!(q[1])){ /*SBC(HL,rp[p])*/ }
-                    else        { /*ADC(HL,rp[p])*/ }
+                    if (!(q[1])){ assert(0); /*SBC(HL,rp[p])*/ }
+                    else        { assert(0); /*ADC(HL,rp[p])*/ }
                     break;
                 case 3:
-                    if (!(q[1])){ /*LD((nn),rp[p])*/ } //Needs two extra bytes
-                    else        { /*LD(rp[p],(nn))*/ } //Needs two extra bytes
+                    if (!(q[1])){ assert(0); /*LD((nn),rp[p])*/ } //Needs two extra bytes
+                    else        { assert(0); /*LD(rp[p],(nn))*/ } //Needs two extra bytes
                     break;
                 case 4:
-                    { /*NEG*/ }
+                    { assert(0); /*NEG*/ }
                     break;
                 case 5:
-                    if (y[1] != 1) { /*RETN*/ }
-                    else           { /*RETI*/ }
+                    if (y[1] != 1) { assert(0); /*RETN*/ }
+                    else           { assert(0); /*RETI*/ }
                     break;
                 case 6:
-                    { /*IM(im[y])*/ }
+                    { assert(0); /*IM(im[y])*/ }
                     break;
                 case 7:
-                    if      (y[1] == 0){ /*LD(I,A)*/ }
-                    else if (y[1] == 1){ /*LD(R,A)*/ }
-                    else if (y[1] == 2){ /*LD(A,I)*/ }
-                    else if (y[1] == 3){ /*LD(A,R)*/ }
-                    else if (y[1] == 4){ /*RRD*/ }
-                    else if (y[1] == 5){ /*RLD*/ }
-                    else               { /*NOP*/ }
+                    if (y[1] == 0){ assert(0); /*LD(I,A)*/ }
+                    else if (y[1] == 1){ assert(0); /*LD(R,A)*/ }
+                    else if (y[1] == 2){ assert(0); /*LD(A,I)*/ }
+                    else if (y[1] == 3){ assert(0); /*LD(A,R)*/ }
+                    else if (y[1] == 4){ assert(0); /*RRD*/ }
+                    else if (y[1] == 5){ assert(0); /*RLD*/ }
+                    else               { assert(0); /*NOP*/ }
                     break;
                 }//Switch(z)
             }
             else if (x[1] == 2) {
-                if ((z[1] <= 3) && (y[1] >= 4)){ /*BLOCK(y,z)*/ }
-                else                           { /*NONI + NOP*/ }
+                if ((z[1] <= 3) && (y[1] >= 4)){ assert(0); /*BLOCK(y,z)*/ }
+                else                           { assert(0); /*NONI + NOP*/ }
             }
-            else{ /*NONI + NOP*/ }
+            else{ assert(0); /*NONI + NOP*/ }
         }
         else if (z80.opcode[0] == 0xDD){
             if      (z80.opcode[1] == 0xDD) z80.opcode_index--; //0xDDDD = 0xDD
@@ -484,13 +488,16 @@ int AAA_z80_instruction_decode(){
                 ///@note HL --> IY
                 z80.opcode[0] = 0xFD;
                 z80.opcode_index--;
+                assert(0);
             }
             else if (z80.opcode[1] == 0xED){
                 z80.opcode[0] = 0xED;
                 z80.opcode_index--;
                 ///@bug HL --> HL
+                assert(0);
             }
             ///@bug 0xDD prefixed opcodes
+            assert(0);
         } 
         else if (z80.opcode[0] == 0xFD){
             if (z80.opcode[0] == 0xFD) z80.opcode_index--;
@@ -499,45 +506,52 @@ int AAA_z80_instruction_decode(){
                 ///@note HL --> IX
                 z80.opcode[0] = 0xDD;
                 z80.opcode_index--;
+                assert(0);
             }
             else if (z80.opcode[1] == 0xED){
                 z80.opcode[0] = 0xED;
                 z80.opcode_index--;
                 ///@bug HL --> HL
+                assert(0);
             }
             ///@bug 0xFD prefixed opcodes
+            assert(0);
         }
         else{
             ///@bug Insert 2-byte, unprefixed stuff here.
+            assert(0);
         }
 
     //Third opcode byte
-    case 3:
+    case 2:
         //Test prefixes
-        if      (z80.opcode[0] == 0xCB){}
-        else if (z80.opcode[0] == 0xED){}
+        if (z80.opcode[0] == 0xCB){ assert(0); }
+        else if (z80.opcode[0] == 0xED){ assert(0); }
         else if (((z80.opcode[0] == 0xDD) && (z80.opcode[1] == 0xCB)) ||
                 ((z80.opcode[0] == 0xFD) && (z80.opcode[1] == 0xCB)))
                 {
             //All opcodes at this place need an extra byte
+            assert(0);
         }
-        else if (z80.opcode[0] == 0xDD) {}
-        else if (z80.opcode[0] == 0xFD) {}
+        else if (z80.opcode[0] == 0xDD) { assert(0); }
+        else if (z80.opcode[0] == 0xFD) { assert(0); }
         else{
             ///@bug Insert 3-byte, unprefixed stuff here.
+            assert(0);
         } //Prefixes
         break;
     //Fourth opcode byte
-    case 4:
+    case 3:
         //Test prefixes
-        if (z80.opcode[0] == 0xCB){}
-        else if (z80.opcode[0] == 0xED){}
+        if (z80.opcode[0] == 0xCB){ assert(0); }
+        else if (z80.opcode[0] == 0xED){ assert(0); }
         else if (((z80.opcode[0] == 0xDD) && (z80.opcode[1] == 0xCB)) ||
             ((z80.opcode[0] == 0xFD) && (z80.opcode[1] == 0xCB)))
         {
+            assert(0);
         }
-        else if (z80.opcode[0] == 0xDD) {}
-        else if (z80.opcode[0] == 0xFD) {}
+        else if (z80.opcode[0] == 0xDD) { assert(0); }
+        else if (z80.opcode[0] == 0xFD) { assert(0); }
         else{
             ///@bug Insert 4-byte, unprefixed stuff here. (none that I know of).
         } //Prefixes
@@ -551,5 +565,6 @@ int AAA_z80_instruction_decode(){
  */
 void z80_tick(){
     z80_stage_m1();
-    z80_stage_m2();
+    //z80_stage_m2();
+    AAA_z80_instruction_decode();
 }
