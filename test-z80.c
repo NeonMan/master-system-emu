@@ -29,6 +29,5 @@ int main(){
         z80_tick();
         z80_tick();
     }
-
     return 0;
 }
