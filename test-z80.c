@@ -7,6 +7,8 @@
 #include <string.h>
 
 int main(){
+    //Setup Z80
+    z80_init();
 
     //Setup the ROM, all NOPs
     uint8_t *full_rom = malloc(ROM_MAX_SIZE);
