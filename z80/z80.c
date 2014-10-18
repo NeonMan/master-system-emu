@@ -10,6 +10,8 @@
 #include "z80.h"
 #include "z80_macros.h"
 #include <stdint.h>
+#include <string.h>
+#include <stdlib.h>
 #include <assert.h>
 
 // Z80 Buses
@@ -34,14 +36,15 @@ uint8_t  z80_n_wait = 1;  ///<-- !Wait (Input)
 uint8_t  z80_n_busreq = 1; ///<-- !Bus request (???)
 uint8_t  z80_n_busack = 1; ///<-- !Bus-acknowledge (???)
 
-#define Z80_STAGE_M1 0
-#define Z80_STAGE_M2 1
-#define Z80_STAGE_M3 2
+#define Z80_STAGE_RESET 0
+#define Z80_STAGE_M1 1
+#define Z80_STAGE_M2 2
+#define Z80_STAGE_M3 3
 
 unsigned int z80_tick_count = 0; ///<-- Counts the number of half cycles on each M stage.
 uint8_t z80_stage = Z80_STAGE_M1;
 
-struct {
+struct z80_s {
     //Single 8bit registers
     uint8_t rAF[4]; ///<-- Accumulator/Flags
     uint8_t rI;    ///<-- Interrupt register
@@ -67,26 +70,29 @@ struct {
     uint8_t opcode[4]; //An opcode is at most 4 bytes long
     ///Current opcode byte
     uint8_t opcode_index;
-    ///Expected opcode size
-    uint8_t opcode_size;
 
-} z80 = {   { 0, 0, 0, 0 }, //AF
-            0, //I
-            0, //R
-            { 0, 0, 0, 0 }, //WZ
-            { 0, 0, 0, 0 }, //BC
-            { 0, 0, 0, 0 }, //DE
-            { 0, 0, 0, 0 }, //HL
-            0, //IX
-            0, //IY
-            0xffff, //SP
-            0, //PC
-            0, //data_latch
-            {0,0}, //Interrupt flip-flops
-            { 0, 0, 0, 0 }, //Opcode
-            0,  //Opcode idx
-            0   //opcode_size
-            };
+    //Current stage
+    uint8_t stage;
+
+    //Temporal memory read storage
+    uint16_t read_address;   ///<-- Which address to read from
+    uint8_t  read_buffer[2]; ///<-- Up to 16-bit reads
+    uint8_t  read_index;     ///<-- How many bytes we have read
+
+    //Temporal memory write storage
+    uint16_t write_address;   ///<-- Which address to write to
+    uint8_t  write_buffer[2]; ///<-- Up to 16-bit writes
+    uint8_t  write_index;     ///<-- How many bytes we have written
+};
+
+struct z80_s  z80;
+
+void z80_init(){
+    //Zero the z80 struct.
+    memset(&z80, 0x00, sizeof(struct z80_s));
+    //Set anything non-zero here
+    z80.rSP = 0xFFFF; //<-- Stack pointer starts at 0xFFFF
+}
 
 struct z80_decoder_result_s{
     uint8_t request_fetch; ///<-- After reading a byte, the decoder requests more data
@@ -97,8 +103,6 @@ struct z80_decoder_result_s{
     uint8_t  is_16bit; ///<-- True on 16-bit read/write
 };
 typedef struct z80_decoder_result_s z80_decoder_result;
-#define Z80_DECODER(X,Y,Z,T) ((z80_decoder_result){X,Y,Z,T})
-#define Z80_DECODER_END Z80_DECODER(0,0,0,0)
 
 // --- Register lookup tables ---
 
@@ -122,6 +126,9 @@ const int8_t z80_im[8] = { 0, -1, 1, 2, 0, -1, 1, 2 };
 */
 __inline void z80_reset_pipeline(){
     z80.opcode_index = 0;
+    z80.write_index = 0;
+    z80.read_index = 0;
+
     z80_tick_count = 0;
 }
 
@@ -131,7 +138,17 @@ __inline void z80_reset_pipeline(){
  Decoding Z80 instructions:
      http://www.z80.info/decoding.htm
 */
-z80_decoder_result AAA_z80_instruction_decode(){
+
+/**
+ * @brief decode/execute a Z80 opcode.
+ *
+ * Decode a z80 opcode, if the opcode is completly read, execute it.
+ * If a memory read/write is needed, signal it by returning the apropriate
+ * information.
+ *
+ * @return Signal wether we need a read/write/fetch or none.
+ */
+int z80_instruction_decode(){
 
     //Relevant sub-byte divisions, for each of the 4 bytes (max) in an opcode.
     const uint8_t x[4] = { z80.opcode[0] >> 6, z80.opcode[1] >> 6, z80.opcode[2] >> 6, z80.opcode[3] >> 6 };
@@ -162,16 +179,14 @@ z80_decoder_result AAA_z80_instruction_decode(){
                     //Select by 'y'
                     if (z[0] == 0) { /*NOP*/
                         //No flags were harmed
-                        z80_reset_pipeline();
-                        return Z80_DECODER_END;
+                        return Z80_STAGE_RESET;
                     }
                     else if (z[0] == 1){  /*EX (AF, AFp)*/
                         const uint16_t tmp_af = Z80_AF;
                         Z80_AF = Z80_AFp;
                         Z80_AFp = tmp_af;
                         //No flags were harmed
-                        z80_reset_pipeline();
-                        return Z80_DECODER_END;
+                        return Z80_STAGE_RESET;
                     }
                     else if (z[0] == 2) assert(0); /*DJNZ (d)*/    //Needs one extra byte
                     else if (z[0] == 3) assert(0); /*JR(d)*/       //Needs one extra byte
@@ -180,19 +195,33 @@ z80_decoder_result AAA_z80_instruction_decode(){
                 case 1:
                     //Select by q 
                     if (q[0]){ assert(0); /*LD (rp[p], nn)*/ } //Needs two extra bytes
-                    else     { /*ADD(HL,rp[p])*/ //--?-0*
+                    else     { /*ADD(HL,rp[p])*/ 
                         const uint16_t old_hl = Z80_HL;
                         Z80_HL = Z80_HL + *z80_rp[p[0]];
                         Z80_F = (Z80_F & (Z80_CLRFLAG_CARRY & Z80_CLRFLAG_ADD)) //Clear N/Carry flag (bits 1,0)
                             | Z80_SETFLAG_CARRY(old_hl, Z80_HL); //Set carry flag (bit 0)
-                        z80_reset_pipeline();
-                        return Z80_DECODER_END;
+                        return Z80_STAGE_RESET;
                     }
                     break;
                 case 2:
                     //Select by q
                     if (!(q[0])){
-                        if (p[0] == 0) { assert(0); /*LD((BC),A)*/ }
+                        if (p[0] == 0) {/*LD((BC),A)*/ 
+                            //Write the A register into the BC address
+                            
+                            //If the write has not been performed, request it
+                            if (z80.write_index == 0){
+                                z80.write_address = Z80_BC;
+                                z80.write_buffer[0] = Z80_A;
+                                z80.write_index = 0;
+                                return  Z80_STAGE_M3;
+                            }
+                            //Otherwise, reset pipeline
+                            else{
+                                assert(z80.write_index == 1);
+                                return Z80_STAGE_RESET;
+                            }
+                        }
                         else if (p[0] == 1) { assert(0); /*LD((DE),A)*/ }
                         else if (p[0] == 2) { assert(0); /*LD((nn),HL)*/ } //Needs two extra bytes
                         else if (p[0] == 3) { assert(0); /*LD((nn),A)*/ }  //Needs two extra bytes
@@ -209,14 +238,12 @@ z80_decoder_result AAA_z80_instruction_decode(){
                     if (!(q[0])){/*INC(rp[p])*/
                         ++z80_rp[p[0]];
                         //No flags were harmed
-                        z80_reset_pipeline();
-                        return Z80_DECODER_END;
+                        return Z80_STAGE_RESET;
                     }
                     else        { /*DEC(rp[p])*/
                         --z80_rp[p[0]];
                         //No flags were harmed
-                        z80_reset_pipeline();
-                        return Z80_DECODER_END;
+                        return Z80_STAGE_RESET;
                     }
                     break;
                 case 4:
@@ -233,8 +260,7 @@ z80_decoder_result AAA_z80_instruction_decode(){
                               | Z80_SETFLAG_ZERO(*z80_r[y[0]])
                               | Z80_SETFLAG_HC(old_r, *z80_r[y[0]])
                               | Z80_SETFLAG_OVERFLOW(old_r, *z80_r[y[0]]);
-                          z80_reset_pipeline();
-                          return Z80_DECODER_END;
+                          return Z80_STAGE_RESET;
                 }
                     break;
                 case 5:
@@ -249,8 +275,7 @@ z80_decoder_result AAA_z80_instruction_decode(){
                               | Z80_SETFLAG_ZERO(*z80_r[y[0]])
                               | Z80_SETFLAG_HC(old_r, *z80_r[y[0]])
                               | Z80_SETFLAG_OVERFLOW(*z80_r[y[0]], old_r);
-                          z80_reset_pipeline();
-                          return Z80_DECODER_END;
+                          return Z80_STAGE_RESET;
                 }
                     break;
                 case 6:
@@ -263,16 +288,14 @@ z80_decoder_result AAA_z80_instruction_decode(){
                         //Clear HNC
                         Z80_F = (Z80_F & (Z80_CLRFLAG_HC & Z80_CLRFLAG_ADD & Z80_CLRFLAG_CARRY))
                             | (Z80_F & 1 ? Z80_FLAG_CARRY : 0); //Set Carry
-                        z80_reset_pipeline();
-                        return Z80_DECODER_END;
+                        return Z80_STAGE_RESET;
                     }
                     else if (y[0] == 1) {/*RRCA*/
                         Z80_A = (Z80_A >> 1) | (Z80_A & (1 >> 7) ? (1 << 7) : 0);
                         //Clear HNC
                         Z80_F = (Z80_F & (Z80_CLRFLAG_HC & Z80_CLRFLAG_ADD & Z80_CLRFLAG_CARRY))
                             | (Z80_F & (1 << 7) ? Z80_FLAG_CARRY : 0); //Set Carry
-                        z80_reset_pipeline();
-                        return Z80_DECODER_END;
+                        return Z80_STAGE_RESET;
                     }
                     else if (y[0] == 2) {/*RLA */
                         const uint8_t next_carry = Z80_A & (1 << 7);
@@ -280,37 +303,32 @@ z80_decoder_result AAA_z80_instruction_decode(){
                         //Clear HNC
                         Z80_F = (Z80_F & (Z80_CLRFLAG_HC & Z80_CLRFLAG_ADD & Z80_CLRFLAG_CARRY))
                             | (next_carry ? Z80_FLAG_CARRY : 0); //Set Carry
-                        z80_reset_pipeline();
-                        return Z80_DECODER_END;
+                        return Z80_STAGE_RESET;
                     }
                     else if (y[0] == 3) {/*RRA */
                         const uint8_t next_carry = Z80_A & (1);
                         Z80_A = (Z80_A >> 1) | (Z80_F & Z80_FLAG_CARRY ? (1 << 7) : 0);
                         //Clear HNC
                         Z80_F = (Z80_F & (Z80_CLRFLAG_HC & Z80_CLRFLAG_ADD & Z80_CLRFLAG_CARRY))
-                            | (next_carry ? Z80_FLAG_CARRY : 0); //Set Carry  
-                        z80_reset_pipeline();
-                        return Z80_DECODER_END;
+                            | (next_carry ? Z80_FLAG_CARRY : 0); //Set Carry
+                        return Z80_STAGE_RESET;
                     }
                     else if (y[0] == 4) { assert(0); /*DAA */ }
                     else if (y[0] == 5) {/*CPL */
                         Z80_A = ~Z80_A;
                         //Set H,N
                         Z80_F = Z80_F | Z80_FLAG_HC | Z80_FLAG_ADD;
-                        z80_reset_pipeline();
-                        return Z80_DECODER_END;
+                        return Z80_STAGE_RESET;
                     }
                     else if (y[0] == 6) {/*SCF */
                         //Clear H,N. Set C
                         Z80_F = (Z80_F & (Z80_CLRFLAG_HC & Z80_CLRFLAG_ADD)) | Z80_FLAG_CARRY;
-                        z80_reset_pipeline();
-                        return Z80_DECODER_END;
+                        return Z80_STAGE_RESET;
                     }
                     else {/*CCF */
                         //Clear N, Swap C
                         Z80_F = (Z80_F ^ Z80_FLAG_CARRY) & Z80_CLRFLAG_ADD;
-                        z80_reset_pipeline();
-                        return Z80_DECODER_END;
+                        return Z80_STAGE_RESET;
                     }
                     break;
                 }//switch (z)
@@ -353,8 +371,7 @@ z80_decoder_result AAA_z80_instruction_decode(){
                             Z80_DEp = old_de;
                             Z80_HLp = old_hl;
                             //No flags were harmed
-                            z80_reset_pipeline();
-                            return Z80_DECODER_END;
+                            return Z80_STAGE_RESET;
                         }
                         else if (p[0] == 2) { assert(0); /*JP(HL)*/ }
                         else if (p[0] == 3) { assert(0); /*LD(SP,HL)*/ }
@@ -374,22 +391,19 @@ z80_decoder_result AAA_z80_instruction_decode(){
                         Z80_DE = Z80_HL;
                         Z80_HL = old_de;
                         //No flags were harmed
-                        z80_reset_pipeline();
-                        return Z80_DECODER_END;
+                        return Z80_STAGE_RESET;
                     }
                     else if (y[0] == 6) {/*DI*/
                         z80.iff[0] = 0;
                         z80.iff[1] = 0;
                         //No flags were harmed
-                        z80_reset_pipeline();
-                        return Z80_DECODER_END;
+                        return Z80_STAGE_RESET;
                     }
                     else if (y[0] == 7) {/*EI*/
                         z80.iff[0] = 1;
                         z80.iff[1] = 1;
                         //No flags were harmed
-                        z80_reset_pipeline();
-                        return Z80_DECODER_END;
+                        return Z80_STAGE_RESET;
                     }
                     else { assert(0); /* Should NEVER get here*/ }
                     break;
@@ -550,35 +564,24 @@ z80_decoder_result AAA_z80_instruction_decode(){
         } //Prefixes
         break;
     }//switch Opcode index
-    return Z80_DECODER_END;
+    return Z80_STAGE_RESET;
 }
 
 
-///Executes the M2 stage (Instruction decode/execute)
-__inline void z80_stage_m2(){
-    switch (z80.opcode_index){
-    case 0:
-        //No instruction
-        break;
-    case 1:
-        //1 byte
-        break;
-    case 2:
-        //2 bytes
-        break;
-    case 3:
-        //3 bytes
-        break;
-    case 4:
-        //4 bytes
-        break;
-    default:
-        assert(0); //Should never get here
-    }
+///Executes the M3 stage (Memory write)
+__inline int z80_stage_m3(){
+    assert(0); //Unimplemented; Forcefully fail
+    return Z80_STAGE_RESET;
+}
+
+///Executes the M2 stage (Memory read)
+__inline int z80_stage_m2(){
+    assert(0); //Unimplemented; Forcefully fail
+    return Z80_STAGE_RESET;
 }
 
 ///Executes the M1 stage (Instruction fetch)
-__inline void z80_stage_m1(){
+__inline int z80_stage_m1(){
     switch (z80_tick_count){
     case 0:
         //On T1 up (first Rising edge)
@@ -610,7 +613,7 @@ __inline void z80_stage_m1(){
         if   (z80_n_wait) break; //<-- Continue
         else{                    //<-- GoTo T2 up
             --z80_tick_count;
-            return; //<-- Prevent tick from increasing
+            return Z80_STAGE_M1; //<-- Prevent tick from increasing
         }
 
         //On T3 up
@@ -652,12 +655,6 @@ __inline void z80_stage_m1(){
         ++z80.opcode_index;
         ///@bug Where on the M1 stage is PC incremented? Assuming at the end.
         ++Z80_PC;
-        //Call instruction decoder
-        AAA_z80_instruction_decode();
-
-        //Clear tick count
-        ///@bug Select next stage instead of resetting M1
-        z80_tick_count = -1;
         break;
     default:
         assert(0); //Should never get here.
@@ -670,13 +667,28 @@ __inline void z80_stage_m1(){
     //   -Pass continue to M2
     //   -Discard data and start M1 again (NOP)
     //In essence, decode the instruction
-
+    return z80_instruction_decode();
 }
 
 /** Executes a z80 half-clock.
  * 
  */
 void z80_tick(){
-    z80_stage_m1();
-    //z80_stage_m2();
+    switch (z80.stage){
+    case 0:
+        z80_reset_pipeline();
+        ++(z80.stage);
+        //Fall-through
+    case 1:
+        z80.stage = z80_stage_m1();
+        break;
+    case 2:
+        z80.stage = z80_stage_m2();
+        break;
+    case 3:
+        z80.stage = z80_stage_m3();
+        break;
+    default:
+        assert(0);
+    }
 }

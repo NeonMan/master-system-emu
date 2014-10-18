@@ -7,5 +7,6 @@
 #include "z80_externs.h"
 
 void z80_tick();
+void z80_init();
 
 #endif
