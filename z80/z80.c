@@ -41,7 +41,12 @@ uint8_t  z80_n_busack = 1; ///<-- !Bus-acknowledge (???)
 #define Z80_STAGE_M2 2
 #define Z80_STAGE_M3 3
 
-unsigned int z80_tick_count = 0; ///<-- Counts the number of half cycles on each M stage.
+
+
+///@bug Move this into the z80 struct.
+unsigned int z80_m1_tick_count = 0; ///<-- Counts the number of half cycles on the M1 stage.
+unsigned int z80_m2_tick_count = 0; ///<-- Counts the number of half-cycles on the M2 stage.
+unsigned int z80_m3_tick_count = 0; ///<-- Counts the number of half-cycles on the M3 stage.
 uint8_t z80_stage = Z80_STAGE_M1;
 
 struct z80_s {
@@ -78,11 +83,13 @@ struct z80_s {
     uint16_t read_address;   ///<-- Which address to read from
     uint8_t  read_buffer[2]; ///<-- Up to 16-bit reads
     uint8_t  read_index;     ///<-- How many bytes we have read
+    uint8_t  read_is_io;     ///<-- True if read is IO instead of mem
 
     //Temporal memory write storage
     uint16_t write_address;   ///<-- Which address to write to
     uint8_t  write_buffer[2]; ///<-- Up to 16-bit writes
     uint8_t  write_index;     ///<-- How many bytes we have written
+    uint8_t  write_is_io;     ///<-- True if write is IO instead of mem
 };
 
 struct z80_s  z80;
@@ -124,12 +131,13 @@ const int8_t z80_im[8] = { 0, -1, 1, 2, 0, -1, 1, 2 };
 /**
 * @brief clears the z80 state to prepare for a new opcode.
 */
-__inline void z80_reset_pipeline(){
+void z80_reset_pipeline(){
     z80.opcode_index = 0;
     z80.write_index = 0;
     z80.read_index = 0;
-
-    z80_tick_count = 0;
+    z80_m1_tick_count = 0;
+    z80_m2_tick_count = 0;
+    z80_m3_tick_count = 0;
 }
 
 /*
@@ -567,22 +575,141 @@ int z80_instruction_decode(){
     return Z80_STAGE_RESET;
 }
 
-
 ///Executes the M3 stage (Memory write)
-__inline int z80_stage_m3(){
-    assert(0); //Unimplemented; Forcefully fail
+int z80_stage_m3(){
+    switch (z80_m3_tick_count){
+    case 0:
+        //1st rising edge
+        //Write address to bus
+        z80_address = z80.write_address;
+
+        //Prepare for next tick
+        ++z80_m3_tick_count;
+        return Z80_STAGE_M3; //<-- Stage not finished
+    case 1:
+        //1st falling edge
+        //#MREQ down
+        z80_n_mreq = 0;
+        //Write data to data bus
+        assert((z80.write_index >= 0) && (z80.write_index < 2));
+        z80_data = z80.write_buffer[z80.write_index];
+        --z80.write_index;
+        ++z80.write_address; //Increment address, for 16-bit writes
+
+        //Prepare for next tick
+        ++z80_m3_tick_count;
+        return Z80_STAGE_M3; //<-- Stage not finished
+    case 2:
+        //2nd rising edge
+        //nothing
+
+        //Prepare for next tick
+        ++z80_m3_tick_count;
+        return Z80_STAGE_M3; //<-- Stage not finished
+    case 3:
+        //2nd falling edge
+        //Sample #wait
+        if ((z80_n_wait == 0) || (z80.write_is_io)){
+            z80_m3_tick_count -= 2;
+            z80.write_is_io = 0;
+        }
+        else{
+            //Push #Write down
+            z80_n_wr = 0;
+        }
+
+        //Prepare for next tick
+        ++z80_m3_tick_count;
+        return Z80_STAGE_M3; //<-- Stage not finished
+    case 4:
+        //3rd rising edge
+        //nothing
+
+        //Prepare for next tick
+        ++z80_m3_tick_count;
+        return Z80_STAGE_M3; //<-- Stage not finished
+    case 5:
+        //3rd falling edge
+        //#MREQ up
+        z80_n_mreq = 1;
+        //#WR up
+        z80_n_wr = 1;
+
+        //Call instruction decoder, return whatever it wants
+        return z80_instruction_decode();
+    }
+    assert(0); //Should never get here.
     return Z80_STAGE_RESET;
 }
 
 ///Executes the M2 stage (Memory read)
-__inline int z80_stage_m2(){
-    assert(0); //Unimplemented; Forcefully fail
+int z80_stage_m2(){
+    switch (z80_m2_tick_count){
+    case 0:
+        //1st rising edge
+        //Write address to address bus.
+        z80_address = z80.read_address;
+
+        //Prepare for next tick
+        ++z80_m2_tick_count;
+        return Z80_STAGE_M2; //<-- Stage hasn't finished yet
+    case 1:
+        //1st falling edge
+        // #MREQ down
+        z80_n_mreq = 0;
+        // #RD down
+        z80_n_rd = 0;
+
+        //Prepare for next tick
+        ++z80_m2_tick_count;
+        return Z80_STAGE_M2; //<-- Stage hasn't finished yet
+    case 2:
+        //2nd rising edge
+        // Nothing
+
+        //Prepare for next tick
+        ++z80_m2_tick_count;
+        return Z80_STAGE_M2; //<-- Stage hasn't finished yet
+    case 3:
+        //2nd falling edge
+        //Sample #WAIT. If down, decrement tick in 2. force one wait if IO.
+        if ((z80_n_wait == 0) || z80.read_is_io){
+            z80_m2_tick_count -= 2;
+            z80.read_is_io = 0;
+        }
+
+        //Prepare for next tick
+        ++z80_m2_tick_count;
+        return Z80_STAGE_M2; //<-- Stage hasn't finished yet
+    case 4:
+        //3rd rising edge
+        // Nothing
+
+        //Prepare for next tick
+        ++z80_m2_tick_count;
+        return Z80_STAGE_M2; //<-- Stage hasn't finished yet
+    case 5:
+        //3rd falling edge
+        // Sample data bus
+        assert(z80.read_index < 2); //<-- No more than one byte in buffer.
+        z80.read_buffer[z80.read_index] = z80_data;
+        ++z80.read_index;
+        ++z80.read_address; //Increment address, for 16-bit reads
+
+        //Reset #RD, #MREQ
+        z80_n_mreq = 1;
+        z80_n_rd = 1;
+
+        //Call instruction decoder, retun whatever it wants.
+        return z80_instruction_decode();
+    }
+    assert(0); //Shold never get here.
     return Z80_STAGE_RESET;
 }
 
 ///Executes the M1 stage (Instruction fetch)
-__inline int z80_stage_m1(){
-    switch (z80_tick_count){
+int z80_stage_m1(){
+    switch (z80_m1_tick_count){
     case 0:
         //On T1 up (first Rising edge)
         //    -M1 is pulled down
@@ -591,8 +718,10 @@ __inline int z80_stage_m1(){
         z80_n_rfsh = 1;
         //    -R register is incremented (7-bit). 8th bit is kept
         Z80_R = (Z80_R & (1 << 7)) | ((Z80_R + 1) % (1 << 7));
-        break;
         
+        //Prepare for next tick
+        ++z80_m1_tick_count;
+        return Z80_STAGE_M1; //<-- Stage hasn't finished
     case 1:
         //On T1 dn (first falling edge) 
         //    -PC is written to the address bus
@@ -600,22 +729,30 @@ __inline int z80_stage_m1(){
         //    -MREQ and RD are pulled down
         z80_n_mreq = 0;
         z80_n_rd = 0;
-        break;
 
+        //Prepare for next tick
+        ++z80_m1_tick_count;
+        return Z80_STAGE_M1; //<-- Stage hasn't finished
     case 2:
         //On T2 up
         //    <nothing>
-        break;
 
+        //Prepare for next tick
+        ++z80_m1_tick_count;
+        return Z80_STAGE_M1; //<-- Stage hasn't finished
     case 3:
         //On T2 dn
         //    - WAIT line is sampled. If down decrease the tick count (T2 up)
         if   (z80_n_wait) break; //<-- Continue
         else{                    //<-- GoTo T2 up
-            --z80_tick_count;
+            --z80_m1_tick_count;
             return Z80_STAGE_M1; //<-- Prevent tick from increasing
         }
 
+        //Prepare for next tick
+        ++z80_m1_tick_count;
+        return Z80_STAGE_M1; //<-- Stage hasn't finished
+    case 4:
         //On T3 up
         //    -DATA bus is sampled
         z80.data_latch = z80_data;
@@ -629,45 +766,51 @@ __inline int z80_stage_m1(){
         z80_n_rfsh = 0;
         //    -ADDRESS bus is set to REFRESH address
         z80_address = Z80_R;
-        break;
 
-    case 4:
+        //Prepare for next tick
+        ++z80_m1_tick_count;
+        return Z80_STAGE_M1; //<-- Stage hasn't finished
+    case 5:
         //On T3 dn
         //    -MREQ pulled down (Refresh cycle)
         z80_n_mreq = 0;
         //    -Load I to the high address bus @check
         Z80_ADDRH = Z80_I;
-        break;
 
-    case 5:
+        //Prepare for next tick
+        ++z80_m1_tick_count;
+        return Z80_STAGE_M1; //<-- Stage hasn't finished
+    case 6:
         //On T4 up
         //    <nothing>
-        break;
 
-    case 6:
+        //Prepare for next tick
+        ++z80_m1_tick_count;
+        return Z80_STAGE_M1; //<-- Stage hasn't finished
+    case 7:
         //On T4 dn
         //    -MREQ pulled up
         z80_n_mreq = 1;
 
         /// @bug Identify where on the M1 stage is the (partial) opcode latched
         /// here we are presuming it is done at the end of M1 stage.
+        assert(z80.opcode_index < 4);
         z80.opcode[z80.opcode_index] = z80.data_latch;
         ++z80.opcode_index;
         ///@bug Where on the M1 stage is PC incremented? Assuming at the end.
         ++Z80_PC;
-        break;
-    default:
-        assert(0); //Should never get here.
-    }
-    //Increment tick count
-    ++z80_tick_count;
 
-    //Now that this M1 is finished we have to decide if:
-    //   -Execute another M1 stage (multi-byte instructions)
-    //   -Pass continue to M2
-    //   -Discard data and start M1 again (NOP)
-    //In essence, decode the instruction
-    return z80_instruction_decode();
+        z80_m1_tick_count = 0; //We might want to do another fetch
+
+        //Now that this M1 is finished we have to decide if:
+        //   -Execute another M1 stage (multi-byte instructions)
+        //   -Pass continue to M2
+        //   -Discard data and start M1 again (NOP)
+        //In essence, decode the instruction
+        return z80_instruction_decode();
+    }
+    assert(0); //Should never get here.
+    return Z80_STAGE_RESET;
 }
 
 /** Executes a z80 half-clock.
