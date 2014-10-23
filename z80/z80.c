@@ -13,6 +13,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <stdio.h>
 #include "../sdsc/sdsc.h"
 
 // Z80 Buses

@@ -5,6 +5,6 @@
 
 void sdsc_write(uint8_t b);
 void sdsc_control(uint8_t b);
-void sdsc_write(char* str);
+void sdsc_write_str(char* str);
 
 #endif

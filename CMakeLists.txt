@@ -70,4 +70,4 @@ add_executable (test-mem test-mem.c)
 target_link_libraries (test-mem rom io ram)
 # --- test-z80
 add_executable (test-z80 test-z80.c)
-target_link_libraries (test-z80 z80 rom ram)
+target_link_libraries (test-z80 z80 rom ram sdsc)
