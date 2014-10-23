@@ -49,6 +49,9 @@ add_subdirectory (io)
 # --- VDP
 include_directories ("${PROJECT_SOURCE_DIR}/vdp")
 add_subdirectory (vdp)
+# --- SDSC console
+include_directories ("${PROJECT_SOURCE_DIR}/sdsc")
+add_subdirectory (sdsc)
 
 
 # Z80 assembler tests are only compiled on unix

@@ -13,6 +13,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <assert.h>
+#include "../sdsc/sdsc.h"
 
 // Z80 Buses
 uint8_t  z80_data;     ///<-- Data bus, 8 bit wide (Input/Output)
@@ -131,7 +132,7 @@ void z80_dump(){
             printf("[Size: %d]\n", z80.read_index);
     }
     printf("   Write addr: 0x%X %s\n", z80.write_address, z80.write_is_io ? "(IO)": "");
-    printf("   Write buff: 0x%X 0x%X [Index: %d]\n", z80.write_buffer[0], z80.write_buffer[1], z80.write_index)
+    printf("   Write buff: 0x%X 0x%X [Index: %d]\n", z80.write_buffer[0], z80.write_buffer[1], z80.write_index);
 }
 
 void z80_init(){
@@ -175,6 +176,8 @@ void z80_reset_pipeline(){
     z80.opcode_index = 0;
     z80.write_index = 0;
     z80.read_index = 0;
+    z80.read_is_io = 0;
+    z80.write_is_io = 0;
     z80_m1_tick_count = 0;
     z80_m2_tick_count = 0;
     z80_m3_tick_count = 0;
@@ -622,7 +625,7 @@ int z80_instruction_decode(){
     return Z80_STAGE_RESET;
 }
 
-///Executes the M3 stage (Memory write)
+///Executes the M3 stage (Memory write).
 int z80_stage_m3(){
     switch (z80_m3_tick_count){
     case 0:
@@ -635,30 +638,56 @@ int z80_stage_m3(){
         return Z80_STAGE_M3; //<-- Stage not finished
     case 1:
         //1st falling edge
-        //#MREQ down
-        z80_n_mreq = 0;
+        //#MREQ/#IOREQ down
+        if (z80.write_is_io)
+            z80_n_ioreq = 0;
+        else
+            z80_n_mreq = 0;
         //Write data to data bus
         assert((z80.write_index >= 0) && (z80.write_index < 2));
         z80_data = z80.write_buffer[z80.write_index];
         --z80.write_index;
         ++z80.write_address; //Increment address, for 16-bit writes
 
+        //Prepare for next tick (If not an IO cycle, skip next 2 cases)
+        if (z80.write_is_io)
+            z80_m3_tick_count += 3;
+        else
+            ++z80_m3_tick_count;
+        return Z80_STAGE_M3; //<-- Stage not finished
+    case 2:
+        //Forced IO wait cycle
+        //Do nothing
+
         //Prepare for next tick
         ++z80_m3_tick_count;
         return Z80_STAGE_M3; //<-- Stage not finished
-    case 2:
+    case 3:
+        //Forced IO wait cycle
+        //Do nothing
+
+        //Prepare for next tick
+        ++z80_m3_tick_count;
+        return Z80_STAGE_M3; //<-- Stage not finished
+
+    case 4:
         //2nd rising edge
         //nothing
 
         //Prepare for next tick
         ++z80_m3_tick_count;
         return Z80_STAGE_M3; //<-- Stage not finished
-    case 3:
+    case 5:
         //2nd falling edge
         //Sample #wait
-        if ((z80_n_wait == 0) || (z80.write_is_io)){
+        if ((z80_n_wait == 0)){
             z80_m3_tick_count -= 2;
-            z80.write_is_io = 0;
+            //If this is a SDSC write, covertly call its functions.
+            if (z80.write_is_io)
+            if ((z80.write_address & 0xFF) == 0xFD)
+                sdsc_write(z80.write_buffer[z80.write_index]);
+            else if ((z80.write_address & 0xFF) == 0xFC)
+                sdsc_control(z80.write_buffer[z80.write_index]);
         }
         else{
             //Push #Write down
@@ -668,17 +697,18 @@ int z80_stage_m3(){
         //Prepare for next tick
         ++z80_m3_tick_count;
         return Z80_STAGE_M3; //<-- Stage not finished
-    case 4:
+    case 6:
         //3rd rising edge
         //nothing
 
         //Prepare for next tick
         ++z80_m3_tick_count;
         return Z80_STAGE_M3; //<-- Stage not finished
-    case 5:
+    case 7:
         //3rd falling edge
-        //#MREQ up
+        //#MREQ/#IOREQ up
         z80_n_mreq = 1;
+        z80_n_ioreq = 1;
         //#WR up
         z80_n_wr = 1;
 
@@ -702,22 +732,40 @@ int z80_stage_m2(){
         return Z80_STAGE_M2; //<-- Stage hasn't finished yet
     case 1:
         //1st falling edge
-        // #MREQ down
-        z80_n_mreq = 0;
+        // #MREQ/#IOREQ down
+        if (z80.read_is_io)
+            z80_n_ioreq = 0;
+        else
+            z80_n_mreq = 0;
         // #RD down
         z80_n_rd = 0;
+
+        //Prepare for next tick, if not IO, skip next 2 cases
+        if (z80.read_is_io)
+            z80_m2_tick_count += 3;
+        else
+            ++z80_m2_tick_count;
+        return Z80_STAGE_M2; //<-- Stage hasn't finished yet
+    case 2:
+        //Forced wait cycle for IO requests
 
         //Prepare for next tick
         ++z80_m2_tick_count;
         return Z80_STAGE_M2; //<-- Stage hasn't finished yet
-    case 2:
+    case 3:
+        //Forced wait cycle for IO requests
+
+        //Prepare for next tick
+        ++z80_m2_tick_count;
+        return Z80_STAGE_M2; //<-- Stage hasn't finished yet
+    case 4:
         //2nd rising edge
         // Nothing
 
         //Prepare for next tick
         ++z80_m2_tick_count;
         return Z80_STAGE_M2; //<-- Stage hasn't finished yet
-    case 3:
+    case 5:
         //2nd falling edge
         //Sample #WAIT. If down, decrement tick in 2. force one wait if IO.
         if ((z80_n_wait == 0) || z80.read_is_io){
@@ -728,14 +776,14 @@ int z80_stage_m2(){
         //Prepare for next tick
         ++z80_m2_tick_count;
         return Z80_STAGE_M2; //<-- Stage hasn't finished yet
-    case 4:
+    case 6:
         //3rd rising edge
         // Nothing
 
         //Prepare for next tick
         ++z80_m2_tick_count;
         return Z80_STAGE_M2; //<-- Stage hasn't finished yet
-    case 5:
+    case 7:
         //3rd falling edge
         // Sample data bus
         assert(z80.read_index < 2); //<-- No more than one byte in buffer.
@@ -743,8 +791,9 @@ int z80_stage_m2(){
         ++z80.read_index;
         ++z80.read_address; //Increment address, for 16-bit reads
 
-        //Reset #RD, #MREQ
+        //Reset #RD, #MREQ, #IOREQ
         z80_n_mreq = 1;
+        z80_n_ioreq = 1;
         z80_n_rd = 1;
 
         //Call instruction decoder, retun whatever it wants.

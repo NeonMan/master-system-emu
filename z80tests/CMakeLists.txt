@@ -16,3 +16,4 @@ SET(CMAKE_ASM_LINK_EXECUTABLE "cp <OBJECTS> <TARGET>")
 enable_language (ASM)
 
 add_executable(nop-loop.bin nop-loop.asm)
+add_executable(sdsc-hello.bin sdsc-hello.asm)
