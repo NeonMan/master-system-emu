@@ -50,6 +50,13 @@ add_subdirectory (io)
 include_directories ("${PROJECT_SOURCE_DIR}/vdp")
 add_subdirectory (vdp)
 
+
+# Z80 assembler tests are only compiled on unix
+if (UNIX)
+  # --- Z80Tests
+  add_subdirectory (z80tests)
+endif (UNIX)
+
 # --- The project executables ---
 project (SMS-Emu)
 # --- psg-play

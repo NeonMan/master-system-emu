@@ -23,6 +23,8 @@ doc\/
 \.a$
 \.raw$
 \.wav$
+\.bin$
+\.sms$
 
 #Other
 Makefile$
