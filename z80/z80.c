@@ -94,6 +94,46 @@ struct z80_s {
 
 struct z80_s  z80;
 
+void z80_dump(){
+    printf("General purpose registers\n");
+    printf("   IR: 0x%X%r\n", Z80_I, Z80_R);
+    printf("   AF: 0x%X  AF': 0x%X\n", Z80_AF, Z80_AFp);
+    printf("   BC: 0x%X  BC': 0x%X\n", Z80_BC, Z80_BCp);
+    printf("   DE: 0x%X  DE': 0x%X\n", Z80_DE, Z80_DEp);
+    printf("   HL: 0x%X  HL': 0x%X\n", Z80_HL, Z80_HLp);
+    printf("   IX: 0x%X\n", Z80_IX);
+    printf("   IY: 0x%X\n", Z80_IY);
+    printf("Control registers\n");
+    printf("   SP: 0x%X\n", Z80_SP);
+    printf("   PC: 0x%X\n", Z80_PC);
+    printf("   iff: [0x%X, 0x%X]\n", z80.iff[0], z80.iff[1]);
+    printf("Internal state (implementation state)\n");
+    printf("   Data latch: 0x%X\n", z80.data_latch);
+    printf("   Opcode:");
+    {
+        for (int i = 0; (i < 4) || (i < z80.opcode_index); i++)
+            printf(" 0x%X", z80.opcode[i]);
+        if (z80.opcode_index > 4)
+            printf(" [Overflow! Size: %d]\n", z80.opcode_index);
+        else
+            printf(" [Size: %d]\n", z80.opcode_index + 1);
+    }
+    printf("   Stage: M%d\n", z80.stage);
+    printf("   Read addr: 0x%X %s\n", z80.read_address, z80.read_is_io ? "(IO)" : "");
+    printf("   Read buff:");
+    {
+        for (int i = 0; (i < 2) || (i < z80.read_index); i++){
+            printf(" 0x%X", z80.read_buffer[i]);
+        }
+        if (z80.read_index > 2)
+            printf("[Overflow! Size: %d]\n", z80.read_index);
+        else
+            printf("[Size: %d]\n", z80.read_index);
+    }
+    printf("   Write addr: 0x%X %s\n", z80.write_address, z80.write_is_io ? "(IO)": "");
+    printf("   Write buff: 0x%X 0x%X [Index: %d]\n", z80.write_buffer[0], z80.write_buffer[1], z80.write_index)
+}
+
 void z80_init(){
     //Zero the z80 struct.
     memset(&z80, 0x00, sizeof(struct z80_s));
@@ -432,7 +472,14 @@ int z80_instruction_decode(){
                 { assert(0); /*ALU_ACC_INM(y,n)*/ } //Needs one extra byte
                     break;
                 case 7:
-                { assert(0); /*RST(y * 8)*/ }
+                    /*RST(y * 8)*/
+                    //When in debug mode, RST 0 also dumps the CPU state to stdout
+#ifndef NDEBUG
+                    if (y == 0){
+                        z80_dump();
+                    }
+#endif
+                    assert(0);
                     break;
                 }//switch (z)
                 break;
