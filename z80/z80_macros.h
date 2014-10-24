@@ -1,6 +1,20 @@
 #ifndef __Z80_MACROS_H
 #define __Z80_MACROS_H
 
+//Endianness swapping macros
+//When extracting 16-bit values from memory/opcodes, the z80 stores
+//them in little endian. This is not an issue on intel platforms where
+//you can simply dereference a pointer but will fail on Big endian
+//machines. This macro takes a int16 pointer and returns an integer
+
+//Little endian
+#define Z80_LITTLE_ENDIAN(X) (*((uint16_t*)X))
+//Big endian
+#define Z80_BIG_ENDIAN(X) ((*((uint8_t*)X)) + (((uint16_t)(*((uint8_t*)(X + 1))))<<8))
+//To host endian
+///@bug use macros to select the correct endianness
+#define Z80_HOST_ENDIAN(X) Z80_LITTLE_ENDIAN(X)
+
 //Register macros. *BEWARE* some macros are endianness sensitive!
 //Little endian (x86) is presumed unless noted otherwise.
 
