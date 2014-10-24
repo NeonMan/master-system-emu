@@ -143,16 +143,6 @@ void z80_init(){
     z80.rSP = 0xFFFF; //<-- Stack pointer starts at 0xFFFF
 }
 
-struct z80_decoder_result_s{
-    uint8_t request_fetch; ///<-- After reading a byte, the decoder requests more data
-    uint8_t request_memory_read; ///<-- Decoded instruction requires a byte/word from memory
-    uint8_t request_memory_write; ///<-- Decoded instruction requires a byte/word write
-    uint16_t address; ///<-- Which address to read/write
-    uint16_t data;    ///<-- Data to write
-    uint8_t  is_16bit; ///<-- True on 16-bit read/write
-};
-typedef struct z80_decoder_result_s z80_decoder_result;
-
 // --- Register lookup tables ---
 
 ////Register pairs lookup table
@@ -328,8 +318,8 @@ int z80_instruction_decode(){
                 }
                     break;
                 case 6:
-                { assert(0); /*LD(r[y],n)*/ } //Needs one extra byte
-                    break;
+                    /*LD(r[y],n); Flags: None*/
+                    return Z80_STAGE_M1; //Needs one extra byte
                 case 7:
                     //Select by 'y'
                     if (y[0] == 0) {/*RLCA; Flags: H,N,C*/
@@ -600,6 +590,10 @@ int z80_instruction_decode(){
                     else{
                         assert(0); //No opcode reaches this path.
                     }
+                case 6:
+                    /* LD r, i; Flags: None */
+                    *(z80_r[y[0]]) = z80.opcode[1];
+                    return Z80_STAGE_RESET;
                 default:
                     assert(0); //Unimplemented stuff
                 }
@@ -703,12 +697,26 @@ int z80_instruction_decode(){
                     else{
                         if (p[0] == 0){
                             /* call nn ; Flags: None*/
-                            assert(0); //Unimplemented
-
-                            //Write the new PC
-                            const uint16_t new_pc = *((uint16_t*)(z80.opcode + 1)); ///<-- @bug Endiannes!
-                            Z80_PC = new_pc;
-                            return Z80_STAGE_RESET;
+                            if (z80.write_index == 0){
+                                //Push PC to the stack (M3 write of current PC)
+                                *((uint16_t*)(z80.write_buffer)) = Z80_PC; ///<-- @bug Endianness!
+                                z80.write_address = Z80_SP - 2;
+                                return Z80_STAGE_M3;
+                            }
+                            else if (z80.write_index == 1){
+                                //Write the second byte
+                                ++z80.write_address;
+                                return Z80_STAGE_M3;
+                            }
+                            else{
+                                //Update SP
+                                Z80_SP -= 2;
+                                //Update PC
+                                const uint16_t new_pc = *((uint16_t*)(z80.opcode + 1)); ///<-- @bug Endiannes!
+                                Z80_PC = new_pc;
+                                return Z80_STAGE_RESET;
+                            }
+                            assert(0); //Will never get here
                         }
                     }
                 default:
@@ -763,13 +771,20 @@ int z80_stage_m3(){
         else
             z80_n_mreq = 0;
         //Write data to data bus
-        assert((z80.write_index >= 0) && (z80.write_index < 2));
+        assert(z80.write_index < 2);
         z80_data = z80.write_buffer[z80.write_index];
-        --z80.write_index;
-        ++z80.write_address; //Increment address, for 16-bit writes
+        //If this is a SDSC write, covertly call its functions.
+        if (z80.write_is_io){
+            if ((z80.write_address & 0xFF) == 0xFD)
+                sdsc_write(z80.write_buffer[z80.write_index]);
+            else if ((z80.write_address & 0xFF) == 0xFC)
+                sdsc_control(z80.write_buffer[z80.write_index]);
+        }
+        //Update index
+        ++z80.write_index;
 
         //Prepare for next tick (If not an IO cycle, skip next 2 cases)
-        if (z80.write_is_io)
+        if (!z80.write_is_io)
             z80_m3_tick_count += 3;
         else
             ++z80_m3_tick_count;
@@ -799,14 +814,8 @@ int z80_stage_m3(){
     case 5:
         //2nd falling edge
         //Sample #wait
-        if ((z80_n_wait == 0)){
+        if (z80_n_wait == 0){
             z80_m3_tick_count -= 2;
-            //If this is a SDSC write, covertly call its functions.
-            if (z80.write_is_io)
-            if ((z80.write_address & 0xFF) == 0xFD)
-                sdsc_write(z80.write_buffer[z80.write_index]);
-            else if ((z80.write_address & 0xFF) == 0xFC)
-                sdsc_control(z80.write_buffer[z80.write_index]);
         }
         else{
             //Push #Write down
@@ -831,6 +840,8 @@ int z80_stage_m3(){
         //#WR up
         z80_n_wr = 1;
 
+        //Prepare for another M3
+        z80_m3_tick_count = 0;
         //Call instruction decoder, return whatever it wants
         return z80_instruction_decode();
     }
@@ -915,6 +926,8 @@ int z80_stage_m2(){
         z80_n_ioreq = 1;
         z80_n_rd = 1;
 
+        //Prepare for another M2 if needed.
+        z80_m2_tick_count = 0;
         //Call instruction decoder, retun whatever it wants.
         return z80_instruction_decode();
     }
