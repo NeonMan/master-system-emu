@@ -7,6 +7,11 @@
 //you can simply dereference a pointer but will fail on Big endian
 //machines. This macro takes a int16 pointer and returns an integer
 
+#define Z80_OPCODE_XZ(X,Z) (((X&0x3)<<6)|(Z&0x7))
+#define Z80_OPCODE_X_MASK (3<<6)
+#define Z80_OPCODE_Y_MASK (7<<3)
+#define Z80_OPCODE_Z_MASK (7)
+
 //Little endian
 #define Z80_LITTLE_ENDIAN(X) (*((uint16_t*)X))
 //Big endian
