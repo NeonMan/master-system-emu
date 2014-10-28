@@ -211,6 +211,7 @@ int8_t const z80_im[][2] = { { 0, 0 }, { 1, 0 }, { 1, 1 }, { 2, 2 }, { 0, 0 }, {
 */
 void z80_reset_pipeline(){
 #ifndef NDEBUG
+    /**/
     char opcode_str[10];
     z80d_decode(z80.opcode, opcode_str);
     opcode_str[9] = 0;
@@ -227,6 +228,7 @@ void z80_reset_pipeline(){
             );
     }
     fprintf(stderr, "\n");
+    /**/
 #endif
     z80.opcode_index = 0;
     z80.write_index = 0;
@@ -330,7 +332,7 @@ int z80_instruction_decode(){
                 }
                 else if (p[0] == 1){                       /*LD A,(DE); Size: 1; Flags: None*/
                     if (z80.read_index == 0){
-                        z80.write_address = Z80_DE;
+                        z80.read_address = Z80_DE;
                         return Z80_STAGE_M2;
                     }
                     else{
