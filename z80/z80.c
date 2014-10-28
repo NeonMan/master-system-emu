@@ -115,6 +115,29 @@ int z80_stage_m1();
 int z80_stage_m2(uint8_t noexec);
 int z80_stage_m3(uint8_t noexec);
 
+///Counts the number of ones
+uint8_t z80_parity(uint8_t b){
+    const uint8_t parity[256] = {
+        1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1,
+        0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0,
+        0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0,
+        1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1,
+        0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0,
+        1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1,
+        1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1,
+        0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0,
+        0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0,
+        1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1,
+        1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1,
+        0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0,
+        1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1,
+        0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0,
+        0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0,
+        1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1
+    };
+    return parity[b];
+}
+
 void z80_dump_reg(){
     printf("General purpose registers\n");
     printf("   IR: 0x%X%r\n", Z80_I, Z80_R);
@@ -194,10 +217,19 @@ void z80_reset_pipeline(){
     char opcode_str[10];
     z80d_decode(z80.opcode, opcode_str);
     opcode_str[9] = 0;
-    printf("Latest opcode: %s; 0x", opcode_str);
+    fprintf(stderr, "Last Opcode: (PC:0x%04X) %s; 0x", Z80_PC, opcode_str);
     for (int i = 0; i < z80.opcode_index; i++)
-        printf("%02X", z80.opcode[i]);
-    printf("\n");
+        fprintf(stderr, "%02X", z80.opcode[i]);
+
+    fprintf(stderr, "  ");
+    for (int i = 0; i < z80.opcode_index; i++){
+        fprintf(stderr, ":%d/%d/%d",
+            (z80.opcode[i] & (0x3 << 6))>>6,
+            (z80.opcode[i] & (0x7 << 3))>>3,
+            (z80.opcode[i] & (0x7))
+            );
+    }
+    fprintf(stderr, "\n");
 #endif
     z80.opcode_index = 0;
     z80.write_index = 0;
@@ -296,14 +328,25 @@ int z80_instruction_decode(){
                     return Z80_STAGE_M1; //Needs two extra bytes
             }
             else{
-                if (p[0] == 0)                             /*LD A,(BC); Size: 1; Flags: None*/
+                if (p[0] == 0){                            /*LD A,(BC); Size: 1; Flags: None*/
                     assert(0); //Unimplemented
-                else if (p[0] == 1)                        /*LD A,(DE); Size: 1; Flags: None*/
-                    assert(0); //Unimplemented
-                else if (p[0] == 2)                       /*LD HL,(nn); Size: 3; Flags: None*/
+                }
+                else if (p[0] == 1){                       /*LD A,(DE); Size: 1; Flags: None*/
+                    if (z80.read_index == 0){
+                        z80.write_address = Z80_DE;
+                        return Z80_STAGE_M2;
+                    }
+                    else{
+                        Z80_A = z80.read_buffer[0];
+                        return Z80_STAGE_RESET;
+                    }
+                }
+                else if (p[0] == 2){                      /*LD HL,(nn); Size: 3; Flags: None*/
                     return Z80_STAGE_M1; //2 extra bytes
-                else if (p[0] == 3)                        /*LD A,(nn); Size: 3; Flags: None*/
+                }
+                else if (p[0] == 3){                       /*LD A,(nn); Size: 3; Flags: None*/
                     return Z80_STAGE_M1; //Needs two extra bytes
+                }
             }
 
         case Z80_OPCODE_XZ(0, 3):
@@ -422,7 +465,32 @@ int z80_instruction_decode(){
         case Z80_OPCODE_XZ(2, 5):                            /* */
         case Z80_OPCODE_XZ(2, 6):                            /* */
         case Z80_OPCODE_XZ(2, 7):                            /*alu r[z]; Size: 1; Flags: ALL*/
-            assert(0); /*Unimplemented*/ return Z80_STAGE_RESET;
+            //Select ALU operation by 'y'
+            switch (y[0]){
+            case Z80_ALUOP_XOR:                              /*XOR r[z]; Size: 1; Flags: All*/
+            {
+                if (z80_r[z[0]]){
+                    Z80_A  = Z80_A ^ *(z80_r[z[0]]);
+                }
+                else{                                         /*XOR (HL); Size: 1; Flags:ALL*/
+                    //Requires an extra read
+                    if (z80.read_index == 0){
+                        z80.read_address = Z80_HL;
+                        return Z80_STAGE_M2;
+                    }
+                    else{
+                        Z80_A = Z80_A ^ z80.read_buffer[0];
+                    }
+                }
+                Z80_F = 0;
+                Z80_F |= Z80_SETFLAG_SIGN(Z80_A);
+                Z80_F |= Z80_SETFLAG_ZERO(Z80_A);
+                Z80_F |= Z80_SETFLAG_PARITY(Z80_A);
+                return Z80_STAGE_RESET;
+            }
+            default:
+                assert(0); /*Unimplemented*/ return Z80_STAGE_RESET;
+            }
 
         case Z80_OPCODE_XZ(3, 0):                          /*RET cc[y]; Size: 1; Flags: None*/
             assert(0); /*Unimplemented*/ return Z80_STAGE_RESET;
