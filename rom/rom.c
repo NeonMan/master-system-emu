@@ -14,6 +14,10 @@ uint8_t mapper_slots[3] = {0,1,2}; ///<-- ROM slot selector
 uint8_t mapper_ram = 0; ///<-- RAM slot config @Todo
 uint8_t rom_image[ROM_MAX_SIZE]; ///<-- ROM contents.
 
+void* romdbg_get_rom(){
+    return rom_image;
+}
+
 void rom_set_image(uint8_t* data, size_t count){
     if (count < 1) return;
     memcpy(rom_image, data, count <= ROM_MAX_SIZE ? count : ROM_MAX_SIZE);

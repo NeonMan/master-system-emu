@@ -18,8 +18,8 @@ int main(int argc, char* argv[]){
     //If Try loading a rom. zexdoc_sdsc.sms
     {
         FILE* in_f = 0;
-        //in_f = fopen("zexdoc_sdsc.sms", "rb");
-        in_f = fopen("sdsc-hello.bin", "rb");
+        in_f = fopen("zexdoc_sdsc.sms", "rb");
+        //in_f = fopen("sdsc-hello.bin", "rb");
         if (in_f){
             fread(full_rom, 1, ROM_MAX_SIZE, in_f);
             fclose(in_f);
@@ -36,7 +36,7 @@ int main(int argc, char* argv[]){
     io_stat = 0;
 
     //Perform 100 ticks
-    for (int i = 0; i < 100; i++){
+    for (int i = 0; i < 1000; i++){
         z80_tick();
         ram_tick();
         rom_tick();

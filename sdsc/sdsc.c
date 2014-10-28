@@ -1,3 +1,7 @@
+/** @file sdsc.c
+*  @brief SDSC debug console implementation.
+*
+*/
 #include "sdsc.h"
 #include <stdint.h>
 #include <stdio.h>
@@ -17,7 +21,8 @@ void sdsc_control(uint8_t b){
             fprintf(stderr, "SDSC: Suspend emulation... [!]\n");
             break;
         case 2: /* -- Clear console emulation*/
-            fprintf(stderr, "SDSC: Clear screen.\n\f");
+            fprintf(stderr, "SDSC: Clear screen.\n");
+            fprintf(stderr, "----------------------------\n"); ///<-- @bug do a better (and portable) clear screen procedure
             break;
         case 3: /* -- Set attribute*/
             fprintf(stderr, "SDSC: Set attribute... [!]\n");

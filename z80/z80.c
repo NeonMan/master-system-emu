@@ -9,6 +9,7 @@
  */
 #include "z80.h"
 #include "z80_macros.h"
+#include "z80_dasm.h"
 #include <stdint.h>
 #include <string.h>
 #include <stdlib.h>
@@ -96,7 +97,13 @@ struct z80_s {
 
 struct z80_s  z80;
 
-void z80_dump(){
+
+// Forward declaration of functions
+int z80_stage_m1();
+int z80_stage_m2(uint8_t noexec);
+int z80_stage_m3(uint8_t noexec);
+
+void z80_dump_reg(){
     printf("General purpose registers\n");
     printf("   IR: 0x%X%r\n", Z80_I, Z80_R);
     printf("   AF: 0x%X  AF': 0x%X\n", Z80_AF, Z80_AFp);
@@ -144,18 +151,21 @@ void z80_init(){
 }
 
 // --- Register lookup tables ---
+// The pointers (all array values) themselves declared here are constant.
+// The pointed variable is not.
 
 ////Register pairs lookup table
-uint16_t* z80_rp[8] = { &Z80_BC, &Z80_DE, &Z80_HL, &Z80_SP, &Z80_BCp, &Z80_DEp, &Z80_HLp, &Z80_SP };
+uint16_t* const z80_rp[8] = { &Z80_BC, &Z80_DE, &Z80_HL, &Z80_SP, &Z80_BC, &Z80_DE, &Z80_HL, &Z80_SP };
 ////Register pairs lookup table (AF option)
-uint16_t* z80_rp2[8] = { &Z80_BC, &Z80_DE, &Z80_HL, &Z80_AF, &Z80_BCp, &Z80_DEp, &Z80_HLp, &Z80_AFp };
+uint16_t* const z80_rp2[8] = { &Z80_BC, &Z80_DE, &Z80_HL, &Z80_AF, &Z80_BC, &Z80_DE, &Z80_HL, &Z80_AF };
 ///Register lookup table
-uint8_t* z80_r[16] = { &Z80_B, &Z80_C, &Z80_D, &Z80_E, &Z80_H, &Z80_L, 0, &Z80_A, &Z80_B, &Z80_C, &Z80_D, &Z80_E, &Z80_H, &Z80_L, 0, &Z80_A };
+uint8_t* const z80_r[16] = { &Z80_B, &Z80_C, &Z80_D, &Z80_E, &Z80_H, &Z80_L, 0, &Z80_A, &Z80_B, &Z80_C, &Z80_D, &Z80_E, &Z80_H, &Z80_L, 0, &Z80_A };
 ///Condition Flag  mask lookup table (NZ,Z,NC,C,PO,PE,P,M)
-///@bug cc is unimplemented (all zero)
-const uint8_t z80_cc[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
+uint8_t  const z80_cc[8]      = { Z80_FLAG_ZERO, Z80_FLAG_ZERO, Z80_FLAG_CARRY, Z80_FLAG_CARRY, Z80_FLAG_PARITY, Z80_FLAG_PARITY, Z80_FLAG_SIGN, Z80_FLAG_SIGN };
+///Expected flag value (after mask) for the condition to be true
+uint8_t  const z80_cc_stat[8] = {             0, Z80_FLAG_ZERO,              0, Z80_FLAG_CARRY,               0, Z80_FLAG_PARITY,             0, Z80_FLAG_SIGN };
 ///Interrupt mode lookup table
-const int8_t z80_im[][2] = { { 0, 0 }, { 1, 0 }, { 1, 1 }, { 2, 2 }, { 0, 0 }, { 1, 0 }, { 1, 1 }, { 2, 2 } };
+int8_t const z80_im[][2] = { { 0, 0 }, { 1, 0 }, { 1, 1 }, { 2, 2 }, { 0, 0 }, { 1, 0 }, { 1, 1 }, { 2, 2 } };
 
 ///@bug missing tables: alu, rot, bli
 
@@ -164,6 +174,15 @@ const int8_t z80_im[][2] = { { 0, 0 }, { 1, 0 }, { 1, 1 }, { 2, 2 }, { 0, 0 }, {
 * @brief clears the z80 state to prepare for a new opcode.
 */
 void z80_reset_pipeline(){
+#ifndef NDEBUG
+    char opcode_str[10];
+    z80d_decode(z80.opcode, opcode_str);
+    opcode_str[9] = 0;
+    printf("Latest opcode: %s; 0x", opcode_str);
+    for (int i = 0; i < z80.opcode_index; i++)
+        printf("%02X", z80.opcode[i]);
+    printf("\n");
+#endif
     z80.opcode_index = 0;
     z80.write_index = 0;
     z80.read_index = 0;
@@ -369,8 +388,13 @@ int z80_instruction_decode(){
         case Z80_OPCODE_XZ(1, 5):                       /* */
         case Z80_OPCODE_XZ(1, 7):                       /*LD r[y],r[z]; Size: 1; Flags: None*/
             assert(0); /*Unimplemented*/ return Z80_STAGE_RESET;
-        case Z80_OPCODE_XZ(1, 6):                               /*HALT; Size: 1; Flags: None*/
-            assert(0); /*Unimplemented*/ return Z80_STAGE_RESET;
+        case Z80_OPCODE_XZ(1, 6):
+            if (!y[0]){                                         /*HALT; Size: 1; Flags: None*/
+                assert(0); /*Unimplemented*/ return Z80_STAGE_RESET;
+            }
+            else{                                       /*LD (HL), (HL); Size:1; Flags: None*/
+                assert(0); /*Unimplemented*/ return Z80_STAGE_RESET;
+            }
 
         case Z80_OPCODE_XZ(2, 0):                            /* */
         case Z80_OPCODE_XZ(2, 1):                            /* */
@@ -450,7 +474,20 @@ int z80_instruction_decode(){
 
         case Z80_OPCODE_XZ(3, 5):
             if (!q[0]){ /*PUSH rp2[p]; Size: 1; Flags: None*/
-                assert(0); /*Unimplemented*/ return Z80_STAGE_RESET;
+                //Prepare a write if needed
+                if (z80.write_index == 0){
+                    z80.write_address = Z80_SP - 2;
+                    *((uint16_t*)z80.write_buffer) = *(z80_rp2[p[0]]); ///<-- @bug Endianness
+                    return Z80_STAGE_M3;
+                }
+                else if (z80.write_index == 1){
+                    ++z80.write_address;
+                    return Z80_STAGE_M3;
+                }
+                else{
+                    Z80_SP -= 2;
+                    return Z80_STAGE_RESET;
+                }
             }
             else{
                 switch (p[0]){
@@ -462,7 +499,7 @@ int z80_instruction_decode(){
                     //ED prefix
                 case 3:
                     //FD prefix
-                    assert(0); /*Unimplemented*/ return Z80_STAGE_RESET;
+                    return Z80_STAGE_M1;
                 }
             }
 
@@ -480,14 +517,18 @@ int z80_instruction_decode(){
     case 2: //Second opcode byte
         //Test prefixes
         switch (z80.opcode[0]){
-        case 0xCD: // --- 0xCD prefixed opcodes
+        case 0xCB: // --- 0xCB prefixed opcodes
             switch (x[1]){
             case 0:                                     /*rotation r[z]; Size: 2; Flags: ?*/ 
                 assert(0); /*Unimplemented*/ return Z80_STAGE_RESET;
-            case 1:                                /*BIT y,r[z]; Size: 2; Flags: S,Z,H,P,N*/
-                assert(0); /*Unimplemented*/ return Z80_STAGE_RESET;
+            case 1:                                /*BIT y,r[z]; Size: 2; Flags: _S,Z,H,_P,N*/
+                Z80_F = (Z80_F & (Z80_CLRFLAG_ZERO & Z80_CLRFLAG_ADD)); //Clear Z,N
+                Z80_F = Z80_F | ((1 << y[1]) & (*z80_r[z[1]])) ? 0 : Z80_CLRFLAG_ZERO;
+                Z80_F = Z80_F | Z80_FLAG_HC;
+                return Z80_STAGE_RESET;
             case 2:                                     /*RES y,r[z]; Size: 2; Flags: None*/
-                assert(0); /*Unimplemented*/ return Z80_STAGE_RESET;
+                *(z80_r[z[1]]) = *(z80_r[z[1]]) & (~(1 << y[1]));
+                return Z80_STAGE_RESET;
             case 3:                                     /*SET y,r[z]; Size: 2; Flags: None*/
                 assert(0); /*Unimplemented*/ return Z80_STAGE_RESET;
             }
@@ -586,8 +627,62 @@ int z80_instruction_decode(){
             case Z80_OPCODE_XZ(2, 1): /* */
             case Z80_OPCODE_XZ(2, 2): /* */
             case Z80_OPCODE_XZ(2, 3): /*BLOCK(y,z)*/
-                assert(0);
-                return Z80_STAGE_RESET;
+                switch (z80.opcode[1] & (Z80_OPCODE_Y_MASK | Z80_OPCODE_Z_MASK)){
+                case Z80_OPCODE_YZ(4, 0):
+                case Z80_OPCODE_YZ(4, 1):
+                case Z80_OPCODE_YZ(4, 2):
+                case Z80_OPCODE_YZ(4, 3):
+
+                case Z80_OPCODE_YZ(5, 0):
+                case Z80_OPCODE_YZ(5, 1):
+                case Z80_OPCODE_YZ(5, 2):
+                case Z80_OPCODE_YZ(5, 3):
+
+                case Z80_OPCODE_YZ(6, 0):            /*LDIR; Size: 2; Flags: H,P,N (cleared)*/
+                    //(DE) <-- (HL); --DE; --HL; --BC; BC? repeat : end;
+                    //Test wether we have finished already
+                    if (Z80_BC == 0)
+                        return Z80_STAGE_RESET;
+                    //Perform a read
+                    else if (z80.read_index == 0){
+                        z80.read_address = Z80_HL;
+                        return Z80_STAGE_M2;
+                    }
+                    //Perform a write
+                    else if (z80.write_index == 0){
+                        z80.write_address = Z80_DE;
+                        z80.write_buffer[0] = z80.read_buffer[0];
+                        return Z80_STAGE_M3;
+                    }
+                    //Update registers and end
+                    else{
+                        --Z80_HL;
+                        --Z80_DE;
+                        --Z80_BC;
+                        Z80_F = Z80_F & (Z80_CLRFLAG_HC & Z80_CLRFLAG_PARITY & Z80_CLRFLAG_ADD);
+                        if (Z80_BC){
+                            Z80_PC -= 2; //Repeat this intruction
+                            return Z80_STAGE_RESET;
+                        }
+                        else{ 
+                            return Z80_STAGE_RESET;
+                        }
+                    }
+
+                case Z80_OPCODE_YZ(6, 1):
+                case Z80_OPCODE_YZ(6, 2):
+                case Z80_OPCODE_YZ(6, 3):
+
+                case Z80_OPCODE_YZ(7, 0):
+                case Z80_OPCODE_YZ(7, 1):
+                case Z80_OPCODE_YZ(7, 2):
+                case Z80_OPCODE_YZ(7, 3):
+                    assert(0);
+                    return Z80_STAGE_RESET;
+
+                default: /*NONI/NOP*/
+                    return Z80_STAGE_RESET;
+                }
 
             case Z80_OPCODE_XZ(2, 4):                      /* */
             case Z80_OPCODE_XZ(2, 5):                      /* */
@@ -749,7 +844,7 @@ int z80_instruction_decode(){
 }
 
 ///Executes the M3 stage (Memory write).
-int z80_stage_m3(){
+int z80_stage_m3(uint8_t noexec){
     switch (z80_m3_tick_count){
     case 0:
         //1st rising edge
@@ -839,14 +934,17 @@ int z80_stage_m3(){
         //Prepare for another M3
         z80_m3_tick_count = 0;
         //Call instruction decoder, return whatever it wants
-        return z80_instruction_decode();
+        if (noexec)
+            return Z80_STAGE_RESET;
+        else
+            return z80_instruction_decode();
     }
     assert(0); //Should never get here.
     return Z80_STAGE_RESET;
 }
 
 ///Executes the M2 stage (Memory read)
-int z80_stage_m2(){
+int z80_stage_m2(uint8_t noexec){
     switch (z80_m2_tick_count){
     case 0:
         //1st rising edge
@@ -925,7 +1023,10 @@ int z80_stage_m2(){
         //Prepare for another M2 if needed.
         z80_m2_tick_count = 0;
         //Call instruction decoder, retun whatever it wants.
-        return z80_instruction_decode();
+        if (noexec)
+            return Z80_STAGE_RESET;
+        else
+            return z80_instruction_decode();
     }
     assert(0); //Shold never get here.
     return Z80_STAGE_RESET;
@@ -1049,10 +1150,10 @@ void z80_tick(){
         z80.stage = z80_stage_m1();
         break;
     case Z80_STAGE_M2:
-        z80.stage = z80_stage_m2();
+        z80.stage = z80_stage_m2(0);
         break;
     case Z80_STAGE_M3:
-        z80.stage = z80_stage_m3();
+        z80.stage = z80_stage_m3(0);
         break;
     default:
         assert(0); //<-- Should never get here
