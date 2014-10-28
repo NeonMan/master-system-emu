@@ -8,4 +8,8 @@
 
 void ram_tick();
 
+//Debug functions
+///Returns a pointer to the ram image
+void* ramdbg_get_mem();
+
 #endif

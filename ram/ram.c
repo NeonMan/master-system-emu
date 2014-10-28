@@ -15,6 +15,10 @@
 
 uint8_t ram_image[RAM_SIZE];
 
+void* ramdbg_get_mem(){
+    return ram_image;
+}
+
 void ram_tick(){
     //If mreq is up or address out of range, return.
     //Ammend: MREQ shared using the IO chip, using IO chip signals instead

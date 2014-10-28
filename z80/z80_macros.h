@@ -8,6 +8,7 @@
 //machines. This macro takes a int16 pointer and returns an integer
 
 #define Z80_OPCODE_XZ(X,Z) (((X&0x3)<<6)|(Z&0x7))
+#define Z80_OPCODE_YZ(Y,Z) (((Y&0x7)<<3)|(Z&0x7))
 #define Z80_OPCODE_X_MASK (3<<6)
 #define Z80_OPCODE_Y_MASK (7<<3)
 #define Z80_OPCODE_Z_MASK (7)
@@ -93,18 +94,22 @@
 // --- Flag masks
 #define Z80_FLAG_SIGN   (1<<7)
 #define Z80_FLAG_ZERO   (1<<6)
+#define Z80_FLAG_UNK5   (1<<5)
 #define Z80_FLAG_HC     (1<<4)
+#define Z80_FLAG_UNK3   (1<<3)
 #define Z80_FLAG_PARITY (1<<2)
 #define Z80_FLAG_ADD    (1<<1)
 #define Z80_FLAG_CARRY  (1)
 
 // --- Inverted flag masks (for bit clearing)
-#define Z80_CLRFLAG_SIGN   ((1<<7) ^ 0xFF)
-#define Z80_CLRFLAG_ZERO   ((1<<6) ^ 0xFF)
-#define Z80_CLRFLAG_HC     ((1<<4) ^ 0xFF)
-#define Z80_CLRFLAG_PARITY ((1<<2) ^ 0xFF)
-#define Z80_CLRFLAG_ADD    ((1<<1) ^ 0xFF)
-#define Z80_CLRFLAG_CARRY  ((1)    ^ 0xFF)
+#define Z80_CLRFLAG_SIGN   (Z80_FLAG_SIGN   ^ 0xFF)
+#define Z80_CLRFLAG_ZERO   (Z80_FLAG_ZERO   ^ 0xFF)
+#define Z80_CLRFLAG_UNK5   (Z80_FLAG_UNK5   ^ 0xFF)
+#define Z80_CLRFLAG_HC     (Z80_FLAG_HC     ^ 0xFF)
+#define Z80_CLRFLAG_UNK3   (Z80_FLAG_UNK3   ^ 0xFF)
+#define Z80_CLRFLAG_PARITY (Z80_FLAG_PARITY ^ 0xFF)
+#define Z80_CLRFLAG_ADD    (Z80_FLAG_ADD    ^ 0xFF)
+#define Z80_CLRFLAG_CARRY  (Z80_FLAG_CARRY  ^ 0xFF)
 
 
 #endif
