@@ -15,6 +15,8 @@
 //Sub-byte opcode masks
 #define Z80_OPCODE_XZ(X,Z) (((X&0x3)<<6)|(Z&0x7))
 #define Z80_OPCODE_YZ(Y,Z) (((Y&0x7)<<3)|(Z&0x7))
+#define Z80_OPCODE_XYZ(X,Y,Z) (((Y&0x7)<<3)|(Z&0x7)|((X&0x3)<<6))
+#define Z80_OPCODE_XPQZ(X,P,Q,Z) (Z80_OPCODE_XYZ(X,0,Z) | ((P&0x3)<<4) | ((Q&0x1)<<3))
 #define Z80_OPCODE_X_MASK (3<<6)
 #define Z80_OPCODE_Y_MASK (7<<3)
 #define Z80_OPCODE_Z_MASK (7)
@@ -90,7 +92,7 @@
 #define Z80_SETFLAG_SIGN(X) (((X) & (1 << 7)) ? (1 << 7) : 0) /**<-- [S] Set sign flag (bit 7)*/
 #define Z80_SETFLAG_ZERO(X) (((X) == 0) ? (1 << 6) : 0) /**<-- [Z] Set Zero flag (bit 6)*/
 #define Z80_SETFLAG_HC(O,N) (((O & (1 << 3)) == 0) && ((N) & (1 << 3)) ? (1 << 4) : 0) /**<-- [H] Set Half-carry flag (bit 4)*/
-#define Z80_SETFLAG_PARITY(X) (z80_parity(X)) /**<-- [P] Set parity flag (bit 2)*/
+#define Z80_SETFLAG_PARITY(X) (z80_parity_lut[X]) /**<-- [P] Set parity flag (bit 2)*/
 #define Z80_SETFLAG_OVERFLOW(O,N) (((int8_t)O) > ((int8_t)N) ? 0 : (1 << 2)) /**<-- [V] Set overflow flag (bit 2)*/
 #define Z80_SETFLAG_ADD(A) (A ? 0 : (1<<1)) /**<-- [N] Set Add/Subtract flag (bit 1)*/
 #define Z80_SETFLAG_CARRY(O,N) (O > N ? 1 : 0) /**<-- [C] Set Carry flag, adition (bit 0)*/
