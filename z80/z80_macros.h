@@ -90,7 +90,7 @@
 #define Z80_SETFLAG_SIGN(X) (((X) & (1 << 7)) ? (1 << 7) : 0) /**<-- [S] Set sign flag (bit 7)*/
 #define Z80_SETFLAG_ZERO(X) (((X) == 0) ? (1 << 6) : 0) /**<-- [Z] Set Zero flag (bit 6)*/
 #define Z80_SETFLAG_HC(O,N) (((O & (1 << 3)) == 0) && ((N) & (1 << 3)) ? (1 << 4) : 0) /**<-- [H] Set Half-carry flag (bit 4)*/
-#define Z80_SETFLAG_PARITY(X) (X & 1 ? (1<<2) : 0) /**<-- [P] Set parity flag (bit 2)*/
+#define Z80_SETFLAG_PARITY(X) (z80_parity(X)) /**<-- [P] Set parity flag (bit 2)*/
 #define Z80_SETFLAG_OVERFLOW(O,N) (((int8_t)O) > ((int8_t)N) ? 0 : (1 << 2)) /**<-- [V] Set overflow flag (bit 2)*/
 #define Z80_SETFLAG_ADD(A) (A ? 0 : (1<<1)) /**<-- [N] Set Add/Subtract flag (bit 1)*/
 #define Z80_SETFLAG_CARRY(O,N) (O > N ? 1 : 0) /**<-- [C] Set Carry flag, adition (bit 0)*/
