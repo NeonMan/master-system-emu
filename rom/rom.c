@@ -7,11 +7,12 @@
 #include "../z80/z80_externs.h"
 #include "../io/io_externs.h"
 #include <string.h>
+#include <assert.h>
 
 #include "rom.h"
 
 uint8_t mapper_slots[3] = {0,1,2}; ///<-- ROM slot selector
-uint8_t mapper_ram = 0; ///<-- RAM slot config @Todo
+uint8_t mapper_ram = 0; ///<-- @todo RAM slot config
 uint8_t rom_image[ROM_MAX_SIZE]; ///<-- ROM contents.
 
 void* romdbg_get_rom(){
@@ -33,6 +34,7 @@ void rom_tick(){
         // ----------------
         // --- ROM READ ---
         // ----------------
+        assert(z80_n_wr);
         if      (z80_address <= 0x03FF)
             z80_data = rom_image[z80_address]; //First 1K is unmapped
         //Slot 0
@@ -50,6 +52,7 @@ void rom_tick(){
         // --------------------
         // --- MAPPER WRITE ---
         // --------------------
+        assert(z80_n_rd);
         if   (z80_address == 0xFFFC) mapper_ram = z80_data;
         else mapper_slots[z80_address - 0xFFFD] = z80_data;
     }

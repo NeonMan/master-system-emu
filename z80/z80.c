@@ -17,6 +17,18 @@
 #include <stdio.h>
 #include "../sdsc/sdsc.h"
 
+
+// ##################################################
+// ###  Debug code! delete me!                    ###
+// ##################################################
+
+#include "../ram/ram.h"
+
+uint8_t* dbg_ram;
+
+// ##################################################
+
+
 // Z80 Buses
 uint8_t  z80_data;     ///<-- Data bus, 8 bit wide (Input/Output)
 uint16_t z80_address;  ///<-- Address bus   (Output)
@@ -144,6 +156,10 @@ void z80_dump_reg(){
 }
 
 void z80_init(){
+    //### Debug
+    dbg_ram = ramdbg_get_mem();
+    //###
+
     //Zero the z80 struct.
     memset(&z80, 0x00, sizeof(struct z80_s));
     //Set anything non-zero here
@@ -240,7 +256,7 @@ int z80_instruction_decode(){
             case 3:                                             /*JR d; Size: 2; Flags: None*/ 
                 return Z80_STAGE_M1; //One extra byte
             default: //(4,5,6,7)                  /* JR [C,NC,Z,NZ], e; Size: 2; Flags: None*/
-                assert(0); /*Unimplemented*/; return Z80_STAGE_RESET;
+                return Z80_STAGE_M1; // +1 Byte
             }
 
         case Z80_OPCODE_XZ(0, 1):
@@ -387,7 +403,9 @@ int z80_instruction_decode(){
         case Z80_OPCODE_XZ(1, 4):                       /* */
         case Z80_OPCODE_XZ(1, 5):                       /* */
         case Z80_OPCODE_XZ(1, 7):                       /*LD r[y],r[z]; Size: 1; Flags: None*/
-            assert(0); /*Unimplemented*/ return Z80_STAGE_RESET;
+            *(z80_r[y[0]]) = *(z80_r[z[0]]);
+            return Z80_STAGE_RESET;
+
         case Z80_OPCODE_XZ(1, 6):
             if (!y[0]){                                         /*HALT; Size: 1; Flags: None*/
                 assert(0); /*Unimplemented*/ return Z80_STAGE_RESET;
@@ -411,11 +429,40 @@ int z80_instruction_decode(){
 
         case Z80_OPCODE_XZ(3, 1):
             if (!q[0]){                                   /*POP rp2[p]; Size: 1; Flags: None*/
+                //Read stack
+                if (z80.read_index == 0){
+                    z80.read_address = Z80_SP;
+                    return Z80_STAGE_M2;
+                }
+                else if (z80.read_index == 1){
+                    ++z80.read_address;
+                    return Z80_STAGE_M2;
+                }
+                //Update state
+                else{
+                    Z80_SP += 2;
+                    *(z80_rp2[p[0]]) = *((uint16_t*)z80.read_buffer); ///<-- @bug Endianness!
+                    return Z80_STAGE_RESET;
+                }
                 assert(0); /*Unimplemented*/ return Z80_STAGE_RESET;
             }
             else{
                 switch (p[0]){
                 case 0:                                          /*RET; Size: 1; Flags: None*/
+                    //Read stack
+                    if (z80.read_index == 0){
+                        z80.read_address = Z80_SP;
+                        return Z80_STAGE_M2;
+                    }
+                    else if (z80.read_index == 1){
+                        ++z80.read_address;
+                        return Z80_STAGE_M2;
+                    }
+                    else{
+                        Z80_SP += 2;
+                        Z80_PC = *((uint16_t*)z80.read_buffer); ///<-- @bug Endianness!
+                        return Z80_STAGE_RESET;
+                    }
                     assert(0); /*Unimplemented*/ return Z80_STAGE_RESET;
                 case 1:                                          /*EXX; Size: 1; Flags: None*/
                 {
@@ -504,8 +551,7 @@ int z80_instruction_decode(){
             }
 
         case Z80_OPCODE_XZ(3, 6):                /*alu + 8bit immediate; Size: 2; Flags: ALL*/
-            assert(0); /*Unimplemented*/
-            return Z80_STAGE_RESET;
+            return Z80_STAGE_M1; //+1 byte
 
         case Z80_OPCODE_XZ(3, 7):                            /*RST y*8; Size: 1; Flags: None*/
             assert(0); /*Unimplemented*/
@@ -713,6 +759,21 @@ int z80_instruction_decode(){
 
         default: // --- Unprefixed opcodes (byte 2)
             switch (z80.opcode[0] & (Z80_OPCODE_X_MASK | Z80_OPCODE_Z_MASK)){
+            case Z80_OPCODE_XZ(0,0):
+                switch (y[0]){
+                case 4:
+                case 5:
+                case 6:
+                case 7: //(4,5,6,7)                  /* JR [C,NC,Z,NZ], e; Size: 2; Flags: None*/
+                    //Test required flag
+                    if ((Z80_F & z80_cc[y[0] - 4]) == (z80_cc_stat[y[0] - 4])){
+                        Z80_PC += ((int8_t)Z80_PC) + ((int8_t)z80.opcode[1]); //Signed relative jump
+                    }
+                    return Z80_STAGE_RESET;
+                default:
+                    assert(0); //Unimplemented
+                    return Z80_STAGE_RESET;
+                }
             case Z80_OPCODE_XZ(0, 1):
                 if (!q[0]){                           /* LD rp[n], mm; Size: 3; Flags: None */
                     return Z80_STAGE_M1; //+1 byte
@@ -755,6 +816,22 @@ int z80_instruction_decode(){
                     }
                 }
                 else{
+                    assert(0); //Unimplemented
+                    return Z80_STAGE_RESET;
+                }
+            case Z80_OPCODE_XZ(3, 6):            /*alu + 8bit immediate; Size: 2; Flags: ALL*/
+                //Select ALU operation by 'y'
+                switch (y[0]){
+                case Z80_ALUOP_CP:                               /*CP n; Size: 2; Flags: All*/
+                    Z80_F  = 0;
+                    Z80_F |= Z80_FLAG_ADD; //Flag is set, always
+                    Z80_F |= Z80_SETFLAG_SIGN(Z80_A - z80.opcode[1]);
+                    Z80_F |= Z80_SETFLAG_ZERO(Z80_A - z80.opcode[1]);
+                    Z80_F |= Z80_SETFLAG_HC(Z80_A, Z80_A - z80.opcode[1]);
+                    Z80_F |= Z80_SETFLAG_OVERFLOW(Z80_A, Z80_A - z80.opcode[1]);
+                    Z80_F |= Z80_SETFLAG_BORROW(Z80_A, Z80_A - z80.opcode[1]);
+                    return Z80_STAGE_RESET;
+                default:
                     assert(0); //Unimplemented
                     return Z80_STAGE_RESET;
                 }
@@ -1013,7 +1090,6 @@ int z80_stage_m2(uint8_t noexec){
         assert(z80.read_index < 2); //<-- No more than one byte in buffer.
         z80.read_buffer[z80.read_index] = z80_data;
         ++z80.read_index;
-        ++z80.read_address; //Increment address, for 16-bit reads
 
         //Reset #RD, #MREQ, #IOREQ
         z80_n_mreq = 1;
