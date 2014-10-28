@@ -1,12 +1,18 @@
 #ifndef __Z80_MACROS_H
 #define __Z80_MACROS_H
 
-//Endianness swapping macros
-//When extracting 16-bit values from memory/opcodes, the z80 stores
-//them in little endian. This is not an issue on intel platforms where
-//you can simply dereference a pointer but will fail on Big endian
-//machines. This macro takes a int16 pointer and returns an integer
 
+//ALU operations
+#define Z80_ALUOP_ADD 0
+#define Z80_ALUOP_ADC 1
+#define Z80_ALUOP_SUB 2
+#define Z80_ALUOP_SBC 3
+#define Z80_ALUOP_AND 4
+#define Z80_ALUOP_XOR 5
+#define Z80_ALUOP_OR  6
+#define Z80_ALUOP_CP  7
+
+//Sub-byte opcode masks
 #define Z80_OPCODE_XZ(X,Z) (((X&0x3)<<6)|(Z&0x7))
 #define Z80_OPCODE_YZ(Y,Z) (((Y&0x7)<<3)|(Z&0x7))
 #define Z80_OPCODE_X_MASK (3<<6)

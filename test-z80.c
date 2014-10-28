@@ -36,7 +36,7 @@ int main(int argc, char* argv[]){
     io_stat = 0;
 
     //Perform 100 ticks
-    for (int i = 0; i < 1000; i++){
+    for (int i = 0; i < 5000; i++){
         z80_tick();
         ram_tick();
         rom_tick();
