@@ -115,28 +115,25 @@ int z80_stage_m1();
 int z80_stage_m2(uint8_t noexec);
 int z80_stage_m3(uint8_t noexec);
 
-///Counts the number of ones
-uint8_t z80_parity(uint8_t b){
-    const uint8_t parity[256] = {
-        1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1,
-        0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0,
-        0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0,
-        1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1,
-        0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0,
-        1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1,
-        1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1,
-        0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0,
-        0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0,
-        1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1,
-        1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1,
-        0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0,
-        1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1,
-        0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0,
-        0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0,
-        1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1
-    };
-    return parity[b];
-}
+///Parity LUT.
+const uint8_t z80_parity_lut[256] = {
+    1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1,
+    0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0,
+    0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0,
+    1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1,
+    0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0,
+    1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1,
+    1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1,
+    0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0,
+    0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0,
+    1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1,
+    1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1,
+    0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0,
+    1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1,
+    0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0,
+    0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0,
+    1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1
+};
 
 void z80_dump_reg(){
     printf("General purpose registers\n");
@@ -217,7 +214,7 @@ void z80_reset_pipeline(){
     char opcode_str[10];
     z80d_decode(z80.opcode, opcode_str);
     opcode_str[9] = 0;
-    fprintf(stderr, "Last Opcode: (PC:0x%04X) %s; 0x", Z80_PC, opcode_str);
+    fprintf(stderr, "Last Opcode: (nx PC:0x%04X) %s; 0x", Z80_PC, opcode_str);
     for (int i = 0; i < z80.opcode_index; i++)
         fprintf(stderr, "%02X", z80.opcode[i]);
 
@@ -829,13 +826,22 @@ int z80_instruction_decode(){
             switch (z80.opcode[0] & (Z80_OPCODE_X_MASK | Z80_OPCODE_Z_MASK)){
             case Z80_OPCODE_XZ(0,0):
                 switch (y[0]){
+                case 3:                                           /*JR, e; Size: 2; Flags: None*/
+                {
+                    const int8_t pc_shift = *((int8_t*)&z80.opcode[1]); ///<-- @bug Endianness
+                    const int32_t next_pc = Z80_PC + pc_shift; //Signed relative jump
+                    Z80_PC = (next_pc & 0xFFFF);
+                    return Z80_STAGE_RESET;
+                }
                 case 4:
                 case 5:
                 case 6:
                 case 7: //(4,5,6,7)                  /* JR [C,NC,Z,NZ], e; Size: 2; Flags: None*/
                     //Test required flag
                     if ((Z80_F & z80_cc[y[0] - 4]) == (z80_cc_stat[y[0] - 4])){
-                        Z80_PC += ((int8_t)Z80_PC) + ((int8_t)z80.opcode[1]); //Signed relative jump
+                        const int8_t pc_shift = *((int8_t*)&z80.opcode[1]); ///<-- @bug Endianness
+                        const int32_t next_pc = Z80_PC + pc_shift; //Signed relative jump
+                        Z80_PC = (next_pc & 0xFFFF);
                     }
                     return Z80_STAGE_RESET;
                 default:
@@ -854,6 +860,8 @@ int z80_instruction_decode(){
                 *(z80_r[y[0]]) = z80.opcode[1];
                 return Z80_STAGE_RESET;
 
+            case Z80_OPCODE_XZ(3, 2):                   /* JP cc[y], nn; Size: 3; Flags: None*/
+                return Z80_STAGE_M1; //+1 byte
             case Z80_OPCODE_XZ(3,3):
                 switch (y[0]){
                 case 0:                                       /* JP nn; Size: 3; Flags: None*/
@@ -874,9 +882,11 @@ int z80_instruction_decode(){
                     assert(0); /*Unimplemented*/
                     return Z80_STAGE_RESET;
                 }
+            case Z80_OPCODE_XZ(3, 4):                 /* CALL cc[y] nn; Size: 3; Flags: None*/
+                return Z80_STAGE_M1; // +1 byte
             case Z80_OPCODE_XZ(3,5):
                 if (q[0]){
-                    if (p[0] == 0)                          /* call nn; Size: 3; Flags: None*/
+                    if (p[0] == 0)                          /* CALL nn; Size: 3; Flags: None*/
                         return Z80_STAGE_M1; //+1 byte
                     else{
                         assert(0); //Unimplemented
@@ -933,6 +943,16 @@ int z80_instruction_decode(){
                     assert(0); //Unimplemented stuff
                     return Z80_STAGE_RESET;
                 }
+            case Z80_OPCODE_XZ(3, 2):                  /* JP cc[y], nn; Size: 3; Flags: None*/
+                //Test condition
+                if ((Z80_F & (z80_cc[y[0]])) == (z80_cc_stat[y[0]])){
+                    const uint16_t new_pc = *((uint16_t*)(z80.opcode + 1));
+                    Z80_PC = new_pc; ///<-- @bug Endianness!
+                    return Z80_STAGE_RESET;
+                }
+                else{
+                    return Z80_STAGE_RESET;
+                }
             case Z80_OPCODE_XZ(3,3):
                 switch (y[0]){
                 case 0:                                       /* JP nn; Size: 3; Flags: None*/
@@ -946,6 +966,34 @@ int z80_instruction_decode(){
                     assert(0); //Unimplemented stuff
                     return Z80_STAGE_RESET;
                 }
+            case Z80_OPCODE_XZ(3, 4):                 /* CALL cc[y] nn; Size: 3; Flags: None*/
+                //Check condition
+                if ((Z80_F & z80_cc[y[0]]) == (z80_cc_stat[y[0]])){
+                    //Push PC onto the stack
+                    if (z80.write_index == 0){
+                        //Push PC to the stack (M3 write of current PC)
+                        *((uint16_t*)(z80.write_buffer)) = Z80_PC; ///<-- @bug Endianness!
+                        z80.write_address = Z80_SP - 2;
+                        return Z80_STAGE_M3;
+                    }
+                    else if (z80.write_index == 1){
+                        //Write the second byte
+                        ++z80.write_address;
+                        return Z80_STAGE_M3;
+                    }
+                    else{
+                        //Update SP
+                        Z80_SP -= 2;
+                        //Update PC
+                        const uint16_t new_pc = *((uint16_t*)(z80.opcode + 1)); ///<-- @bug Endiannes!
+                        Z80_PC = new_pc;
+                        return Z80_STAGE_RESET;
+                    }
+                }
+                else{
+                    return Z80_STAGE_RESET;
+                }
+
             case Z80_OPCODE_XZ(3,5):
                 if (!q[0]){
                     assert(0); //unimplemented
