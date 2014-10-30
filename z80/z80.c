@@ -478,22 +478,34 @@ int z80_instruction_decode(){
         case Z80_OPCODE_XZ(2, 5):                            /* */
         case Z80_OPCODE_XZ(2, 6):                            /* */
         case Z80_OPCODE_XZ(2, 7):                            /*alu r[z]; Size: 1; Flags: ALL*/
+            //If source is (HL), make a M2 read  if needed
+            if ((z80_r[z[0]] == 0) && (z80.read_index == 0)){
+                if (z80.read_index == 0){
+                    z80.read_address = Z80_HL;
+                    return Z80_STAGE_M2;
+                }
+                else{
+                    Z80_A = Z80_A ^ z80.read_buffer[0];
+                }
+            }
             //Select ALU operation by 'y'
             switch (y[0]){
+            case Z80_ALUOP_ADD:
+            case Z80_ALUOP_ADC:
+            case Z80_ALUOP_SUB:
+            case Z80_ALUOP_SBC:
+            case Z80_ALUOP_AND:
+                assert(0); //Unimplemented
+                return Z80_STAGE_RESET;
+
             case Z80_ALUOP_XOR:                              /*XOR r[z]; Size: 1; Flags: All*/
             {
                 if (z80_r[z[0]]){
                     Z80_A  = Z80_A ^ *(z80_r[z[0]]);
                 }
                 else{                                         /*XOR (HL); Size: 1; Flags:ALL*/
-                    //Requires an extra read
-                    if (z80.read_index == 0){
-                        z80.read_address = Z80_HL;
-                        return Z80_STAGE_M2;
-                    }
-                    else{
-                        Z80_A = Z80_A ^ z80.read_buffer[0];
-                    }
+                    //Data retrieved from (HL)
+                    Z80_A = Z80_A ^ z80.read_buffer[0];
                 }
                 Z80_F = 0;
                 Z80_F |= Z80_SETFLAG_SIGN(Z80_A);
@@ -501,6 +513,23 @@ int z80_instruction_decode(){
                 Z80_F |= Z80_SETFLAG_PARITY(Z80_A);
                 return Z80_STAGE_RESET;
             }
+            case Z80_ALUOP_OR:
+            {
+                const uint8_t orig_a = Z80_A;
+                if (z80_r[z[0]]){                              /*OR r[z]; Size: 1; Flags:ALL*/
+                    Z80_A = Z80_A | *(z80_r[z[0]]);
+                }
+                else{                                          /*OR (HL); Size: 1; Flags:ALL*/
+                    //Data retrieved from (HL)
+                    Z80_A = Z80_A | z80.read_buffer[0];
+                }
+                Z80_F = 0;
+                Z80_F |= Z80_SETFLAG_SIGN(Z80_A);
+                Z80_F |= Z80_SETFLAG_ZERO(Z80_A);
+                Z80_F |= Z80_SETFLAG_OVERFLOW(orig_a, Z80_A);
+                return Z80_STAGE_RESET;
+            }
+            case Z80_ALUOP_CP:
             default:
                 assert(0); /*Unimplemented*/ return Z80_STAGE_RESET;
             }
@@ -916,6 +945,15 @@ int z80_instruction_decode(){
             case Z80_OPCODE_XZ(3, 6):            /*alu + 8bit immediate; Size: 2; Flags: ALL*/
                 //Select ALU operation by 'y'
                 switch (y[0]){
+                case Z80_ALUOP_ADD:
+                case Z80_ALUOP_ADC:
+                case Z80_ALUOP_SUB:
+                case Z80_ALUOP_SBC:
+                case Z80_ALUOP_AND:
+                case Z80_ALUOP_XOR:
+                case Z80_ALUOP_OR:
+                    assert(0); //Unimplemented
+                    return Z80_STAGE_RESET;
                 case Z80_ALUOP_CP:                               /*CP n; Size: 2; Flags: All*/
                     Z80_F  = 0;
                     Z80_F |= Z80_FLAG_ADD; //Flag is set, always
@@ -924,9 +962,6 @@ int z80_instruction_decode(){
                     Z80_F |= Z80_SETFLAG_HC(Z80_A, Z80_A - z80.opcode[1]);
                     Z80_F |= Z80_SETFLAG_OVERFLOW(Z80_A, Z80_A - z80.opcode[1]);
                     Z80_F |= Z80_SETFLAG_BORROW(Z80_A, Z80_A - z80.opcode[1]);
-                    return Z80_STAGE_RESET;
-                default:
-                    assert(0); //Unimplemented
                     return Z80_STAGE_RESET;
                 }
             default:

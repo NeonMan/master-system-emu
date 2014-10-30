@@ -307,7 +307,10 @@ int z80d_decode(uint8_t* opcode, unsigned int size, char* result){
         break;
 
     case Z80_OPCODE_XZ(1, 6):
-        sprintf(tmp_str, "HALT");
+        if (y[0] == 6)
+            sprintf(tmp_str, "HALT");
+        else
+            sprintf(tmp_str, "LD %s, %s", z80d_r[y[0]], z80d_r[z[0]]);
         rv = 1;
         break;
 
