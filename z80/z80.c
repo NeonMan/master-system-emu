@@ -15,7 +15,6 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <stdio.h>
-#include "../sdsc/sdsc.h"
 
 // #### For debug purposes only ####
 // #### Remove for portabilty   ####
@@ -57,6 +56,10 @@ unsigned int z80_m1_tick_count = 0; ///<-- Counts the number of half cycles on t
 unsigned int z80_m2_tick_count = 0; ///<-- Counts the number of half-cycles on the M2 stage.
 unsigned int z80_m3_tick_count = 0; ///<-- Counts the number of half-cycles on the M3 stage.
 uint8_t z80_stage = Z80_STAGE_M1;
+
+//Sdsc data/control function pointers (decouple z80 from sdsc.h)
+void(*z80_sdsc_data) (uint8_t) = 0; ///<-- Function pointer for SDSC data port.
+void(*z80_sdsc_control) (uint8_t) = 0; ///<-- Function pointer for SDSC control port.
 
 struct z80_s {
     //Single 8bit registers
@@ -189,6 +192,15 @@ void z80_dump_reg(){
     printf("   Write buff: 0x%X 0x%X [Index: %d]\n", z80.write_buffer[0], z80.write_buffer[1], z80.write_index);
 }
 
+/**
+ * @brief Dumps the stack contents to stderr.
+ *
+ * @param ram Pointer to the ram image.
+ * @param sp  Stack pointer value (16bit).
+ * @param base_addr Ram base address.
+ * @param count Number of stack bytes to print, including SP. Always even, last bit ignored.
+ * @param count_below number of bytes to read below SP. Always even, last bit ignored.
+ */
 void z80_dump_stack(void* ram, uint16_t sp, uint16_t base_addr, uint16_t count, uint16_t count_below){
     count = count & 0xFFFE;
     count_below = count_below & 0xFFFE;
@@ -197,21 +209,24 @@ void z80_dump_stack(void* ram, uint16_t sp, uint16_t base_addr, uint16_t count, 
         if (i == 0)
             fprintf(stderr, " SP--> ");
         else if (i>0)
-            fprintf(stderr, " +% 2d   ", i);
+            fprintf(stderr, " +%02d   ", i);
         else
             fprintf(stderr, "       ", -i);
         fprintf(stderr, "0x%04X: 0x%04X\n", sp - base_addr + i, ((uint8_t*)ram)[sp - base_addr + i], ((uint8_t*)ram)[sp - base_addr + i + 1]);
     }
 }
 
-///Initialzes the z80 struct
-void z80_init(){
+///Initialzes the z80 struct and SDSC function callbacks.
+void z80_init(void(*data_f) (uint8_t), void(*ctrl_f) (uint8_t)){
     //Zero the z80 struct.
     memset(&z80, 0x00, sizeof(struct z80_s));
     //Set anything non-zero here
     z80.rSP = 0xFFFF; //<-- Stack pointer starts at 0xFFFF
-}
 
+    //Setup SDSC
+    z80_sdsc_data = data_f;
+    z80_sdsc_control = ctrl_f;
+}
 
 /**
 * @brief clears the z80 state to prepare for a new opcode.
@@ -229,7 +244,7 @@ void z80_reset_pipeline(){
         fprintf(stderr, "%02X", z80.opcode[i]);
     fprintf(stderr, "\n");
     if (Z80_SP != dbg_last_sp){
-        z80_dump_stack(ramdbg_get_mem(), Z80_SP, RAM_BASE_ADDRESS, 8, 4);
+        z80_dump_stack(ramdbg_get_mem(), Z80_SP, RAM_BASE_ADDRESS, 12, 4);
         dbg_last_sp = Z80_SP;
     }
     assert(disasm_size == z80.opcode_index);
@@ -819,9 +834,11 @@ int z80_instruction_decode(){
                 case Z80_OPCODE_YZ(5, 1):
                 case Z80_OPCODE_YZ(5, 2):
                 case Z80_OPCODE_YZ(5, 3):
+                    assert(0);
+                    return Z80_STAGE_RESET;
 
                 case Z80_OPCODE_YZ(6, 0):            /*LDIR; Size: 2; Flags: H,P,N (cleared)*/
-                    //(DE) <-- (HL); --DE; --HL; --BC; BC? repeat : end;
+                    //(DE) <-- (HL); ++DE; ++HL; --BC; BC? repeat : end;
                     //Test wether we have finished already
                     if (Z80_BC == 0)
                         return Z80_STAGE_RESET;
@@ -838,8 +855,8 @@ int z80_instruction_decode(){
                     }
                     //Update registers and end
                     else{
-                        --Z80_HL;
-                        --Z80_DE;
+                        ++Z80_HL;
+                        ++Z80_DE;
                         --Z80_BC;
                         Z80_F = Z80_F & (Z80_CLRFLAG_HC & Z80_CLRFLAG_PARITY & Z80_CLRFLAG_ADD);
                         if (Z80_BC){
@@ -1197,10 +1214,14 @@ int z80_stage_m3(uint8_t noexec){
         z80_data = z80.write_buffer[z80.write_index];
         //If this is a SDSC write, covertly call its functions.
         if (z80.write_is_io){
-            if ((z80.write_address & 0xFF) == 0xFD)
-                sdsc_write(z80.write_buffer[z80.write_index]);
-            else if ((z80.write_address & 0xFF) == 0xFC)
-                sdsc_control(z80.write_buffer[z80.write_index]);
+            if ((z80.write_address & 0xFF) == 0xFD){
+                if (z80_sdsc_data)
+                    z80_sdsc_data(z80.write_buffer[z80.write_index]);
+            }
+            else if ((z80.write_address & 0xFF) == 0xFC){
+                if (z80_sdsc_control)
+                    z80_sdsc_control(z80.write_buffer[z80.write_index]);
+            }
         }
         //Update index
         ++z80.write_index;
