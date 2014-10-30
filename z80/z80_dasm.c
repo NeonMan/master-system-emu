@@ -353,7 +353,7 @@ int z80d_decode(uint8_t* opcode, unsigned int size, char* result){
         break;
 
     case Z80_OPCODE_XZ(3, 2):
-        sprintf(tmp_str, "JP %s, 0x04X", z80d_cc[y[0]], nn);
+        sprintf(tmp_str, "JP %s, 0x%04X", z80d_cc[y[0]], nn);
         rv = 3;
         break;
 
@@ -426,5 +426,5 @@ int z80d_decode(uint8_t* opcode, unsigned int size, char* result){
         rv = 1;
     }
     strncpy(result, tmp_str, size - 1);
-    return 0;
+    return rv;
 }

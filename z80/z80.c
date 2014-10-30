@@ -135,6 +135,26 @@ const uint8_t z80_parity_lut[256] = {
     1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1
 };
 
+// --- Register lookup tables ---
+// The pointers (all array values) themselves declared here are constant.
+// The pointed variable is not.
+
+////Register pairs lookup table
+uint16_t* const z80_rp[8] = { &Z80_BC, &Z80_DE, &Z80_HL, &Z80_SP, &Z80_BC, &Z80_DE, &Z80_HL, &Z80_SP };
+////Register pairs lookup table (AF option)
+uint16_t* const z80_rp2[8] = { &Z80_BC, &Z80_DE, &Z80_HL, &Z80_AF, &Z80_BC, &Z80_DE, &Z80_HL, &Z80_AF };
+///Register lookup table
+uint8_t* const z80_r[8] = { &Z80_B, &Z80_C, &Z80_D, &Z80_E, &Z80_H, &Z80_L, 0, &Z80_A};
+///Condition Flag  mask lookup table (NZ,Z,NC,C,PO,PE,P,M)
+uint8_t  const z80_cc[8]      = { Z80_FLAG_ZERO, Z80_FLAG_ZERO, Z80_FLAG_CARRY, Z80_FLAG_CARRY, Z80_FLAG_PARITY, Z80_FLAG_PARITY, Z80_FLAG_SIGN, Z80_FLAG_SIGN };
+///Expected flag value (after mask) for the condition to be true
+uint8_t  const z80_cc_stat[8] = {             0, Z80_FLAG_ZERO,              0, Z80_FLAG_CARRY,               0, Z80_FLAG_PARITY,             0, Z80_FLAG_SIGN };
+///Interrupt mode lookup table
+int8_t const z80_im[][2] = { { 0, 0 }, { 1, 0 }, { 1, 1 }, { 2, 2 }, { 0, 0 }, { 1, 0 }, { 1, 1 }, { 2, 2 } };
+
+///@bug missing tables: alu, rot, bli
+
+///Prints the z80 registers to stdout
 void z80_dump_reg(){
     printf("General purpose registers\n");
     printf("   IR: 0x%X%r\n", Z80_I, Z80_R);
@@ -171,10 +191,11 @@ void z80_dump_reg(){
         else
             printf("[Size: %d]\n", z80.read_index);
     }
-    printf("   Write addr: 0x%X %s\n", z80.write_address, z80.write_is_io ? "(IO)": "");
+    printf("   Write addr: 0x%X %s\n", z80.write_address, z80.write_is_io ? "(IO)" : "");
     printf("   Write buff: 0x%X 0x%X [Index: %d]\n", z80.write_buffer[0], z80.write_buffer[1], z80.write_index);
 }
 
+///Initialzes the z80 struct
 void z80_init(){
     //### Debug
     dbg_ram = ramdbg_get_mem();
@@ -186,25 +207,6 @@ void z80_init(){
     z80.rSP = 0xFFFF; //<-- Stack pointer starts at 0xFFFF
 }
 
-// --- Register lookup tables ---
-// The pointers (all array values) themselves declared here are constant.
-// The pointed variable is not.
-
-////Register pairs lookup table
-uint16_t* const z80_rp[8] = { &Z80_BC, &Z80_DE, &Z80_HL, &Z80_SP, &Z80_BC, &Z80_DE, &Z80_HL, &Z80_SP };
-////Register pairs lookup table (AF option)
-uint16_t* const z80_rp2[8] = { &Z80_BC, &Z80_DE, &Z80_HL, &Z80_AF, &Z80_BC, &Z80_DE, &Z80_HL, &Z80_AF };
-///Register lookup table
-uint8_t* const z80_r[8] = { &Z80_B, &Z80_C, &Z80_D, &Z80_E, &Z80_H, &Z80_L, 0, &Z80_A};
-///Condition Flag  mask lookup table (NZ,Z,NC,C,PO,PE,P,M)
-uint8_t  const z80_cc[8]      = { Z80_FLAG_ZERO, Z80_FLAG_ZERO, Z80_FLAG_CARRY, Z80_FLAG_CARRY, Z80_FLAG_PARITY, Z80_FLAG_PARITY, Z80_FLAG_SIGN, Z80_FLAG_SIGN };
-///Expected flag value (after mask) for the condition to be true
-uint8_t  const z80_cc_stat[8] = {             0, Z80_FLAG_ZERO,              0, Z80_FLAG_CARRY,               0, Z80_FLAG_PARITY,             0, Z80_FLAG_SIGN };
-///Interrupt mode lookup table
-int8_t const z80_im[][2] = { { 0, 0 }, { 1, 0 }, { 1, 1 }, { 2, 2 }, { 0, 0 }, { 1, 0 }, { 1, 1 }, { 2, 2 } };
-
-///@bug missing tables: alu, rot, bli
-
 
 /**
 * @brief clears the z80 state to prepare for a new opcode.
@@ -213,12 +215,15 @@ void z80_reset_pipeline(){
 #ifndef NDEBUG
     /**/
     char opcode_str[100];
+    int disasm_size = 0;
     opcode_str[0] = 0;
-    z80d_decode(z80.opcode, 100, opcode_str);
+    if (z80.opcode_index) //There must be something to feed the disasm
+        disasm_size = z80d_decode(z80.opcode, 100, opcode_str);
     fprintf(stderr, "Last Opcode: (nx PC:0x%04X) %s; 0x", Z80_PC, opcode_str);
     for (int i = 0; i < z80.opcode_index; i++)
         fprintf(stderr, "%02X", z80.opcode[i]);
     fprintf(stderr, "\n");
+    assert(disasm_size == z80.opcode_index);
     /**/
 #endif
     z80.opcode_index = 0;
