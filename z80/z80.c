@@ -17,18 +17,6 @@
 #include <stdio.h>
 #include "../sdsc/sdsc.h"
 
-
-// ##################################################
-// ###  Debug code! delete me!                    ###
-// ##################################################
-
-#include "../ram/ram.h"
-
-uint8_t* dbg_ram;
-
-// ##################################################
-
-
 // Z80 Buses
 uint8_t  z80_data;     ///<-- Data bus, 8 bit wide (Input/Output)
 uint16_t z80_address;  ///<-- Address bus   (Output)
@@ -197,10 +185,6 @@ void z80_dump_reg(){
 
 ///Initialzes the z80 struct
 void z80_init(){
-    //### Debug
-    dbg_ram = ramdbg_get_mem();
-    //###
-
     //Zero the z80 struct.
     memset(&z80, 0x00, sizeof(struct z80_s));
     //Set anything non-zero here
@@ -213,7 +197,7 @@ void z80_init(){
 */
 void z80_reset_pipeline(){
 #ifndef NDEBUG
-    /**/
+    /*
     char opcode_str[100];
     int disasm_size = 0;
     opcode_str[0] = 0;
@@ -441,18 +425,19 @@ int z80_instruction_decode(){
         case Z80_OPCODE_XZ(1, 4):                       /* */
         case Z80_OPCODE_XZ(1, 5):                       /* */
         case Z80_OPCODE_XZ(1, 7):                       /*LD r[y],r[z]; Size: 1; Flags: None*/
-            //Target can never be (HL) but source can
-            if (z80_r[z[0]]){ //If source != (HL)
+            //Source can never be (HL). That implies z[0]==6
+            //Target can be (HL)
+            if (z80_r[y[0]]){ //If target != (HL)
                 *(z80_r[y[0]]) = *(z80_r[z[0]]);
                 return Z80_STAGE_RESET;
             }
-            else{ //Source is (HL)
-                if (z80.read_index == 0){
-                    z80.read_address = Z80_HL;
-                    return Z80_STAGE_M2;
+            else{ //Target is (HL)
+                if (z80.write_index == 0){
+                    z80.write_address = Z80_HL;
+                    z80.write_buffer[0] = *(z80_r[z[0]]);
+                    return Z80_STAGE_M3;
                 }
                 else{
-                    *(z80_r[y[0]]) = z80.read_buffer[0];
                     return Z80_STAGE_RESET;
                 }
             }
@@ -462,15 +447,14 @@ int z80_instruction_decode(){
             if (y[0]==6){                                         /*HALT; Size: 1; Flags: None*/
                 assert(0); /*Unimplemented*/ return Z80_STAGE_RESET;
             }
-            else{                                       /*LD r[y], r[z]; Size:1; Flags: None*/
-                //Source can never be (HL)
-                const uint8_t value = *(z80_r[y[0]]);
-                if (z80.write_index == 0){//Target is always (HL); z==6
-                    z80.write_address = Z80_HL;
-                    z80.write_buffer[0] = value;
-                    return Z80_STAGE_M3;
+            else{                                       /*LD r[y], (HL); Size:1; Flags: None*/
+                //Source is always (HL, Target is never (HL)
+                if (z80.read_index == 0){
+                    z80.read_address = Z80_HL;
+                    return Z80_STAGE_M2;
                 }
                 else{
+                    *(z80_r[y[0]]) = z80.read_buffer[0];
                     return Z80_STAGE_RESET;
                 }
             }
@@ -500,9 +484,21 @@ int z80_instruction_decode(){
             case Z80_ALUOP_SUB:
             case Z80_ALUOP_SBC:
             case Z80_ALUOP_AND:
-                assert(0); //Unimplemented
+            {
+                const uint8_t orig_a = Z80_A;
+                if (z80_r[z[0]]){                            /*AND r[z]; Size: 1; Flags: All*/
+                    Z80_A = Z80_A & *(z80_r[z[0]]);
+                }
+                else{                                        /*AND (HL); Size: 1; Flags: All*/
+                    Z80_A = Z80_A & z80.read_buffer[0];
+                }
+                Z80_F = 0;
+                Z80_F |= Z80_SETFLAG_SIGN(Z80_A);
+                Z80_F |= Z80_SETFLAG_ZERO(Z80_A);
+                Z80_F |= Z80_FLAG_HC;
+                Z80_F |= Z80_SETFLAG_OVERFLOW(orig_a, Z80_A);
                 return Z80_STAGE_RESET;
-
+            }
             case Z80_ALUOP_XOR:                              /*XOR r[z]; Size: 1; Flags: All*/
             {
                 if (z80_r[z[0]]){
@@ -905,10 +901,39 @@ int z80_instruction_decode(){
                 else{
                     assert(0); /*No opcode reaches this point*/ return Z80_STAGE_RESET;
                 }
-
+            case Z80_OPCODE_XZ(0,2):
+                if (!q[0]){
+                    switch (p[0]){
+                    case 0:
+                    case 1:
+                        assert(0); //No opcode reaches this point
+                        return Z80_STAGE_RESET;
+                    case 2:                              /*LD (nn), HL; size: 3; Flags: None*/
+                    case 3:                               /*LD (nn), A; Size: 3; Flags: None*/
+                        return Z80_STAGE_M1; //+1 byte
+                    }
+                }
+                else{
+                    assert(0); //Unimplemented
+                    return Z80_STAGE_RESET;
+                }
             case Z80_OPCODE_XZ(0, 6):                      /* LD r, i; Size: 2; Flags: None */
-                *(z80_r[y[0]]) = z80.opcode[1];
-                return Z80_STAGE_RESET;
+                //If target is HL, perform write
+                if (z80_r[y[0]] == 0){
+                    if (z80.write_index == 0){
+                        z80.write_address = Z80_HL;
+                        z80.write_buffer[0] = z80.opcode[1];
+                        return Z80_STAGE_M3;
+                    }
+                    else{
+                        return Z80_STAGE_RESET;
+                    }
+                }
+                //Otherwise
+                else{
+                    *(z80_r[y[0]]) = z80.opcode[1];
+                    return Z80_STAGE_RESET;
+                }
 
             case Z80_OPCODE_XZ(3, 2):                   /* JP cc[y], nn; Size: 3; Flags: None*/
                 return Z80_STAGE_M1; //+1 byte
@@ -956,9 +981,16 @@ int z80_instruction_decode(){
                 case Z80_ALUOP_SBC:
                 case Z80_ALUOP_AND:
                 case Z80_ALUOP_XOR:
-                case Z80_ALUOP_OR:
-                    assert(0); //Unimplemented
+                case Z80_ALUOP_OR:                                /*OR n; Size: 1; Flags:ALL*/
+                {
+                    const uint8_t orig_a = Z80_A;
+                    Z80_A = Z80_A | z80.opcode[1];
+                    Z80_F = 0;
+                    Z80_F |= Z80_SETFLAG_SIGN(Z80_A);
+                    Z80_F |= Z80_SETFLAG_ZERO(Z80_A);
+                    Z80_F |= Z80_SETFLAG_OVERFLOW(orig_a, Z80_A);
                     return Z80_STAGE_RESET;
+                }
                 case Z80_ALUOP_CP:                               /*CP n; Size: 2; Flags: All*/
                     Z80_F  = 0;
                     Z80_F |= Z80_FLAG_ADD; //Flag is set, always
@@ -996,6 +1028,32 @@ int z80_instruction_decode(){
                 }
                 else{
                     assert(0); //Unimplemented stuff
+                    return Z80_STAGE_RESET;
+                }
+            case Z80_OPCODE_XZ(0, 2):
+                if (!q[0]){
+                    switch (p[0]){
+                    case 0:
+                    case 1:
+                        assert(0); //No opcode reaches this point
+                        return Z80_STAGE_RESET;
+                    case 2:                              /*LD (nn), HL; size: 3; Flags: None*/
+                        assert(0);
+                        return Z80_STAGE_RESET;
+                    case 3:                               /*LD (nn), A; Size: 3; Flags: None*/
+                        //Perform the byte write
+                        if (z80.write_index == 0){
+                            z80.write_address = *((uint16_t*)(z80.opcode + 1)); ///<-- @bug endianness!
+                            z80.write_buffer[0] = Z80_A;
+                            return Z80_STAGE_M3;
+                        }
+                        else{
+                            return Z80_STAGE_RESET;
+                        }
+                    }
+                }
+                else{
+                    assert(0); //Unimplemented
                     return Z80_STAGE_RESET;
                 }
             case Z80_OPCODE_XZ(3, 2):                  /* JP cc[y], nn; Size: 3; Flags: None*/
