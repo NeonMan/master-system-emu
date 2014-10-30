@@ -195,7 +195,7 @@ uint16_t* const z80_rp[8] = { &Z80_BC, &Z80_DE, &Z80_HL, &Z80_SP, &Z80_BC, &Z80_
 ////Register pairs lookup table (AF option)
 uint16_t* const z80_rp2[8] = { &Z80_BC, &Z80_DE, &Z80_HL, &Z80_AF, &Z80_BC, &Z80_DE, &Z80_HL, &Z80_AF };
 ///Register lookup table
-uint8_t* const z80_r[16] = { &Z80_B, &Z80_C, &Z80_D, &Z80_E, &Z80_H, &Z80_L, 0, &Z80_A, &Z80_B, &Z80_C, &Z80_D, &Z80_E, &Z80_H, &Z80_L, 0, &Z80_A };
+uint8_t* const z80_r[8] = { &Z80_B, &Z80_C, &Z80_D, &Z80_E, &Z80_H, &Z80_L, 0, &Z80_A};
 ///Condition Flag  mask lookup table (NZ,Z,NC,C,PO,PE,P,M)
 uint8_t  const z80_cc[8]      = { Z80_FLAG_ZERO, Z80_FLAG_ZERO, Z80_FLAG_CARRY, Z80_FLAG_CARRY, Z80_FLAG_PARITY, Z80_FLAG_PARITY, Z80_FLAG_SIGN, Z80_FLAG_SIGN };
 ///Expected flag value (after mask) for the condition to be true
@@ -212,21 +212,12 @@ int8_t const z80_im[][2] = { { 0, 0 }, { 1, 0 }, { 1, 1 }, { 2, 2 }, { 0, 0 }, {
 void z80_reset_pipeline(){
 #ifndef NDEBUG
     /**/
-    char opcode_str[10];
-    z80d_decode(z80.opcode, opcode_str);
-    opcode_str[9] = 0;
+    char opcode_str[100];
+    opcode_str[0] = 0;
+    z80d_decode(z80.opcode, 100, opcode_str);
     fprintf(stderr, "Last Opcode: (nx PC:0x%04X) %s; 0x", Z80_PC, opcode_str);
     for (int i = 0; i < z80.opcode_index; i++)
         fprintf(stderr, "%02X", z80.opcode[i]);
-
-    fprintf(stderr, "  ");
-    for (int i = 0; i < z80.opcode_index; i++){
-        fprintf(stderr, ":%d/%d/%d",
-            (z80.opcode[i] & (0x3 << 6))>>6,
-            (z80.opcode[i] & (0x7 << 3))>>3,
-            (z80.opcode[i] & (0x7))
-            );
-    }
     fprintf(stderr, "\n");
     /**/
 #endif
@@ -291,7 +282,7 @@ int z80_instruction_decode(){
             }
 
         case Z80_OPCODE_XZ(0, 1):
-            if (!q[0])                                 /*LD  rp[p], nn; Size: 3; Flags: None*/
+            if (!q[0])                                  /*LD rp[p], nn; Size: 3; Flags: None*/
                 return Z80_STAGE_M1; //Needs two extra bytes
             else{                                        /*ADD HL,rp[p] ; Size: 1; Flags N,C*/ 
                 const uint16_t old_hl = Z80_HL;
@@ -445,15 +436,38 @@ int z80_instruction_decode(){
         case Z80_OPCODE_XZ(1, 4):                       /* */
         case Z80_OPCODE_XZ(1, 5):                       /* */
         case Z80_OPCODE_XZ(1, 7):                       /*LD r[y],r[z]; Size: 1; Flags: None*/
-            *(z80_r[y[0]]) = *(z80_r[z[0]]);
-            return Z80_STAGE_RESET;
+            //Target can never be (HL) but source can
+            if (z80_r[z[0]]){ //If source != (HL)
+                *(z80_r[y[0]]) = *(z80_r[z[0]]);
+                return Z80_STAGE_RESET;
+            }
+            else{ //Source is (HL)
+                if (z80.read_index == 0){
+                    z80.read_address = Z80_HL;
+                    return Z80_STAGE_M2;
+                }
+                else{
+                    *(z80_r[y[0]]) = z80.read_buffer[0];
+                    return Z80_STAGE_RESET;
+                }
+            }
+            
 
         case Z80_OPCODE_XZ(1, 6):
-            if (!y[0]){                                         /*HALT; Size: 1; Flags: None*/
+            if (y[0]==6){                                         /*HALT; Size: 1; Flags: None*/
                 assert(0); /*Unimplemented*/ return Z80_STAGE_RESET;
             }
-            else{                                       /*LD (HL), (HL); Size:1; Flags: None*/
-                assert(0); /*Unimplemented*/ return Z80_STAGE_RESET;
+            else{                                       /*LD r[y], r[z]; Size:1; Flags: None*/
+                //Source can never be (HL)
+                const uint8_t value = *(z80_r[y[0]]);
+                if (z80.write_index == 0){//Target is always (HL); z==6
+                    z80.write_address = Z80_HL;
+                    z80.write_buffer[0] = value;
+                    return Z80_STAGE_M3;
+                }
+                else{
+                    return Z80_STAGE_RESET;
+                }
             }
 
         case Z80_OPCODE_XZ(2, 0):                            /* */
@@ -937,8 +951,7 @@ int z80_instruction_decode(){
                 if (!q[0]){                           /* LD rp[n], mm; Size: 3; Flags: None */
                     //mm is stored in the opcode's bytes 1,2.
                     const uint16_t immediate = *((uint16_t*)(z80.opcode + 1));
-                    uint16_t* target_r = z80_rp[p[0]];
-                    *target_r = immediate; ///<-- @bug Endianness!
+                    *z80_rp[p[0]] = immediate; ///<-- @bug Endianness!
                     return Z80_STAGE_RESET;
                 }
                 else{
