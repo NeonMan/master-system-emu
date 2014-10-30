@@ -11,9 +11,6 @@
 #include <stdint.h>
 #include <assert.h>
 
-#define RAM_SIZE (1024 * 8)
-#define RAM_BASE_ADDRESS 0xC000
-
 uint8_t ram_image[RAM_SIZE];
 
 void* ramdbg_get_mem(){
