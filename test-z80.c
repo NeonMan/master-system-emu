@@ -2,15 +2,19 @@
 #include "ram/ram.h"
 #include "z80/z80.h"
 #include "io/fake_io.h"
+#include "sdsc/sdsc.h"
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
 
 int main(int argc, char* argv[]){
-    //Setup Z80
-    z80_init();
+    //Redirect stds to files
+    *stderr = *fopen("std.err", "w");
+    *stdout = *fopen("std.out", "w");
 
+    //Setup Z80
+    z80_init(sdsc_write, sdsc_control);
 
     //Setup the ROM, all NOPs
     uint8_t *full_rom = malloc(ROM_MAX_SIZE);
@@ -36,7 +40,7 @@ int main(int argc, char* argv[]){
     io_stat = 0;
 
     //Perform 100 ticks
-    for (int i = 0; i < 8000; i++){
+    for (int i = 0; i < 40000; i++){
     //for (;;){
         z80_tick();
         ram_tick();
@@ -63,5 +67,7 @@ int main(int argc, char* argv[]){
         rom_tick();
         z80_tick(); //Cycle 5
     }
+    fclose(stderr);
+    fclose(stdout);
     return 0;
 }
