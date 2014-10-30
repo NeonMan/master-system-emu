@@ -17,6 +17,13 @@ const char* const z80d_bli[4*4] = {
     "LDDR", "CPDR", "INDR", "OTDR"
 };
 
+char z80d_byte_to_char(uint8_t b){
+    if ((b >= 0x20) && (b <= 0x7E)) //If printable, return as-is
+        return b;
+    else //Otherwise, a point
+        return '.';
+}
+
 int z80d_decode_ED(uint8_t* opcode, unsigned int size, char* result){
     const uint8_t x[4] = { opcode[0] >> 6, opcode[1] >> 6, opcode[2] >> 6, opcode[3] >> 6 };
     const uint8_t y[4] = { (opcode[0] >> 3) & 0x7, (opcode[1] >> 3) & 0x7, (opcode[2] >> 3) & 0x7, (opcode[3] >> 3) & 0x7 };
@@ -254,7 +261,7 @@ int z80d_decode(uint8_t* opcode, unsigned int size, char* result){
         break;
 
     case Z80_OPCODE_XZ(0, 6):
-        sprintf(tmp_str, "LD %s, 0x%02X", z80d_r[y[0]], opcode[1]);
+        sprintf(tmp_str, "LD %s, 0x%02X; (%d '%c')", z80d_r[y[0]], opcode[1], opcode[1], z80d_byte_to_char(opcode[1]));
         rv = 2;
         break;
 
@@ -405,7 +412,7 @@ int z80d_decode(uint8_t* opcode, unsigned int size, char* result){
         break;
 
     case Z80_OPCODE_XZ(3, 6):
-        sprintf(tmp_str, "%s %02X; (%d)", z80d_alu[y[0]], opcode[1], opcode[1]);
+        sprintf(tmp_str, "%s 0x%02X; (%d '%c')", z80d_alu[y[0]], opcode[1], opcode[1], z80d_byte_to_char(opcode[1]));
         rv = 2;
         break;
 
