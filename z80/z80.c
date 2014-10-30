@@ -17,6 +17,12 @@
 #include <stdio.h>
 #include "../sdsc/sdsc.h"
 
+// #### For debug purposes only ####
+// #### Remove for portabilty   ####
+#include "../ram/ram.h"
+uint16_t dbg_last_sp = 0xFFFF;
+// #################################
+
 // Z80 Buses
 uint8_t  z80_data;     ///<-- Data bus, 8 bit wide (Input/Output)
 uint16_t z80_address;  ///<-- Address bus   (Output)
@@ -183,6 +189,21 @@ void z80_dump_reg(){
     printf("   Write buff: 0x%X 0x%X [Index: %d]\n", z80.write_buffer[0], z80.write_buffer[1], z80.write_index);
 }
 
+void z80_dump_stack(void* ram, uint16_t sp, uint16_t base_addr, uint16_t count, uint16_t count_below){
+    count = count & 0xFFFE;
+    count_below = count_below & 0xFFFE;
+    fprintf(stderr, "Stack:\n");
+    for (int i = -(int)count_below; i < count; i += 2){
+        if (i == 0)
+            fprintf(stderr, " SP--> ");
+        else if (i>0)
+            fprintf(stderr, " +% 2d   ", i);
+        else
+            fprintf(stderr, "       ", -i);
+        fprintf(stderr, "0x%04X: 0x%04X\n", sp - base_addr + i, ((uint8_t*)ram)[sp - base_addr + i], ((uint8_t*)ram)[sp - base_addr + i + 1]);
+    }
+}
+
 ///Initialzes the z80 struct
 void z80_init(){
     //Zero the z80 struct.
@@ -197,7 +218,7 @@ void z80_init(){
 */
 void z80_reset_pipeline(){
 #ifndef NDEBUG
-    /*
+    /**/
     char opcode_str[100];
     int disasm_size = 0;
     opcode_str[0] = 0;
@@ -207,6 +228,10 @@ void z80_reset_pipeline(){
     for (int i = 0; i < z80.opcode_index; i++)
         fprintf(stderr, "%02X", z80.opcode[i]);
     fprintf(stderr, "\n");
+    if (Z80_SP != dbg_last_sp){
+        z80_dump_stack(ramdbg_get_mem(), Z80_SP, RAM_BASE_ADDRESS, 8, 4);
+        dbg_last_sp = Z80_SP;
+    }
     assert(disasm_size == z80.opcode_index);
     /**/
 #endif
