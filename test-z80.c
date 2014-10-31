@@ -11,7 +11,7 @@
 int main(int argc, char* argv[]){
     //Redirect stds to files
     *stderr = *fopen("std.err", "w");
-    *stdout = *fopen("std.out", "w");
+    //*stdout = *fopen("std.out", "w");
 
     //Setup Z80
     z80_init(sdsc_write, sdsc_control);
@@ -68,6 +68,6 @@ int main(int argc, char* argv[]){
         z80_tick(); //Cycle 5
     }
     fclose(stderr);
-    fclose(stdout);
+    //fclose(stdout);
     return 0;
 }
