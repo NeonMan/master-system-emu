@@ -36,8 +36,45 @@ int z80_instruction_decode_DD_FD(){
     const uint8_t p[4] = { (z80.opcode[0] >> 4) & 0x3, (z80.opcode[1] >> 4) & 0x3, (z80.opcode[2] >> 4) & 0x3, (z80.opcode[3] >> 4) & 0x3 };
     const uint8_t q[4] = { z80.opcode[0] & (1 << 3), z80.opcode[1] & (1 << 3), z80.opcode[2] & (1 << 3), z80.opcode[3] & (1 << 3) };
 
-    assert(0);
-    return Z80_STAGE_RESET;
+    /* From z80.info.
+     *
+     * "If the next byte is a DD, ED or FD prefix, the current DD prefix is 
+     *  ignored (it's equivalent to a NONI) and processing continues with
+     *  the next byte." <-- This part is done in main decoder function.
+     *
+     * "If the next byte is a CB prefix, the instruction will be decoded as
+     *  stated in section 7, DDCB-prefixed opcodes." <-- DDCB_FDCB decoder.
+     *
+     * "If the next opcode makes use of HL, H, L, but not (HL), any occurrence
+     *  of these will be replaced by IX, IXH, IXL respectively. An exception
+     *  of this is EX DE, HL which is unaffected."
+     *
+     *  For this opcodes, overwritting the register LUT may work.
+     *
+     * "If the next opcode makes use of (HL), it will be replaced by (IX+d), 
+     *  where d is a signed 8-bit displacement immediately following the
+     *  opcode (any immediate data, i.e. n, will follow the displacement byte),
+     *  and any other instances of H and L will be unaffected. Therefore, an
+     *  instruction like LD IXH, (IX+d) does not exist, but LD H, (IX+d) does."
+     *
+     *  This instructions must be decoded here.
+     */
+
+    switch (z80.opcode_index){
+    case 2:
+        if (z80.opcode[1] == 0xCB) //DDCB/FDCB prefix, read one more byte
+            return Z80_STAGE_M1;
+        assert(0); /*unimplemented*/
+        return Z80_STAGE_RESET;
+    case 3:
+        if (z80.opcode[1] == 0xCB) //DDCB/FDCB prefix, call its own decoder.
+            return z80_instruction_decode_DDCB_FDCB();
+        assert(0); /*unimplemented*/
+        return Z80_STAGE_RESET;
+    default:
+        assert(0); /*unimplemented*/
+        return Z80_STAGE_RESET;
+    }
 }
 
 ///Decodes the CB-prefixed opcodes.
@@ -56,7 +93,8 @@ int z80_instruction_decode_CB(){
     case 2:
         switch (x[1]){
         case 0:                                     /*rotation r[z]; Size: 2; Flags: ?*/
-            assert(0); /*Unimplemented*/ return Z80_STAGE_RESET;
+            assert(0); //Unimplemented
+            return Z80_STAGE_RESET;
         case 1:                                /*BIT y,r[z]; Size: 2; Flags: _S,Z,H,_P,N*/
             Z80_F = (Z80_F & (Z80_CLRFLAG_ZERO & Z80_CLRFLAG_ADD)); //Clear Z,N
             Z80_F = Z80_F | ((1 << y[1]) & (*z80_r[z[1]])) ? 0 : Z80_CLRFLAG_ZERO;
