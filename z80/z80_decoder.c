@@ -10,6 +10,17 @@ Decoding Z80 instructions:
 http://www.z80.info/decoding.htm
 */
 
+//Forward declaration of decoder functions
+int z80_instruction_decode();
+
+///Removes prefix byte from opcode
+void z80_instruction_unprefix(){
+    z80.opcode[0] = z80.opcode[1];
+    z80.opcode[1] = z80.opcode[2];
+    z80.opcode[2] = z80.opcode[3];
+    --z80.opcode_index;
+}
+
 ///Decodes DDCB/FDCB prefix opcodes
 ///First two bytes already decoded (0xDDCB/0xFDCB)
 int z80_instruction_decode_DDCB_FDCB(){
@@ -62,13 +73,58 @@ int z80_instruction_decode_DD_FD(){
 
     switch (z80.opcode_index){
     case 2:
+        //---Check xxCB prefix---
         if (z80.opcode[1] == 0xCB) //DDCB/FDCB prefix, read one more byte
             return Z80_STAGE_M1;
+        switch (z80.opcode[1] & (Z80_OPCODE_X_MASK | Z80_OPCODE_Z_MASK)){
+        case Z80_OPCODE_XZ(0, 0): //
+        case Z80_OPCODE_XZ(0, 7): //
+        case Z80_OPCODE_XZ(3, 0): //
+        case Z80_OPCODE_XZ(3, 2): //
+        case Z80_OPCODE_XZ(3, 4): //
+        case Z80_OPCODE_XZ(3, 7): // Unaffected opcodes
+            z80_instruction_unprefix();      //
+            return z80_instruction_decode(); //<-- Remove prefix, execute as a normal opcode
+        case Z80_OPCODE_XZ(0, 1):
+        case Z80_OPCODE_XZ(0, 2):
+        case Z80_OPCODE_XZ(0, 3):
+        case Z80_OPCODE_XZ(0, 4):
+        case Z80_OPCODE_XZ(0, 5):
+        case Z80_OPCODE_XZ(0, 6):
+
+        case Z80_OPCODE_XZ(1, 0):
+        case Z80_OPCODE_XZ(1, 1):
+        case Z80_OPCODE_XZ(1, 2):
+        case Z80_OPCODE_XZ(1, 3):
+        case Z80_OPCODE_XZ(1, 4):
+        case Z80_OPCODE_XZ(1, 5):
+        case Z80_OPCODE_XZ(1, 6):
+        case Z80_OPCODE_XZ(1, 7):
+
+        case Z80_OPCODE_XZ(2, 0):
+        case Z80_OPCODE_XZ(2, 1):
+        case Z80_OPCODE_XZ(2, 2):
+        case Z80_OPCODE_XZ(2, 3):
+        case Z80_OPCODE_XZ(2, 4):
+        case Z80_OPCODE_XZ(2, 5):
+        case Z80_OPCODE_XZ(2, 6):
+        case Z80_OPCODE_XZ(2, 7):
+
+        case Z80_OPCODE_XZ(3, 1):
+        case Z80_OPCODE_XZ(3, 3):
+        case Z80_OPCODE_XZ(3, 5):
+        case Z80_OPCODE_XZ(3, 6):
+            assert(0); //Unimplemented
+            return Z80_STAGE_RESET;
+
+        }
         assert(0); /*unimplemented*/
         return Z80_STAGE_RESET;
     case 3:
+        //---Check xxCB prefix---
         if (z80.opcode[1] == 0xCB) //DDCB/FDCB prefix, call its own decoder.
             return z80_instruction_decode_DDCB_FDCB();
+
         assert(0); /*unimplemented*/
         return Z80_STAGE_RESET;
     default:
