@@ -22,6 +22,12 @@ static const uint8_t z80_parity_lut[256] = {
     1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1
 };
 
+//Stage enumerations
+#define Z80_STAGE_RESET 0
+#define Z80_STAGE_M1 1
+#define Z80_STAGE_M2 2
+#define Z80_STAGE_M3 3
+
 //ALU operations
 #define Z80_ALUOP_ADD 0
 #define Z80_ALUOP_ADC 1
@@ -40,14 +46,6 @@ static const uint8_t z80_parity_lut[256] = {
 #define Z80_OPCODE_X_MASK (3<<6)
 #define Z80_OPCODE_Y_MASK (7<<3)
 #define Z80_OPCODE_Z_MASK (7)
-
-//Little endian
-#define Z80_LITTLE_ENDIAN(X) (*((uint16_t*)X))
-//Big endian
-#define Z80_BIG_ENDIAN(X) ((*((uint8_t*)X)) + (((uint16_t)(*((uint8_t*)(X + 1))))<<8))
-//To host endian
-///@bug use macros to select the correct endianness
-#define Z80_HOST_ENDIAN(X) Z80_LITTLE_ENDIAN(X)
 
 //Register macros. *BEWARE* some macros are endianness sensitive!
 //Little endian (x86) is presumed unless noted otherwise.

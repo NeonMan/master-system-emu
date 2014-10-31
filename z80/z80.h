@@ -2,7 +2,7 @@
  *  @brief The z80 module functions.
  */
 #ifndef __Z80_H
-#define __Z80_h
+#define __Z80_H
 
 #include "z80_externs.h"
 
