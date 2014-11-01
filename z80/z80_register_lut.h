@@ -22,6 +22,20 @@ static uint8_t  const z80_cc_stat[8] = { 0, Z80_FLAG_ZERO, 0, Z80_FLAG_CARRY, 0,
 ///Interrupt mode lookup table
 static int8_t const z80_im[][2] = { { 0, 0 }, { 1, 0 }, { 1, 1 }, { 2, 2 }, { 0, 0 }, { 1, 0 }, { 1, 1 }, { 2, 2 } };
 
-///@bug missing tables: alu, rot, bli
+//IX version
+////Register pairs lookup table
+static uint16_t* const z80_rp_ix[8] = { &Z80_BC, &Z80_DE, &Z80_IX, &Z80_SP, &Z80_BC, &Z80_DE, &Z80_IX, &Z80_SP };
+////Register pairs lookup table (AF option)
+static uint16_t* const z80_rp2_ix[8] = { &Z80_BC, &Z80_DE, &Z80_IX, &Z80_AF, &Z80_BC, &Z80_DE, &Z80_IX, &Z80_AF };
+///Register lookup table
+static uint8_t* const z80_r_ix[8] = { &Z80_B, &Z80_C, &Z80_D, &Z80_E, &Z80_IXH, &Z80_IXL, 0, &Z80_A };
+
+//IY version
+////Register pairs lookup table
+static uint16_t* const z80_rp_iy[8] = { &Z80_BC, &Z80_DE, &Z80_IY, &Z80_SP, &Z80_BC, &Z80_DE, &Z80_IY, &Z80_SP };
+////Register pairs lookup table (AF option)
+static uint16_t* const z80_rp2_iy[8] = { &Z80_BC, &Z80_DE, &Z80_IY, &Z80_AF, &Z80_BC, &Z80_DE, &Z80_IY, &Z80_AF };
+///Register lookup table
+static uint8_t* const z80_r_iy[8] = { &Z80_B, &Z80_C, &Z80_D, &Z80_E, &Z80_IYH, &Z80_IYL, 0, &Z80_A };
 
 #endif
