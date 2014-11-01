@@ -155,6 +155,7 @@ void z80_reset_pipeline(){
         dbg_last_sp = Z80_SP;
     }
     assert(disasm_size == z80.opcode_index);
+    fflush(stderr); /*<-- Program will eventually crash, we want the most info as posible*/
     /**/
 #endif
     z80.opcode_index = 0;

@@ -106,6 +106,12 @@ static const uint8_t z80_parity_lut[256] = {
 #define Z80_SP z80.rSP
 #define Z80_PC z80.rPC
 
+//Index bytes
+#define Z80_IXH (*((uint8_t*)&Z80_IX))
+#define Z80_IXL (*((uint8_t*)(&Z80_IX + 1)))
+#define Z80_IYH (*((uint8_t*)&Z80_IY))
+#define Z80_IYL (*((uint8_t*)(&Z80_IY + 1)))
+
 // --- Flag update macros
 #define Z80_SETFLAG_SIGN(X) (((X) & (1 << 7)) ? (1 << 7) : 0) /**<-- [S] Set sign flag (bit 7)*/
 #define Z80_SETFLAG_ZERO(X) (((X) == 0) ? (1 << 6) : 0) /**<-- [Z] Set Zero flag (bit 6)*/
