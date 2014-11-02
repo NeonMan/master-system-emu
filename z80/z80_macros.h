@@ -100,7 +100,7 @@ static const uint8_t z80_parity_lut[256] = {
 #define Z80_WZ  (*((uint16_t*) z80.rWZ))
 #define Z80_WZp (*((uint16_t*) z80.rWZ + 2))
 
-//IX (endianness insensitive)
+//IX/IY/SP/PC (endianness insensitive)
 #define Z80_IX z80.rIX
 #define Z80_IY z80.rIY
 #define Z80_SP z80.rSP
@@ -111,6 +111,10 @@ static const uint8_t z80_parity_lut[256] = {
 #define Z80_IXL (*((uint8_t*)(&Z80_IX + 1)))
 #define Z80_IYH (*((uint8_t*)&Z80_IY))
 #define Z80_IYL (*((uint8_t*)(&Z80_IY + 1)))
+
+//IX/IY selection macro. IX if param == 0xDD use IX; IY otherwise.
+#define Z80_INDIRECT(PREFIX) (*(PREFIX == 0xDD ? &Z80_IX : &Z80_IY))
+
 
 // --- Flag update macros
 #define Z80_SETFLAG_SIGN(X) (((X) & (1 << 7)) ? (1 << 7) : 0) /**<-- [S] Set sign flag (bit 7)*/

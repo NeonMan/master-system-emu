@@ -150,11 +150,12 @@ void z80_reset_pipeline(){
     for (int i = 0; i < z80.opcode_index; i++)
         fprintf(stderr, "%02X", z80.opcode[i]);
     fprintf(stderr, "\n");
+    if (disasm_size != z80.opcode_index)
+        fprintf(stderr, "Warning: Disasm opcode size mismatch! Dasm: %d; z80: %d\n", disasm_size, z80.opcode_index);
     if (Z80_SP != dbg_last_sp){
         z80_dump_stack(ramdbg_get_mem(), Z80_SP, RAM_BASE_ADDRESS, 12, 4);
         dbg_last_sp = Z80_SP;
     }
-    assert(disasm_size == z80.opcode_index);
     fflush(stderr); /*<-- Program will eventually crash, we want the most info as posible*/
     /**/
 #endif
