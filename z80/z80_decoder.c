@@ -486,17 +486,43 @@ int z80_instruction_decode(){
 
         case Z80_OPCODE_XZ(0, 4):                     /*INC(r[y]); Size: 1; Flags: S,Z,H,V,N*/
         {
-            const uint8_t old_r = *z80_r[y[0]];
-            ++(*(z80_r[y[0]]));
-            Z80_F = (Z80_F & (
-                Z80_CLRFLAG_SIGN & Z80_CLRFLAG_ZERO & Z80_CLRFLAG_HC
-                & Z80_CLRFLAG_PARITY & Z80_CLRFLAG_ADD)
-                )  //Clear S,Z,H,P,N (7,6,4,2,1) ***V0-
-                | Z80_SETFLAG_SIGN(*z80_r[y[0]])
-                | Z80_SETFLAG_ZERO(*z80_r[y[0]])
-                | Z80_SETFLAG_HC(old_r, *z80_r[y[0]])
-                | Z80_SETFLAG_OVERFLOW(old_r, *z80_r[y[0]]);
-            return Z80_STAGE_RESET;
+            if (y[0] == 6){ //INC (HL)
+                //Memory read
+                if (z80.read_index == 0){
+                    z80.read_address = Z80_HL;
+                    return Z80_STAGE_M2;
+                }
+                else if (z80.write_index == 0){
+                    const uint8_t old_r = z80.read_buffer[0];
+                    z80.write_address = Z80_HL;
+                    z80.write_buffer[0] = old_r + 1;
+                    Z80_F = (Z80_F & (
+                        Z80_CLRFLAG_SIGN & Z80_CLRFLAG_ZERO & Z80_CLRFLAG_HC
+                        & Z80_CLRFLAG_PARITY & Z80_CLRFLAG_ADD)
+                        )  //Clear S,Z,H,P,N (7,6,4,2,1) ***V0-
+                        | Z80_SETFLAG_SIGN(old_r + 1)
+                        | Z80_SETFLAG_ZERO(old_r + 1)
+                        | Z80_SETFLAG_HC(old_r, old_r + 1)
+                        | Z80_SETFLAG_OVERFLOW(old_r, old_r + 1);
+                    return Z80_STAGE_M3;
+                }
+                else{
+                    return Z80_STAGE_RESET;
+                }
+            }
+            else{ //INC register
+                uint8_t old_r = *z80_r[y[0]];
+                ++(*(z80_r[y[0]]));
+                Z80_F = (Z80_F & (
+                    Z80_CLRFLAG_SIGN & Z80_CLRFLAG_ZERO & Z80_CLRFLAG_HC
+                    & Z80_CLRFLAG_PARITY & Z80_CLRFLAG_ADD)
+                    )  //Clear S,Z,H,P,N (7,6,4,2,1) ***V0-
+                    | Z80_SETFLAG_SIGN(*z80_r[y[0]])
+                    | Z80_SETFLAG_ZERO(*z80_r[y[0]])
+                    | Z80_SETFLAG_HC(old_r, *z80_r[y[0]])
+                    | Z80_SETFLAG_OVERFLOW(old_r, *z80_r[y[0]]);
+                return Z80_STAGE_RESET;
+            }
         }
         case Z80_OPCODE_XZ(0, 5):                      /*DEC(r[y]); Size:1; Flags: S,Z,H,P,N*/
         {
@@ -1186,8 +1212,19 @@ int z80_instruction_decode(){
                         assert(0); //No opcode reaches this point
                         return Z80_STAGE_RESET;
                     case 2:                              /*LD (nn), HL; size: 3; Flags: None*/
-                        assert(0);
-                        return Z80_STAGE_RESET;
+                        if (z80.write_index == 0){
+                            z80.write_address = *((uint16_t*)(z80.opcode + 1));
+                            z80.write_buffer[0] = Z80_H;
+                            z80.write_buffer[1] = Z80_L;
+                            return Z80_STAGE_M3;
+                        }
+                        else if (z80.write_index == 1){
+                            ++(z80.write_address);
+                            return Z80_STAGE_M3;
+                        }
+                        else{
+                            return Z80_STAGE_RESET;
+                        }
                     case 3:                               /*LD (nn), A; Size: 3; Flags: None*/
                         //Perform the byte write
                         if (z80.write_index == 0){
