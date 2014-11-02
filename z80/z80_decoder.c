@@ -166,8 +166,23 @@ int z80_instruction_decode_DD_FD(){
 
         case Z80_OPCODE_XZ(3, 1):
             if (!q[1]){                                   /*POP rp2[p]; Size: 2; Flags: None*/
-                assert(0);
-                return Z80_STAGE_RESET;
+                //Otherwise, perform the operation as usual
+                if (z80.read_index == 0){
+                    z80.read_address = Z80_SP;
+                    return Z80_STAGE_M2;
+                }
+                else if (z80.read_index == 1){
+                    ++(z80.read_address);
+                    return Z80_STAGE_M2;
+                }
+                else{
+                    Z80_SP += 2;
+                    if (z80.opcode[0] == 0xDD)
+                        *z80_rp2_ix[p[1]] = *((uint16_t*)(z80.read_buffer)); ///<-- @bug Endianness
+                    else
+                        *z80_rp2_iy[p[1]] = *((uint16_t*)(z80.read_buffer)); ///<-- @bug Endianness
+                    return Z80_STAGE_RESET;
+                }
             }
             else{
                 if (p[1] >= 2){                     /*JP HL; LD SP, HL; Size: 2; Flags: None*/
@@ -195,9 +210,26 @@ int z80_instruction_decode_DD_FD(){
             }
 
         case Z80_OPCODE_XZ(3, 5):
-            if (!q[1]){                                  /*PUSH rp2[p]; Size: 2; Flags: None*/
-                assert(0);
-                return Z80_STAGE_RESET;
+            if (!q[1]){
+                if (p[1] == 2){                          /*PUSH aX; Size: 2; Flags: None*/
+                    if (z80.write_index == 0){
+                        z80.write_address = Z80_SP - 2;
+                        *((uint16_t*)z80.write_buffer) = Z80_INDIRECT(z80.opcode[0]); ///<-- @bug Endianness
+                        return Z80_STAGE_M3;
+                    }
+                    else if (z80.write_index == 1){
+                        ++ z80.write_address;
+                        return Z80_STAGE_M3;
+                    }
+                    else{
+                        Z80_SP -= 2;
+                        return Z80_STAGE_RESET;
+                    }
+                }
+                else{
+                    z80_instruction_unprefix();
+                    return z80_instruction_decode();
+                }
             }
             else{                                            /*CALL nn; Size: 4; Flags: None*/
                 return Z80_STAGE_M1; //+2 bytes
