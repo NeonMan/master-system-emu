@@ -444,8 +444,16 @@ int z80_instruction_decode(){
                         return Z80_STAGE_RESET;
                     }
                 }
-                else if (p[0] == 1)                        /*LD (DE),A; Size: 1; Flags: None*/
-                    assert(0); //unimplemented
+                else if (p[0] == 1){                       /*LD (DE),A; Size: 1; Flags: None*/
+                    if (z80.write_index == 0){
+                        z80.write_address = Z80_DE;
+                        z80.write_buffer[0] = Z80_A;
+                        return Z80_STAGE_M3;
+                    }
+                    else{
+                        return Z80_STAGE_RESET;
+                    }
+                }
                 else if (p[0] == 2)                       /*LD (nn),HL; Size: 3; Flags: None*/
                     return Z80_STAGE_M1; //Needs two extra bytes
                 else if (p[0] == 3)                        /*LD (nn),A; Size: 3; Flags: None*/
