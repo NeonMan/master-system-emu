@@ -7,6 +7,10 @@
 #ifndef __IO_EXTERNS_H
 #define __IO_EXTERNS_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 //IO mapper enable bits. Active LOW
 #define IO_EXPANSION_SLOT (1<<7)
 #define IO_CARTRIDGE_SLOT (1<<6)
@@ -18,5 +22,9 @@
 #define IO_UNK0           (1)
 
 extern uint8_t io_stat; ///<-- The exported #CE lines. #MREQ/#IOREQ dependant
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

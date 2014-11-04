@@ -8,6 +8,10 @@
 #include <stdint.h>
 #include "../z80/z80_externs.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
     //Variables
 
     //PSG IO ports.
@@ -59,4 +63,7 @@
     */
     uint8_t make_data(uint8_t data);
 
+#ifdef __cplusplus
+}
+#endif
 #endif

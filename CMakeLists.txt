@@ -1,12 +1,6 @@
 # Main
 cmake_minimum_required (VERSION 2.8)
 
-# --- Uncomment to use clang on linux
-#if (UNIX)
-#    SET (CMAKE_C_COMPILER "/usr/bin/clang")
-#    SET (CMAKE_CXX_COMPILER "/usr/bin/clang++")
-#endif (UNIX)
-
 # --- Explicitly enable C
 enable_language (C)
 

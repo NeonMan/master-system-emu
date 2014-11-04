@@ -8,6 +8,10 @@
 #include <stdint.h>
 #include <stddef.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 //Required Z80 buses and signals
 // Z80 Buses
 extern uint8_t  z80_data;     ///<-- Data bus, 8 bit wide (Input/Output)
@@ -40,5 +44,9 @@ void rom_set_image(uint8_t* data, size_t count);
 //Debug functions
 ///Return a pointer to the whole ROM image.
 void* romdbg_get_rom();
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

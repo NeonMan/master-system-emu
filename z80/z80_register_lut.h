@@ -4,6 +4,10 @@
 #include "z80_macros.h"
 #include "z80.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 extern struct z80_s z80; //<-- Provided by z80.c, must be forward-declared here.
 
 // --- Register lookup tables ---
@@ -39,5 +43,9 @@ static uint16_t* const z80_rp_iy[4] = { &Z80_BC, &Z80_DE, &Z80_IY, &Z80_SP};
 static uint16_t* const z80_rp2_iy[4] = { &Z80_BC, &Z80_DE, &Z80_IY, &Z80_AF};
 ///Register lookup table
 static uint8_t* const z80_r_iy[8] = { &Z80_B, &Z80_C, &Z80_D, &Z80_E, &Z80_IYH, &Z80_IYL, 0, &Z80_A };
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
