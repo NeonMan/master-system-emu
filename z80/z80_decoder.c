@@ -32,6 +32,11 @@ int z80_instruction_decode_DDCB_FDCB(){
     const uint8_t p[4] = { (z80.opcode[0] >> 4) & 0x3, (z80.opcode[1] >> 4) & 0x3, (z80.opcode[2] >> 4) & 0x3, (z80.opcode[3] >> 4) & 0x3 };
     const uint8_t q[4] = { z80.opcode[0] & (1 << 3), z80.opcode[1] & (1 << 3), z80.opcode[2] & (1 << 3), z80.opcode[3] & (1 << 3) };
 
+    //DDCB/FDCB always require an extra 2 bytes.
+    if (z80.opcode_index == 3)
+        return Z80_STAGE_M1;
+
+    //Fourth byte
     assert(0);
     return Z80_STAGE_RESET;
 }
@@ -315,17 +320,10 @@ int z80_instruction_decode_DD_FD(){
                 assert(0);
                 return Z80_STAGE_RESET;
             }
-
-        case Z80_OPCODE_XZ(3, 5):
-            if (q[1]){                                       /*CALL nn; Size: 4; Flags: None*/
-                assert(0);
-                return Z80_STAGE_RESET;
-            }
-            assert(0);
+        default:
+            assert(0); /*unimplemented*/
             return Z80_STAGE_RESET;
         }
-        assert(0); /*unimplemented*/
-        return Z80_STAGE_RESET;
 
     default:
         assert(0); /*unimplemented*/
@@ -715,7 +713,25 @@ int z80_instruction_decode(){
             }
 
         case Z80_OPCODE_XZ(3, 0):                          /*RET cc[y]; Size: 1; Flags: None*/
-            assert(0); /*Unimplemented*/ return Z80_STAGE_RESET;
+            if ((Z80_F & z80_cc[y[0]]) == z80_cc_stat[y[0]]){
+                //POP stack, update PC
+                if (z80.read_index == 0){
+                    z80.read_address = Z80_SP;
+                    return Z80_STAGE_M2;
+                }
+                else if (z80.read_index == 1){
+                    ++(z80.read_address);
+                    return Z80_STAGE_M2;
+                }
+                else{
+                    Z80_PC = *((uint16_t*)(z80.read_buffer));
+                    Z80_SP += 2;
+                    return Z80_STAGE_RESET;
+                }
+            }
+            else{
+                return Z80_STAGE_RESET;
+            }
 
         case Z80_OPCODE_XZ(3, 1):
             if (!q[0]){                                   /*POP rp2[p]; Size: 1; Flags: None*/
@@ -970,13 +986,20 @@ int z80_instruction_decode(){
             case Z80_OPCODE_XZ(2, 3): /*BLOCK(y,z)*/
                 switch (z80.opcode[1] & (Z80_OPCODE_Y_MASK | Z80_OPCODE_Z_MASK)){
                 case Z80_OPCODE_YZ(4, 0):
+                    assert(0);
                 case Z80_OPCODE_YZ(4, 1):
+                    assert(0);
                 case Z80_OPCODE_YZ(4, 2):
+                    assert(0);
                 case Z80_OPCODE_YZ(4, 3):
+                    assert(0);
 
                 case Z80_OPCODE_YZ(5, 0):
+                    assert(0);
                 case Z80_OPCODE_YZ(5, 1):
+                    assert(0);
                 case Z80_OPCODE_YZ(5, 2):
+                    assert(0);
                 case Z80_OPCODE_YZ(5, 3):
                     assert(0);
                     return Z80_STAGE_RESET;
@@ -1013,12 +1036,18 @@ int z80_instruction_decode(){
                     }
 
                 case Z80_OPCODE_YZ(6, 1):
+                    assert(0);
                 case Z80_OPCODE_YZ(6, 2):
+                    assert(0);
                 case Z80_OPCODE_YZ(6, 3):
+                    assert(0);
 
                 case Z80_OPCODE_YZ(7, 0):
+                    assert(0);
                 case Z80_OPCODE_YZ(7, 1):
+                    assert(0);
                 case Z80_OPCODE_YZ(7, 2):
+                    assert(0);
                 case Z80_OPCODE_YZ(7, 3):
                     assert(0);
                     return Z80_STAGE_RESET;

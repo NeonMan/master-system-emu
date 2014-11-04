@@ -10,7 +10,7 @@
 
 int main(int argc, char* argv[]){
     //Redirect stds to files
-    *stderr = *fopen("std.err", "w");
+    //*stderr = *fopen("std.err", "w");
     //*stdout = *fopen("std.out", "w");
 
     //Setup Z80
@@ -22,8 +22,8 @@ int main(int argc, char* argv[]){
     //If Try loading a rom. zexdoc_sdsc.sms
     {
         FILE* in_f = 0;
-        in_f = fopen("zexdoc_sdsc.sms", "rb");
-        //in_f = fopen("sdsc-hello.bin", "rb");
+        //in_f = fopen("zexdoc_sdsc.sms", "rb");
+        in_f = fopen("SDI.sms", "rb");
         if (in_f){
             fread(full_rom, 1, ROM_MAX_SIZE, in_f);
             fclose(in_f);
@@ -67,7 +67,7 @@ int main(int argc, char* argv[]){
         rom_tick();
         z80_tick(); //Cycle 5
     }
-    fclose(stderr);
+    //fclose(stderr);
     //fclose(stdout);
     return 0;
 }
