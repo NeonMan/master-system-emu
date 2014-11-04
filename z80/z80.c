@@ -119,7 +119,7 @@ void z80_dump_stack(void* ram, uint16_t sp, uint16_t base_addr, uint16_t count, 
             fprintf(stderr, " +%02d   ", i);
         else
             fprintf(stderr, "       ");
-        fprintf(stderr, "0x%04X: 0x%04X\n", sp - base_addr + i, ((uint8_t*)ram)[sp - base_addr + i], ((uint8_t*)ram)[sp - base_addr + i + 1]);
+        fprintf(stderr, "0x%04X: 0x%02X%02X\n", sp - base_addr + i, ((uint8_t*)ram)[sp - base_addr + i + 1], ((uint8_t*)ram)[sp - base_addr + i]);
     }
 }
 
@@ -146,17 +146,17 @@ void z80_reset_pipeline(){
     opcode_str[0] = 0;
     if (z80.opcode_index) //There must be something to feed the disasm
         disasm_size = z80d_decode(z80.opcode, 100, opcode_str);
+    if (Z80_SP != dbg_last_sp){
+        z80_dump_stack(ramdbg_get_mem(), Z80_SP, RAM_BASE_ADDRESS, 12, 4);
+        dbg_last_sp = Z80_SP;
+    }
     fprintf(stderr, "Last Opcode: (nx PC:0x%04X) %s; 0x", Z80_PC, opcode_str);
     for (int i = 0; i < z80.opcode_index; i++)
         fprintf(stderr, "%02X", z80.opcode[i]);
     fprintf(stderr, "\n");
     if (disasm_size != z80.opcode_index)
         fprintf(stderr, "Warning: Disasm opcode size mismatch! Dasm: %d; z80: %d\n", disasm_size, z80.opcode_index);
-    if (Z80_SP != dbg_last_sp){
-        z80_dump_stack(ramdbg_get_mem(), Z80_SP, RAM_BASE_ADDRESS, 12, 4);
-        dbg_last_sp = Z80_SP;
-    }
-    fflush(stderr); /*<-- Program will eventually crash, we want the most info as posible*/
+    fflush(stderr);
     /**/
 #endif
     z80.opcode_index = 0;

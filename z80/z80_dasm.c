@@ -405,9 +405,9 @@ int z80d_decode(uint8_t* opcode, unsigned int size, char* result){
         }
         else{
             if (p[0] == 0) { sprintf(tmp_str, "CALL 0x%04X", nn); rv = 3;  }
-            else if (p[0] == 1) { sprintf(tmp_str, "!!DD!!"); rv = 1; }
-            else if (p[0] == 2) { rv = z80d_decode_ED(opcode, 100, tmp_str); }
-            else if (p[0] == 3) { sprintf(tmp_str, "!!FD!!"); rv = 1; }
+            else if (p[0] == 1) { sprintf(tmp_str, "!!DD!!"); rv = 2; }
+            else if (p[0] == 2) { rv = z80d_decode_ED(opcode, 100, tmp_str); } /*0xED prefix*/
+            else if (p[0] == 3) { sprintf(tmp_str, "!!FD!!"); rv = 2; }
         }
         break;
 
