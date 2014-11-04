@@ -1,6 +1,10 @@
 #ifndef __Z80_MACROS_H
 #define __Z80_MACROS_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 //Data needed for macros
 ///Parity LUT.
 static const uint8_t z80_parity_lut[256] = {
@@ -147,5 +151,8 @@ static const uint8_t z80_parity_lut[256] = {
 #define Z80_CLRFLAG_ADD    (Z80_FLAG_ADD    ^ 0xFF)
 #define Z80_CLRFLAG_CARRY  (Z80_FLAG_CARRY  ^ 0xFF)
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif

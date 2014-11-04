@@ -8,6 +8,14 @@
 #include "io_externs.h"
 #include "../z80/z80_externs.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 void io_tick(); ///<-- Updates the IO chip state.
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

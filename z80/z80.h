@@ -6,6 +6,10 @@
 
 #include "z80_externs.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 //Types
 
 ///z80 internal state structure
@@ -59,5 +63,9 @@ struct z80_s {
 
 void z80_tick();
 void z80_init(void(*data_f) (uint8_t), void(*ctrl_f) (uint8_t));
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

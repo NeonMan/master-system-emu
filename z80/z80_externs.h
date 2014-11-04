@@ -7,6 +7,11 @@
 #define __Z80_EXTERNS_H
 
 #include <stdint.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 // Z80 Buses
 extern uint8_t  z80_data;     ///<-- Data bus, 8 bit wide (Input/Output)
 extern uint16_t z80_address;  ///<-- Address bus   (Output)
@@ -28,5 +33,9 @@ extern uint8_t  z80_n_wait;  ///<-- !Wait (Input)
 // Z80 to-be-documented signals
 extern uint8_t  z80_n_busreq; ///<-- !Bus request (???)
 extern uint8_t  z80_n_busack; ///<-- !Bus-acknowledge (???)
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

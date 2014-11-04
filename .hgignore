@@ -1,8 +1,8 @@
 syntax: regexp
 
 #Directories
-Build\/
-build\/
+^Build
+^build
 Debug\/
 Release\/
 CMakeFiles\/
