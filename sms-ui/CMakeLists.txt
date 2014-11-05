@@ -26,7 +26,10 @@ QT5_ADD_RESOURCES (ResourceSources ${Resources})
 # Tell CMake to create the helloworld executable
 add_executable(sms-ui main.cpp romwrapper.cpp ${ResourceSources})
 
-# Use the Widgets module from Qt 5.
+# Required Qt5 modules
 qt5_use_modules(sms-ui Widgets)
 qt5_use_modules(sms-ui Quick)
 qt5_use_modules(sms-ui Qml)
+
+# External libraries
+target_link_libraries (sms-ui rom io ram z80 psg peripherial sdsc vdp)
