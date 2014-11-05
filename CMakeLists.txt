@@ -1,5 +1,5 @@
 # Main
-cmake_minimum_required (VERSION 2.8)
+cmake_minimum_required (VERSION 2.8.11)
 
 # --- Explicitly enable C
 enable_language (C)
@@ -46,7 +46,8 @@ add_subdirectory (vdp)
 # --- SDSC console
 include_directories ("${PROJECT_SOURCE_DIR}/sdsc")
 add_subdirectory (sdsc)
-
+# --- Qt5 GUI
+add_subdirectory(sms-ui)
 
 # Z80 assembler tests are only compiled on unix
 if (UNIX)
