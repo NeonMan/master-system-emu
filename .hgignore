@@ -25,6 +25,7 @@ doxygen\/
 \.wav$
 \.bin$
 \.sms$
+\.user$
 
 #Other
 Makefile$
@@ -37,4 +38,3 @@ CMakeCache.txt
 #Executables
 psg-play
 test-mem
-
