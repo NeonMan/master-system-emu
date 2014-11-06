@@ -2,15 +2,7 @@
 project(sms-ui)
 
 # --- Qt5 ---
-#Kit: MSVC 2013 kit
-set(CMAKE_PREFIX_PATH "C:\\Qt\\5.3\\msvc2013")
-#Kit: MSVC 2013 OpenGL
-#set(CMAKE_PREFIX_PATH "C:\\Qt\\5.3\\msvc2013_opengl")
-#Kit: Mingw 482
-#set(CMAKE_PREFIX_PATH "C:\\Qt\\5.3\\mingw482_32")
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
-
-# Run automoc
 set(CMAKE_AUTOMOC ON)
 
 # Requred QT packages
