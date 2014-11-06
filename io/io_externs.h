@@ -7,6 +7,8 @@
 #ifndef __IO_EXTERNS_H
 #define __IO_EXTERNS_H
 
+#include <stdint.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif

@@ -32,4 +32,4 @@ qt5_use_modules(sms-ui Quick)
 qt5_use_modules(sms-ui Qml)
 
 # External libraries
-target_link_libraries (sms-ui rom io ram z80 psg peripherial sdsc vdp)
+target_link_libraries (sms-ui smsrom smsio smsram z80 psg peripherial sdsc vdp)

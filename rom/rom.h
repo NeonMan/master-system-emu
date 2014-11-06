@@ -7,15 +7,11 @@
 
 #include <stdint.h>
 #include <stddef.h>
+#include "../z80/z80_externs.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-//Required Z80 buses and signals
-// Z80 Buses
-extern uint8_t  z80_data;     ///<-- Data bus, 8 bit wide (Input/Output)
-extern uint16_t z80_address;  ///<-- Address bus   (Output)
 
 //Constants
 #define ROM_MAX_SIZE (1024*1024*4) /**<-- Largest possible rom is 4M. */
@@ -44,6 +40,8 @@ void rom_set_image(uint8_t* data, size_t count);
 //Debug functions
 ///Return a pointer to the whole ROM image.
 void* romdbg_get_rom();
+///Return the mapper status
+uint8_t romdbg_get_slot(uint8_t slot);
 
 #ifdef __cplusplus
 }

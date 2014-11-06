@@ -62,7 +62,7 @@ add_executable (psg-play psg-play.c)
 target_link_libraries (psg-play psg)
 # --- test-mem
 add_executable (test-mem test-mem.c)
-target_link_libraries (test-mem rom io ram)
+target_link_libraries (test-mem smsrom smsio smsram)
 # --- test-z80
 add_executable (test-z80 test-z80.c)
-target_link_libraries (test-z80 z80 rom ram sdsc)
+target_link_libraries (test-z80 z80 smsrom smsram sdsc)
