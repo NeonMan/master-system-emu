@@ -1,3 +1,3 @@
 #IO chip
-project(io)
-add_library(io io.c)
+project(smsio)
+add_library(smsio io.c)

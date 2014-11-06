@@ -2,6 +2,7 @@ import QtQuick 2.3
 import QtQuick.Controls 1.2
 import QtQuick.Window 2.2
 import QtQuick.Layouts 1.1
+import emu.rom.Test 1.0 as RomTest
 
 Item {
     anchors.fill: parent

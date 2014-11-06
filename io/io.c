@@ -7,6 +7,8 @@
  */
 
 #include "io.h"
+#include "io_externs.h"
+#include <stdint.h>
 
 uint8_t io_stat = 0xFF;
 uint8_t io_reg  = 0;    ///<-- Internal mapper register

@@ -1,3 +1,3 @@
 # ROM
-project(rom)
-add_library(rom rom.c)
+project(smsrom)
+add_library(smsrom rom.c)
