@@ -16,7 +16,7 @@ file (GLOB Resources *.qrc)
 QT5_ADD_RESOURCES (ResourceSources ${Resources})
 
 # Tell CMake to create the helloworld executable
-add_executable(sms-ui main.cpp romwrapper.cpp ${ResourceSources})
+add_executable(sms-ui main.cpp emuthread.cpp ${ResourceSources})
 
 # Required Qt5 modules
 qt5_use_modules(sms-ui Widgets)
