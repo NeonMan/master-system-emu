@@ -3,9 +3,7 @@ TEMPLATE = app
 QT += qml quick widgets
 
 SOURCES += main.cpp \
-    romwrapper.cpp \
-    iowrapper.cpp \
-    z80wrapper.cpp
+    emuthread.cpp
 
 RESOURCES += qml.qrc
 
@@ -24,6 +22,4 @@ QML_IMPORT_PATH =
 include(deployment.pri)
 
 HEADERS += \
-    romwrapper.h \
-    iowrapper.h \
-    z80wrapper.h
+    emuthread.h
