@@ -489,3 +489,8 @@ void z80_tick(){
         assert(0); //<-- Should never get here
     }
 }
+
+// ---  Debug functions ---
+struct z80_s* z80dbg_get_z80(){
+    return &z80;
+}

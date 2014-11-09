@@ -4,6 +4,9 @@
 #ifndef __Z80_H
 #define __Z80_H
 
+#define Z80_CLOCK_NTSC  (3579545) /*<-- PSG clock (pal NTSC version)*/
+#define Z80_CLOCK_PAL (3546893) /*<-- PSG clock (pal PAL version)*/
+
 #include "z80_externs.h"
 
 #ifdef __cplusplus
@@ -63,6 +66,9 @@ struct z80_s {
 
 void z80_tick();
 void z80_init(void(*data_f) (uint8_t), void(*ctrl_f) (uint8_t));
+
+//Debug functions
+struct z80_s* z80dbg_get_z80();
 
 #ifdef __cplusplus
 }

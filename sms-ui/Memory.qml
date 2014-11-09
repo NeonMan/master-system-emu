@@ -2,14 +2,13 @@ import QtQuick 2.3
 import QtQuick.Controls 1.2
 import QtQuick.Window 2.2
 import QtQuick.Layouts 1.1
-import emu.rom.Test 1.0 as RomTest
+import QtQuick.Dialogs 1.2
+
+//Custom types
+//import Mastersystem 1.0
 
 Item {
-    anchors.fill: parent
-
     ColumnLayout{
-        //Layout.fillHeight: true
-        //Layout.fillWidth: true
         anchors.fill: parent
 
         TextArea{
@@ -48,7 +47,8 @@ Item {
             }
             TextField{
                 Layout.maximumWidth: 50
-                text: "0x00"
+                enabled: false
+                text: "0"
             }
 
             Label{
@@ -56,7 +56,8 @@ Item {
             }
             TextField{
                 Layout.maximumWidth: 50
-                text: "0x01"
+                enabled: false
+                text: "1"
             }
 
             Label{
@@ -64,7 +65,8 @@ Item {
             }
             TextField{
                 Layout.maximumWidth: 50
-                text: "0x02"
+                enabled: false
+                text: "2"
             }
         }
     }
