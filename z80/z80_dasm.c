@@ -428,3 +428,12 @@ int z80d_decode(uint8_t* opcode, unsigned int size, char* result){
     strncpy(result, tmp_str, size - 1);
     return rv;
 }
+
+z80d_opcode z80d_decode_op(uint8_t* opcode, uint16_t pc_addr){
+    z80d_opcode rv;
+    rv.address = pc_addr;
+    rv.next = 0;
+    memcpy(rv.opcode, opcode, 4);
+    rv.size = z80d_decode(opcode, sizeof(rv.opcode_str), rv.opcode_str);
+    return rv;
+}
