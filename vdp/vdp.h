@@ -15,6 +15,9 @@ struct vdp_s {
     uint8_t vram[16 * 1024]; ///<-- VRAM, 16K
     uint8_t v; ///<-- V counter
     uint8_t h; ///<-- H counter
+
+    uint8_t address[2]; ///<-- Address register (14bit)
+    uint8_t regs[16]; ///<-- Registers. Regs 11 to 15 have no effect.
 };
 
 void vdp_tick();
