@@ -66,3 +66,6 @@ target_link_libraries (test-mem smsrom smsio smsram)
 # --- test-z80
 add_executable (test-z80 test-z80.c)
 target_link_libraries (test-z80 z80 smsrom smsram sdsc)
+# --- test-vdp (SDL2 is presumed to be available)
+add_executable (test-vdp test-vdp.c)
+target_link_libraries (test-vdp vdp SDL2 SDL2main)

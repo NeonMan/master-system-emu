@@ -1,4 +1,5 @@
 #include "vdp.h"
+#include "vdp_constants.h"
 #include <string.h>
 #include <assert.h>
 
@@ -46,7 +47,18 @@ void vdp_data_write(){
 }
 
 void vdp_init(){
+    //Clear the VDP struct
     memset(&vdp, 0, sizeof(struct vdp_s));
+    ///@bug set the real initial VDP state. If known.
+}
+
+vdp_pixels vdp_mode0_pixels(){
+
+}
+
+vdp_pixels vdp_get_pixels(){
+    vdp_pixels rv = { 0, 0 };
+    return rv;
 }
 
 void vdp_io(){
