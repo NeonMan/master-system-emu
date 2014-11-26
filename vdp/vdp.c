@@ -5,6 +5,16 @@
 
 struct vdp_s vdp;
 
+void* vdp_mode0_pixels(){
+
+
+    return (void*)vdp.framebuffer;
+}
+
+void* vdp_get_pixels(){
+    return (void*)vdp.framebuffer;
+}
+
 void vdp_control_write(){
 	//First control word byte
 	if (vdp.control_index == 0){
@@ -34,14 +44,17 @@ void vdp_control_write(){
 }
 
 void vdp_control_read(){
+    vdp.control_index = 0;
 	z80_data = vdp.status;
 }
 
 void vdp_data_read(){
+    vdp.control_index = 0;
 	assert(0); //<-- Unimplemented
 }
 
 void vdp_data_write(){
+    vdp.control_index = 0;
 	assert(0); //<-- Unimplemented
 }
 
@@ -49,14 +62,6 @@ void vdp_init(){
     //Clear the VDP struct
     memset(&vdp, 0, sizeof(struct vdp_s));
     ///@bug set the real initial VDP state. If known.
-}
-
-void* vdp_mode0_pixels(){
-    return 0;
-}
-
-void* vdp_get_pixels(){
-    return 0;
 }
 
 void vdp_io(){

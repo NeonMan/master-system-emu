@@ -1,6 +1,7 @@
 #include <SDL/SDL.h>
 #include <SDL/SDL_version.h>
 #include <stdio.h>
+#include "vdp/vdp.h"
 #include "vdp/vdp_constants.h"
 
 int main(int argc, char** argv){
@@ -20,8 +21,8 @@ int main(int argc, char** argv){
     for (int x = 0; x < 4; x++){
         for (int y = 0; y < 4; y++){
             SDL_Rect video_area; 
-            video_area.x = 32 + (256 / 4) * x;
-            video_area.y = 32 + (192 / 4) * y;
+            video_area.x = 32 + ((256 / 4) * x);
+            video_area.y = 32 + ((192 / 4) * y);
             video_area.w = 256/4; 
             video_area.h = 192/4;
             SDL_FillRect(screen, &video_area, vdp_tmscolors[(4*y) + x] );
