@@ -22,10 +22,27 @@
 #define VDP_REG_BKG_PATTERN_ADDR 4
 #define VDP_REG_SPR_ATTRIBUTE_ADDR 5
 #define VDP_REG_SPR_PATTERN_ADDR 6
-#define VDP_REG_OVERSCAN_COLOR 7
+#define VDP_REG_TEXT_COLOR 7
 #define VDP_REG_BKG_X_SCROLL 8
 #define VDP_REG_BKG_Y_SCROLL 9
 #define VDP_REG_LINE_COUNTER 10
+
+//Status register flags and values
+#define VDP_STAT_INT (vdp.status & (1<<7))
+#define VDP_STAT_5S (vdp.status & (1<<6))
+#define VDP_STAT_C (vdp.status & (1<<5))
+#define VDP_STAT_FS (vdp.status & (7<<5)) /*Lower 5 bits*/
+
+//Register flags
+#define VDP_FLAG_EXTVID (vdp.regs[0] & 1)
+#define VDP_FLAG_M2 (vdp.regs[0] & (1<<1))
+#define VDP_FLAG_4_16K (vdp.regs[1] & (1<<7))
+#define VDP_FLAG_BL (vdp.regs[1] & (1<<6))
+#define VDP_FLAG_GINT (vdp.regs[1] & (1<<5))
+#define VDP_FLAG_M1 (vdp.regs[1] & (1<<4))
+#define VDP_FLAG_M3 (vdp.regs[1] & (1<<3))
+#define VDP_FLAG_SI (vdp.regs[1] & (1<<1))
+#define VDP_FLAG_MAG (vdp.regs[1] & (1<<0))
 
 #ifdef __cplusplus
 //extern "C" {
@@ -43,9 +60,11 @@ struct vdp_s {
     uint16_t address; ///<-- Address register (14bit)
     uint8_t regs[16]; ///<-- Registers. Regs 11 to 15 have no effect.
 
-	uint8_t control_word[2]; //<-- Stores the current control word
-	uint8_t control_index; //<-- Which control word byte are we expecting [0,1]
+	uint8_t control_word[2]; ///<-- Stores the current control word
+	uint8_t control_index; ///<-- Which control word byte are we expecting [0,1]
 	uint8_t control_mode;
+
+    uint8_t framebuffer[256 * 192]; ///<-- Current picture being displayed
 };
 
 ///executes the minimum relevant period of time.
