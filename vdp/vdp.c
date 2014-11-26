@@ -52,13 +52,12 @@ void vdp_init(){
     ///@bug set the real initial VDP state. If known.
 }
 
-vdp_pixels vdp_mode0_pixels(){
+void* vdp_mode0_pixels(){
 
 }
 
-vdp_pixels vdp_get_pixels(){
-    vdp_pixels rv = { 0, 0 };
-    return rv;
+void* vdp_get_pixels(){
+    return 0;
 }
 
 void vdp_io(){
