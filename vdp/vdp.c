@@ -30,7 +30,6 @@ void vdp_control_write(){
 	case VDP_CTRL_REGISTER:
 		vdp.regs[vdp.control_word[1] & 0x0F] = vdp.control_word[0];
 		break;
-	default:
 	}
 }
 
@@ -53,7 +52,7 @@ void vdp_init(){
 }
 
 void* vdp_mode0_pixels(){
-
+    return 0;
 }
 
 void* vdp_get_pixels(){
