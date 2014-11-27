@@ -82,6 +82,14 @@ void vdp_init(){
 void vdp_io(){
     //Check the IO ports (Address/data/IOreq)
 
+    //If internal ioreq is active, we prevent a spurious IO
+    //Reset if z80 ioreq is up
+    if (vdp.ioreq_done){
+        if (z80_n_ioreq)
+            vdp.ioreq_done = 0;
+        return;
+    }
+
     //If not IO, just return
     if (z80_n_ioreq)
         return;
@@ -92,11 +100,13 @@ void vdp_io(){
     case ((1 << 6) | 1) : //Odd address H counter (read)
         if (z80_n_rd) //Only allow reads
             return;
+        vdp.ioreq_done = 1; //<-- Set internal IO to prevent spurious IO
         z80_data = vdp.h;
         return;
     case ((1 << 6) | 0) : //Even address V counter (read)
         if (z80_n_rd) //Only allow reads
             return;
+        vdp.ioreq_done = 1; //<-- Set internal IO to prevent spurious IO
         z80_data = vdp.regs[VDP_REG_LINE_COUNTER];
         return;
     // --- If Address' bit 7 is set and 6 is not. Address is in range [0x80-0xBF]
@@ -107,6 +117,7 @@ void vdp_io(){
 		else if (!z80_n_wr){ //Control port writes
 			vdp_control_write();
 		}
+        vdp.ioreq_done = 1; //<-- Set internal IO to prevent spurious IO
         return;
     case ((1 << 7) | 0) : //Even address is data port
 		if (!z80_n_rd){ //Data port read
@@ -115,6 +126,7 @@ void vdp_io(){
 		else if (!z80_n_wr){ //Data port writes
 			vdp_data_write();
 		}
+        vdp.ioreq_done = 1; //<-- Set internal IO to prevent spurious IO
         return;
     // --- Otherwise, ignore.
     default:
