@@ -10,18 +10,18 @@
 #define VDP_HEIGHT_PIXELS 192
 #define VDP_FRAMEBUFFER_SIZE (256 * 192)
 
-// --- Mode 0 ---
+// --- Mode 0 constants ---
 #define VDP_MODE0_ROWS 24
 #define VDP_MODE0_COLS 32
 #define VDP_MODE0_PATTERN_SIZE 8
 
 // --- Addressing offsets ---
 //Address registers are multiplied by a constant to get the effective address in VRAM
-#define VDP_NAME_TABLE_SIZE  0x400             /*From TMS9918 datasheet 2.2.3*/
-#define VDP_COLOR_TABLE_SIZE 0x40              /**/
-#define VDP_PATTERN_GENERATOR_TABLE_SIZE 0x800 /**/
-#define VDP_SPRITE_ATTR_TABLE_SIZE 0x80        /**/
-#define VDP_SPRITE_GENERATOR_TABLE_SIZE 0x800  /**/
+#define VDP_NAME_TABLE_SIZE              0x400 /*From TMS9918 datasheet 2.2.3*/
+#define VDP_COLOR_TABLE_SIZE             0x40  /*    "    */
+#define VDP_PATTERN_GENERATOR_TABLE_SIZE 0x800 /*    "    */
+#define VDP_SPRITE_ATTR_TABLE_SIZE       0x80  /*    "    */
+#define VDP_SPRITE_GENERATOR_TABLE_SIZE  0x800 /*    "    */
 
 // --- VDP Colors ---
 #define VDP_COLOR_RGBA(R,G,B,A) ((uint32_t)((A<<24)+(R<<16)+(G<<8)+B))
@@ -47,7 +47,7 @@
 #define VDP_COLOR_GRAY    VDP_COLOR_RGB(204, 204, 204)
 #define VDP_COLOR_WHITE   VDP_COLOR_RGB(255, 255, 255)
 
-uint32_t vdp_tmscolors[16] = {
+static uint32_t vdp_tmscolors[16] = {
     VDP_COLOR_NONE, VDP_COLOR_BLACK, VDP_COLOR_MGREEN, VDP_COLOR_LGREEN,
     VDP_COLOR_DBLUE, VDP_COLOR_LBLUE, VDP_COLOR_DRED, VDP_COLOR_CYAN,
     VDP_COLOR_MRED, VDP_COLOR_LRED, VDP_COLOR_DYELLOW, VDP_COLOR_LYELLOW,

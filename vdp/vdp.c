@@ -46,16 +46,24 @@ void* vdp_mode0_pixels(){
 
         // --- Write the result ---
         const uint8_t pattern_row_byte = vdp.vram[generator_addr + (char_name * VDP_MODE0_PATTERN_SIZE) + pattern_row];
-        if (pattern_row_byte & (1 << pattern_col))
+        if (pattern_row_byte & (1 << pattern_col)){
             vdp.framebuffer[x + (y * VDP_WIDTH_PIXELS)] = fg_color;
-        else
+            vdp.argb_framebuffer[x + (y * VDP_WIDTH_PIXELS)] = vdp_tmscolors[fg_color % 16];
+        }
+        else{
             vdp.framebuffer[x + (y * VDP_WIDTH_PIXELS)] = bg_color;
+            vdp.argb_framebuffer[x + (y * VDP_WIDTH_PIXELS)] = vdp_tmscolors[bg_color % 16];
+        }
     }
     return (void*)vdp.framebuffer;
 }
 
 void* vdp_get_pixels(){
-    return (void*)vdp.framebuffer;
+    return vdp_mode0_pixels();
+}
+
+void* vdp_get_pallette(){
+    return (void*)vdp.cram;
 }
 
 void vdp_control_write(){
