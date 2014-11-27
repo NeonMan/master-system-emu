@@ -5,8 +5,8 @@
 
 struct vdp_s vdp;
 
+//Fill the framebuffer as if the VDP is configured in Mode 0
 void* vdp_mode0_pixels(){
-
 
     return (void*)vdp.framebuffer;
 }
@@ -50,12 +50,27 @@ void vdp_control_read(){
 
 void vdp_data_read(){
     vdp.control_index = 0;
-	assert(0); //<-- Unimplemented
+    z80_data = vdp.buffer;
+    vdp.address = (vdp.address + 1) % VDP_VRAM_SIZE;
+    vdp.buffer = vdp.vram[vdp.address];
 }
 
 void vdp_data_write(){
     vdp.control_index = 0;
-	assert(0); //<-- Unimplemented
+    vdp.buffer = z80_data;
+    switch (vdp.control_mode){
+    case VDP_CTRL_REGISTER:
+    case VDP_CTRL_VRAM_READ:
+    case VDP_CTRL_VRAM_WRITE:
+        //Writes go to VRAM
+        vdp.vram[vdp.address] = vdp.buffer;
+        break;
+    case VDP_CTRL_CRAM:
+        //Writes go to CRAM
+        vdp.cram[vdp.address % 32];
+        break;
+    }
+    vdp.address = (vdp.address + 1) % VDP_VRAM_SIZE;
 }
 
 void vdp_init(){
