@@ -50,6 +50,10 @@
 
 //Types
 struct vdp_s {
+    //IO status (prevents spurious writes)
+    uint8_t ioreq_done;
+
+    //Ram, registers and stuff
     uint8_t cram[32]; ///<-- Color RAM, 32 bytes
     uint8_t vram[16 * 1024]; ///<-- VRAM, 16K
     //uint8_t v; ///<-- V counter (Register #10)
