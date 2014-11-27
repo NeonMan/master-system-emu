@@ -88,5 +88,5 @@ int main(int argc, char *argv[]) {
     fclose(out_f);
     time_t end_time;
     time(&end_time);
-    fprintf(stderr, "\r\n\r\n%lu samples in %ld ms\r\n\r\n", sample_count, end_time - init_time);
+    fprintf(stderr, "\r\n\r\n%lu samples in %ld ms\r\n\r\n", sample_count, (int)(end_time - init_time));
 }

@@ -18,6 +18,7 @@ rem set CMAKE_PREFIX_PATH=C:\Qt\5.3\msvc2013_opengl
 rem Mingw 482
 rem set CMAKE_PREFIX_PATH=C:\Qt\5.3\mingw482_32
 
+md build
 cd build
 cmake ..
 

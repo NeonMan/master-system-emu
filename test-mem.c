@@ -1,6 +1,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <assert.h>
 #include "z80/fake_z80.h"
 #include "rom/rom.h"
 #include "io/io.h"
@@ -33,6 +34,7 @@ void write_byte(uint16_t addr, uint8_t b){
 int main(int argc, char**argv){
 
     uint8_t* full_rom = (uint8_t*) malloc(ROM_MAX_SIZE);
+    assert(full_rom);
 
     //Initialize the full rom
     for (int i = 0; i < ROM_MAX_SIZE; i++){
