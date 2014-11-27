@@ -3,6 +3,9 @@
 
 #include <stdint.h>
 
+// --- Sizes ---
+#define VDP_VRAM_SIZE 0x4000
+
 // --- VDP Colors ---
 #define VDP_COLOR_RGBA(R,G,B,A) ((uint32_t)((A<<24)+(R<<16)+(G<<8)+B))
 #define VDP_COLOR_RGB(R,G,B) VDP_COLOR_RGBA(R,G,B,255)
