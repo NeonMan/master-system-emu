@@ -60,7 +60,7 @@ int z80_stage_m3(uint8_t noexec);
 ///Prints the z80 registers to stdout
 void z80_dump_reg(){
     printf("General purpose registers\n");
-    printf("   IR: 0x%X%r\n", Z80_I, Z80_R);
+    printf("   IR: 0x%X %Xr\n", Z80_I, Z80_R);
     printf("   AF: 0x%X  AF': 0x%X\n", Z80_AF, Z80_AFp);
     printf("   BC: 0x%X  BC': 0x%X\n", Z80_BC, Z80_BCp);
     printf("   DE: 0x%X  DE': 0x%X\n", Z80_DE, Z80_DEp);

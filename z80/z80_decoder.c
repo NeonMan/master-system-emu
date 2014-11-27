@@ -351,7 +351,7 @@ int z80_instruction_decode_CB(){
             return Z80_STAGE_RESET;
         case 1:                                /*BIT y,r[z]; Size: 2; Flags: _S,Z,H,_P,N*/
             Z80_F = (Z80_F & (Z80_CLRFLAG_ZERO & Z80_CLRFLAG_ADD)); //Clear Z,N
-            Z80_F = Z80_F | ((1 << y[1]) & (*z80_r[z[1]])) ? 0 : Z80_CLRFLAG_ZERO;
+            Z80_F = Z80_F | (((1 << y[1]) & (*z80_r[z[1]])) ? 0 : Z80_CLRFLAG_ZERO);
             Z80_F = Z80_F | Z80_FLAG_HC;
             return Z80_STAGE_RESET;
         case 2:                                     /*RES y,r[z]; Size: 2; Flags: None*/
@@ -611,6 +611,7 @@ int z80_instruction_decode(){
             else{ //Target is (HL)
                 if (z80.write_index == 0){
                     z80.write_address = Z80_HL;
+                    assert(z80_r[z[0]]);
                     z80.write_buffer[0] = *(z80_r[z[0]]);
                     return Z80_STAGE_M3;
                 }

@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <assert.h>
 
 int main(int argc, char* argv[]){
     //Redirect stds to files
@@ -18,6 +19,7 @@ int main(int argc, char* argv[]){
 
     //Setup the ROM, all NOPs
     uint8_t *full_rom = malloc(ROM_MAX_SIZE);
+    assert(full_rom);
     memset(full_rom, 0, ROM_MAX_SIZE);
     //If Try loading a rom. zexdoc_sdsc.sms
     {

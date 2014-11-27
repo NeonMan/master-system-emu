@@ -417,7 +417,7 @@ int z80d_decode(uint8_t* opcode, unsigned int size, char* result){
         break;
 
     case Z80_OPCODE_XZ(3, 7):
-        sprintf(tmp_str, "RST 0x02X", y[0]);
+        sprintf(tmp_str, "RST 0x%02X", y[0]);
         rv = 1;
         break;
 
