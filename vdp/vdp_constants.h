@@ -4,7 +4,24 @@
 #include <stdint.h>
 
 // --- Sizes ---
-#define VDP_VRAM_SIZE 0x4000
+#define VDP_VRAM_SIZE (16 * 1024)
+#define VDP_CRAM_SIZE 32
+#define VDP_WIDTH_PIXELS  256
+#define VDP_HEIGHT_PIXELS 192
+#define VDP_FRAMEBUFFER_SIZE (256 * 192)
+
+// --- Mode 0 ---
+#define VDP_MODE0_ROWS 24
+#define VDP_MODE0_COLS 32
+#define VDP_MODE0_PATTERN_SIZE 8
+
+// --- Addressing offsets ---
+//Address registers are multiplied by a constant to get the effective address in VRAM
+#define VDP_NAME_TABLE_SIZE  0x400             /*From TMS9918 datasheet 2.2.3*/
+#define VDP_COLOR_TABLE_SIZE 0x40              /**/
+#define VDP_PATTERN_GENERATOR_TABLE_SIZE 0x800 /**/
+#define VDP_SPRITE_ATTR_TABLE_SIZE 0x80        /**/
+#define VDP_SPRITE_GENERATOR_TABLE_SIZE 0x800  /**/
 
 // --- VDP Colors ---
 #define VDP_COLOR_RGBA(R,G,B,A) ((uint32_t)((A<<24)+(R<<16)+(G<<8)+B))

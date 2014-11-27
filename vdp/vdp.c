@@ -6,8 +6,51 @@
 struct vdp_s vdp;
 
 //Fill the framebuffer as if the VDP is configured in Mode 0
+//32x24 text mode, monochrome.
 void* vdp_mode0_pixels(){
+    assert(!VDP_FLAG_M1);
+    assert(!VDP_FLAG_M2);
+    assert(!VDP_FLAG_M3);
+    //Pattern name table is 32x24 bytes, base address calculated from VDP_VDP_REG_NAME_TABLE_ADDR
+    const uint16_t name_addr = vdp.regs[VDP_REG_NAME_TABLE_ADDR] * VDP_NAME_TABLE_SIZE;
+    //Pattern generator table is 256 elements, 8 bytes per char. Base addr from VDP_REG_PATTERN_GENERATOR_ADDR
+    const uint16_t generator_addr = vdp.regs[VDP_REG_PATTERN_GENERATOR_ADDR] * VDP_PATTERN_GENERATOR_TABLE_SIZE;
+    //Color table colorizes characters in groups of 8. The table is 32 bytes long. Base address from VDP_REG_COLOR_TABLE_ADDR
+    const uint16_t color_addr = vdp.regs[VDP_REG_COLOR_TABLE_ADDR] * VDP_COLOR_TABLE_SIZE;
+    //Background color is read from reg #7
+    const uint8_t bg_color = vdp.regs[VDP_REG_TEXT_COLOR] & 0x0F;
 
+    //Start making the picture
+//#pragma omp parallel for /*OpenMP *may* speed up things here*/
+    for (unsigned int i = 0; i < VDP_FRAMEBUFFER_SIZE; i++){ //<-- For each pixel
+        // -- Pixel x/y coordinates --
+        const uint8_t x = i % VDP_WIDTH_PIXELS;
+        const uint8_t y = i / VDP_WIDTH_PIXELS;
+
+        // --- We neeed to calculate which char coresponds to this pixel ---
+        //Every 8 pixel rows (y) is one character row.
+        const uint8_t char_row = y / 8;
+        //Every 8 pixel columns (x) is one character col
+        const uint8_t char_col = x / 8;
+        //Copy the name byte
+        const uint8_t char_name = vdp.vram[name_addr + (char_row * VDP_MODE0_COLS) + char_col];
+
+        // --- Which of the character pattern rows [0-7] ---
+        const uint8_t pattern_row = y % 8;
+
+        // --- Which bit of the row ---
+        const uint8_t pattern_col = x % 8;
+
+        // --- Which foreground color has that pixel ---
+        const uint8_t fg_color = vdp.vram[color_addr + (char_col + (char_row * VDP_MODE0_COLS))];
+
+        // --- Write the result ---
+        const uint8_t pattern_row_byte = vdp.vram[generator_addr + (char_name * VDP_MODE0_PATTERN_SIZE) + pattern_row];
+        if (pattern_row_byte & (1 << pattern_col))
+            vdp.framebuffer[x + (y * VDP_WIDTH_PIXELS)] = fg_color;
+        else
+            vdp.framebuffer[x + (y * VDP_WIDTH_PIXELS)] = bg_color;
+    }
     return (void*)vdp.framebuffer;
 }
 
@@ -67,7 +110,7 @@ void vdp_data_write(){
         break;
     case VDP_CTRL_CRAM:
         //Writes go to CRAM
-        vdp.cram[vdp.address % 32];
+        vdp.cram[vdp.address % VDP_CRAM_SIZE];
         break;
     }
     vdp.address = (vdp.address + 1) % VDP_VRAM_SIZE;

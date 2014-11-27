@@ -28,8 +28,23 @@ int main(int argc, char** argv){
             SDL_FillRect(screen, &video_area, vdp_tmscolors[(4*y) + x] );
         }
     }
-    SDL_UpdateWindowSurface(window);
-    SDL_Delay(5000);
+	//Wait for exit
+	uint8_t running = 1;
+	SDL_DisplayMode mode;
+	SDL_GetCurrentDisplayMode(0, &mode);
+	while (running){
+		SDL_UpdateWindowSurface(window);
+		SDL_Event evt;
+		while (SDL_PollEvent(&evt)){
+			if (evt.type == SDL_QUIT)
+				running = 0;
+		}
+		if (mode.refresh_rate)
+			SDL_Delay(1000 / mode.refresh_rate);
+		else
+			SDL_Delay(100);
+	}
+	
     SDL_Quit();
     return 0;
 }
