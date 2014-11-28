@@ -16,12 +16,16 @@ int vdp_to_sdl(void* vdp_fb, void* vdp_pal, SDL_Surface* surf){
     uint8_t* fb = (uint8_t*)vdp_fb;
 
     for (int i = 0; i < VDP_FRAMEBUFFER_SIZE; i++){
-        const uint32_t color = vdp_tmscolors[ fb[i]];
+        const uint32_t red   = (((uint32_t)fb[i] & (3 << 4)) >> 4) << (16 + 6);
+        const uint32_t green = (((uint32_t)fb[i] & (3 << 2)) >> 2) << (8 + 6);
+        const uint32_t blue  = (((uint32_t)fb[i] & (3 << 0)) >> 0) << (0 + 6);
+        const uint32_t alpha = fb[i] ? 0xff000000 : 0x00000000;
+        const uint32_t color = red | green | blue | alpha;
         SDL_Rect r;
         r.w = 1;
         r.h = 1;
-        r.x = i % VDP_WIDTH_PIXELS;
-        r.y = i / VDP_WIDTH_PIXELS;
+        r.x = (i % VDP_WIDTH_PIXELS) + 32;
+        r.y = (i / VDP_WIDTH_PIXELS) + 32;
         SDL_FillRect(surf, &r, color);
     }
     return 1;
