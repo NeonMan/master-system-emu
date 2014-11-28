@@ -7,6 +7,7 @@
 
 #include "vdp/vdp.h"
 #include "vdp/vdp_constants.h"
+#include "vdp/vdp_font.h"
 
 //Naive and slow conversion from VDP framebuffer to SDL surface.
 int vdp_to_sdl(void* vdp_fb, void* vdp_pal, SDL_Surface* surf){
@@ -154,13 +155,13 @@ int main(int argc, char** argv){
     vram_write(0x0400); //Set write addr to 0x0400
     //Size is 0x40
     for (int i = 0; i < VDP_COLOR_TABLE_SIZE; i++)
-        data_write(i % 3 + 1); //Use red-green-blue colors.
+        data_write(i % 3 + 2); //Use red-green-blue colors.
 
     //Write control port and write pattern generator table
     vram_write(0x800);
     //Pattern generator table is 8x256 bytes long.
     for (int i = 0; i < (256 * 8); i++)
-        data_write((i % 256) & 0xFF);
+        data_write(vdp_font[i]);
 
     // -----------------
 

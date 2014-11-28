@@ -53,11 +53,11 @@ void* vdp_mode0_pixels(){
         const uint8_t pattern_row_byte = vdp.vram[generator_addr + (char_name * VDP_MODE0_PATTERN_SIZE) + pattern_row];
         assert(fg_color < 32);
         assert(bg_color < 32);
-        if (pattern_row_byte & (1 << pattern_col)){
+        if (pattern_row_byte & (0x80 >> pattern_col)){
             vdp.framebuffer[x + (y * VDP_WIDTH_PIXELS)] = fg_color ? vdp.cram[fg_color] : vdp.cram[backdrop_color];
         }
         else{
-            vdp.framebuffer[x + (y * VDP_WIDTH_PIXELS)] = bg_color? vdp.cram[bg_color] : vdp.cram[backdrop_color];
+            vdp.framebuffer[x + (y * VDP_WIDTH_PIXELS)] = bg_color ? vdp.cram[bg_color] : vdp.cram[backdrop_color];
         }
     }
     return (void*)vdp.framebuffer;
