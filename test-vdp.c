@@ -26,7 +26,11 @@ int vdp_to_sdl(void* vdp_fb, void* vdp_pal, SDL_Surface* surf){
     return 1;
 }
 
-int main(int argc, char** argv){
+void init(){
+    SDL_Quit();
+}
+
+void cleanup(){
     SDL_version ver;
     SDL_Init(SDL_INIT_VIDEO);
     //SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
@@ -37,30 +41,132 @@ int main(int argc, char** argv){
     SDL_GetVersion(&ver);
     printf("SDL Ver: %d.%d.%d\n", ver.major, ver.minor, ver.patch);
 
+}
+
+void control_write(uint16_t control_word){
+    z80_n_ioreq = 0;
+    z80_n_wr = 0;
+    z80_address = 0xBF;
+    z80_data = control_word & 0xFF; //<--
+    vdp_tick();
+    z80_n_ioreq = 1;
+    z80_n_wr = 1;
+    vdp_tick();         /*Write first byte*/
+    z80_n_ioreq = 0;
+    z80_n_wr = 0;
+    z80_address = 0xBF;
+    z80_data = (control_word>>8) & 0xFF; //<--
+    vdp_tick();
+    z80_n_ioreq = 1;
+    z80_n_wr = 1;
+    vdp_tick();         /*Write second byte*/
+}
+
+void register_write(uint8_t reg, uint8_t val){
+    uint16_t control_word = val + (((uint16_t)reg) << 8) + (2 << 14);
+    control_write(control_word);
+}
+
+void cram_write(uint16_t addr){
+    uint16_t control_word = (3 << 14) + (addr & 0x3F);
+    control_write(control_word);
+}
+
+void vram_write(uint16_t addr){
+    uint16_t control_word = (1 << 14) + (addr & 0x3F);
+    control_write(control_word);
+}
+
+void data_write(uint8_t b){
+    z80_n_ioreq = 0;
+    z80_n_wr = 0;
+    z80_address = 0xBE;
+    z80_data = b; //<--
+    vdp_tick();
+    z80_n_ioreq = 1;
+    z80_n_wr = 1;
+    vdp_tick();         /*Write first byte*/
+}
+
+int main(int argc, char** argv){
+    init();
+    //Create a SDL window
     SDL_Window* window = SDL_CreateWindow("VDP testing", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 256 + 64, 192 + 64, 0);
     SDL_Surface* screen = SDL_GetWindowSurface(window);
-    SDL_Surface* vdp_surf = SDL_CreateRGBSurface(0, VDP_WIDTH_PIXELS, VDP_HEIGHT_PIXELS, 32, 255 << 16, 255 << 8, 255, 255 << 24);
     SDL_FillRect(screen, 0, 128);
-    for (int x = 0; x < 4; x++){
-        for (int y = 0; y < 4; y++){
-            SDL_Rect video_area; 
-            video_area.x = 32 + ((256 / 4) * x);
-            video_area.y = 32 + ((192 / 4) * y);
-            video_area.w = 256/4; 
-            video_area.h = 192/4;
-            SDL_FillRect(screen, &video_area, vdp_tmscolors[(4*y) + x] );
-        }
-    }
-    SDL_Rect dst_rect;
-    dst_rect.w = VDP_WIDTH_PIXELS;
-    dst_rect.h = VDP_HEIGHT_PIXELS;
-    dst_rect.x = 0;
-    dst_rect.y = 0;
+    //Paint somebkg color
     vdp_to_sdl(vdp_get_pixels(), 0, screen);
+
+    // --- VDP tests ---
+    //VDP initialization
+    vdp_init();
+
+    //Read H counter (Port: 7F)
+    z80_n_ioreq = 0;
+    z80_n_rd = 0;
+    z80_address = 0x7F;
+    vdp_tick();
+    printf("H Counter is: 0x%02X\n", z80_data);
+    z80_n_ioreq = 1;
+    z80_n_rd = 1;
+    vdp_tick();
+
+    //Read V counter (Port: 7E)
+    z80_n_ioreq = 0;
+    z80_n_rd = 0;
+    z80_address = 0x7E;
+    vdp_tick();
+    printf("V Counter is: 0x%02X\n", z80_data);
+    z80_n_ioreq = 1;
+    z80_n_rd = 1;
+    vdp_tick();
+
+    //Read control port (0xBF). Returns status register
+    z80_n_ioreq = 0;
+    z80_n_rd = 0;
+    z80_address = 0xBF;
+    vdp_tick();
+    printf("Status is: 0x%02X\n", z80_data);
+    z80_n_ioreq = 1;
+    z80_n_rd = 1;
+    vdp_tick();
+
+    //Write control port (0xBF). Register write
+    register_write(VDP_REG_NAME_TABLE_ADDR, 0); //Name table at 0x00. Next free address is 0x400
+    register_write(VDP_REG_COLOR_TABLE_ADDR, 0x10); //Color table at 0x400. Next free address 0x440
+    register_write(VDP_REG_PATTERN_GENERATOR_ADDR, 0x01); //Pattern generator table at 0x800.
+
+    //Write control port (0xBF) and write CRAM (port 0xBE)
+    cram_write(1);
+    data_write(3 << 4); //Red
+    data_write(3 << 2); //Green
+    data_write(3 << 0); //Blue
+    data_write(3 << 4); //Red
+    data_write(3 << 2); //Green
+    data_write(3 << 0); //Blue
+
+    //Write control port (0xBF) and write Name table (VRAM @ 0x0000)
+    vram_write(0x0000); //Set write address to 0x0000
+    //32x24 characters
+    for (int i = 0; i < (32*24); i++)
+        data_write(i%256);
+
+    //Write control port and write color table
+    vram_write(0x400); //Set write addr to 0x0400
+    //Size is 0x40
+    for (int i = 0; i < 0x40; i++)
+        data_write(i % 3 + 1); //Use red-green-blue colors.
+
+    //Write control port and write pattern generator table
+    vram_write(0x800);
+    //Pattern generator table is 8x256 bytes long.
+    for (int i = 0; i < (256 * 8); i++)
+        data_write((i % 256) & 0xFF);
+
+    // -----------------
+
 	//Wait for exit
 	uint8_t running = 1;
-	SDL_DisplayMode mode;
-	SDL_GetCurrentDisplayMode(0, &mode);
 	while (running){
 		SDL_UpdateWindowSurface(window);
 		SDL_Event evt;
@@ -68,12 +174,9 @@ int main(int argc, char** argv){
 			if (evt.type == SDL_QUIT)
 				running = 0;
 		}
-		if (mode.refresh_rate)
-			SDL_Delay(1000 / mode.refresh_rate);
-		else
-			SDL_Delay(100);
+    	SDL_Delay(100);
 	}
-    SDL_FreeSurface(vdp_surf);
-    SDL_Quit();
+
+    cleanup();
     return 0;
 }

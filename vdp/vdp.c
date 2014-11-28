@@ -3,7 +3,11 @@
 #include <string.h>
 #include <assert.h>
 
+#ifdef NDEBUG
 struct vdp_s vdp;
+#else
+volatile struct vdp_s vdp;
+#endif
 
 //Fill the framebuffer as if the VDP is configured in Mode 0
 //32x24 text mode, monochrome.
@@ -81,7 +85,7 @@ void vdp_control_write(){
 	//Store the read/write mode
 	vdp.control_mode = vdp.control_word[1] & VDP_CTRL_MASK;
 	//Store the address
-	vdp.address = vdp.control_word[0] + (((uint16_t)vdp.control_word[1]) << 8);
+	vdp.address = (vdp.control_word[0] + (((uint16_t)vdp.control_word[1])<< 8)) & 0x3FFF;
 
 	//Only register writes/VRAM reads do something on this part
 	switch (vdp.control_mode){
@@ -118,8 +122,10 @@ void vdp_data_write(){
         break;
     case VDP_CTRL_CRAM:
         //Writes go to CRAM
-        vdp.cram[vdp.address % VDP_CRAM_SIZE];
+        vdp.cram[vdp.address % VDP_CRAM_SIZE] = vdp.buffer;
         break;
+    default:
+        assert(0); //Invalid mode
     }
     vdp.address = (vdp.address + 1) % VDP_VRAM_SIZE;
 }
