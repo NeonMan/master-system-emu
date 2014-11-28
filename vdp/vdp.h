@@ -70,7 +70,6 @@ struct vdp_s {
 	uint8_t control_mode;
 
     uint8_t framebuffer[VDP_FRAMEBUFFER_SIZE]; ///<-- Current picture being displayed. VDP pallette.
-    uint32_t argb_framebuffer[VDP_FRAMEBUFFER_SIZE]; ///<-- Current picture being displayed. ARGB 32bpp.
 };
 
 ///executes the minimum relevant period of time.
