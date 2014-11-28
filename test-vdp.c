@@ -73,7 +73,7 @@ void cram_write(uint16_t addr){
 }
 
 void vram_write(uint16_t addr){
-    uint16_t control_word = (1 << 14) + (addr & 0x3F);
+    uint16_t control_word = (1 << 14) + (addr & 0x3FFF);
     control_write(control_word);
 }
 
@@ -95,7 +95,6 @@ int main(int argc, char** argv){
     SDL_Surface* screen = SDL_GetWindowSurface(window);
     SDL_FillRect(screen, 0, 128);
     //Paint somebkg color
-    vdp_to_sdl(vdp_get_pixels(), 0, screen);
 
     // --- VDP tests ---
     //VDP initialization
@@ -152,9 +151,9 @@ int main(int argc, char** argv){
         data_write(i%256);
 
     //Write control port and write color table
-    vram_write(0x400); //Set write addr to 0x0400
+    vram_write(0x0400); //Set write addr to 0x0400
     //Size is 0x40
-    for (int i = 0; i < 0x40; i++)
+    for (int i = 0; i < VDP_COLOR_TABLE_SIZE; i++)
         data_write(i % 3 + 1); //Use red-green-blue colors.
 
     //Write control port and write pattern generator table
@@ -165,6 +164,8 @@ int main(int argc, char** argv){
 
     // -----------------
 
+    //Get the picture
+    vdp_to_sdl(vdp_get_pixels(), 0, screen);
 	//Wait for exit
 	uint8_t running = 1;
 	while (running){

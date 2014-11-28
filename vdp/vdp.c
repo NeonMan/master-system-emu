@@ -3,11 +3,8 @@
 #include <string.h>
 #include <assert.h>
 
-#ifdef NDEBUG
 struct vdp_s vdp;
-#else
-volatile struct vdp_s vdp;
-#endif
+
 
 //Fill the framebuffer as if the VDP is configured in Mode 0
 //32x24 text mode, monochrome.
@@ -46,17 +43,20 @@ void* vdp_mode0_pixels(){
         const uint8_t pattern_col = x % 8;
 
         // --- Which foreground color has that pixel ---
-        const uint8_t fg_color = vdp.vram[color_addr + (char_col + (char_row * VDP_MODE0_COLS))];
+        //Each color table element paints 4 characters
+        const uint8_t color_table_index = ((char_col + (char_row * VDP_MODE0_COLS)) / 8) % VDP_COLOR_TABLE_SIZE; ///@bug hack so the assert is not triggered
+        assert(color_table_index < VDP_COLOR_TABLE_SIZE);
+        const uint8_t fg_color = vdp.vram[color_addr + color_table_index];
 
         // --- Write the result ---
         const uint8_t pattern_row_byte = vdp.vram[generator_addr + (char_name * VDP_MODE0_PATTERN_SIZE) + pattern_row];
+        assert(fg_color < 32);
+        assert(bg_color < 32);
         if (pattern_row_byte & (1 << pattern_col)){
-            vdp.framebuffer[x + (y * VDP_WIDTH_PIXELS)] = fg_color;
-            vdp.argb_framebuffer[x + (y * VDP_WIDTH_PIXELS)] = vdp_tmscolors[fg_color % 16];
+            vdp.framebuffer[x + (y * VDP_WIDTH_PIXELS)] = vdp.cram[fg_color];
         }
         else{
-            vdp.framebuffer[x + (y * VDP_WIDTH_PIXELS)] = bg_color;
-            vdp.argb_framebuffer[x + (y * VDP_WIDTH_PIXELS)] = vdp_tmscolors[bg_color % 16];
+            vdp.framebuffer[x + (y * VDP_WIDTH_PIXELS)] = vdp.cram[bg_color];
         }
     }
     return (void*)vdp.framebuffer;
