@@ -8,7 +8,7 @@ struct vdp_s vdp;
 
 //Fill the framebuffer as if the VDP is configured in Mode 0
 //32x24 text mode, monochrome.
-void* vdp_mode0_pixels(){
+void vdp_mode0_pixels(uint8_t* framebuffer){
     assert(!VDP_FLAG_M1);
     assert(!VDP_FLAG_M2);
     assert(!VDP_FLAG_M3);
@@ -54,20 +54,19 @@ void* vdp_mode0_pixels(){
         assert(fg_color < 32);
         assert(bg_color < 32);
         if (pattern_row_byte & (0x80 >> pattern_col)){
-            vdp.framebuffer[x + (y * VDP_WIDTH_PIXELS)] = fg_color ? vdp.cram[fg_color] : vdp.cram[backdrop_color];
+            framebuffer[x + (y * VDP_WIDTH_PIXELS)] = fg_color ? vdp.cram[fg_color] : vdp.cram[backdrop_color];
         }
         else{
-            vdp.framebuffer[x + (y * VDP_WIDTH_PIXELS)] = bg_color ? vdp.cram[bg_color] : vdp.cram[backdrop_color];
+            framebuffer[x + (y * VDP_WIDTH_PIXELS)] = bg_color ? vdp.cram[bg_color] : vdp.cram[backdrop_color];
         }
     }
-    return (void*)vdp.framebuffer;
 }
 
-void* vdp_get_pixels(){
-    return vdp_mode0_pixels();
+void vdp_get_pixels(void* fb){
+    return vdp_mode0_pixels((uint8_t*)fb);
 }
 
-void* vdp_get_pallette(){
+void* vdp_get_cram(){
     return (void*)vdp.cram;
 }
 
