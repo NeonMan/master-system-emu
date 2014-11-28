@@ -170,7 +170,9 @@ int main(int argc, char** argv){
     // -----------------
 
     //Get the picture
-    vdp_to_sdl(vdp_get_pixels(), 0, screen);
+    uint8_t framebuffer[VDP_FRAMEBUFFER_SIZE];
+    vdp_get_pixels(framebuffer);
+    vdp_to_sdl(framebuffer, 0, screen);
 	//Wait for exit
 	uint8_t running = 1;
 	while (running){

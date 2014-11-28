@@ -68,8 +68,6 @@ struct vdp_s {
 	uint8_t control_word[2]; ///<-- Stores the current control word
 	uint8_t control_index; ///<-- Which control word byte are we expecting [0,1]
 	uint8_t control_mode;
-
-    uint8_t framebuffer[VDP_FRAMEBUFFER_SIZE]; ///<-- Current picture being displayed. VDP pallette.
 };
 
 ///executes the minimum relevant period of time.
@@ -78,9 +76,13 @@ void vdp_tick();
 ///Sets up all the VDP state and stuff. Call once.
 void vdp_init();
 
-///Returns the current picture. Pixels in VDP format.
-void* vdp_get_pixels();
-void* vdp_get_pallette();
+/**
+ * @brief generates the current VDP picture.
+ * Written framebuffer will be in --rrggbb format.
+ * @param fb Pointer to a frame buffer, must hold VDP_FRAMEBUFFER_SIZE bytes.
+ */
+void vdp_get_pixels(void* fb);
+void* vdp_get_cram();
 
 #ifdef __cplusplus
 }
