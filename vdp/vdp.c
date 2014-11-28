@@ -18,8 +18,8 @@ void* vdp_mode0_pixels(){
     const uint16_t generator_addr = vdp.regs[VDP_REG_PATTERN_GENERATOR_ADDR] * VDP_PATTERN_GENERATOR_TABLE_SIZE;
     //Color table colorizes characters in groups of 8. The table is 32 bytes long. Base address from VDP_REG_COLOR_TABLE_ADDR
     const uint16_t color_addr = vdp.regs[VDP_REG_COLOR_TABLE_ADDR] * VDP_COLOR_TABLE_SIZE;
-    //Background color is read from reg #7
-    const uint8_t bg_color = vdp.regs[VDP_REG_TEXT_COLOR] & 0x0F;
+    //Backdrop color
+    const uint8_t backdrop_color = vdp.regs[VDP_REG_TEXT_COLOR] & 0x0F;
 
     //Start making the picture
 //#pragma omp parallel for /*OpenMP *may* speed up things here*/
@@ -42,21 +42,22 @@ void* vdp_mode0_pixels(){
         // --- Which bit of the row ---
         const uint8_t pattern_col = x % 8;
 
-        // --- Which foreground color has that pixel ---
+        // --- Which foreground/background color has that pixel ---
         //Each color table element paints 4 characters
-        const uint8_t color_table_index = ((char_col + (char_row * VDP_MODE0_COLS)) / 8) % VDP_COLOR_TABLE_SIZE; ///@bug hack so the assert is not triggered
+        const uint8_t color_table_index = char_name / 8;
         assert(color_table_index < VDP_COLOR_TABLE_SIZE);
-        const uint8_t fg_color = vdp.vram[color_addr + color_table_index];
+        const uint8_t fg_color = vdp.vram[color_addr + color_table_index] & 0x0F;
+        const uint8_t bg_color = (vdp.vram[color_addr + color_table_index] & 0xF0)>>4;
 
         // --- Write the result ---
         const uint8_t pattern_row_byte = vdp.vram[generator_addr + (char_name * VDP_MODE0_PATTERN_SIZE) + pattern_row];
         assert(fg_color < 32);
         assert(bg_color < 32);
         if (pattern_row_byte & (1 << pattern_col)){
-            vdp.framebuffer[x + (y * VDP_WIDTH_PIXELS)] = vdp.cram[fg_color];
+            vdp.framebuffer[x + (y * VDP_WIDTH_PIXELS)] = fg_color ? vdp.cram[fg_color] : vdp.cram[backdrop_color];
         }
         else{
-            vdp.framebuffer[x + (y * VDP_WIDTH_PIXELS)] = vdp.cram[bg_color];
+            vdp.framebuffer[x + (y * VDP_WIDTH_PIXELS)] = bg_color? vdp.cram[bg_color] : vdp.cram[backdrop_color];
         }
     }
     return (void*)vdp.framebuffer;
