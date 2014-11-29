@@ -13,9 +13,8 @@ void vdp_get_pixels(void* fb){
         if ((VDP_FLAG_M1) && (!VDP_FLAG_M2)){
             assert(0); //Invalid mode
         }
-        else{
-            assert(0); ///<-- @bug Unimplemented.
-        }
+        else
+            vdp_mode4_pixels(fb);
     }
     else{
         //Original TMS modes
