@@ -24,11 +24,17 @@ void vdp_get_pixels(void* fb){
             vdp_mode1_pixels((uint8_t*)fb);
         else if ((!VDP_FLAG_M1) && (VDP_FLAG_M2) && (!VDP_FLAG_M3))  /*Mode 2 (GRAPHIC 2)*/
             vdp_mode2_pixels((uint8_t*)fb);
-        else if ((!VDP_FLAG_M1) && (VDP_FLAG_M2) && (!VDP_FLAG_M3))  /*Mode 3 (MULTICOLOR)*/
+        else if ((!VDP_FLAG_M1) && (!VDP_FLAG_M2) && (VDP_FLAG_M3))  /*Mode 3 (MULTICOLOR)*/
             vdp_mode3_pixels((uint8_t*)fb);
-        else{
-            assert(0); //Invalid mode.
-        }
+        //Undocumented modes
+        else if ((!VDP_FLAG_M1) && (VDP_FLAG_M2) && (!VDP_FLAG_M3))  /*Mode 1+2*/
+            vdp_mode12_pixels((uint8_t*)fb);
+        else if ((VDP_FLAG_M1) && (!VDP_FLAG_M2) && (VDP_FLAG_M3))   /*Mode 1+3*/
+            vdp_mode13_pixels((uint8_t*)fb);
+        else if ((!VDP_FLAG_M1) && (VDP_FLAG_M2) && (VDP_FLAG_M3))   /*Mode 2+3*/
+            vdp_mode23_pixels((uint8_t*)fb);
+        else if ((VDP_FLAG_M1) && (VDP_FLAG_M2) && (VDP_FLAG_M3))    /*Mode 1+2+3*/
+            vdp_mode123_pixels((uint8_t*)fb);
     }
 }
 

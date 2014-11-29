@@ -5,6 +5,7 @@
 
 extern struct vdp_s vdp; //<-- Provided by vdp.c
 
+// --- TMS Screen modes ---
 //Fill the framebuffer as if the VDP is configured in Mode 0
 //32x24 text mode, monochrome.
 void vdp_mode0_pixels(uint8_t* fb){
@@ -63,20 +64,38 @@ void vdp_mode0_pixels(uint8_t* fb){
 
 //Renders Mode 1 (TEXT)
 void vdp_mode1_pixels(uint8_t* fb){
-    assert(0); ///@bug Unimplemented
+    assert(0); ///<-- @bug Unimplemented
 }
 
 //Renders Mode 2 (GRAPHICS 2)
 void vdp_mode2_pixels(uint8_t* fb){
-    assert(0); ///@bug Unimplemented
+    assert(0); ///<-- @bug Unimplemented
 }
 
 //Renders Mode 3 (MULTICOLOR)
 void vdp_mode3_pixels(uint8_t* fb){
-    assert(0); ///@bug Unimplemented
+    assert(0); ///<-- @bug Unimplemented
 }
 
+// --- SMS Mode 4 ---
 //Renders Mode 4 (SMS custom mode)
 void vdp_mode4_pixels(uint8_t* fb){
-    assert(0); ///@bug Unimplemented
+    assert(0); ///<-- @bug Unimplemented
+}
+
+// --- Undocumented modes ---
+void vdp_mode12_pixels(uint8_t* fb){
+    assert(0); ///<-- @bug unimplemented.
+}
+
+void vdp_mode13_pixels(uint8_t* fb){
+    assert(0); ///<-- @bug unimplemented.
+}
+
+void vdp_mode23_pixels(uint8_t* fb){
+    assert(0); ///<-- @bug unimplemented.
+}
+
+void vdp_mode123_pixels(uint8_t* fb){
+    assert(0); ///<-- @bug unimplemented.
 }
