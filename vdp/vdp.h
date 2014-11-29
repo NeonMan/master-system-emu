@@ -43,7 +43,8 @@
 #define VDP_FLAG_M1 (vdp.regs[1] & (1<<4))
 #define VDP_FLAG_M3 (vdp.regs[1] & (1<<3))
 #define VDP_FLAG_SI (vdp.regs[1] & (1<<1))
-#define VDP_FLAG_MAG (vdp.regs[1] & (1<<0))
+#define VDP_FLAG_MAG (vdp.regs[1] & (1<<0)0)
+#define VDP_FLAG_M4 (vdp.regs[0] & (1<<2))
 
 #ifdef __cplusplus
 extern "C" {

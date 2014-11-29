@@ -31,11 +31,11 @@ int vdp_to_sdl(void* vdp_fb, void* vdp_pal, SDL_Surface* surf){
     return 1;
 }
 
-void init(){
+void cleanup(){
     SDL_Quit();
 }
 
-void cleanup(){
+void init(){
     SDL_version ver;
     SDL_Init(SDL_INIT_VIDEO);
     //SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
@@ -152,14 +152,17 @@ int main(int argc, char** argv){
     //Write control port (0xBF) and write Name table (VRAM @ 0x0000)
     vram_write(0x0000); //Set write address to 0x0000
     //32x24 characters
-    for (int i = 0; i < (32*24); i++)
+    const char hello[] = " HELLO Mode0 WORLD! 0123456789~ ";
+    for (int i = 0; i < 32; i++)
+        data_write(hello[i]);
+    for (int i = 32; i < (32*24); i++)
         data_write(i%256);
 
     //Write control port and write color table
     vram_write(0x0400); //Set write addr to 0x0400
     //Size is 0x40
     for (int i = 0; i < VDP_COLOR_TABLE_SIZE; i++)
-        data_write(i % 3 + 2); //Use red-green-blue colors.
+        data_write(i % 3 + 1); //Use red-green-blue colors.
 
     //Write control port and write pattern generator table
     vram_write(0x800);

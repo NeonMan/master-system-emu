@@ -62,8 +62,45 @@ void vdp_mode0_pixels(uint8_t* framebuffer){
     }
 }
 
+//Renders Mode 1 (TEXT)
+void vdp_mode1_pixels(uint8_t* fb){
+    assert(0); ///@bug Unimplemented
+}
+
+//Renders Mode 2 (GRAPHICS 2)
+void vdp_mode2_pixels(uint8_t* fb){
+    assert(0); ///@bug Unimplemented
+}
+
+//Renders Mode 3 (MULTICOLOR)
+void vdp_mode3_pixels(uint8_t* fb){
+    assert(0); ///@bug Unimplemented
+}
+
 void vdp_get_pixels(void* fb){
-    return vdp_mode0_pixels((uint8_t*)fb);
+    if (VDP_FLAG_M4){
+        //Mode 4 'modes'
+        if ((VDP_FLAG_M1) && (!VDP_FLAG_M2)){
+            assert(0); //Invalid mode
+        }
+        else{
+            assert(0); ///<-- @bug Unimplemented.
+        }
+    }
+    else{
+        //Original TMS modes
+        if      ((!VDP_FLAG_M1) && (!VDP_FLAG_M2) && (!VDP_FLAG_M3)) /*Mode 0*/
+            vdp_mode0_pixels((uint8_t*)fb);
+        else if ((VDP_FLAG_M1) && (!VDP_FLAG_M2) && (!VDP_FLAG_M3))  /*Mode 1 (TEXT)*/
+            vdp_mode1_pixels((uint8_t*)fb);
+        else if ((!VDP_FLAG_M1) && (VDP_FLAG_M2) && (!VDP_FLAG_M3))  /*Mode 2 (GRAPHIC 2)*/
+            vdp_mode2_pixels((uint8_t*)fb);
+        else if ((!VDP_FLAG_M1) && (VDP_FLAG_M2) && (!VDP_FLAG_M3))  /*Mode 3 (MULTICOLOR)*/
+            vdp_mode3_pixels((uint8_t*)fb);
+        else{
+            assert(0); //Invalid mode.
+        }
+    }
 }
 
 void* vdp_get_cram(){
