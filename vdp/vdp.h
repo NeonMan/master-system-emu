@@ -83,6 +83,11 @@ void vdp_init();
  * @param fb Pointer to a frame buffer, must hold VDP_FRAMEBUFFER_SIZE bytes.
  */
 void vdp_get_pixels(void* fb);
+
+/**
+ * @brief Provides a pointer to the CRAM.
+ * @returns A pointer to the CRAM array.
+ */
 void* vdp_get_cram();
 
 #ifdef __cplusplus

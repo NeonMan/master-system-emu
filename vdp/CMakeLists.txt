@@ -1,3 +1,3 @@
 #VDP
 project(vdp)
-add_library(vdp vdp.c)
+add_library(vdp vdp.c vdp_render.c)
