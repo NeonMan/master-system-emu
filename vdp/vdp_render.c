@@ -1,11 +1,13 @@
+#include "vdp.h"
 #include "vdp_render.h"
+#include "vdp_constants.h"
 #include <assert.h>
 
 extern struct vdp_s vdp; //<-- Provided by vdp.c
 
 //Fill the framebuffer as if the VDP is configured in Mode 0
 //32x24 text mode, monochrome.
-void vdp_mode0_pixels(uint8_t* framebuffer){
+void vdp_mode0_pixels(uint8_t* fb){
     assert(!VDP_FLAG_M1);
     assert(!VDP_FLAG_M2);
     assert(!VDP_FLAG_M3);
@@ -51,10 +53,10 @@ void vdp_mode0_pixels(uint8_t* framebuffer){
         assert(fg_color < 32);
         assert(bg_color < 32);
         if (pattern_row_byte & (0x80 >> pattern_col)){
-            framebuffer[x + (y * VDP_WIDTH_PIXELS)] = fg_color ? vdp.cram[fg_color] : vdp.cram[backdrop_color];
+            fb[x + (y * VDP_WIDTH_PIXELS)] = fg_color ? vdp.cram[fg_color] : vdp.cram[backdrop_color];
         }
         else{
-            framebuffer[x + (y * VDP_WIDTH_PIXELS)] = bg_color ? vdp.cram[bg_color] : vdp.cram[backdrop_color];
+            fb[x + (y * VDP_WIDTH_PIXELS)] = bg_color ? vdp.cram[bg_color] : vdp.cram[backdrop_color];
         }
     }
 }
@@ -71,5 +73,10 @@ void vdp_mode2_pixels(uint8_t* fb){
 
 //Renders Mode 3 (MULTICOLOR)
 void vdp_mode3_pixels(uint8_t* fb){
+    assert(0); ///@bug Unimplemented
+}
+
+//Renders Mode 4 (SMS custom mode)
+void vdp_mode4_pixels(uint8_t* fb){
     assert(0); ///@bug Unimplemented
 }
