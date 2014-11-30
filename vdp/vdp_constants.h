@@ -8,12 +8,17 @@
 #define VDP_CRAM_SIZE 32
 #define VDP_WIDTH_PIXELS  256
 #define VDP_HEIGHT_PIXELS 192
-#define VDP_FRAMEBUFFER_SIZE (256 * 192)
+#define VDP_FRAMEBUFFER_SIZE 49152
 
 // --- Mode 0 constants ---
 #define VDP_MODE0_ROWS 24
 #define VDP_MODE0_COLS 32
 #define VDP_MODE0_PATTERN_SIZE 8
+
+// --- Mode 1 constants ---
+#define VDP_MODE1_ROWS 24
+#define VDP_MODE1_COLS 40
+#define VDP_MODE1_PATTERN_SIZE 8
 
 // --- Addressing offsets ---
 //Address registers are multiplied by a constant to get the effective address in VRAM

@@ -15,7 +15,11 @@ int vdp_to_sdl(void* vdp_fb, void* vdp_pal, SDL_Surface* surf){
     if (surf->w < VDP_WIDTH_PIXELS) return 0;
     uint8_t* fb = (uint8_t*)vdp_fb;
 
-    for (int i = 0; i < VDP_FRAMEBUFFER_SIZE; i++){
+    int i;
+    /*OpenMP might speedup things*/
+    /*Don't know how SDL behaves with OpenMP*/
+//#pragma omp parallel for private(i)
+    for (i = 0; i < VDP_FRAMEBUFFER_SIZE; i++){
         const uint32_t red   = (((uint32_t)fb[i] & (3 << 4)) >> 4) << (16 + 6);
         const uint32_t green = (((uint32_t)fb[i] & (3 << 2)) >> 2) << (8 + 6);
         const uint32_t blue  = (((uint32_t)fb[i] & (3 << 0)) >> 0) << (0 + 6);
@@ -93,6 +97,77 @@ void data_write(uint8_t b){
     vdp_tick();         /*Write first byte*/
 }
 
+void mode0_setup(){
+    //Write control port (0xBF). Register write
+    register_write(VDP_REG_MODE_CTRL1, 0x00); //
+    register_write(VDP_REG_MODE_CTRL2, 0x00); //Select Mode 0
+    register_write(VDP_REG_NAME_TABLE_ADDR, 0); //Name table at 0x00. Next free address is 0x400
+    register_write(VDP_REG_COLOR_TABLE_ADDR, 0x10); //Color table at 0x400. Next free address 0x440
+    register_write(VDP_REG_PATTERN_GENERATOR_ADDR, 0x01); //Pattern generator table at 0x800.
+    register_write(VDP_REG_TEXT_COLOR, 0x20);//Fg color: Green; Bg color: Black/None
+
+    //Write control port (0xBF) and write CRAM (port 0xBE)
+    cram_write(1);
+    data_write(3 << 4); //Red
+    data_write(3 << 2); //Green
+    data_write(3 << 0); //Blue
+    data_write(3 << 4); //Red
+    data_write(3 << 2); //Green
+    data_write(3 << 0); //Blue
+
+    //Write control port (0xBF) and write Name table (VRAM @ 0x0000)
+    vram_write(0x0000); //Set write address to 0x0000
+    //32x24 characters
+    const char hello[] = " HELLO Mode0 WORLD! 0123456789~ ";
+    for (int i = 0; i < 32; i++)
+        data_write(hello[i]);
+    for (int i = 32; i < (32 * 24); i++)
+        data_write(i % 256);
+
+    //Write control port and write color table
+    vram_write(0x0400); //Set write addr to 0x0400
+    //Size is 0x40
+    for (int i = 0; i < VDP_COLOR_TABLE_SIZE; i++)
+        data_write(i % 3 + 1); //Use red-green-blue colors.
+
+    //Write control port and write pattern generator table
+    vram_write(0x800);
+    //Pattern generator table is 8x256 bytes long.
+    for (int i = 0; i < (256 * 8); i++)
+        data_write(vdp_font[i]);
+}
+
+void mode1_setup(){
+    //Write control port (0xBF). Register write
+    register_write(VDP_REG_MODE_CTRL1, 0x00); //
+    register_write(VDP_REG_MODE_CTRL2, 0x10); //Select Mode 1
+    register_write(VDP_REG_NAME_TABLE_ADDR, 0); //Name table at 0x00. Next free address is 0x400
+    register_write(VDP_REG_PATTERN_GENERATOR_ADDR, 0x01); //Pattern generator table at 0x800.
+    register_write(VDP_REG_TEXT_COLOR, 0x20);//Fg color: Green; Bg color: Black/None
+
+    //Write control port (0xBF) and write Name table (VRAM @ 0x0000)
+    vram_write(0x0000); //Set write address to 0x0000
+    //32x24 characters
+    const char hello[] = "---HELLO WORLD FROM MODE 1 0123456789---";
+    for (int i = 0; i < 40; i++)
+        data_write(hello[i]);
+    for (int i = 40; i < (40 * 24); i++)
+        data_write(i % 256);
+
+    //Write control port and write color table
+    vram_write(0x0400); //Set write addr to 0x0400
+    //Size is 0x40
+    for (int i = 0; i < VDP_COLOR_TABLE_SIZE; i++)
+        data_write(i % 3 + 1); //Use red-green-blue colors.
+
+    //Write control port and write pattern generator table
+    vram_write(0x800);
+    //Pattern generator table is 8x256 bytes long.
+    for (int i = 0; i < (256 * 8); i++)
+        data_write(vdp_font[i]);
+}
+
+
 int main(int argc, char** argv){
     init();
     //Create a SDL window
@@ -135,50 +210,25 @@ int main(int argc, char** argv){
     z80_n_rd = 1;
     vdp_tick();
 
-    //Write control port (0xBF). Register write
-    register_write(VDP_REG_NAME_TABLE_ADDR, 0); //Name table at 0x00. Next free address is 0x400
-    register_write(VDP_REG_COLOR_TABLE_ADDR, 0x10); //Color table at 0x400. Next free address 0x440
-    register_write(VDP_REG_PATTERN_GENERATOR_ADDR, 0x01); //Pattern generator table at 0x800.
-
-    //Write control port (0xBF) and write CRAM (port 0xBE)
-    cram_write(1);
-    data_write(3 << 4); //Red
-    data_write(3 << 2); //Green
-    data_write(3 << 0); //Blue
-    data_write(3 << 4); //Red
-    data_write(3 << 2); //Green
-    data_write(3 << 0); //Blue
-
-    //Write control port (0xBF) and write Name table (VRAM @ 0x0000)
-    vram_write(0x0000); //Set write address to 0x0000
-    //32x24 characters
-    const char hello[] = " HELLO Mode0 WORLD! 0123456789~ ";
-    for (int i = 0; i < 32; i++)
-        data_write(hello[i]);
-    for (int i = 32; i < (32*24); i++)
-        data_write(i%256);
-
-    //Write control port and write color table
-    vram_write(0x0400); //Set write addr to 0x0400
-    //Size is 0x40
-    for (int i = 0; i < VDP_COLOR_TABLE_SIZE; i++)
-        data_write(i % 3 + 1); //Use red-green-blue colors.
-
-    //Write control port and write pattern generator table
-    vram_write(0x800);
-    //Pattern generator table is 8x256 bytes long.
-    for (int i = 0; i < (256 * 8); i++)
-        data_write(vdp_font[i]);
-
-    // -----------------
-
-    //Get the picture
-    uint8_t framebuffer[VDP_FRAMEBUFFER_SIZE];
-    vdp_get_pixels(framebuffer);
-    vdp_to_sdl(framebuffer, 0, screen);
+    // ----------------
 	//Wait for exit
 	uint8_t running = 1;
+    int loop_count = 0;
 	while (running){
+        //Setup VDP
+        switch ((loop_count / 20) % 2){
+        case 0:
+            mode0_setup();
+            break;
+        case 1:
+            mode1_setup();
+            break;
+        }
+        //Render the picture
+        uint8_t framebuffer[VDP_FRAMEBUFFER_SIZE];
+        vdp_get_pixels(framebuffer);
+        vdp_to_sdl(framebuffer, 0, screen);
+        //Paint it
 		SDL_UpdateWindowSurface(window);
 		SDL_Event evt;
 		while (SDL_PollEvent(&evt)){
@@ -186,6 +236,7 @@ int main(int argc, char** argv){
 				running = 0;
 		}
     	SDL_Delay(100);
+        ++loop_count;
 	}
 
     cleanup();
