@@ -9,9 +9,6 @@ extern struct vdp_s vdp; //<-- Provided by vdp.c
 //Fill the framebuffer as if the VDP is configured in Mode 0
 //32x24 text mode, monochrome.
 void vdp_mode0_pixels(uint8_t* fb){
-    assert(!VDP_FLAG_M1);
-    assert(!VDP_FLAG_M2);
-    assert(!VDP_FLAG_M3);
     //Pattern name table is 32x24 bytes, base address calculated from VDP_VDP_REG_NAME_TABLE_ADDR
     const uint16_t name_addr = vdp.regs[VDP_REG_NAME_TABLE_ADDR] * VDP_NAME_TABLE_SIZE;
     //Pattern generator table is 256 elements, 8 bytes per char. Base addr from VDP_REG_PATTERN_GENERATOR_ADDR
@@ -22,8 +19,10 @@ void vdp_mode0_pixels(uint8_t* fb){
     const uint8_t backdrop_color = vdp.regs[VDP_REG_TEXT_COLOR] & 0x0F;
 
     //Start making the picture
-    //#pragma omp parallel for /*OpenMP *may* speed up things here*/
-    for (unsigned int i = 0; i < VDP_FRAMEBUFFER_SIZE; i++){ //<-- For each pixel
+    int i; //<-- OpenMP for variable must be declared C89-style.
+//#pragma omp parallel for private(i) /*OpenMP might speedup things*/
+    for (i = 0; i < VDP_FRAMEBUFFER_SIZE; i++)
+    {
         // -- Pixel x/y coordinates --
         const uint8_t x = i % VDP_WIDTH_PIXELS;
         const uint8_t y = i / VDP_WIDTH_PIXELS;
@@ -63,8 +62,42 @@ void vdp_mode0_pixels(uint8_t* fb){
 }
 
 //Renders Mode 1 (TEXT)
+//40x24 characters. 6x8 pixels per char. Name table 960 bytes.
+//Color table not used. PC works as Mode0 but lower 2 bits are ignored.
 void vdp_mode1_pixels(uint8_t* fb){
-    assert(0); ///<-- @bug Unimplemented
+    //Pattern name table address
+    const uint16_t name_addr = vdp.regs[VDP_REG_NAME_TABLE_ADDR] * VDP_NAME_TABLE_SIZE;
+    //Pattern generator table
+    const uint16_t generator_addr = vdp.regs[VDP_REG_PATTERN_GENERATOR_ADDR] * VDP_PATTERN_GENERATOR_TABLE_SIZE;
+    //Backdrop color
+    const uint8_t bg_color = vdp.regs[VDP_REG_TEXT_COLOR] & 0x0F;
+    //Foreground color
+    const uint8_t fg_color = (vdp.regs[VDP_REG_TEXT_COLOR] & 0xF0)>>4;
+    //CRAM colors
+    const uint8_t bg_cram_color = bg_color ? vdp.cram[bg_color] : 0;
+    const uint8_t fg_cram_color = vdp.cram[fg_color];
+
+    //Start making the picture
+    int i;
+//#pragma omp parallel for /*OpenMP *may* speed up things here*/
+    for (i = 0; i < VDP_FRAMEBUFFER_SIZE; i++){ //<-- For each pixel
+        //Calculate all the relevant info.
+        const uint8_t x = i % VDP_WIDTH_PIXELS;
+        const uint8_t y = i / VDP_WIDTH_PIXELS;
+        const uint8_t char_row = y / 8; //<-- Each character uses 8 rows
+        const uint8_t char_col = x / 6; //<-- Each character uses 6 columns
+        const uint8_t char_name = vdp.vram[name_addr + (char_row * VDP_MODE1_COLS) + char_col];
+        const uint8_t pattern_row = y % 8;
+        const uint8_t pattern_col = x % 6;
+        //Write the result.
+        const uint8_t pattern_row_byte = vdp.vram[generator_addr + (char_name * VDP_MODE1_PATTERN_SIZE) + pattern_row];
+        if (pattern_row_byte & (0x80 >> pattern_col)){
+            fb[x + (y * VDP_WIDTH_PIXELS)] = fg_cram_color;
+        }
+        else{
+            fb[x + (y * VDP_WIDTH_PIXELS)] = bg_cram_color;
+        }
+    }
 }
 
 //Renders Mode 2 (GRAPHICS 2)
