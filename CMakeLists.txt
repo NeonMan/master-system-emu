@@ -57,15 +57,23 @@ endif (UNIX)
 
 # --- The project executables ---
 project (SMS-Emu)
+
 # --- psg-play
 add_executable (psg-play psg-play.c)
 target_link_libraries (psg-play psg)
+
 # --- test-mem
 add_executable (test-mem test-mem.c)
 target_link_libraries (test-mem smsrom smsio smsram)
+
 # --- test-z80
 add_executable (test-z80 test-z80.c)
 target_link_libraries (test-z80 z80 smsrom smsram sdsc)
+
 # --- test-vdp (SDL2 is presumed to be available)
 add_executable (test-vdp test-vdp.c)
 target_link_libraries (test-vdp vdp SDL2 SDL2main)
+
+# --- sms-emu
+add_executable (emu sms-emu.c)
+target_link_libraries (emu smsrom smsio smsram psg z80 peripherial vdp sdsc SDL2 SDL2main SDL2_mixer)
