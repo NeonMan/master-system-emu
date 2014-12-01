@@ -19,6 +19,7 @@
 #define VDP_MODE1_ROWS 24
 #define VDP_MODE1_COLS 40
 #define VDP_MODE1_PATTERN_SIZE 8
+#define VDP_MODE1_WIDTH_PIXELS 240
 
 // --- Addressing offsets ---
 //Address registers are multiplied by a constant to get the effective address in VRAM
