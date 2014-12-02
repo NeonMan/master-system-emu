@@ -1,0 +1,91 @@
+Once an opcode has been fully retrieved via multiple M1 stages, the execution
+may require a memory read/write operation.
+
+/////////////////////////////////////////
+//  M2 cycle explained (Memory reads)  //
+/////////////////////////////////////////
+
+Memory reads are implemented in the z80_stage_m2() function which is controlled
+using the z80 struct members z80.read_address, z80.read_buffer, z80.read_is_io
+and z80.read_index.
+
+If no byte has been requested yet, the relevant struct state is as follows:
+
+	z80.read_address   = [undefined];
+	z80.read_index     = 0;
+	z80.read_is_io     = 0;
+	z80.read_buffer[2] = {[undefined],[undefined]};
+	
+To request a memory read, the z80 instruction decoder sets up the struct:
+
+	z80.read_address   = [16-bit address to read];
+	z80.read_index     = 0;
+	z80.read_is_io     = [true if reading a port]
+	z80.read_buffer    = {[undefined],[undefined]};
+	
+And the instruction decoder returns Z80_STAGE_M2 to perform a one byte read.
+After M2 has been executed the state is left like this:
+
+	z80.read_address   = [unmodified];
+	z80.read_index     = 1;
+	z80.read_is_io     = [unmodified];
+	z80.read_buffer    = {[byte at selected address], [undefined]};
+	
+For 16-bit reads, another M2 cycle is needed, in that case, z80.read_address
+is updated with the new address and Z80_STAGE_M2 is returned. After the second
+M2 cycle is performed, the struct is left as follows:
+
+	z80.read_address   = [unmodified];
+	z80.read_index     = 2;
+	z80.read_is_io     = [unmodified];
+	z80.read_buffer    = {[byte @last address], [byte @current address]};
+	
+Returning Z80_STAGE_RESET clears z80.read_index and z80.read_is_io. preparing
+the struct for a new read.
+
+Trying to perform a third M2 stage without resetting the stage will result in
+an assertion failure **in debug mode**. In release mode will be silently
+ignored, creating a potential security breach.
+
+//////////////////////////////////////////
+//  M3 cycle explained (Memory writes)  //
+//////////////////////////////////////////
+
+Memory writes are implemented in the z80_stage_m3() function, like M2, this
+function is controlled by the z80 struct. The relevant members are:
+z80.write_address, z80.write_buffer, z80.write_is_io, z80.write_index.
+
+If no write has been requested, the struct state is as follows:
+
+	z80.write_address = [undefined];
+	z80.write_index   = 0;
+	z80.write_is_io   = 0;
+	z80.write_buffer  = {[undefined],[undefined]};
+	
+To request a memory write, the struct must be setup like:
+
+	z80.write_address = [16-bit address];
+	z80.write_index   = 0;
+	z80.write_is_io   = [true if writing an IO port];
+	z80.write_buffer  = {[first byte to write],[second byte to write if any]};
+	
+The instruction decoder must return Z80_STAGE_M3 to perform a one byte write.
+Once the M3 stage is finished, the first byte of the buffer has been written
+and the struct is updated:
+
+	z80.write_address = [unmodified];
+	z80.write_index   = 1;
+	z80.write_is_io   = [unmodified];
+	z80.write_buffer  = [unmodified];
+	
+As it happens with M2, if a 16-bit write is performed, the address is updated
+and the decoder returns Z80_STAGE_M3 to perform another byte write, this time
+the second byte in the buffer. The struct is likewise updated:
+
+	z80.write_address = [unmodified];
+	z80.write_index   = 2;
+	z80.write_is_io   = [unmodified];
+	z80.write_buffer  = [unmodified];
+	
+The same way it happens with M2, buffer boundaries are only checked in debug
+binaries. Release binaries will silently overwrite nearby memory.
