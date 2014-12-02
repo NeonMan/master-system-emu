@@ -986,32 +986,29 @@ int z80_instruction_decode(){
             case Z80_OPCODE_XZ(2, 2): /* */
             case Z80_OPCODE_XZ(2, 3): /*BLOCK(y,z)*/
                 switch (z80.opcode[1] & (Z80_OPCODE_Y_MASK | Z80_OPCODE_Z_MASK)){
-                case Z80_OPCODE_YZ(4, 0):
+                case Z80_OPCODE_YZ(4, 0): /*LDI*/
                     assert(0);
-                case Z80_OPCODE_YZ(4, 1):
+                case Z80_OPCODE_YZ(4, 1): /*CPI*/
                     assert(0);
-                case Z80_OPCODE_YZ(4, 2):
+                case Z80_OPCODE_YZ(4, 2): /*INI*/
                     assert(0);
-                case Z80_OPCODE_YZ(4, 3):
+                case Z80_OPCODE_YZ(4, 3): /*OUTI*/
                     assert(0);
 
-                case Z80_OPCODE_YZ(5, 0):
+                case Z80_OPCODE_YZ(5, 0): /*LDD*/
                     assert(0);
-                case Z80_OPCODE_YZ(5, 1):
+                case Z80_OPCODE_YZ(5, 1): /*CPD*/
                     assert(0);
-                case Z80_OPCODE_YZ(5, 2):
+                case Z80_OPCODE_YZ(5, 2): /*IND*/
                     assert(0);
-                case Z80_OPCODE_YZ(5, 3):
+                case Z80_OPCODE_YZ(5, 3): /*OUTD*/
                     assert(0);
                     return Z80_STAGE_RESET;
 
                 case Z80_OPCODE_YZ(6, 0):            /*LDIR; Size: 2; Flags: H,P,N (cleared)*/
                     //(DE) <-- (HL); ++DE; ++HL; --BC; BC? repeat : end;
-                    //Test wether we have finished already
-                    if (Z80_BC == 0)
-                        return Z80_STAGE_RESET;
                     //Perform a read
-                    else if (z80.read_index == 0){
+                    if (z80.read_index == 0){
                         z80.read_address = Z80_HL;
                         return Z80_STAGE_M2;
                     }
@@ -1036,20 +1033,45 @@ int z80_instruction_decode(){
                         }
                     }
 
-                case Z80_OPCODE_YZ(6, 1):
+                case Z80_OPCODE_YZ(6, 1): /*CPIR*/
                     assert(0);
-                case Z80_OPCODE_YZ(6, 2):
+                case Z80_OPCODE_YZ(6, 2): /*INIR*/
                     assert(0);
-                case Z80_OPCODE_YZ(6, 3):
-                    assert(0);
+                case Z80_OPCODE_YZ(6, 3):                        /*OTIR; Size: 2; Flags: Z,N*/
+                    //(C)<-(HL), B<-B – 1, HL<-HL + 1; B? repeat : end
+                    //Perform read
+                    if (z80.read_index == 0){
+                        z80.read_address = Z80_HL;
+                        return Z80_STAGE_M2;
+                    }
+                    //Perform write
+                    else if (z80.write_index == 0){
+                        z80.write_address = Z80_C | (((uint16_t)Z80_A) << 8);
+                        z80.write_is_io = 1;
+                        z80.write_buffer[0] = z80.read_buffer[0];
+                        return Z80_STAGE_M3;
+                    }
+                    //Update state and flags
+                    else{
+                        ++Z80_HL;
+                        --Z80_B;
+                        Z80_F = Z80_F & (Z80_CLRFLAG_ZERO & Z80_CLRFLAG_ADD); //Z,N
+                        if (Z80_B){ //Repeat instruction
+                            Z80_PC = Z80_PC - 2;
+                            return Z80_STAGE_RESET;
+                        }
+                        else{
+                            return Z80_STAGE_RESET;
+                        }
+                    }
 
-                case Z80_OPCODE_YZ(7, 0):
+                case Z80_OPCODE_YZ(7, 0): /*LDDR*/
                     assert(0);
-                case Z80_OPCODE_YZ(7, 1):
+                case Z80_OPCODE_YZ(7, 1): /*CPDR*/
                     assert(0);
-                case Z80_OPCODE_YZ(7, 2):
+                case Z80_OPCODE_YZ(7, 2): /*INDR*/
                     assert(0);
-                case Z80_OPCODE_YZ(7, 3):
+                case Z80_OPCODE_YZ(7, 3): /*OTDR*/
                     assert(0);
                     return Z80_STAGE_RESET;
 

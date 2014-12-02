@@ -120,7 +120,7 @@ void vdp_io(){
     }
 
     //If not IO, just return
-    if (z80_n_ioreq)
+    if (z80_n_ioreq || (z80_n_rd && z80_n_wr))
         return;
 
     //Test bits 7,6 and 0
