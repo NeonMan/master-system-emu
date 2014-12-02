@@ -139,8 +139,8 @@ void emu_loop(){
             per_tick();
         }
 
-        ///Update SDL. @bug correct the rendering rate to one frame every SMS frame.
-        if ((edge_count % 3000) == 0){
+        ///Update SDL. 59659
+        if ((edge_count % 59659) == 0){
             vdp_to_sdl(framebuffer, 0, screen);
             SDL_UpdateWindowSurface(emu_window);
         }
