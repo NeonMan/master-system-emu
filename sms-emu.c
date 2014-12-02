@@ -26,9 +26,9 @@ SDL_Window* emu_window;
 
 //Naive and slow conversion from VDP framebuffer to SDL surface.
 int vdp_to_sdl(void* vdp_fb, void* vdp_pal, SDL_Surface* surf){
-    if (surf->h < VDP_HEIGHT_PIXELS) return 0;
+	uint8_t* fb = (uint8_t*)vdp_fb;
+	if (surf->h < VDP_HEIGHT_PIXELS) return 0;
     if (surf->w < VDP_WIDTH_PIXELS) return 0;
-    uint8_t* fb = (uint8_t*)vdp_fb;
 
     int i;
     /*OpenMP might speedup things*/
@@ -126,7 +126,8 @@ void emu_loop(){
         //  * Peripherial
         //
         z80_tick();
-        vdp_tick();
+        if ((edge_count % 2) == 0)
+            vdp_tick();
         if ((edge_count % 32) == 0)
             psg_tick();
         if ((!z80_n_mreq) && ((!z80_n_rd) || (!z80_n_wr))){ //Memory-mapped operation
