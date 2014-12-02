@@ -11,9 +11,9 @@
 
 //Naive and slow conversion from VDP framebuffer to SDL surface.
 int vdp_to_sdl(void* vdp_fb, void* vdp_pal, SDL_Surface* surf){
-    if (surf->h < VDP_HEIGHT_PIXELS) return 0;
+	uint8_t* fb = (uint8_t*)vdp_fb;
+	if (surf->h < VDP_HEIGHT_PIXELS) return 0;
     if (surf->w < VDP_WIDTH_PIXELS) return 0;
-    uint8_t* fb = (uint8_t*)vdp_fb;
 
     int i;
     /*OpenMP might speedup things*/
