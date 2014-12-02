@@ -658,9 +658,13 @@ int z80_instruction_decode(){
             //Select ALU operation by 'y'
             switch (y[0]){
             case Z80_ALUOP_ADD:
+                assert(0); /*Unimplemented*/ return Z80_STAGE_RESET;
             case Z80_ALUOP_ADC:
+                assert(0); /*Unimplemented*/ return Z80_STAGE_RESET;
             case Z80_ALUOP_SUB:
+                assert(0); /*Unimplemented*/ return Z80_STAGE_RESET;
             case Z80_ALUOP_SBC:
+                assert(0); /*Unimplemented*/ return Z80_STAGE_RESET;
             case Z80_ALUOP_AND:
             {
                 const uint8_t orig_a = Z80_A;
@@ -709,6 +713,7 @@ int z80_instruction_decode(){
                 return Z80_STAGE_RESET;
             }
             case Z80_ALUOP_CP:
+                assert(0); /*Unimplemented*/ return Z80_STAGE_RESET;
             default:
                 assert(0); /*Unimplemented*/ return Z80_STAGE_RESET;
             }
@@ -935,7 +940,14 @@ int z80_instruction_decode(){
 
             case Z80_OPCODE_XZ(1, 2):
                 if (!(q[1])){                              /*SBC HL,rp[p]; Size: 2; Flags: ?*/
-                    assert(0);
+                    const uint16_t old_hl = Z80_HL;
+                    Z80_HL = (Z80_F & Z80_FLAG_CARRY) ? Z80_HL - *(z80_rp[p[1]]) : Z80_HL - *(z80_rp[p[1]]) - 1;
+                    Z80_F = Z80_FLAG_ADD
+                        | Z80_SETFLAG_BORROW(old_hl, Z80_HL)
+                        | Z80_SETFLAG_SIGN(Z80_HL)
+                        | Z80_SETFLAG_ZERO(Z80_HL)
+                        | Z80_SETFLAG_HC((old_hl >> 8), (Z80_HL >> 8))
+                        | Z80_SETFLAG_OVERFLOW(old_hl, Z80_HL);
                     return Z80_STAGE_RESET;
                 }
                 else        {                              /*ADC HL,rp[p]; Size: 2; Flags: ?*/
@@ -1091,6 +1103,14 @@ int z80_instruction_decode(){
             switch (z80.opcode[0] & (Z80_OPCODE_X_MASK | Z80_OPCODE_Z_MASK)){
             case Z80_OPCODE_XZ(0, 0):
                 switch (y[0]){
+                case 2:                                          /*DJNZ e; Size: 2; Flags: None*/
+                    --Z80_B;
+                    if (Z80_B)
+                        return Z80_STAGE_RESET;
+                    else{
+                        Z80_PC += ((int8_t)z80.opcode[1]);
+                        return Z80_STAGE_RESET;
+                    }
                 case 3:                                           /*JR, e; Size: 2; Flags: None*/
                 {
                     const int8_t pc_shift = *((int8_t*)&z80.opcode[1]); ///<-- @bug Endianness
@@ -1180,6 +1200,16 @@ int z80_instruction_decode(){
                     //Otherwise, reset.
                     else
                         return Z80_STAGE_RESET;
+                case 3:                                    /*IN A, (n); Size: 2; Flags: None*/
+                    if (z80.read_index == 0){
+                        z80.read_address = z80.opcode[1] | (((uint16_t)Z80_A) << 8);
+                        z80.read_is_io = 1;
+                        return Z80_STAGE_M2;
+                    }
+                    else{
+                        Z80_A = z80.read_buffer[0];
+                        return Z80_STAGE_RESET;
+                    }
                 default:
                     assert(0); /*Unimplemented*/
                     return Z80_STAGE_RESET;
