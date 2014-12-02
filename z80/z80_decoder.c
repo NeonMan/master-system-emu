@@ -651,9 +651,6 @@ int z80_instruction_decode(){
                     z80.read_address = Z80_HL;
                     return Z80_STAGE_M2;
                 }
-                else{
-                    Z80_A = Z80_A ^ z80.read_buffer[0];
-                }
             }
             //Select ALU operation by 'y'
             switch (y[0]){
@@ -713,7 +710,22 @@ int z80_instruction_decode(){
                 return Z80_STAGE_RESET;
             }
             case Z80_ALUOP_CP:
-                assert(0); /*Unimplemented*/ return Z80_STAGE_RESET;
+            {
+                uint8_t new_a;
+                if (z80_r[z[0]]){                             /*CP r[z]; Size: 1; Flags: All*/
+                    new_a = Z80_A - *(z80_r[z[0]]);
+                }
+                else{                                         /*CP (HL); Size: 1; Flags: All*/
+                    new_a = Z80_A - z80.read_buffer[0];
+                }
+                Z80_F =  Z80_SETFLAG_SIGN(Z80_A)
+                    | Z80_SETFLAG_ZERO(Z80_A)
+                    | Z80_SETFLAG_HC(Z80_A, new_a)
+                    | Z80_SETFLAG_OVERFLOW(Z80_A, new_a)
+                    | Z80_FLAG_ADD
+                    | Z80_SETFLAG_BORROW(Z80_A, new_a);
+                return Z80_STAGE_RESET;
+            }
             default:
                 assert(0); /*Unimplemented*/ return Z80_STAGE_RESET;
             }
