@@ -142,6 +142,7 @@ void emu_loop(){
 
         ///Update SDL. 59659
         if ((edge_count % 59659) == 0){
+            vdp_get_pixels(framebuffer);
             vdp_to_sdl(framebuffer, 0, screen);
             SDL_UpdateWindowSurface(emu_window);
         }
