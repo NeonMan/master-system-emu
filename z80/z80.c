@@ -4,8 +4,8 @@
  *  Implementation of a z80 CPU, ideally cycle-perfect.
  *
  *  Known issues.
- *  @fixme HI-Impedance is not implemented, no busreq or busack.
- *  @fixme instruction decode/execute.
+ *  @note HI-Impedance is not implemented, no busreq or busack.
+ *  @note instruction decode/execute.
  */
 #include "z80.h"
 #include "z80_macros.h"
