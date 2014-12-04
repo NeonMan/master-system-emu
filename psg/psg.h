@@ -1,5 +1,5 @@
 /**
- *  @file psh.h
+ *  @file psg.h
  *  @brief PSG functions and variables.
  */
 #ifndef __PSG_H

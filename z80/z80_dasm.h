@@ -33,7 +33,7 @@ struct z80d_opcode_tree_s{
 typedef struct z80d_opcode_tree_s z80d_optree;
 
 ///List header of z80d_opcode
-struct z80_opcode_list_s{
+struct z80d_opcode_list_s{
     struct z80d_opcode_s* head;
 };
 typedef struct z80d_opcode_tree_s z80d_oplist;

@@ -23,7 +23,7 @@ extern "C" {
 #define IO_UNK1           (1<<1)
 #define IO_UNK0           (1)
 
-extern uint8_t io_stat; ///<-- The exported #CE lines. #MREQ/#IOREQ dependant
+extern uint8_t io_stat; ///<-- The exported CE lines. MREQ/IOREQ dependant
 
 #ifdef __cplusplus
 }

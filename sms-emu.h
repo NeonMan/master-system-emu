@@ -1,5 +1,5 @@
 /**
-* @file vdp-emu.h
+* @file sms-emu.h
 * @brief Master System Emulator.
 *
 */
