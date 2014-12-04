@@ -40,6 +40,7 @@ void rom_set_image(uint8_t* data, size_t count);
 //Debug functions
 ///Return a pointer to the whole ROM image.
 void* romdbg_get_rom();
+
 ///Return the mapper status
 uint8_t romdbg_get_slot(uint8_t slot);
 

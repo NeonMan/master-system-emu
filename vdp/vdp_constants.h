@@ -1,3 +1,8 @@
+/**
+ * @file vdp_constants.h
+ * @brief VDP and VDP mode constants.
+ *
+ */
 #ifndef __VDP_CONSTANTS_H
 #define __VDP_CONSTANTS_H
 

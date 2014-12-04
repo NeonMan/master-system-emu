@@ -30,11 +30,9 @@ extern "C" {
     uint8_t psg_tick();
 
     /**
-    * @brief Perform a clock cycle, return true if a sample is ready.
-    *
-    * @returns true if a sample is ready.
-    */
-    uint8_t psg_clock();
+     * @brief update PSG registers but don't increment timer towards a new sample. 
+     */
+    void psg_io();
 
     /**
     * @brief Configures the psg emulator for a sample rate.

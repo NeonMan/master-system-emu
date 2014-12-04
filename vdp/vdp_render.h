@@ -1,3 +1,8 @@
+/**
+* @file vdp_render.h
+* @brief Provides functions to convert from VDP state to bitmap.
+*
+*/
 #ifndef __VDP_RENDER_H
 #define __VDP_RENDER_H
 

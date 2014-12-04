@@ -37,7 +37,7 @@ uint8_t make_data(uint8_t data){
     int16_t psg_next_sample = 0;
 
     // --- Internal PSG state ---
-        uint32_t cycle = 0; ///<-- Current clock cycle
+        //uint32_t cycle = 0; ///<-- Current clock cycle
 
         ///Clock ratio between psg clock and sample rate *128
         uint32_t clock_ratio; // = (psg_clock_f << 7) / psg_sample_rate;
@@ -188,7 +188,7 @@ uint8_t make_data(uint8_t data){
         }
 
         //Update clock state
-        ++cycle;
+        //++cycle;
         clock_current_ratio += 128;
 
         //Generate sample, if needed
@@ -207,12 +207,7 @@ uint8_t make_data(uint8_t data){
         clock_ratio = (psg_clock_f << 7) / rate;
     }
 
-    //Preform a clock cycle (with clock divider) (see .h)
-    uint8_t psg_clock(){
-        ++divider_state;
-        if (divider_state == 16){
-            divider_state = 0;
-            return psg_tick();
-        }
-        return 0;
+    void psg_io(){
+        clock_current_ratio -= 128;
+        psg_tick();
     }

@@ -1,3 +1,8 @@
+/**
+* @file vdp-emu.h
+* @brief Master System Emulator.
+*
+*/
 #ifndef __SMS_EMU_H
 #define __SMS_EMU_H
 

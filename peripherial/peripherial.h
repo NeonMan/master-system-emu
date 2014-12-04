@@ -13,6 +13,7 @@
 extern "C" {
 #endif
 
+///Updates the peripherial ports.
 void per_tick();
 
 #ifdef __cplusplus

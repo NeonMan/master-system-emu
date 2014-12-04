@@ -1,3 +1,8 @@
+/**
+* @file vdp.h
+* @brief Emulatior of the TMS9918A SEGA variation.
+*
+*/
 #ifndef __VDP_H
 #define __VDP_H
 

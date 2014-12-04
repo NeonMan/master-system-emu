@@ -45,11 +45,3 @@ void sdsc_write(uint8_t b){
     //Dumb console passthrough
     putc(b, stdout);
 }
-
-///Write a string to the sdsc console
-void sdsc_write_str(char* str){
-    while ((*str) != 0){
-        sdsc_write(*str);
-        str++;
-    }
-}

@@ -1,3 +1,8 @@
+/**
+ * @file z80_macros.h
+ * @brief Helper macros and constants for the z80 emulator.
+ *
+ */
 #ifndef __Z80_MACROS_H
 #define __Z80_MACROS_H
 
