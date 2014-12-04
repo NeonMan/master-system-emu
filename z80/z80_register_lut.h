@@ -13,9 +13,9 @@ extern struct z80_s z80; //<-- Provided by z80.c, must be forward-declared here.
 // --- Register lookup tables ---
 // The pointers (all array values) themselves declared here are constant.
 // The pointed variable is not.
-////Register pairs lookup table
+///Register pairs lookup table
 static uint16_t* const z80_rp[4] = { &Z80_BC, &Z80_DE, &Z80_HL, &Z80_SP };
-////Register pairs lookup table (AF option)
+///Register pairs lookup table (AF option)
 static uint16_t* const z80_rp2[4] = { &Z80_BC, &Z80_DE, &Z80_HL, &Z80_AF };
 ///Register lookup table
 static uint8_t* const z80_r[8] = { &Z80_B, &Z80_C, &Z80_D, &Z80_E, &Z80_H, &Z80_L, 0, &Z80_A };
@@ -27,19 +27,18 @@ static uint8_t  const z80_cc_stat[8] = { 0, Z80_FLAG_ZERO, 0, Z80_FLAG_CARRY, 0,
 static int8_t const z80_im[][2] = { { 0, 0 }, { 1, 0 }, { 1, 1 }, { 2, 2 }, { 0, 0 }, { 1, 0 }, { 1, 1 }, { 2, 2 } };
 
 //IX version
-////Register pairs lookup table
-
+///Register pairs lookup table
 static uint16_t* const z80_rp_ix[4] = { &Z80_BC, &Z80_DE, &Z80_IX, &Z80_SP};
-////Register pairs lookup table (AF option)
+///Register pairs lookup table (AF option)
 static uint16_t* const z80_rp2_ix[4] = { &Z80_BC, &Z80_DE, &Z80_IX, &Z80_AF};
 ///Register lookup table
 static uint8_t* const z80_r_ix[8] = { &Z80_B, &Z80_C, &Z80_D, &Z80_E, &Z80_IXH, &Z80_IXL, 0, &Z80_A };
 /*                                    0       1       2       3       4         5         6  7 */
 
 //IY version
-////Register pairs lookup table
+///Register pairs lookup table
 static uint16_t* const z80_rp_iy[4] = { &Z80_BC, &Z80_DE, &Z80_IY, &Z80_SP};
-////Register pairs lookup table (AF option)
+///Register pairs lookup table (AF option)
 static uint16_t* const z80_rp2_iy[4] = { &Z80_BC, &Z80_DE, &Z80_IY, &Z80_AF};
 ///Register lookup table
 static uint8_t* const z80_r_iy[8] = { &Z80_B, &Z80_C, &Z80_D, &Z80_E, &Z80_IYH, &Z80_IYL, 0, &Z80_A };

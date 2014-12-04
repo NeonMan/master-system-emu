@@ -12,7 +12,8 @@
 extern "C" {
 #endif
 
-void io_tick(); ///<-- Updates the IO chip state.
+///Updates the IO chip state.
+void io_tick();
 
 #ifdef __cplusplus
 }

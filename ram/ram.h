@@ -13,10 +13,11 @@
 extern "C" {
 #endif
 
+///Executes a RAM read/write.
 void ram_tick();
 
 //Debug functions
-///Returns a pointer to the ram image
+///Returns a pointer to the ram image.
 void* ramdbg_get_mem();
 
 #ifdef __cplusplus

@@ -1,5 +1,5 @@
 /** @file z80.h
- *  @brief The z80 module functions.
+ *  @brief The z80 emulation functions.
  */
 #ifndef __Z80_H
 #define __Z80_H
@@ -38,13 +38,11 @@ struct z80_s {
     uint8_t data_latch; ///<-- When data bus is sampled, it is stored here.
     uint8_t iff[2]; ///<-- Interrupt flip/flops
 
-    ///Current opcode
-    uint8_t opcode[4]; //An opcode is at most 4 bytes long
-    ///Current opcode byte
-    uint8_t opcode_index;
+    uint8_t opcode[4]; ///<-- Opcode bytes, an opcode is at most 4 bytes long.
+    uint8_t opcode_index; ///<-- Current read opcode size.
 
     //Current stage
-    uint8_t stage;
+    uint8_t stage; ///<-- Current Z80 stage. Either M1, M2, M3 or RESET (first M1).
 
     //Each stages' state
     unsigned int m1_tick_count; ///<-- Counts the number of half cycles on the M1 stage.
@@ -64,10 +62,14 @@ struct z80_s {
     uint8_t  write_is_io;     ///<-- True if write is IO instead of mem
 };
 
+///Executes a z80 half-cycle.
 void z80_tick();
+
+///Initializes the z80 state.
 void z80_init(void(*data_f) (uint8_t), void(*ctrl_f) (uint8_t));
 
 //Debug functions
+///Returns a pointer to the current z80 struct.
 struct z80_s* z80dbg_get_z80();
 
 #ifdef __cplusplus

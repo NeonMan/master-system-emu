@@ -1,3 +1,8 @@
+/**
+* @file sdsc.h
+* @brief Sample implementations of SDSC callbacks.
+*
+*/
 #ifndef __SDSC_H
 #define __SDSC_H
 
@@ -7,9 +12,10 @@
 extern "C" {
 #endif
 
+///Sample SDSC data callback function.
 void sdsc_write(uint8_t b);
+///Sample SDSC control callback function.
 void sdsc_control(uint8_t b);
-void sdsc_write_str(char* str);
 
 #ifdef __cplusplus
 }

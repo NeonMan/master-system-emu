@@ -1,11 +1,11 @@
+/**
+* @file vdp_font.h
+* @brief Mode0 font for the VDP.
+*
+* Font converted from smspower.org SMS export fonts.
+*/
 #ifndef __VDP_FONT_H
 #define __VDP_FONT_H
-
-/**
- * @file Mode0 font for the VDP.
- * 
- * Font converted from smspower.org SMS export fonts.
- */
 
 #include <stdint.h>
 uint8_t vdp_font[256*8] = {

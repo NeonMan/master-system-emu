@@ -31,9 +31,9 @@ int vdp_to_sdl(void* vdp_fb, void* vdp_pal, SDL_Surface* surf){
     if (surf->w < VDP_WIDTH_PIXELS) return 0;
 
     int i;
-    /*OpenMP might speedup things*/
+    /*OpenMP might speedup things (it does)*/
     /*Don't know how SDL behaves with OpenMP*/
-    //#pragma omp parallel for private(i)
+//#pragma omp parallel for private(i)
     for (i = 0; i < VDP_FRAMEBUFFER_SIZE; i++){
         const uint32_t red = (((uint32_t)fb[i] & (3 << 4)) >> 4) << (16 + 6);
         const uint32_t green = (((uint32_t)fb[i] & (3 << 2)) >> 2) << (8 + 6);
@@ -138,6 +138,7 @@ void emu_loop(){
         if ((!z80_n_ioreq) && ((!z80_n_rd) || (!z80_n_wr))){ //IO operation
             io_tick();
             per_tick();
+            psg_io();
         }
 
         ///Update SDL. 59659

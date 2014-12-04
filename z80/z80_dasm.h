@@ -1,3 +1,8 @@
+/**
+* @file z80_dasm.h
+* @brief Provides functions to decode z80 opcodes into human-readable text.
+*
+*/
 #ifndef __Z80_DASM
 #define __Z80_DASM
 
