@@ -58,7 +58,6 @@ void emu_log(char* msg, int level){
 
 void emu_cleanup(){
     emu_log("Emulator exitting", EMU_LOG_INFO);
-    Mix_Quit();
     SDL_Quit();
 }
 
@@ -70,7 +69,6 @@ int emu_init(){
     rv = SDL_Init(SDL_INIT_EVERYTHING);
     if (!(rv | SDL_INIT_VIDEO))
         return -1;
-    rv = Mix_Init(0);
 
     emu_window = SDL_CreateWindow("SMSE", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 256 + 64, 192 + 64, 0);
     if (!emu_window)

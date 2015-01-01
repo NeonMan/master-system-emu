@@ -60,7 +60,7 @@ project (SMS-Emu)
 
 # --- psg-play
 add_executable (psg-play psg-play.c)
-target_link_libraries (psg-play psg)
+target_link_libraries (psg-play psg SDL2 SDL2main)
 
 # --- test-mem
 add_executable (test-mem test-mem.c)
@@ -76,4 +76,4 @@ target_link_libraries (test-vdp vdp SDL2 SDL2main)
 
 # --- sms-emu
 add_executable (emu sms-emu.c)
-target_link_libraries (emu smsrom smsio smsram psg z80 peripherial vdp sdsc SDL2 SDL2main SDL2_mixer)
+target_link_libraries (emu smsrom smsio smsram psg z80 peripherial vdp sdsc SDL2 SDL2main)

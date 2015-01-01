@@ -39,7 +39,7 @@ extern "C" {
     *
     * @param rate Sample rate in Hz
     */
-    void set_sample_rate(uint32_t rate);
+    void psg_set_rate(uint32_t rate);
 
     /**
     * @brief Generates a latch/data byte

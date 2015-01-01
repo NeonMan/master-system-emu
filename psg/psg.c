@@ -201,7 +201,7 @@ uint8_t make_data(uint8_t data){
     }
 
     //Configure sample rate (see .h)
-    void set_sample_rate(uint32_t rate){
+    void psg_set_rate(uint32_t rate){
         psg_sample_rate = rate;
         clock_current_ratio = 0;
         clock_ratio = (psg_clock_f << 7) / rate;

@@ -1,17 +1,57 @@
 #include <stdio.h>
 #include <time.h>
+#include <SDL/SDL.h>
 
 #include "z80/fake_z80.h"
 #include "psg/psg.h"
 
-//Generate a couple seconds of sound
-int main(int argc, char *argv[]) {
-    unsigned long sample_count = 0;
-    unsigned long cycle_count = 0;
-    const unsigned long rate = 22050;
+#define SAMPLE_RATE  22050
+#define SAMPLE_COUNT (SAMPLE_RATE * 2)
+#define SAMPLES_PER_CHUNK 1024
 
-    set_sample_rate(rate);
+volatile int playing;
+int sample_count = 0;
 
+//stream: Where the samples are written.
+//   len: Stream size in bytes.
+void audio_callbackf(void *userdata, Uint8 * stream, int len){
+    //Fill the stream buffer. In samples:
+    //    len / bytes_per_sample
+    //bytes_per_sample is 2.
+    for (int i = 0; i < len; i+=2){
+        while (!psg_tick()){}
+        *((uint16_t*)(stream + i)) = psg_next_sample;
+    }
+
+    sample_count += SAMPLES_PER_CHUNK;
+    if (sample_count > SAMPLE_COUNT)
+        playing = 0;
+}
+
+int main(int argc, char** argv){
+    // --- Initializing ---
+    const unsigned long rate = SAMPLE_RATE;
+
+    printf("Available audio drivers.\n");
+    for (int i = 0; i < SDL_GetNumAudioDrivers(); i++){
+        printf("%d: %s\n", i, SDL_GetAudioDriver(i));
+    }
+    SDL_Init(SDL_INIT_AUDIO);
+
+    SDL_AudioSpec audio_want, audio_set;
+    SDL_zero(audio_want);
+    audio_want.freq = rate;
+    audio_want.channels = 1;
+    audio_want.format = AUDIO_S16SYS;
+    audio_want.samples = SAMPLES_PER_CHUNK;
+    audio_want.callback = audio_callbackf;
+    SDL_AudioDeviceID audio_dev;
+    audio_dev = SDL_OpenAudioDevice(NULL, 0, &audio_want, &audio_set, SDL_AUDIO_ALLOW_ANY_CHANGE);
+    //audio_dev = SDL_OpenAudio(&audio_want, &audio_set);
+    playing = 1;
+
+    // --- Setup PSG ---
+    psg_set_rate(SAMPLE_RATE);
     //Write 0 to the three first volume registers
     //Pull n_we low
     z80_n_wr = 0;
@@ -34,59 +74,14 @@ int main(int argc, char *argv[]) {
     //Pull n_we back up
     z80_n_wr = 1;
 
+    // --- Playing ---
+    SDL_PauseAudioDevice(audio_dev, 0);
 
-    //Starting time
-    time_t init_time;
-    time(&init_time);
-    FILE* out_f = fopen("psg-play.wav", "wb");
+    while (playing)
+        SDL_Delay(100);
 
-    //Write WAV header
-    fwrite("RIFF", 4, 1, out_f);
-    fputc(0xbc, out_f);
-    fputc(0x4a, out_f);
-    fputc(0x43, out_f);
-    fputc(0x00, out_f); //File size - 8.
-    fwrite("WAVE", 4, 1, out_f);
-    //Format chunk
-    fwrite("fmt ", 4, 1, out_f); //ID
-    fputc(0x10, out_f);
-    fputc(0x00, out_f);
-    fputc(0x00, out_f);
-    fputc(0x00, out_f); //Size
-    fputc(0x01, out_f);
-    fputc(0x00, out_f); //Compression, PCM
-    fputc(0x01, out_f);
-    fputc(0x00, out_f); //Channels, 1
-    fputc(0x22, out_f);
-    fputc(0x56, out_f);
-    fputc(0x00, out_f);
-    fputc(0x00, out_f);//sample rate
-    fputc(0x44, out_f);
-    fputc(0xAC, out_f);
-    fputc(0x00, out_f);
-    fputc(0x00, out_f);//bitrate
-    fputc(0x02, out_f);
-    fputc(0x00, out_f);//bytes per sample
-    fputc(0x10, out_f);
-    fputc(0x00, out_f);//significant bits
-
-    //All the samples in one huge chunk
-    fwrite("data", 4, 1, out_f);
-    fputc(0x90, out_f);
-    fputc(0x4a, out_f);
-    fputc(0x43, out_f);
-    fputc(0x00, out_f);//size
-
-    while (sample_count < (rate * 100)){
-        ++cycle_count;
-        if (psg_tick()){
-            ++sample_count;
-            fputc(*(char*)&(psg_next_sample), out_f);
-            fputc(*((char*)&(psg_next_sample)+1), out_f);
-        }
-    }
-    fclose(out_f);
-    time_t end_time;
-    time(&end_time);
-    fprintf(stderr, "\r\n\r\n%lu samples in %ld ms\r\n\r\n", sample_count, (int)(end_time - init_time));
+    // --- Cleanup --.
+    SDL_CloseAudioDevice(audio_dev);
+    SDL_Quit();
+    return 0;
 }
