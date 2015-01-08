@@ -55,7 +55,7 @@ if (UNIX)
   add_subdirectory (z80tests)
 endif (UNIX)
 
-# --- The project executables ---
+# --- The project executables config ---
 project (SMS-Emu)
 
 # --- psg-play
@@ -76,4 +76,4 @@ target_link_libraries (test-vdp vdp SDL2 SDL2main)
 
 # --- sms-emu
 add_executable (emu sms-emu.c)
-target_link_libraries (emu smsrom smsio smsram psg z80 peripherial vdp sdsc SDL2 SDL2main)
+target_link_libraries (emu smsrom smsio smsram psg z80 peripherial vdp sdsc SDL2 SDL2main simplediag)
