@@ -63,7 +63,7 @@ struct vdp_s {
     //Ram, registers and stuff
     uint8_t cram[VDP_CRAM_SIZE]; ///<-- Color RAM, 32 bytes
     uint8_t vram[VDP_VRAM_SIZE]; ///<-- VRAM, 16K
-    uint8_t v; ///<-- V counter (Register #10)
+    //uint8_t v; ///<-- V counter (Register #10)
     uint16_t h; ///<-- H counter
 	uint8_t buffer;
 	uint8_t status;

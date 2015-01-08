@@ -6,7 +6,7 @@
 #include "psg/psg.h"
 
 #define SAMPLE_RATE  22050
-#define SAMPLE_COUNT (SAMPLE_RATE * 2)
+#define SAMPLE_COUNT (SAMPLE_RATE * 1)
 #define SAMPLES_PER_CHUNK 1024
 
 volatile int playing;
@@ -20,7 +20,7 @@ void audio_callbackf(void *userdata, Uint8 * stream, int len){
     //bytes_per_sample is 2.
     for (int i = 0; i < len; i+=2){
         while (!psg_tick()){}
-        *((uint16_t*)(stream + i)) = psg_next_sample;
+        *((int16_t*)(stream + i)) = psg_next_sample;
     }
 
     sample_count += SAMPLES_PER_CHUNK;
@@ -36,7 +36,9 @@ int main(int argc, char** argv){
     for (int i = 0; i < SDL_GetNumAudioDrivers(); i++){
         printf("%d: %s\n", i, SDL_GetAudioDriver(i));
     }
+    
     SDL_Init(SDL_INIT_AUDIO);
+    //SDL_AudioInit("disk"); //Uncomment to dump raw samples to sdlaudio.raw
 
     SDL_AudioSpec audio_want, audio_set;
     SDL_zero(audio_want);
@@ -46,8 +48,11 @@ int main(int argc, char** argv){
     audio_want.samples = SAMPLES_PER_CHUNK;
     audio_want.callback = audio_callbackf;
     SDL_AudioDeviceID audio_dev;
-    audio_dev = SDL_OpenAudioDevice(NULL, 0, &audio_want, &audio_set, SDL_AUDIO_ALLOW_ANY_CHANGE);
-    //audio_dev = SDL_OpenAudio(&audio_want, &audio_set);
+    audio_dev = SDL_OpenAudioDevice(NULL, 0, &audio_want, &audio_set, 0);
+    if (audio_dev == 0){
+        printf("Unable to configure audio device.\n");
+        exit(-1);
+    }
     playing = 1;
 
     // --- Setup PSG ---

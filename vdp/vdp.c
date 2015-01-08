@@ -136,8 +136,7 @@ void vdp_io(){
         if (z80_n_rd) //Only allow reads
             return;
         vdp.ioreq_done = 1; //<-- Set internal IO to prevent spurious IO
-        //z80_data = vdp.regs[VDP_REG_LINE_COUNTER];
-        z80_data = vdp.v;
+        z80_data = vdp.regs[VDP_REG_LINE_COUNTER];
         return;
     // --- If Address' bit 7 is set and 6 is not. Address is in range [0x80-0xBF]
     case ((1 << 7) | 1) : //Odd address is control port
@@ -167,9 +166,9 @@ void vdp_io(){
 void vdp_update(){
     //Update H counter [0,256)
     vdp.h = (vdp.h + 1) % 256; 
-    //Update V counter
+    ///Update V counter @bug VCounter behaves differently depending on video mode.
     if (!(vdp.h)){
-        ++(vdp.v);
+        ++(vdp.regs[VDP_REG_LINE_COUNTER]);
     }
 }
 

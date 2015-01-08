@@ -15,6 +15,7 @@
 #include <string.h>
 #include <SDL/SDL.h>
 #include <SDL/SDL_mixer.h>
+#include <simplediag/simplediag.h>
 
 #include "sms-emu.h"
 
@@ -77,7 +78,12 @@ int emu_init(){
     // Load a ROM
     uint8_t* full_rom = malloc(ROM_MAX_SIZE);
     memset(full_rom, 0, ROM_MAX_SIZE);
-    FILE* in_f = fopen("zexdoc.sms", "rb");
+    char* diag_path = SD_file_chooser("Open ROM", "ROM Files (*.{sms,bin})", "", 0);
+    FILE* in_f;
+    if (diag_path)
+        in_f = fopen(diag_path, "rb");
+    else
+        in_f = fopen("zexdoc.sms", "rb");
     if (in_f == 0){
         emu_log("Failed to load rom", EMU_LOG_CRITICAL);
         return -3;
