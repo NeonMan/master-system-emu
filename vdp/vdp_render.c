@@ -113,6 +113,18 @@ void vdp_mode3_pixels(uint8_t* fb){
 // --- SMS Mode 4 ---
 //Renders Mode 4 (SMS custom mode)
 void vdp_mode4_pixels(uint8_t* fb){
+    //Mode 4 repurposes some registers and ignores others
+    //  r00: Mode Control 1
+    //  r01: Mode Control 2
+    //  r02: Name Table base addr. (Handled different)
+    //  r03: [IGNORED] Should be all set in mode 4.
+    //  r04: [IGNORED] Bits 2-0 must be set.
+    //  r05: Sprite Attribute Table base. (Same-ish, bit 0 selects sprite upper/lower 128B bank)
+    //  r06: Sprite pattern generator base addr. (Bits 0,1 mask bits 8 and 6 of the tile index)
+    //  r07: Overscan color.
+    //  r08: X Scroll (new on VDP)
+    //  r09: Y Scroll (new on VPD)
+    //  r0A: V counter (same)
     assert(0); ///<-- @bug Unimplemented
 }
 
