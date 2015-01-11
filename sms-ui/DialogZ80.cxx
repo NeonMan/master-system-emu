@@ -19,7 +19,7 @@ void DialogZ80::cb_buttonRunning(Fl_Light_Button* o, void* v) {
 }
 
 DialogZ80::DialogZ80() {
-  { windowDialog = new Fl_Double_Window(570, 292, "z80");
+  { windowDialog = new Fl_Double_Window(570, 291, "z80");
     windowDialog->user_data((void*)(this));
     { Fl_Group* o = new Fl_Group(0, 20, 165, 265, "Registers");
       { textAF = new Fl_Output(25, 30, 50, 30, "AF");
@@ -201,4 +201,58 @@ void DialogZ80::set_running_ptr(uint8_t* p) {
 */
 void DialogZ80::set_z80_ptr(struct z80_s* p) {
   this->z80_ptr = p;
+}
+
+/**
+   Updates the dialog values
+*/
+void DialogZ80::update_values() {
+  if(this->z80_ptr){
+      #define __REG_TO_STR(R,S) _itoa((R)[0] + (((int)(R)[1])<<8), (S), 16)
+      #define __REG16_TO_STR(R,S) _itoa((R), (S), 16)
+      
+      char num_str[10] = {0,0,0,0,0,0,0,0,0,0};
+      //AF
+      __REG_TO_STR(z80_ptr->rAF, num_str);
+      this->textAF->value(num_str);
+      //BC
+      __REG_TO_STR(z80_ptr->rBC, num_str);
+      this->textBC->value(num_str);
+      //DE
+      __REG_TO_STR(z80_ptr->rDE, num_str);
+      this->textDE->value(num_str);
+      //HL
+      __REG_TO_STR(z80_ptr->rHL, num_str);
+      this->textHL->value(num_str);
+      //IX
+      __REG16_TO_STR(z80_ptr->rIX, num_str);
+      this->textIX->value(num_str);
+      //IY
+      __REG16_TO_STR(z80_ptr->rIY, num_str);
+      this->textIY->value(num_str);
+      //SP
+      __REG16_TO_STR(z80_ptr->rSP, num_str);
+      this->textSP->value(num_str);
+      //PC
+      __REG16_TO_STR(z80_ptr->rPC, num_str);
+      this->textPC->value(num_str);
+      
+      //AF'
+      __REG_TO_STR(z80_ptr->rAF + 2, num_str);
+      this->textAFp->value(num_str);
+      //BC'
+      __REG_TO_STR(z80_ptr->rBC + 2, num_str);
+      this->textBCp->value(num_str);
+      //DE'
+      __REG_TO_STR(z80_ptr->rDE + 2, num_str);
+      this->textDEp->value(num_str);
+      //HL'
+      __REG_TO_STR(z80_ptr->rHL + 2, num_str);
+      this->textHLp->value(num_str);
+      
+      //IR
+      _itoa(z80_ptr->rI, num_str, 16);
+      _itoa(z80_ptr->rR, num_str + 2, 16);
+      this->textIR->value(num_str);
+    }
 }
