@@ -7,6 +7,7 @@
  *  @note HI-Impedance is not implemented, no busreq or busack.
  *  @note instruction decode/execute.
  */
+
 #include "z80.h"
 #include "z80_macros.h"
 #include "z80_dasm.h"
@@ -42,8 +43,8 @@ uint8_t  z80_n_reset = 1; ///<-- !Reset (Input)
 uint8_t  z80_n_wait = 1;  ///<-- !Wait (Input)
 
 // Z80 to-be-documented signals
-uint8_t  z80_n_busreq = 1; ///<-- !Bus request (???)
-uint8_t  z80_n_busack = 1; ///<-- !Bus-acknowledge (???)
+uint8_t  z80_n_busreq = 1; ///<-- !Bus request (Input)
+uint8_t  z80_n_busack = 1; ///<-- !Bus-acknowledge (Output)
 
 //Sdsc data/control function pointers (decouple z80 from sdsc.h)
 void(*z80_sdsc_data) (uint8_t) = 0; ///<-- Function pointer for SDSC data port.
@@ -52,10 +53,30 @@ void(*z80_sdsc_control) (uint8_t) = 0; ///<-- Function pointer for SDSC control 
 ///Instance of the z80 struct. Used by the z80 module internally
 struct z80_s  z80;
 
+///Breakpoint table. If an address is nonzero there may be a breakpoint.
+uint8_t z80_breakpoints[Z80_ADDRESS_SIZE];
+
 // Forward declaration of functions
 int z80_stage_m1();
 int z80_stage_m2(uint8_t noexec);
 int z80_stage_m3(uint8_t noexec);
+
+///Sets a breakpoint
+void z80_set_breakpoint(uint16_t address, uint8_t flags){
+    //Unless it is an 8-bit IO breakpoint, simply set the coresponding
+    //byte on the breakpoint table.
+    if ((flags & (Z80_BREAK_IO_RD | Z80_BREAK_IO_WR)) && ((flags & Z80_BREAK_IO_16B) == 0)){
+        //8-bit IO breakpoint
+        for (uint16_t i = 0x0000; i < 0xFF00; i += 0x100){
+            z80_breakpoints[i | (address & 0xFF)] = flags;
+        }
+    }
+    else{
+        //Normal breakpoint
+        z80_breakpoints[address] = flags;
+    }
+
+}
 
 ///Prints the z80 registers to stdout
 void z80_dump_reg(){
@@ -128,6 +149,8 @@ void z80_dump_stack(void* ram, uint16_t sp, uint16_t base_addr, uint16_t count, 
 void z80_init(void(*data_f) (uint8_t), void(*ctrl_f) (uint8_t)){
     //Zero the z80 struct.
     memset(&z80, 0x00, sizeof(struct z80_s));
+    //Zero the breakpoint table
+    memset(z80_breakpoints, 0x00, Z80_ADDRESS_SIZE);
     //Set anything non-zero here
     z80.rSP = 0xFFFF; //<-- Stack pointer starts at 0xFFFF
 
@@ -168,6 +191,11 @@ void z80_reset_pipeline(){
     z80.m1_tick_count = 0;
     z80.m2_tick_count = 0;
     z80.m3_tick_count = 0;
+
+    //Check for an execution (PC) breakpoint
+    if (z80_breakpoints[Z80_PC] & Z80_BREAK_PC){
+        ///@note implement PC breakpoint callback.
+    }
 }
 
 ///Executes the M3 stage (Memory write).
