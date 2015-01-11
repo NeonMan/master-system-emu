@@ -2,186 +2,208 @@
 version 1.0303 
 header_name {.h} 
 code_name {.cxx}
+declblock {\#if 1} {open public after {\#endif}
+} {
+  decl {\#include <stdint.h>} {public global
+  }
+  decl {\#include "../z80/z80.h"} {public global
+  }
+} 
+
 class DialogZ80 {
   comment {Shows the z80 internal state} open
 } {
+  decl {struct z80_s* z80_ptr;} {
+    comment {Pointer to z80 internals.} private local
+  }
+  decl {uint8_t* running_ptr;} {
+    comment {A pointer to the z80 clock on/off variable.} private local
+  }
   Function {DialogZ80()} {open
   } {
     Fl_Window windowDialog {
       label z80 open
-      xywh {595 284 570 286} type Double visible
+      xywh {360 244 570 292} type Double visible
     } {
       Fl_Group {} {
         label Registers
-        xywh {0 20 165 265}
+        private xywh {0 20 165 265}
       } {
         Fl_Output textAF {
           label AF
-          xywh {25 30 50 30} textfont 13
+          private xywh {25 30 50 30} textfont 13
         }
         Fl_Output textBC {
           label BC
-          xywh {25 60 50 30} textfont 13
+          private xywh {25 60 50 30} textfont 13
         }
         Fl_Output textDE {
           label DE
-          xywh {25 90 50 30} textfont 13
+          private xywh {25 90 50 30} textfont 13
         }
         Fl_Output textHL {
           label HL
-          xywh {25 120 50 30} textfont 13
+          private xywh {25 120 50 30} textfont 13
         }
         Fl_Output textIX {
           label IX
-          xywh {25 150 50 30} textfont 13
+          private xywh {25 150 50 30} textfont 13
         }
         Fl_Output textIY {
           label IY
-          xywh {25 180 50 30} textfont 13
+          private xywh {25 180 50 30} textfont 13
         }
         Fl_Output textSP {
           label SP
-          xywh {25 215 50 30} textfont 13
+          private xywh {25 215 50 30} textfont 13
         }
         Fl_Output textPC {
           label PC
-          xywh {25 245 50 30} textfont 13
+          private xywh {25 245 50 30} textfont 13
         }
         Fl_Output textAFp {
           label {AF'}
-          xywh {110 30 50 30} textfont 13
+          private xywh {110 30 50 30} textfont 13
         }
         Fl_Output textBCp {
           label {BC'}
-          xywh {110 60 50 30} textfont 13
+          private xywh {110 60 50 30} textfont 13
         }
         Fl_Output textDEp {
           label {DE'}
-          xywh {110 90 50 30} textfont 13
+          private xywh {110 90 50 30} textfont 13
         }
         Fl_Output textHLp {
           label {HL'}
-          xywh {110 120 50 30} textfont 13
+          private xywh {110 120 50 30} textfont 13
         }
         Fl_Output textIR {
           label IR
-          xywh {110 150 50 30} textfont 13
+          private xywh {110 150 50 30} textfont 13
         }
       }
       Fl_Group {} {
         label Signals
-        xywh {190 20 235 165}
+        private xywh {190 20 235 165}
       } {
         Fl_Check_Button checkM1 {
           label {!M1}
-          xywh {245 25 25 25} down_box DOWN_BOX align 4
+          private xywh {245 25 25 25} down_box DOWN_BOX align 4
         }
         Fl_Check_Button checkMreq {
           label {!MREQ}
-          xywh {245 45 25 25} down_box DOWN_BOX align 4
+          private xywh {245 45 25 25} down_box DOWN_BOX align 4
         }
         Fl_Check_Button checkIoreq {
           label {!IOREQ}
-          xywh {245 65 25 25} down_box DOWN_BOX align 4
+          private xywh {245 65 25 25} down_box DOWN_BOX align 4
         }
         Fl_Check_Button checkRd {
           label {!RD}
-          xywh {245 85 25 25} down_box DOWN_BOX align 4
+          private xywh {245 85 25 25} down_box DOWN_BOX align 4
         }
         Fl_Check_Button checkWr {
           label {!WR}
-          xywh {245 105 25 25} down_box DOWN_BOX align 4
+          private xywh {245 105 25 25} down_box DOWN_BOX align 4
         }
         Fl_Check_Button checkRfsh {
           label {!RFSH}
-          xywh {245 125 25 25} down_box DOWN_BOX align 4
+          private xywh {245 125 25 25} down_box DOWN_BOX align 4
         }
         Fl_Check_Button checkHalt {
           label {!HALT}
-          xywh {245 145 25 25} down_box DOWN_BOX align 4
+          private xywh {245 145 25 25} down_box DOWN_BOX align 4
         }
         Fl_Check_Button checkWait {
           label {!WAIT}
-          xywh {330 25 25 25} down_box DOWN_BOX align 4
+          private xywh {330 25 25 25} down_box DOWN_BOX align 4
         }
         Fl_Check_Button checkInt {
           label {!INT}
-          xywh {330 45 25 25} down_box DOWN_BOX align 4
+          private xywh {330 45 25 25} down_box DOWN_BOX align 4
         }
         Fl_Check_Button checkNmi {
           label {!NMI}
-          xywh {330 65 25 25} down_box DOWN_BOX align 4
+          private xywh {330 65 25 25} down_box DOWN_BOX align 4
         }
         Fl_Check_Button checkReset {
           label {!RESET}
-          xywh {330 85 25 25} down_box DOWN_BOX align 4
+          private xywh {330 85 25 25} down_box DOWN_BOX align 4
         }
         Fl_Check_Button checkClk {
           label {!CLK}
-          xywh {330 105 25 25} down_box DOWN_BOX align 4
+          private xywh {330 105 25 25} down_box DOWN_BOX align 4
         }
         Fl_Check_Button checkBusreq {
           label {!BUSRQ}
-          xywh {330 125 25 25} down_box DOWN_BOX align 4
+          private xywh {330 125 25 25} down_box DOWN_BOX align 4
         }
         Fl_Check_Button checkBusack {
           label {!BUSACK}
-          xywh {330 145 25 25} down_box DOWN_BOX align 4
+          private xywh {330 145 25 25} down_box DOWN_BOX align 4
         }
       }
       Fl_Group {} {
         label Buses
-        xywh {190 195 170 90}
+        private xywh {190 195 170 90}
       } {
         Fl_Output textAddress {
           label Address
-          xywh {245 205 105 25} textfont 13
+          private xywh {245 205 105 25} textfont 13
         }
         Fl_Output textData {
           label Data
-          xywh {245 230 105 25} textfont 13
+          private xywh {245 230 105 25} textfont 13
         }
       }
       Fl_Group {} {
         label {Internal state}
-        xywh {355 20 225 140}
+        private xywh {355 20 225 140}
       } {
         Fl_Output textOpcode {
           label Opcode
-          xywh {420 30 140 25} textfont 13
+          private xywh {420 30 140 25} textfont 13
         }
         Fl_Output textStage {
           label Stage
-          xywh {420 80 45 25} textfont 13
+          private xywh {420 80 45 25} textfont 13
         }
         Fl_Output textDasm {
           label Disasm
-          xywh {420 55 140 25} textfont 13
+          private xywh {420 55 140 25} textfont 13
         }
         Fl_Output textRbuffer {
           label {R Buffer}
-          xywh {420 105 140 25} textfont 13
+          private xywh {420 105 140 25} textfont 13
         }
         Fl_Output textWbuffer {
           label {W Buffer}
-          xywh {420 130 140 25} textfont 13
+          private xywh {420 130 140 25} textfont 13
         }
       }
       Fl_Group {} {
-        label Buttons open
-        xywh {365 175 210 100} labeltype NO_LABEL
+        label Buttons
+        private xywh {365 175 210 100} labeltype NO_LABEL
       } {
         Fl_Light_Button buttonRunning {
           label Running
-          xywh {480 185 75 25}
+          callback {uint8_t* volatile rp = running_ptr;
+  
+  if(this->running_ptr){
+    if(o->value())
+      *rp = 1;
+    else
+      *rp = 0;
+  }}
+          private xywh {480 185 75 25}
         }
         Fl_Button buttonStep {
           label Step
-          xywh {480 215 75 25}
+          private xywh {480 215 75 25}
         }
         Fl_Button buttonEdge {
           label Edge
-          xywh {480 245 75 25}
+          private xywh {480 245 75 25}
         }
       }
     }
@@ -209,7 +231,17 @@ this->textOpcode->value("NOP ?");
 this->textStage->value("M1 ?");
 //Buttons
 this->buttonRunning->value(1);
-// --- END Initial values ---} {selected
+// --- END Initial values ---} {}
+  }
+  Function {set_running_ptr(uint8_t* p)} {
+    comment {Sets a pointer to the clock on/of var.} open return_type void
+  } {
+    code {this->running_ptr = p;} {}
+  }
+  Function {set_z80_ptr(struct z80_s* p)} {
+    comment {Sets a pointer to the z80 internals struct.} open return_type void
+  } {
+    code {this->z80_ptr = p;} {selected
     }
   }
 } 

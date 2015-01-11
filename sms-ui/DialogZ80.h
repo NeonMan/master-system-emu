@@ -3,6 +3,10 @@
 #ifndef DialogZ80_h
 #define DialogZ80_h
 #include <FL/Fl.H>
+#if 1
+#include <stdint.h>
+#include "../z80/z80.h"
+#endif
 #include <FL/Fl_Double_Window.H>
 #include <FL/Fl_Group.H>
 #include <FL/Fl_Output.H>
@@ -14,9 +18,18 @@
    Shows the z80 internal state
 */
 class DialogZ80 {
+  /**
+     Pointer to z80 internals.
+  */
+  struct z80_s* z80_ptr;
+  /**
+     A pointer to the z80 clock on/off variable.
+  */
+  uint8_t* running_ptr; 
 public:
   DialogZ80();
   Fl_Double_Window *windowDialog;
+private:
   Fl_Output *textAF;
   Fl_Output *textBC;
   Fl_Output *textDE;
@@ -52,7 +65,12 @@ public:
   Fl_Output *textRbuffer;
   Fl_Output *textWbuffer;
   Fl_Light_Button *buttonRunning;
+  inline void cb_buttonRunning_i(Fl_Light_Button*, void*);
+  static void cb_buttonRunning(Fl_Light_Button*, void*);
   Fl_Button *buttonStep;
   Fl_Button *buttonEdge;
+public:
+  void set_running_ptr(uint8_t* p);
+  void set_z80_ptr(struct z80_s* p);
 };
 #endif
