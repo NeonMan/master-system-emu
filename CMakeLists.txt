@@ -47,6 +47,10 @@ add_subdirectory (vdp)
 # --- SDSC console
 include_directories ("${PROJECT_SOURCE_DIR}/sdsc")
 add_subdirectory (sdsc)
+# --- UI
+include_directories ("${PROJECT_SOURCE_DIR}/sms-ui")
+add_subdirectory (sms-ui)
+
 
 # Z80 assembler tests are only compiled on unix
 if (UNIX)
