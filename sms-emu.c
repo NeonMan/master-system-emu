@@ -7,7 +7,6 @@
 #include "sdsc/sdsc.h"
 #include "vdp/vdp.h"
 #include "z80/z80.h"
-#include "./sms-emu/dialogs.h"
 
 //Other includes
 #include <stdint.h>
@@ -80,12 +79,7 @@ int emu_init(){
     // Load a ROM
     uint8_t* full_rom = malloc(ROM_MAX_SIZE);
     memset(full_rom, 0, ROM_MAX_SIZE);
-    char* diag_path = DLG_file_chooser("Open ROM", "ROM Files (*.{sms,bin})", "", 0);
-    FILE* in_f;
-    if (diag_path)
-        in_f = fopen(diag_path, "rb");
-    else
-        in_f = fopen("zexdoc.sms", "rb");
+    FILE* in_f = fopen("zexdoc.sms", "rb");
     if (in_f == 0){
         emu_log("Failed to load rom", EMU_LOG_CRITICAL);
         return -3;
@@ -102,9 +96,6 @@ int emu_init(){
     rom_set_image(full_rom, ROM_MAX_SIZE);
     free(full_rom);
 
-    //Show the debug dialogs
-    DLG_z80(&running);
-
     //All OK
     return 1;
 }
@@ -115,57 +106,52 @@ void emu_loop(){
 
     SDL_Surface* screen = SDL_GetWindowSurface(emu_window);
     SDL_FillRect(screen, 0, 128);
-    while (1){
-        while (running){
-            //
-            // Every clock edge, the z80 is 'ticked'. Other modules must be clocked
-            // synchronously at different rates (clock divider). Other modules can
-            // be ticked asynchronosly when required.
-            //
-            // Synchronous modules:
-            //   * z80
-            //   * PSG (16 prescaler/32 edge prescaler)
-            //   * VDP (no prescaler?)
-            //
-            // Asynchronous modules:
-            //  * RAM
-            //  * ROM
-            //  * IO  (must be ticked before any MREQ/IOREQ operation)
-            //  * Peripherial
-            //
-            z80_tick();
-            if ((edge_count % 2) == 0)
-                vdp_tick();
-            if ((edge_count % 32) == 0)
-                psg_tick();
-            if ((!z80_n_mreq) && ((!z80_n_rd) || (!z80_n_wr))){ //Memory-mapped operation
-                io_tick();
-                rom_tick();
-                ram_tick();
-            }
-            if ((!z80_n_ioreq) && ((!z80_n_rd) || (!z80_n_wr))){ //IO operation
-                io_tick();
-                per_tick();
-                psg_io();
-            }
+	while (running){
+		//
+		// Every clock edge, the z80 is 'ticked'. Other modules must be clocked
+		// synchronously at different rates (clock divider). Other modules can
+		// be ticked asynchronosly when required.
+		//
+		// Synchronous modules:
+		//   * z80
+		//   * PSG (16 prescaler/32 edge prescaler)
+		//   * VDP (no prescaler?)
+		//
+		// Asynchronous modules:
+		//  * RAM
+		//  * ROM
+		//  * IO  (must be ticked before any MREQ/IOREQ operation)
+		//  * Peripherial
+		//
+		z80_tick();
+		if ((edge_count % 2) == 0)
+			vdp_tick();
+		if ((edge_count % 32) == 0)
+			psg_tick();
+		if ((!z80_n_mreq) && ((!z80_n_rd) || (!z80_n_wr))){ //Memory-mapped operation
+			io_tick();
+			rom_tick();
+			ram_tick();
+		}
+		if ((!z80_n_ioreq) && ((!z80_n_rd) || (!z80_n_wr))){ //IO operation
+			io_tick();
+			per_tick();
+			psg_io();
+		}
 
-            ///Update SDL. 59659
-            if ((edge_count % 59659) == 0){
-                vdp_get_pixels(framebuffer);
-                vdp_to_sdl(framebuffer, 0, screen);
-                SDL_UpdateWindowSurface(emu_window);
-            }
-            SDL_Event evt;
-            while (SDL_PollEvent(&evt)){
-                if (evt.type == SDL_QUIT)
-                    running = 0;
-            }
+		///Update SDL. 59659
+		if ((edge_count % 59659) == 0){
+			vdp_get_pixels(framebuffer);
+			vdp_to_sdl(framebuffer, 0, screen);
+			SDL_UpdateWindowSurface(emu_window);
+		}
+		SDL_Event evt;
+		while (SDL_PollEvent(&evt)){
+			if (evt.type == SDL_QUIT)
+				running = 0;
+		}
 
-            ++edge_count;
-            DLG_update();
-        }
-        SDL_Delay(100);
-        DLG_update();
+		++edge_count;
     }
 }
 

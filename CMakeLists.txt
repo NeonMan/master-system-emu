@@ -78,5 +78,5 @@ add_executable (test-vdp test-vdp.c)
 target_link_libraries (test-vdp vdp SDL2 SDL2main)
 
 # --- sms-emu
-add_executable (emu sms-emu.c ./sms-emu/dialogs.cpp ./sms-emu/DialogZ80.cxx)
-target_link_libraries (emu smsrom smsio smsram psg z80 peripherial vdp sdsc SDL2 SDL2main fltk)
+add_executable (emu sms-emu.c)
+target_link_libraries (emu smsrom smsio smsram psg z80 peripherial vdp sdsc SDL2 SDL2main)
