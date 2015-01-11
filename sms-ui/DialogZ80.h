@@ -21,11 +21,11 @@ class DialogZ80 {
   /**
      Pointer to z80 internals.
   */
-  struct z80_s* z80_ptr;
+  struct z80_s* z80_ptr = 0;
   /**
      A pointer to the z80 clock on/off variable.
   */
-  uint8_t* running_ptr; 
+  uint8_t* running_ptr = 0; 
 public:
   DialogZ80();
   Fl_Double_Window *windowDialog;
@@ -72,5 +72,6 @@ private:
 public:
   void set_running_ptr(uint8_t* p);
   void set_z80_ptr(struct z80_s* p);
+  void update_values();
 };
 #endif

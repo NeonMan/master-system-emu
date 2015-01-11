@@ -20,8 +20,13 @@ int main(int argc, char** argv){
     volatile uint8_t is_clocked = 1; //<-- When this becames false, the execution is paused.
 
     //Provide the UI with relevant variables
+    struct z80_s fake_z80;
+    for (int i = 0; i < sizeof(struct z80_s); i++){
+        *(((uint8_t*)&fake_z80) + i) = i & 0xFF;
+    }
+
     z80->set_running_ptr((uint8_t*) &is_clocked);
-    z80->set_z80_ptr(0);
+    z80->set_z80_ptr(&fake_z80);
 
     int tick_count = 0;
     while (is_running){
@@ -30,6 +35,7 @@ int main(int argc, char** argv){
             if ((tick_count%20) == 0) std::cout << "Tick!" << std::endl;
 
             //Update UI
+            z80->update_values();
             Fl::check();
             Fl::wait(0.1);
             if (!z80->windowDialog->shown())
