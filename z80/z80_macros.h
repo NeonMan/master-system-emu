@@ -156,6 +156,16 @@ static const uint8_t z80_parity_lut[256] = {
 #define Z80_CLRFLAG_ADD    (Z80_FLAG_ADD    ^ 0xFF)
 #define Z80_CLRFLAG_CARRY  (Z80_FLAG_CARRY  ^ 0xFF)
 
+// --- Breakpoint macros ---
+#define Z80_BREAK_PC     (1 << 0) /*Break on z80 exec (PC)*/
+#define Z80_BREAK_RD     (1 << 1) /*Break on memory read*/
+#define Z80_BREAK_WR     (1 << 2) /*Break on memory write*/
+#define Z80_BREAK_IO_RD  (1 << 3) /*Break on IO read*/
+#define Z80_BREAK_IO_WR  (1 << 4) /*Break on IO write*/
+#define Z80_BREAK_IO_16B (1 << 5) /*Use 16-bit IO Addressing*/
+
+// --- Constants ---
+#define Z80_ADDRESS_SIZE (65536) /*Address space. 2^16*/
 #ifdef __cplusplus
 }
 #endif
