@@ -9,7 +9,7 @@ class DialogZ80 {
   } {
     Fl_Window windowDialog {
       label z80 open
-      xywh {736 334 573 278} type Double visible
+      xywh {595 284 570 286} type Double visible
     } {
       Fl_Group {} {
         label Registers
@@ -143,7 +143,7 @@ class DialogZ80 {
         }
       }
       Fl_Group {} {
-        label {Internal state} open
+        label {Internal state}
         xywh {355 20 225 140}
       } {
         Fl_Output textOpcode {
@@ -180,7 +180,7 @@ class DialogZ80 {
           xywh {480 215 75 25}
         }
         Fl_Button buttonEdge {
-          label Edge selected
+          label Edge
           xywh {480 245 75 25}
         }
       }
@@ -207,6 +207,9 @@ this->textData->value("0x0000 ?");
 //Internals
 this->textOpcode->value("NOP ?");
 this->textStage->value("M1 ?");
-// --- END Initial values ---} {}
+//Buttons
+this->buttonRunning->value(1);
+// --- END Initial values ---} {selected
+    }
   }
 } 
