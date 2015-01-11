@@ -7,12 +7,6 @@
 #include "DialogZ80.h"
 #include "DialogBreakpoint.h"
 
-///Z80->Running callback
-void clocked_callback(Fl_Widget* widget, void* u){
-    uint8_t* volatile clocked = (uint8_t*)u;
-    *clocked = (uint8_t)((Fl_Light_Button*)widget)->value();
-}
-
 int main(int argc, char** argv){
     //Create dialogs
     DialogZ80* z80         = new DialogZ80;
@@ -25,8 +19,9 @@ int main(int argc, char** argv){
     volatile uint8_t is_running = 1; //<-- When this becomes false, the app exits
     volatile uint8_t is_clocked = 1; //<-- When this becames false, the execution is paused.
 
-    //Connect callbacks
-    z80->buttonRunning->callback(clocked_callback, (void*) &is_clocked);
+    //Provide the UI with relevant variables
+    z80->set_running_ptr((uint8_t*) &is_clocked);
+    z80->set_z80_ptr(0);
 
     int tick_count = 0;
     while (is_running){
