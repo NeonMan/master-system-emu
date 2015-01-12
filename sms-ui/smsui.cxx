@@ -6,6 +6,7 @@
 #include <FL/Fl.H>
 #include "DialogZ80.h"
 #include "DialogBreakpoint.h"
+#include "../z80/fake_z80.h"
 
 int main(int argc, char** argv){
     //Create dialogs
