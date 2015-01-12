@@ -12,6 +12,8 @@ declblock {\#if 1} {open public after {\#endif}
   }
   decl {\#include "../z80/z80_externs.h"} {public global
   }
+  decl {\#include "../z80/z80_dasm.h"} {public global
+  }
 } 
 
 class DialogZ80 {
@@ -27,7 +29,7 @@ class DialogZ80 {
   } {
     Fl_Window windowDialog {
       label z80 open
-      xywh {597 312 562 283} type Double visible
+      xywh {361 173 571 287} type Double align 80 visible
     } {
       Fl_Group {} {
         label Registers
@@ -148,7 +150,7 @@ class DialogZ80 {
         }
       }
       Fl_Group {} {
-        label Buses open
+        label Buses
         private xywh {190 195 170 90}
       } {
         Fl_Output textAddress {
@@ -161,7 +163,7 @@ class DialogZ80 {
         }
       }
       Fl_Group {} {
-        label {Internal state}
+        label {Internal state} open
         private xywh {355 20 225 140}
       } {
         Fl_Output textOpcode {
@@ -250,10 +252,14 @@ this->buttonRunning->value(1);
   Function {update_values()} {
     comment {Updates the dialog values} open return_type void
   } {
-    code {if(this->z80_ptr){
-    const struct z80_s z80 = *((this->z80_ptr));
-    char tmp_str[32];
-    memset(tmp_str,0,32);
+    code {if(this->z80_ptr){    
+    /*to use the Z80_* macros, the z80
+      struct variable must be accesible
+      by the identifier 'z80'*/
+    \#define z80 (*(this->z80_ptr))
+    \#define __TMP_STR_LEN 64
+    char tmp_str[__TMP_STR_LEN];
+    memset(tmp_str,0,__TMP_STR_LEN);
     
     // --- Update z80 registers ---
     //AF
@@ -320,6 +326,37 @@ this->buttonRunning->value(1);
     //Address
     sprintf(tmp_str, "0x%04X", z80_address);
     textAddress->value(tmp_str);
+    
+    // --- Internals ---
+    //Opcode
+    sprintf(tmp_str, "%02X %02X %02X %02X (%d)", z80.opcode[0], z80.opcode[1], z80.opcode[2], z80.opcode[3], z80.opcode_index);
+    textOpcode->value(tmp_str);
+    //Stage
+    switch(z80.stage){
+      case 0:
+      textStage->value("Reset"); break;
+      case 1:
+      textStage->value("M1"); break;
+      case 2:
+      textStage->value("M2"); break;
+      case 3:
+      textStage->value("M3"); break;
+      default:
+      sprintf(tmp_str, "%d !", z80.stage);
+      textStage->value(tmp_str); break;
+    }
+    //Read buffer
+    sprintf(tmp_str, "%02X %02X (%d)", z80.read_buffer[0], z80.read_buffer[1], z80.read_index);
+    textRbuffer->value(tmp_str);
+    //Write buffer
+    sprintf(tmp_str, "%02X %02X (%d)", z80.write_buffer[0], z80.write_buffer[1], z80.write_index);
+    textWbuffer->value(tmp_str);
+    //Disasm
+    z80d_opcode op = z80d_decode_op(z80.opcode, Z80_PC);
+    sprintf(tmp_str, "%s ;(Size: %d)", op.opcode_str, op.size);
+    textDasm->value(tmp_str);
+    
+    \#undef z80
   }} {selected
     }
   }

@@ -46,7 +46,7 @@ typedef struct z80d_opcode_tree_s z80d_oplist;
 * @param result pointer to the string where the result will be written.
 * @returns the opcode size in bytes.
 */
-int z80d_decode(uint8_t* opcode, unsigned int size, char* result);
+int z80d_decode(const uint8_t* opcode, unsigned int size, char* result);
 
 /**
  * Decodes an opcode, return an z80d_opcode struct.
@@ -55,7 +55,7 @@ int z80d_decode(uint8_t* opcode, unsigned int size, char* result);
  * @param pc_addr The address where the opcode was found (PC).
  * @returns A z80_opcode struct containg all the opcode info.
  */
-z80d_opcode z80d_decode_op(uint8_t* opcode, uint16_t pc_addr);
+z80d_opcode z80d_decode_op(const uint8_t* opcode, uint16_t pc_addr);
 
 #ifdef __cplusplus
 }

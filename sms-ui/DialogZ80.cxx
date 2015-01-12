@@ -19,8 +19,9 @@ void DialogZ80::cb_buttonRunning(Fl_Light_Button* o, void* v) {
 }
 
 DialogZ80::DialogZ80() {
-  { windowDialog = new Fl_Double_Window(562, 283, "z80");
+  { windowDialog = new Fl_Double_Window(571, 287, "z80");
     windowDialog->user_data((void*)(this));
+    windowDialog->align(Fl_Align(FL_ALIGN_CLIP|FL_ALIGN_INSIDE));
     { Fl_Group* o = new Fl_Group(0, 20, 165, 265, "Registers");
       { textAF = new Fl_Output(25, 30, 50, 30, "AF");
         textAF->textfont(13);
@@ -207,10 +208,14 @@ void DialogZ80::set_z80_ptr(struct z80_s* p) {
    Updates the dialog values
 */
 void DialogZ80::update_values() {
-  if(this->z80_ptr){
-      const struct z80_s z80 = *((this->z80_ptr));
-      char tmp_str[32];
-      memset(tmp_str,0,32);
+  if(this->z80_ptr){    
+      /*to use the Z80_* macros, the z80
+        struct variable must be accesible
+        by the identifier 'z80'*/
+      #define z80 (*(this->z80_ptr))
+      #define __TMP_STR_LEN 64
+      char tmp_str[__TMP_STR_LEN];
+      memset(tmp_str,0,__TMP_STR_LEN);
       
       // --- Update z80 registers ---
       //AF
@@ -277,5 +282,36 @@ void DialogZ80::update_values() {
       //Address
       sprintf(tmp_str, "0x%04X", z80_address);
       textAddress->value(tmp_str);
+      
+      // --- Internals ---
+      //Opcode
+      sprintf(tmp_str, "%02X %02X %02X %02X (%d)", z80.opcode[0], z80.opcode[1], z80.opcode[2], z80.opcode[3], z80.opcode_index);
+      textOpcode->value(tmp_str);
+      //Stage
+      switch(z80.stage){
+        case 0:
+        textStage->value("Reset"); break;
+        case 1:
+        textStage->value("M1"); break;
+        case 2:
+        textStage->value("M2"); break;
+        case 3:
+        textStage->value("M3"); break;
+        default:
+        sprintf(tmp_str, "%d !", z80.stage);
+        textStage->value(tmp_str); break;
+      }
+      //Read buffer
+      sprintf(tmp_str, "%02X %02X (%d)", z80.read_buffer[0], z80.read_buffer[1], z80.read_index);
+      textRbuffer->value(tmp_str);
+      //Write buffer
+      sprintf(tmp_str, "%02X %02X (%d)", z80.write_buffer[0], z80.write_buffer[1], z80.write_index);
+      textWbuffer->value(tmp_str);
+      //Disasm
+      z80d_opcode op = z80d_decode_op(z80.opcode, Z80_PC);
+      sprintf(tmp_str, "%s ;(Size: %d)", op.opcode_str, op.size);
+      textDasm->value(tmp_str);
+      
+      #undef z80
     }
 }
