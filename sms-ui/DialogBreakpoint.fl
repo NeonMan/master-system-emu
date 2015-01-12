@@ -1,0 +1,53 @@
+# data file for the Fltk User Interface Designer (fluid)
+version 1.0303 
+header_name {.h} 
+code_name {.cxx}
+declblock {\#if 1} {open after {\#endif}
+} {
+  decl {\#include <stdint.h>} {private global
+  }
+} 
+
+class DialogBreakpoints {open
+} {
+  Function {DialogBreakpoints()} {
+    comment {Dialog constructor} open
+  } {
+    Fl_Window windowDialog {open
+      xywh {354 201 351 456} type Double resizable visible
+    } {
+      Fl_Browser browserBreakpoins {
+        label Breakpoints
+        xywh {25 25 315 340} align 1 textfont 13 resizable
+      }
+      Fl_Input textAddress {
+        label Address
+        xywh {80 370 80 25} textfont 13
+      }
+      Fl_Check_Button checkPc {
+        label PC
+        xywh {190 370 25 25} down_box DOWN_BOX align 4
+      }
+      Fl_Check_Button checkRead {
+        label Read
+        xywh {250 370 25 25} down_box DOWN_BOX align 4
+      }
+      Fl_Check_Button checkWrite {
+        label Write
+        xywh {310 370 25 25} down_box DOWN_BOX align 4
+      }
+      Fl_Input textNote {
+        label Note selected
+        xywh {80 395 260 25} textfont 13
+      }
+      Fl_Button buttonCreate {
+        label Create
+        xywh {25 425 80 25}
+      }
+      Fl_Button buttonRemove {
+        label Remove
+        xywh {105 425 80 25}
+      }
+    }
+  }
+} 
