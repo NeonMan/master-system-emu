@@ -6,7 +6,7 @@
 #include <FL/Fl.H>
 #include "DialogZ80.h"
 #include "DialogBreakpoint.h"
-#include "../z80/fake_z80.h"
+#include "../z80/z80.h"
 
 int main(int argc, char** argv){
     //Create dialogs
@@ -15,7 +15,7 @@ int main(int argc, char** argv){
 
     //Show dialogs
     z80->windowDialog->show();
-    brk->windowDialog->show();
+    //brk->windowDialog->show();
 
     volatile uint8_t is_running = 1; //<-- When this becomes false, the app exits
     volatile uint8_t is_clocked = 1; //<-- When this becames false, the execution is paused.
@@ -51,7 +51,6 @@ int main(int argc, char** argv){
                 is_running = 0;
         }
     }
-
     //Cleanup
     delete z80;
     delete brk;
