@@ -24,7 +24,7 @@ char z80d_byte_to_char(uint8_t b){
         return '.';
 }
 
-int z80d_decode_ED(uint8_t* opcode, unsigned int size, char* result){
+int z80d_decode_ED(const uint8_t* opcode, unsigned int size, char* result){
     const uint8_t x[4] = { opcode[0] >> 6, opcode[1] >> 6, opcode[2] >> 6, opcode[3] >> 6 };
     const uint8_t y[4] = { (opcode[0] >> 3) & 0x7, (opcode[1] >> 3) & 0x7, (opcode[2] >> 3) & 0x7, (opcode[3] >> 3) & 0x7 };
     const uint8_t z[4] = { opcode[0] & 0x7, opcode[1] & 0x7, opcode[2] & 0x7, opcode[3] & 0x7 };
@@ -170,7 +170,7 @@ int z80d_decode_ED(uint8_t* opcode, unsigned int size, char* result){
     return rv;
 }
 
-int z80d_decode(uint8_t* opcode, unsigned int size, char* result){
+int z80d_decode(const uint8_t* opcode, unsigned int size, char* result){
     const uint8_t x[4] = { opcode[0] >> 6, opcode[1] >> 6, opcode[2] >> 6, opcode[3] >> 6 };
     const uint8_t y[4] = { (opcode[0] >> 3) & 0x7, (opcode[1] >> 3) & 0x7, (opcode[2] >> 3) & 0x7, (opcode[3] >> 3) & 0x7 };
     const uint8_t z[4] = { opcode[0] & 0x7, opcode[1] & 0x7, opcode[2] & 0x7, opcode[3] & 0x7 };
@@ -429,7 +429,7 @@ int z80d_decode(uint8_t* opcode, unsigned int size, char* result){
     return rv;
 }
 
-z80d_opcode z80d_decode_op(uint8_t* opcode, uint16_t pc_addr){
+z80d_opcode z80d_decode_op(const uint8_t* opcode, uint16_t pc_addr){
     z80d_opcode rv;
     rv.address = pc_addr;
     rv.next = 0;
