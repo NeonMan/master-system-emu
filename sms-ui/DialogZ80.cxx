@@ -21,6 +21,7 @@ void DialogZ80::cb_buttonRunning(Fl_Light_Button* o, void* v) {
 DialogZ80::DialogZ80() {
   { windowDialog = new Fl_Double_Window(571, 287, "z80");
     windowDialog->user_data((void*)(this));
+    windowDialog->align(Fl_Align(FL_ALIGN_CLIP|FL_ALIGN_INSIDE));
     { Fl_Group* o = new Fl_Group(0, 20, 165, 265, "Registers");
       { textAF = new Fl_Output(25, 30, 50, 30, "AF");
         textAF->textfont(13);
@@ -207,9 +208,12 @@ void DialogZ80::set_z80_ptr(struct z80_s* p) {
    Updates the dialog values
 */
 void DialogZ80::update_values() {
-  if(this->z80_ptr){
+  if(this->z80_ptr){    
+      /*to use the Z80_* macros, the z80
+        struct variable must be accesible
+        by the identifier 'z80'*/
+      #define z80 (*(this->z80_ptr))
       #define __TMP_STR_LEN 64
-      const struct z80_s z80 = *((this->z80_ptr));
       char tmp_str[__TMP_STR_LEN];
       memset(tmp_str,0,__TMP_STR_LEN);
       
@@ -307,5 +311,7 @@ void DialogZ80::update_values() {
       z80d_opcode op = z80d_decode_op(z80.opcode, Z80_PC);
       sprintf(tmp_str, "%s ;(Size: %d)", op.opcode_str, op.size);
       textDasm->value(tmp_str);
+      
+      #undef z80
     }
 }

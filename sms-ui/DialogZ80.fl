@@ -29,7 +29,7 @@ class DialogZ80 {
   } {
     Fl_Window windowDialog {
       label z80 open
-      xywh {361 173 571 287} type Double visible
+      xywh {361 173 571 287} type Double align 80 visible
     } {
       Fl_Group {} {
         label Registers
@@ -252,9 +252,12 @@ this->buttonRunning->value(1);
   Function {update_values()} {
     comment {Updates the dialog values} open return_type void
   } {
-    code {if(this->z80_ptr){
+    code {if(this->z80_ptr){    
+    /*to use the Z80_* macros, the z80
+      struct variable must be accesible
+      by the identifier 'z80'*/
+    \#define z80 (*(this->z80_ptr))
     \#define __TMP_STR_LEN 64
-    const struct z80_s z80 = *((this->z80_ptr));
     char tmp_str[__TMP_STR_LEN];
     memset(tmp_str,0,__TMP_STR_LEN);
     
@@ -352,6 +355,8 @@ this->buttonRunning->value(1);
     z80d_opcode op = z80d_decode_op(z80.opcode, Z80_PC);
     sprintf(tmp_str, "%s ;(Size: %d)", op.opcode_str, op.size);
     textDasm->value(tmp_str);
+    
+    \#undef z80
   }} {selected
     }
   }
