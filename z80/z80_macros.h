@@ -75,7 +75,7 @@ static const uint8_t z80_parity_lut[256] = {
 #define Z80_F  (z80.rAF[1])
 #define Z80_Fp (z80.rAF[3])
 #define Z80_AF  (*((uint16_t*) z80.rAF))
-#define Z80_AFp (*((uint16_t*) z80.rAF + 2))
+#define Z80_AFp (*((uint16_t*) (z80.rAF + 2)))
 
 //BC
 #define Z80_B  z80.rBC[1]
@@ -83,7 +83,7 @@ static const uint8_t z80_parity_lut[256] = {
 #define Z80_Bp z80.rBC[3]
 #define Z80_Cp z80.rBC[2]
 #define Z80_BC  (*((uint16_t*) z80.rBC))
-#define Z80_BCp (*((uint16_t*) z80.rBC + 2))
+#define Z80_BCp (*((uint16_t*) (z80.rBC + 2)))
 
 //DE
 #define Z80_D  z80.rDE[1]
@@ -91,7 +91,7 @@ static const uint8_t z80_parity_lut[256] = {
 #define Z80_Dp z80.rDE[3]
 #define Z80_Ep z80.rDE[2]
 #define Z80_DE  (*((uint16_t*) z80.rDE))
-#define Z80_DEp (*((uint16_t*) z80.rDE + 2))
+#define Z80_DEp (*((uint16_t*) (z80.rDE + 2)))
 
 //HL
 #define Z80_H  z80.rHL[1]
@@ -99,7 +99,7 @@ static const uint8_t z80_parity_lut[256] = {
 #define Z80_Hp z80.rHL[3]
 #define Z80_Lp z80.rHL[2]
 #define Z80_HL  (*((uint16_t*) z80.rHL))
-#define Z80_HLp (*((uint16_t*) z80.rHL + 2))
+#define Z80_HLp (*((uint16_t*) (z80.rHL + 2)))
 
 //WZ
 #define Z80_W  z80.rWZ[1]
@@ -107,7 +107,7 @@ static const uint8_t z80_parity_lut[256] = {
 #define Z80_Wp z80.rWZ[3]
 #define Z80_Zp z80.rWZ[2]
 #define Z80_WZ  (*((uint16_t*) z80.rWZ))
-#define Z80_WZp (*((uint16_t*) z80.rWZ + 2))
+#define Z80_WZp (*((uint16_t*) (z80.rWZ + 2)))
 
 //IX/IY/SP/PC (endianness insensitive)
 #define Z80_IX z80.rIX
