@@ -30,7 +30,7 @@ void DialogZ80::cb_buttonEdge(Fl_Button* o, void* v) {
 }
 
 DialogZ80::DialogZ80() {
-  { windowDialog = new Fl_Double_Window(565, 280, "z80");
+  { windowDialog = new Fl_Double_Window(675, 307, "z80");
     windowDialog->user_data((void*)(this));
     windowDialog->align(Fl_Align(FL_ALIGN_CLIP|FL_ALIGN_INSIDE));
     { Fl_Group* o = new Fl_Group(0, 20, 165, 265, "Registers");
@@ -145,15 +145,16 @@ DialogZ80::DialogZ80() {
       } // Fl_Output* textData
       o->end();
     } // Fl_Group* o
-    { Fl_Group* o = new Fl_Group(355, 20, 225, 140, "Internal state");
-      { textOpcode = new Fl_Output(420, 30, 140, 25, "Opcode");
+    { Fl_Group* o = new Fl_Group(130, 20, 530, 285, "Internal state");
+      { textOpcode = new Fl_Output(420, 30, 240, 25, "Opcode");
         textOpcode->textfont(13);
       } // Fl_Output* textOpcode
       { textStage = new Fl_Output(420, 80, 45, 25, "Stage");
         textStage->textfont(13);
       } // Fl_Output* textStage
-      { textDasm = new Fl_Output(420, 55, 140, 25, "Disasm");
+      { textDasm = new Fl_Output(420, 55, 240, 25, "Disasm");
         textDasm->textfont(13);
+        textDasm->align(Fl_Align(FL_ALIGN_LEFT_TOP));
       } // Fl_Output* textDasm
       { textRbuffer = new Fl_Output(420, 105, 140, 25, "R Buffer");
         textRbuffer->textfont(13);
@@ -163,17 +164,17 @@ DialogZ80::DialogZ80() {
       } // Fl_Output* textWbuffer
       o->end();
     } // Fl_Group* o
-    { Fl_Group* o = new Fl_Group(360, 175, 215, 100, "Buttons");
+    { Fl_Group* o = new Fl_Group(360, 175, 295, 100, "Buttons");
       o->labeltype(FL_NO_LABEL);
-      { buttonRunning = new Fl_Light_Button(430, 200, 125, 25, "Running");
+      { buttonRunning = new Fl_Light_Button(530, 200, 125, 25, "Running");
         buttonRunning->callback((Fl_Callback*)cb_buttonRunning);
       } // Fl_Light_Button* buttonRunning
-      { buttonEdge = new Fl_Button(430, 225, 75, 25, "Edge");
+      { buttonEdge = new Fl_Button(530, 225, 75, 25, "Edge");
         buttonEdge->callback((Fl_Callback*)cb_buttonEdge);
       } // Fl_Button* buttonEdge
-      { spinEdgecount = new Fl_Spinner(505, 225, 50, 25);
+      { spinEdgecount = new Fl_Spinner(605, 225, 50, 25);
       } // Fl_Spinner* spinEdgecount
-      { buttonStep = new Fl_Button(430, 250, 125, 25, "Step");
+      { buttonStep = new Fl_Button(530, 250, 125, 25, "Step");
         buttonStep->deactivate();
       } // Fl_Button* buttonStep
       o->end();

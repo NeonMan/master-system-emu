@@ -74,9 +74,9 @@ private:
   Fl_Button *buttonEdge;
   inline void cb_buttonEdge_i(Fl_Button*, void*);
   static void cb_buttonEdge(Fl_Button*, void*);
-public:
   Fl_Spinner *spinEdgecount;
   Fl_Button *buttonStep;
+public:
   void set_running_ptr(uint32_t* p);
   void set_z80_ptr(struct z80_s* p);
   void update_values();

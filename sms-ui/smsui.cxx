@@ -43,6 +43,9 @@ void emu_log(const char* msg, int level){
 
 int emu_init(){
     emu_log("Hello!", EMU_LOG_INFO);
+    //Init emulator modules
+    vdp_init();
+    z80_init(0, 0); ///<-- @note No SDSC callbacks
 
     //Load ROM
     const char* f_path = fl_file_chooser("Open ROM", "Mastersystem ROM (*.{sms,bin})", "", 0);
@@ -83,9 +86,8 @@ void emu_cleanup(){
 }
 
 // --- Emulator ---
-void emu_loop(){
 
-}
+
 
 int main(int argc, char** argv){
     emu_init();
