@@ -5,4 +5,4 @@ SET(FLTK_DIALOGS ${FLTK_DIALOGS} "DialogBreakpoint.cxx")
 
 project(sms-ui)
 add_executable(smsui smsui.cxx ${FLTK_DIALOGS})
-target_link_libraries(smsui fltk z80)
+target_link_libraries(smsui fltk smsrom smsio smsram psg z80 peripherial vdp sdsc SDL2 SDL2main)

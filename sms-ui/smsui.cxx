@@ -1,14 +1,41 @@
 #include <stdint.h>
 #include <stdlib.h>
-
 #include <iostream>
+#include <SDL/SDL.h>
 
+
+//FLTK and dialogs
 #include <FL/Fl.H>
 #include "DialogZ80.h"
 #include "DialogBreakpoint.h"
+
+//Emulator includes
+#include <io/io.h>
+#include <peripherial/peripherial.h>
+#include <psg/psg.h>
+#include <ram/ram.h>
+#include <rom/rom.h>
+#include <sdsc/sdsc.h>
+#include <vdp/vdp.h>
 #include <z80/z80.h>
+#include "sms-emu.h" /*<-- Refactor me!*/
+
+void emu_log(const char* msg, int level){
+    std::cerr << "[" << emu_logelvel_names[level][0] << "] " << msg << std::endl;
+}
+
+void emu_init(){
+    emu_log("Hello!", EMU_LOG_INFO);
+}
+
+void emu_cleanup(){
+    //SDL_Quit();
+    emu_log("Bye!", EMU_LOG_INFO);
+}
+
 
 int main(int argc, char** argv){
+    emu_init();
     //Create dialogs
     DialogZ80* z80         = new DialogZ80;
     DialogBreakpoints* brk = new DialogBreakpoints;
@@ -54,5 +81,6 @@ int main(int argc, char** argv){
     //Cleanup
     delete z80;
     delete brk;
+    emu_cleanup();
     return 0;
 }
