@@ -5,11 +5,11 @@
 #endif
 
 void DialogZ80::cb_buttonRunning_i(Fl_Light_Button* o, void*) {
-  uint8_t* volatile rp = running_ptr;
+  uint32_t* volatile rp = running_ptr;
   
   if(this->running_ptr){
     if(o->value())
-      *rp = 1;
+      *rp = UINT32_MAX;
     else
       *rp = 0;
   };
@@ -18,8 +18,19 @@ void DialogZ80::cb_buttonRunning(Fl_Light_Button* o, void* v) {
   ((DialogZ80*)(o->parent()->parent()->user_data()))->cb_buttonRunning_i(o,v);
 }
 
+void DialogZ80::cb_buttonEdge_i(Fl_Button*, void*) {
+  uint32_t* volatile rp = running_ptr;
+  
+  if(this->running_ptr){
+      *rp = (uint32_t) spinEdgecount->value();;
+  };
+}
+void DialogZ80::cb_buttonEdge(Fl_Button* o, void* v) {
+  ((DialogZ80*)(o->parent()->parent()->user_data()))->cb_buttonEdge_i(o,v);
+}
+
 DialogZ80::DialogZ80() {
-  { windowDialog = new Fl_Double_Window(563, 279, "z80");
+  { windowDialog = new Fl_Double_Window(565, 280, "z80");
     windowDialog->user_data((void*)(this));
     windowDialog->align(Fl_Align(FL_ALIGN_CLIP|FL_ALIGN_INSIDE));
     { Fl_Group* o = new Fl_Group(0, 20, 165, 265, "Registers");
@@ -92,6 +103,7 @@ DialogZ80::DialogZ80() {
       { checkHalt = new Fl_Check_Button(245, 145, 25, 25, "!HALT");
         checkHalt->down_box(FL_DOWN_BOX);
         checkHalt->align(Fl_Align(FL_ALIGN_LEFT));
+        checkHalt->deactivate();
       } // Fl_Check_Button* checkHalt
       { checkWait = new Fl_Check_Button(330, 25, 25, 25, "!WAIT");
         checkWait->down_box(FL_DOWN_BOX);
@@ -112,6 +124,7 @@ DialogZ80::DialogZ80() {
       { checkClk = new Fl_Check_Button(330, 105, 25, 25, "!CLK");
         checkClk->down_box(FL_DOWN_BOX);
         checkClk->align(Fl_Align(FL_ALIGN_LEFT));
+        checkClk->deactivate();
       } // Fl_Check_Button* checkClk
       { checkBusreq = new Fl_Check_Button(330, 125, 25, 25, "!BUSRQ");
         checkBusreq->down_box(FL_DOWN_BOX);
@@ -150,15 +163,19 @@ DialogZ80::DialogZ80() {
       } // Fl_Output* textWbuffer
       o->end();
     } // Fl_Group* o
-    { Fl_Group* o = new Fl_Group(365, 175, 210, 100, "Buttons");
+    { Fl_Group* o = new Fl_Group(360, 175, 215, 100, "Buttons");
       o->labeltype(FL_NO_LABEL);
-      { buttonRunning = new Fl_Light_Button(480, 185, 75, 25, "Running");
+      { buttonRunning = new Fl_Light_Button(430, 200, 125, 25, "Running");
         buttonRunning->callback((Fl_Callback*)cb_buttonRunning);
       } // Fl_Light_Button* buttonRunning
-      { buttonStep = new Fl_Button(480, 215, 75, 25, "Step");
-      } // Fl_Button* buttonStep
-      { buttonEdge = new Fl_Button(480, 245, 75, 25, "Edge");
+      { buttonEdge = new Fl_Button(430, 225, 75, 25, "Edge");
+        buttonEdge->callback((Fl_Callback*)cb_buttonEdge);
       } // Fl_Button* buttonEdge
+      { spinEdgecount = new Fl_Spinner(505, 225, 50, 25);
+      } // Fl_Spinner* spinEdgecount
+      { buttonStep = new Fl_Button(430, 250, 125, 25, "Step");
+        buttonStep->deactivate();
+      } // Fl_Button* buttonStep
       o->end();
     } // Fl_Group* o
     windowDialog->end();
@@ -193,7 +210,7 @@ DialogZ80::DialogZ80() {
 /**
    Sets a pointer to the clock on/of var.
 */
-void DialogZ80::set_running_ptr(uint8_t* p) {
+void DialogZ80::set_running_ptr(uint32_t* p) {
   this->running_ptr = p;
 }
 
@@ -311,7 +328,6 @@ void DialogZ80::update_values() {
       z80d_opcode op = z80d_decode_op(z80.opcode, Z80_PC);
       sprintf(tmp_str, "%s ;(Size: %d)", op.opcode_str, op.size);
       textDasm->value(tmp_str);
-      
       #undef z80
     }
 }

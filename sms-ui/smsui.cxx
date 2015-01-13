@@ -26,8 +26,11 @@
 #define __UPDATE_FLTK \
 { \
     const DWORD ticks = GetTickCount(); \
-    if ((ticks % 10) == 0) Fl::check();  /*Refresh FLTK every .1 seconds*/ \
-    if ((ticks % 100) == 0) dlg_z80->update_values(); /*Refresh Values every second*/ \
+    if ((ticks - last_update) > 100){ \
+      Fl::check();  /*Refresh FLTK every .1 seconds*/ \
+      dlg_z80->update_values(); \
+      last_update = ticks; \
+    } \
     if (!dlg_z80->windowDialog->shown()) \
         is_running = 0; \
 }
@@ -41,7 +44,6 @@ void emu_init(){
 }
 
 void emu_cleanup(){
-    
     //SDL_Quit();
     emu_log("Bye!", EMU_LOG_INFO);
 }
@@ -58,18 +60,19 @@ int main(int argc, char** argv){
     DialogBreakpoints* dlg_brk = new DialogBreakpoints;
 
     //Show dialogs
-    
     dlg_z80->windowDialog->show();
     //brk->windowDialog->show();
 
-    volatile uint8_t is_running = 1; //<-- When this becomes false, the app exits
-    volatile uint8_t is_clocked = 1; //<-- When this becames false, the execution is paused.
+    //Control variables
+    uint8_t is_running = 1; //<-- When this becomes false, the app exits
+    uint32_t is_clocked = 0; //<-- When this becames false, the execution is paused.
+    unsigned long last_update = 0;
 
     //Provide the UI with relevant variables
-    dlg_z80->set_running_ptr((uint8_t*) &is_clocked);
+    dlg_z80->set_running_ptr((uint32_t*) &is_clocked);
     dlg_z80->set_z80_ptr(z80dbg_get_z80());
 
-    int edge_count = 0;
+    unsigned int edge_count = 0;
     while (is_running){
         while (is_clocked && is_running){
             //
@@ -103,8 +106,9 @@ int main(int argc, char** argv){
                 per_tick();
                 psg_io();
             }
-            __UPDATE_FLTK;
             ++edge_count;
+            --is_clocked;
+            __UPDATE_FLTK;
         }
         // --- Just update the UI if not clocked ---
         {

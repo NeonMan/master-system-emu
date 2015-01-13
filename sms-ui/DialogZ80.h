@@ -16,6 +16,7 @@
 #include <FL/Fl_Check_Button.H>
 #include <FL/Fl_Light_Button.H>
 #include <FL/Fl_Button.H>
+#include <FL/Fl_Spinner.H>
 
 /**
    Shows the z80 internal state
@@ -28,7 +29,7 @@ class DialogZ80 {
   /**
      A pointer to the z80 clock on/off variable.
   */
-  uint8_t* running_ptr = 0; 
+  uint32_t* running_ptr = 0; 
 public:
   DialogZ80();
   Fl_Double_Window *windowDialog;
@@ -70,10 +71,13 @@ private:
   Fl_Light_Button *buttonRunning;
   inline void cb_buttonRunning_i(Fl_Light_Button*, void*);
   static void cb_buttonRunning(Fl_Light_Button*, void*);
-  Fl_Button *buttonStep;
   Fl_Button *buttonEdge;
+  inline void cb_buttonEdge_i(Fl_Button*, void*);
+  static void cb_buttonEdge(Fl_Button*, void*);
 public:
-  void set_running_ptr(uint8_t* p);
+  Fl_Spinner *spinEdgecount;
+  Fl_Button *buttonStep;
+  void set_running_ptr(uint32_t* p);
   void set_z80_ptr(struct z80_s* p);
   void update_values();
 };
