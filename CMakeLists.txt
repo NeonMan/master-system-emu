@@ -1,6 +1,9 @@
 # Main
 cmake_minimum_required (VERSION 2.8.11)
 
+# --- Project name ---
+project (SMS-Emu)
+
 # --- Explicitly enable C
 enable_language (C)
 enable_language (CXX)
@@ -23,33 +26,17 @@ if (OPENMP_FOUND)
 endif(OPENMP_FOUND)
 
 # --- Dependencies ---
-# --- PSG
-include_directories ("${PROJECT_SOURCE_DIR}/psg")
+include_directories(${PROJECT_SOURCE_DIR})
 add_subdirectory (psg)
-# --- RAM
-include_directories ("${PROJECT_SOURCE_DIR}/ram")
 add_subdirectory (ram)
-# --- ROM
-include_directories ("${PROJECT_SOURCE_DIR}/rom")
 add_subdirectory (rom)
-# --- z80
-include_directories ("${PROJECT_SOURCE_DIR}/z80")
 add_subdirectory (z80)
-# --- Peripherial
-include_directories ("${PROJECT_SOURCE_DIR}/peripherial")
 add_subdirectory (peripherial)
-# --- IO
-include_directories ("${PROJECT_SOURCE_DIR}/io")
 add_subdirectory (io)
-# --- VDP
-include_directories ("${PROJECT_SOURCE_DIR}/vdp")
 add_subdirectory (vdp)
-# --- SDSC console
-include_directories ("${PROJECT_SOURCE_DIR}/sdsc")
 add_subdirectory (sdsc)
-# --- UI
-include_directories ("${PROJECT_SOURCE_DIR}/sms-ui")
 add_subdirectory (sms-ui)
+
 
 
 # Z80 assembler tests are only compiled on unix
@@ -58,8 +45,7 @@ if (UNIX)
   add_subdirectory (z80tests)
 endif (UNIX)
 
-# --- The project executables config ---
-project (SMS-Emu)
+# --- The project executables ---
 
 # --- psg-play
 add_executable (psg-play psg-play.c)

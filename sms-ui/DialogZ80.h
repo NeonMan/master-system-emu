@@ -5,10 +5,10 @@
 #include <FL/Fl.H>
 #if 1
 #include <stdint.h>
-#include "../z80/z80.h"
-#include "../z80/z80_macros.h"
-#include "../z80/z80_externs.h"
-#include "../z80/z80_dasm.h"
+#include <z80/z80.h>
+#include <z80/z80_macros.h>
+#include <z80/z80_externs.h>
+#include <z80/z80_dasm.h>
 #endif
 #include <FL/Fl_Double_Window.H>
 #include <FL/Fl_Group.H>

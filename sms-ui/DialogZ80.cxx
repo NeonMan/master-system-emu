@@ -19,7 +19,7 @@ void DialogZ80::cb_buttonRunning(Fl_Light_Button* o, void* v) {
 }
 
 DialogZ80::DialogZ80() {
-  { windowDialog = new Fl_Double_Window(571, 287, "z80");
+  { windowDialog = new Fl_Double_Window(563, 279, "z80");
     windowDialog->user_data((void*)(this));
     windowDialog->align(Fl_Align(FL_ALIGN_CLIP|FL_ALIGN_INSIDE));
     { Fl_Group* o = new Fl_Group(0, 20, 165, 265, "Registers");
