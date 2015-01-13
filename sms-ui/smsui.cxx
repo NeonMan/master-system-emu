@@ -27,7 +27,7 @@
 //Update UI, where X is a milisecond delta since last update
 #define __UPDATE_FLTK \
 { \
-    const DWORD ticks = GetTickCount(); \
+    const unsigned long ticks = GetTickCount(); \
     if ((ticks - last_update) > 100){ \
       Fl::check();  /*Refresh FLTK every .1 seconds*/ \
       dlg_z80->update_values(); \
@@ -48,7 +48,7 @@ int emu_init(){
     z80_init(0, 0); ///<-- @note No SDSC callbacks
 
     //Load ROM
-    const char* f_path = fl_file_chooser("Open ROM", "Mastersystem ROM (*.{sms,bin})", "", 0);
+    const char* f_path = fl_file_chooser("Open ROM", "Mastersystem ROM (*.{sms,bin})", "", 1);
     const char* f_default = "zexdoc.sms";
     FILE* in_f = 0;
     if (f_path){
@@ -96,8 +96,8 @@ int main(int argc, char** argv){
     DialogBreakpoints* dlg_brk = new DialogBreakpoints;
 
     //Show dialogs
+    dlg_brk->windowDialog->show();
     dlg_z80->windowDialog->show();
-    //brk->windowDialog->show();
 
     //Control variables
     uint8_t is_running = 1; //<-- When this becomes false, the app exits
@@ -107,6 +107,7 @@ int main(int argc, char** argv){
     //Provide the UI with relevant variables
     dlg_z80->set_running_ptr((uint32_t*) &is_clocked);
     dlg_z80->set_z80_ptr(z80dbg_get_z80());
+    dlg_brk->set_breakpoint_table(z80dbg_get_breakpoints());
 
     unsigned int edge_count = 0;
     while (is_running){
@@ -149,6 +150,8 @@ int main(int argc, char** argv){
         // --- Just update the UI if not clocked ---
         {
             __UPDATE_FLTK;
+            //Add a delay
+            Fl::wait(0.1);
         }
     }
     //Cleanup
