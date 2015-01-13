@@ -4,55 +4,90 @@
 #if 1
 #endif
 
+void DialogBreakpoints::cb_checkVdpcontrol_i(Fl_Check_Button* o, void*) {
+  vdp_control(o->value());
+}
+void DialogBreakpoints::cb_checkVdpcontrol(Fl_Check_Button* o, void* v) {
+  ((DialogBreakpoints*)(o->parent()->parent()->user_data()))->cb_checkVdpcontrol_i(o,v);
+}
+
+void DialogBreakpoints::cb_checkVdpread_i(Fl_Check_Button* o, void*) {
+  this->vdp_data(o->value(), 1);
+}
+void DialogBreakpoints::cb_checkVdpread(Fl_Check_Button* o, void* v) {
+  ((DialogBreakpoints*)(o->parent()->parent()->user_data()))->cb_checkVdpread_i(o,v);
+}
+
+void DialogBreakpoints::cb_checkVdpwrite_i(Fl_Check_Button* o, void*) {
+  this->vdp_data(o->value(), 0);
+}
+void DialogBreakpoints::cb_checkVdpwrite(Fl_Check_Button* o, void* v) {
+  ((DialogBreakpoints*)(o->parent()->parent()->user_data()))->cb_checkVdpwrite_i(o,v);
+}
+
 /**
    Dialog constructor
 */
 DialogBreakpoints::DialogBreakpoints() {
-  { windowDialog = new Fl_Double_Window(361, 214, "Breakpoints");
+  { windowDialog = new Fl_Double_Window(383, 403, "Breakpoints");
     windowDialog->user_data((void*)(this));
-    { Fl_Group* o = new Fl_Group(10, 100, 340, 95, "New breakpoint");
+    { Fl_Group* o = new Fl_Group(10, 285, 340, 95, "New breakpoint");
       o->deactivate();
-      { textAddress = new Fl_Input(65, 115, 80, 25, "Address");
+      { textAddress = new Fl_Input(65, 300, 80, 25, "Address");
         textAddress->textfont(13);
       } // Fl_Input* textAddress
-      { checkPc = new Fl_Check_Button(175, 115, 25, 25, "PC");
+      { checkPc = new Fl_Check_Button(175, 300, 25, 25, "PC");
         checkPc->down_box(FL_DOWN_BOX);
         checkPc->align(Fl_Align(FL_ALIGN_LEFT));
       } // Fl_Check_Button* checkPc
-      { checkRead = new Fl_Check_Button(235, 115, 25, 25, "Read");
+      { checkRead = new Fl_Check_Button(235, 300, 25, 25, "Read");
         checkRead->down_box(FL_DOWN_BOX);
         checkRead->align(Fl_Align(FL_ALIGN_LEFT));
       } // Fl_Check_Button* checkRead
-      { checkWrite = new Fl_Check_Button(295, 115, 25, 25, "Write");
+      { checkWrite = new Fl_Check_Button(295, 300, 25, 25, "Write");
         checkWrite->down_box(FL_DOWN_BOX);
         checkWrite->align(Fl_Align(FL_ALIGN_LEFT));
       } // Fl_Check_Button* checkWrite
-      { textNote = new Fl_Input(65, 140, 260, 25, "Note");
+      { textNote = new Fl_Input(65, 325, 260, 25, "Note");
         textNote->textfont(13);
       } // Fl_Input* textNote
-      { buttonCreate = new Fl_Button(10, 170, 80, 25, "Create");
+      { buttonCreate = new Fl_Button(10, 355, 80, 25, "Create");
       } // Fl_Button* buttonCreate
-      { buttonRemove = new Fl_Button(90, 170, 80, 25, "Remove");
+      { buttonRemove = new Fl_Button(90, 355, 80, 25, "Remove");
       } // Fl_Button* buttonRemove
       o->end();
     } // Fl_Group* o
-    { Fl_Group* o = new Fl_Group(15, 20, 350, 55, "Common breakpoints");
-      { checkVdpcontrol = new Fl_Check_Button(165, 50, 25, 25, "VDP Control");
+    { Fl_Group* o = new Fl_Group(15, 20, 355, 160, "Common breakpoints");
+      { checkVdpcontrol = new Fl_Check_Button(150, 50, 25, 25, "VDP Control");
         checkVdpcontrol->down_box(FL_DOWN_BOX);
+        checkVdpcontrol->callback((Fl_Callback*)cb_checkVdpcontrol);
         checkVdpcontrol->align(Fl_Align(FL_ALIGN_LEFT));
       } // Fl_Check_Button* checkVdpcontrol
-      { checkPsgwrite = new Fl_Check_Button(265, 50, 25, 25, "PSG Write");
+      { checkPsgwrite = new Fl_Check_Button(280, 100, 25, 25, "PSG Write");
         checkPsgwrite->down_box(FL_DOWN_BOX);
         checkPsgwrite->align(Fl_Align(FL_ALIGN_LEFT));
+        checkPsgwrite->deactivate();
       } // Fl_Check_Button* checkPsgwrite
-      { checkVdpread = new Fl_Check_Button(165, 25, 25, 25, "VDP Read");
+      { checkVdpread = new Fl_Check_Button(150, 25, 25, 25, "VDP Data Read");
         checkVdpread->down_box(FL_DOWN_BOX);
+        checkVdpread->callback((Fl_Callback*)cb_checkVdpread);
         checkVdpread->align(Fl_Align(FL_ALIGN_LEFT));
       } // Fl_Check_Button* checkVdpread
-      { checkVdpwrite = new Fl_Check_Button(265, 25, 25, 25, "VDP Write");
+      { checkVdpwrite = new Fl_Check_Button(280, 25, 25, 25, "VDP DataWrite");
         checkVdpwrite->down_box(FL_DOWN_BOX);
+        checkVdpwrite->callback((Fl_Callback*)cb_checkVdpwrite);
         checkVdpwrite->align(Fl_Align(FL_ALIGN_LEFT));
       } // Fl_Check_Button* checkVdpwrite
+      { checkVcounter = new Fl_Check_Button(150, 75, 25, 25, "V Counter");
+        checkVcounter->down_box(FL_DOWN_BOX);
+        checkVcounter->align(Fl_Align(FL_ALIGN_LEFT));
+        checkVcounter->deactivate();
+      } // Fl_Check_Button* checkVcounter
+      { checkHcounter = new Fl_Check_Button(150, 100, 25, 25, "H Counter");
+        checkHcounter->down_box(FL_DOWN_BOX);
+        checkHcounter->align(Fl_Align(FL_ALIGN_LEFT));
+        checkHcounter->deactivate();
+      } // Fl_Check_Button* checkHcounter
       o->end();
     } // Fl_Group* o
     windowDialog->end();
@@ -64,4 +99,21 @@ DialogBreakpoints::DialogBreakpoints() {
 
 void DialogBreakpoints::set_breakpoint_table(uint8_t* p) {
   this->bp_table = p;
+}
+
+void DialogBreakpoints::vdp_data(uint8_t enable, uint8_t read) {
+  const uint8_t en_value = read ? Z80_BREAK_IO_RD : Z80_BREAK_IO_WR;
+  const uint8_t value = enable ? en_value : 0;
+  //Add breakpoint at even ports in range [0x80-0xBF]
+  for(int i=0x80; i<=0xBF; i+=2){
+    bp_table[i] = value;
+  }
+}
+
+void DialogBreakpoints::vdp_control(uint8_t enable) {
+  const uint8_t v = enable ? Z80_BREAK_IO_RD : 0;
+  //Set a read breakpoint at odd ports in range [0x80-0xBF]
+  for(int i = 0x81; i<= 0xBF; i+=2){
+    bp_table[i] = v;
+  }
 }
