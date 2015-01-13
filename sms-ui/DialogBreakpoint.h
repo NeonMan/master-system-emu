@@ -3,17 +3,21 @@
 #ifndef DialogBreakpoint_h
 #define DialogBreakpoint_h
 #include <FL/Fl.H>
+#if 1
+#include <stdint.h>
+#endif
 #include <FL/Fl_Double_Window.H>
-#include <FL/Fl_Browser.H>
+#include <FL/Fl_Group.H>
 #include <FL/Fl_Input.H>
 #include <FL/Fl_Check_Button.H>
 #include <FL/Fl_Button.H>
 
 class DialogBreakpoints {
+  uint8_t* bp_table = 0; 
 public:
   DialogBreakpoints();
   Fl_Double_Window *windowDialog;
-  Fl_Browser *browserBreakpoins;
+private:
   Fl_Input *textAddress;
   Fl_Check_Button *checkPc;
   Fl_Check_Button *checkRead;
@@ -21,5 +25,11 @@ public:
   Fl_Input *textNote;
   Fl_Button *buttonCreate;
   Fl_Button *buttonRemove;
+  Fl_Check_Button *checkVdpcontrol;
+  Fl_Check_Button *checkPsgwrite;
+  Fl_Check_Button *checkVdpread;
+  Fl_Check_Button *checkVdpwrite;
+public:
+  void set_breakpoint_table(uint8_t* p);
 };
 #endif
