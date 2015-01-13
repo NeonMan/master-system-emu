@@ -1,11 +1,13 @@
 #include <stdint.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <iostream>
 #include <SDL/SDL.h>
 
 
 //FLTK and dialogs
 #include <FL/Fl.H>
+#include <FL/Fl_File_Chooser.H>
 #include "DialogZ80.h"
 #include "DialogBreakpoint.h"
 
@@ -39,12 +41,44 @@ void emu_log(const char* msg, int level){
     std::cerr << "[" << emu_logelvel_names[level][0] << "] " << msg << std::endl;
 }
 
-void emu_init(){
+int emu_init(){
     emu_log("Hello!", EMU_LOG_INFO);
+
+    //Load ROM
+    const char* f_path = fl_file_chooser("Open ROM", "Mastersystem ROM (*.{sms,bin})", "", 0);
+    const char* f_default = "zexdoc.sms";
+    FILE* in_f = 0;
+    if (f_path){
+        in_f = fopen(f_path, "rb");
+    }
+    else{
+        in_f = fopen("zexdoc.sms", "rb");
+    }
+    if (!in_f){
+        emu_log("Unable to open ROM:", EMU_LOG_CRITICAL);
+        emu_log(f_path ? f_path : f_default, EMU_LOG_CRITICAL);
+        exit(-1);
+    }
+    uint8_t* read_buffer = (uint8_t*) malloc(ROM_MAX_SIZE);
+    if (!read_buffer){
+        emu_log("Unable to allocate read buffer.", EMU_LOG_CRITICAL);
+        exit(-1);
+    }
+    memset(read_buffer, 0, ROM_MAX_SIZE);
+    fread(read_buffer, 1, ROM_MAX_SIZE, in_f);
+    rom_set_image(read_buffer, ROM_MAX_SIZE);
+    free(read_buffer);
+    fclose(in_f);
+    emu_log("Rom loaded:", EMU_LOG_INFO);
+    emu_log(f_path ? f_path : f_default, EMU_LOG_INFO);
+
+    //Setup SDL
+    ///@note Implement me
+    SDL_Init(SDL_INIT_EVERYTHING);
 }
 
 void emu_cleanup(){
-    //SDL_Quit();
+    SDL_Quit();
     emu_log("Bye!", EMU_LOG_INFO);
 }
 
