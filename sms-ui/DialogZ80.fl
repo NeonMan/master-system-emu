@@ -29,7 +29,7 @@ class DialogZ80 {
   } {
     Fl_Window windowDialog {
       label z80 open
-      xywh {361 173 571 287} type Double align 80 visible
+      xywh {365 177 563 279} type Double align 80 visible
     } {
       Fl_Group {} {
         label Registers
@@ -163,7 +163,7 @@ class DialogZ80 {
         }
       }
       Fl_Group {} {
-        label {Internal state} open
+        label {Internal state}
         private xywh {355 20 225 140}
       } {
         Fl_Output textOpcode {
@@ -188,7 +188,7 @@ class DialogZ80 {
         }
       }
       Fl_Group {} {
-        label Buttons
+        label Buttons open
         private xywh {365 175 210 100} labeltype NO_LABEL
       } {
         Fl_Light_Button buttonRunning {
