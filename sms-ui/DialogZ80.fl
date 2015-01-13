@@ -29,7 +29,7 @@ class DialogZ80 {
   } {
     Fl_Window windowDialog {
       label z80 open
-      xywh {377 189 565 280} type Double align 80 visible
+      xywh {385 197 675 307} type Double align 80 visible
     } {
       Fl_Group {} {
         label Registers
@@ -89,7 +89,7 @@ class DialogZ80 {
         }
       }
       Fl_Group {} {
-        label Signals open
+        label Signals
         private xywh {190 20 235 165}
       } {
         Fl_Check_Button checkM1 {
@@ -163,12 +163,12 @@ class DialogZ80 {
         }
       }
       Fl_Group {} {
-        label {Internal state}
-        private xywh {355 20 225 140}
+        label {Internal state} open
+        private xywh {130 20 530 285}
       } {
         Fl_Output textOpcode {
           label Opcode
-          private xywh {420 30 140 25} textfont 13
+          private xywh {420 30 240 25} textfont 13
         }
         Fl_Output textStage {
           label Stage
@@ -176,7 +176,7 @@ class DialogZ80 {
         }
         Fl_Output textDasm {
           label Disasm
-          private xywh {420 55 140 25} textfont 13
+          private xywh {420 55 240 25} align 7 textfont 13
         }
         Fl_Output textRbuffer {
           label {R Buffer}
@@ -188,8 +188,8 @@ class DialogZ80 {
         }
       }
       Fl_Group {} {
-        label Buttons open
-        private xywh {360 175 215 100} labeltype NO_LABEL
+        label Buttons
+        private xywh {360 175 295 100} labeltype NO_LABEL
       } {
         Fl_Light_Button buttonRunning {
           label Running
@@ -201,7 +201,7 @@ class DialogZ80 {
     else
       *rp = 0;
   }} selected
-          private xywh {430 200 125 25}
+          private xywh {530 200 125 25}
         }
         Fl_Button buttonEdge {
           label Edge
@@ -210,14 +210,14 @@ class DialogZ80 {
   if(this->running_ptr){
       *rp = (uint32_t) spinEdgecount->value();;
   }} selected
-          private xywh {430 225 75 25}
+          private xywh {530 225 75 25}
         }
         Fl_Spinner spinEdgecount {selected
-          xywh {505 225 50 25}
+          private xywh {605 225 50 25}
         }
         Fl_Button buttonStep {
           label Step selected
-          xywh {430 250 125 25} deactivate
+          private xywh {530 250 125 25} deactivate
         }
       }
     }

@@ -61,8 +61,13 @@ int z80_stage_m1();
 int z80_stage_m2(uint8_t noexec);
 int z80_stage_m3(uint8_t noexec);
 
+///Returns the pointer to the breakpoint table
+uint8_t* z80dbg_get_breakpoints(){
+    return z80_breakpoints;
+}
+
 ///Sets a breakpoint
-void z80_set_breakpoint(uint16_t address, uint8_t flags){
+void z80dbg_set_breakpoint(uint16_t address, uint8_t flags){
     //Unless it is an 8-bit IO breakpoint, simply set the coresponding
     //byte on the breakpoint table.
     if ((flags & (Z80_BREAK_IO_RD | Z80_BREAK_IO_WR)) && ((flags & Z80_BREAK_IO_16B) == 0)){

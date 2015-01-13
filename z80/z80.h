@@ -71,6 +71,10 @@ void z80_init(void(*data_f) (uint8_t), void(*ctrl_f) (uint8_t));
 //Debug functions
 ///Returns a pointer to the current z80 struct.
 struct z80_s* z80dbg_get_z80();
+///Returns a pointer to the breakpoint table
+uint8_t* z80dbg_get_breakpoints();
+///Sets a breakpoint
+void z80dbg_set_breakpoint(uint16_t address, uint8_t flags);
 
 #ifdef __cplusplus
 }
