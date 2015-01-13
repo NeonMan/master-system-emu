@@ -5,6 +5,7 @@
 #include <FL/Fl.H>
 #if 1
 #include <stdint.h>
+#include <z80/z80_macros.h>
 #endif
 #include <FL/Fl_Double_Window.H>
 #include <FL/Fl_Group.H>
@@ -26,10 +27,21 @@ private:
   Fl_Button *buttonCreate;
   Fl_Button *buttonRemove;
   Fl_Check_Button *checkVdpcontrol;
+  inline void cb_checkVdpcontrol_i(Fl_Check_Button*, void*);
+  static void cb_checkVdpcontrol(Fl_Check_Button*, void*);
   Fl_Check_Button *checkPsgwrite;
   Fl_Check_Button *checkVdpread;
+  inline void cb_checkVdpread_i(Fl_Check_Button*, void*);
+  static void cb_checkVdpread(Fl_Check_Button*, void*);
   Fl_Check_Button *checkVdpwrite;
+  inline void cb_checkVdpwrite_i(Fl_Check_Button*, void*);
+  static void cb_checkVdpwrite(Fl_Check_Button*, void*);
 public:
+  Fl_Check_Button *checkVcounter;
+  Fl_Check_Button *checkHcounter;
   void set_breakpoint_table(uint8_t* p);
+private:
+  void vdp_data(uint8_t enable, uint8_t read);
+  void vdp_control(uint8_t enable);
 };
 #endif

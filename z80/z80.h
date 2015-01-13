@@ -68,13 +68,19 @@ void z80_tick();
 ///Initializes the z80 state.
 void z80_init(void(*data_f) (uint8_t), void(*ctrl_f) (uint8_t));
 
-//Debug functions
+// --- Debug functions ---
 ///Returns a pointer to the current z80 struct.
 struct z80_s* z80dbg_get_z80();
 ///Returns a pointer to the breakpoint table
 uint8_t* z80dbg_get_breakpoints();
 ///Sets a breakpoint
 void z80dbg_set_breakpoint(uint16_t address, uint8_t flags);
+///Set IO breakpoint callback
+void z80dbg_set_io_breakpoint_cb(void(*cb) (uint16_t /*Addr*/, uint8_t /*Read*/));
+///Set Mem breakpoint callback
+void z80dbg_set_mem_breakpoint_cb(void(*cb) (uint16_t /*Addr*/, uint8_t /*Read*/));
+///Set PC breakpoint callback
+void z80dbg_set_pc_breakpoint_cb(void(*cb) (uint16_t /*Addr*/));
 
 #ifdef __cplusplus
 }

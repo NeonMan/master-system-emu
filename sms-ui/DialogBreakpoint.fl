@@ -6,6 +6,8 @@ declblock {\#if 1} {open public after {\#endif}
 } {
   decl {\#include <stdint.h>} {public global
   }
+  decl {\#include <z80/z80_macros.h>} {public global
+  }
 } 
 
 class DialogBreakpoints {open
@@ -17,60 +19,71 @@ class DialogBreakpoints {open
   } {
     Fl_Window windowDialog {
       label Breakpoints open
-      xywh {381 162 361 214} type Double visible
+      xywh {547 207 383 403} type Double visible
     } {
       Fl_Group {} {
         label {New breakpoint} open
-        private xywh {10 100 340 95} deactivate
+        private xywh {10 285 340 95} deactivate
       } {
         Fl_Input textAddress {
           label Address
-          private xywh {65 115 80 25} textfont 13
+          private xywh {65 300 80 25} textfont 13
         }
         Fl_Check_Button checkPc {
           label PC
-          private xywh {175 115 25 25} down_box DOWN_BOX align 4
+          private xywh {175 300 25 25} down_box DOWN_BOX align 4
         }
         Fl_Check_Button checkRead {
           label Read
-          private xywh {235 115 25 25} down_box DOWN_BOX align 4
+          private xywh {235 300 25 25} down_box DOWN_BOX align 4
         }
         Fl_Check_Button checkWrite {
           label Write
-          private xywh {295 115 25 25} down_box DOWN_BOX align 4
+          private xywh {295 300 25 25} down_box DOWN_BOX align 4
         }
         Fl_Input textNote {
           label Note
-          private xywh {65 140 260 25} textfont 13
+          private xywh {65 325 260 25} textfont 13
         }
         Fl_Button buttonCreate {
           label Create
-          private xywh {10 170 80 25}
+          private xywh {10 355 80 25}
         }
         Fl_Button buttonRemove {
           label Remove
-          private xywh {90 170 80 25}
+          private xywh {90 355 80 25}
         }
       }
       Fl_Group {} {
         label {Common breakpoints} open
-        private xywh {15 20 350 55}
+        private xywh {15 20 355 160}
       } {
         Fl_Check_Button checkVdpcontrol {
-          label {VDP Control} selected
-          private xywh {165 50 25 25} down_box DOWN_BOX align 4
+          label {VDP Control}
+          callback {vdp_control(o->value());} selected
+          private xywh {150 50 25 25} down_box DOWN_BOX align 4
         }
         Fl_Check_Button checkPsgwrite {
           label {PSG Write}
-          private xywh {265 50 25 25} down_box DOWN_BOX align 4
+          private xywh {280 100 25 25} down_box DOWN_BOX align 4 deactivate
         }
         Fl_Check_Button checkVdpread {
-          label {VDP Read}
-          private xywh {165 25 25 25} down_box DOWN_BOX align 4
+          label {VDP Data Read}
+          callback {this->vdp_data(o->value(), 1);}
+          private xywh {150 25 25 25} down_box DOWN_BOX align 4
         }
         Fl_Check_Button checkVdpwrite {
-          label {VDP Write}
-          private xywh {265 25 25 25} down_box DOWN_BOX align 4
+          label {VDP DataWrite}
+          callback {this->vdp_data(o->value(), 0);}
+          private xywh {280 25 25 25} down_box DOWN_BOX align 4
+        }
+        Fl_Check_Button checkVcounter {
+          label {V Counter}
+          xywh {150 75 25 25} down_box DOWN_BOX align 4 deactivate
+        }
+        Fl_Check_Button checkHcounter {
+          label {H Counter}
+          xywh {150 100 25 25} down_box DOWN_BOX align 4 deactivate
         }
       }
     }
@@ -78,8 +91,24 @@ class DialogBreakpoints {open
 textAddress->value("0x0000");
 textNote->value("Pointless pointer breakpoint");} {}
   }
-  Function {set_breakpoint_table(uint8_t* p)} {open
-  } {
+  Function {set_breakpoint_table(uint8_t* p)} {} {
     code {this->bp_table = p;} {}
+  }
+  Function {vdp_data(uint8_t enable, uint8_t read)} {private
+  } {
+    code {const uint8_t en_value = read ? Z80_BREAK_IO_RD : Z80_BREAK_IO_WR;
+const uint8_t value = enable ? en_value : 0;
+//Add breakpoint at even ports in range [0x80-0xBF]
+for(int i=0x80; i<=0xBF; i+=2){
+  bp_table[i] = value;
+}} {}
+  }
+  Function {vdp_control(uint8_t enable)} {open private
+  } {
+    code {const uint8_t v = enable ? Z80_BREAK_IO_RD : 0;
+//Set a read breakpoint at odd ports in range [0x80-0xBF]
+for(int i = 0x81; i<= 0xBF; i+=2){
+  bp_table[i] = v;
+}} {}
   }
 } 

@@ -50,6 +50,10 @@ uint8_t  z80_n_busack = 1; ///<-- !Bus-acknowledge (Output)
 void(*z80_sdsc_data) (uint8_t) = 0; ///<-- Function pointer for SDSC data port.
 void(*z80_sdsc_control) (uint8_t) = 0; ///<-- Function pointer for SDSC control port.
 
+void(*z80_break_io) (uint16_t /*Addr*/, uint8_t /*Read*/) = 0; ///<-- Function pointer for IO breakpoints
+void(*z80_break_mem) (uint16_t /*Addr*/, uint8_t /*Read*/) = 0; ///<-- Function pointer for mem breakpoints
+void(*z80_break_pc) (uint16_t /*Addr*/) = 0; ///<-- Function pointer for PC breakpoints
+
 ///Instance of the z80 struct. Used by the z80 module internally
 struct z80_s  z80;
 
@@ -60,6 +64,21 @@ uint8_t z80_breakpoints[Z80_ADDRESS_SIZE];
 int z80_stage_m1();
 int z80_stage_m2(uint8_t noexec);
 int z80_stage_m3(uint8_t noexec);
+
+///Set IO breakpoint callback
+void z80dbg_set_io_breakpoint_cb(void(*cb) (uint16_t /*Addr*/, uint8_t /*Read*/)){
+    z80_break_io = cb;
+}
+
+///Set Mem breakpoint callback
+void z80dbg_set_mem_breakpoint_cb(void(*cb) (uint16_t /*Addr*/, uint8_t /*Read*/)){
+    z80_break_mem = cb;
+}
+
+///Set PC breakpoint callback
+void z80dbg_set_pc_breakpoint_cb(void(*cb) (uint16_t /*Addr*/)){
+    z80_break_pc = cb;
+}
 
 ///Returns the pointer to the breakpoint table
 uint8_t* z80dbg_get_breakpoints(){
@@ -169,7 +188,7 @@ void z80_init(void(*data_f) (uint8_t), void(*ctrl_f) (uint8_t)){
 */
 void z80_reset_pipeline(){
 #ifndef NDEBUG
-    /**/
+    /*
     char opcode_str[100];
     int disasm_size = 0;
     opcode_str[0] = 0;
@@ -199,7 +218,7 @@ void z80_reset_pipeline(){
 
     //Check for an execution (PC) breakpoint
     if (z80_breakpoints[Z80_PC] & Z80_BREAK_PC){
-        ///@note implement PC breakpoint callback.
+        if (z80_break_pc) z80_break_pc(Z80_PC);
     }
 }
 
@@ -207,6 +226,17 @@ void z80_reset_pipeline(){
 int z80_stage_m3(uint8_t noexec){
     switch (z80.m3_tick_count){
     case 0:
+        /* IO Write Breakpoints */
+        if (z80_breakpoints[z80.write_address & 0x00FF]){
+            if (z80.write_is_io && (z80_breakpoints[z80.write_address & 0x00FF] & Z80_BREAK_IO_WR))
+                if (z80_break_io) z80_break_io(z80.write_address, 0);
+        }
+        /* Memory write breakpoints */
+        if (z80_breakpoints[z80.write_address]){
+            if ((!z80.write_is_io) && (z80_breakpoints[z80.write_address] & Z80_BREAK_WR))
+                if (z80_break_mem) z80_break_mem(z80.write_address, 0);
+        }
+        /* ------------------------- */
         //1st rising edge
         //Write address to bus
         z80_address = z80.write_address;
@@ -311,6 +341,17 @@ int z80_stage_m3(uint8_t noexec){
 int z80_stage_m2(uint8_t noexec){
     switch (z80.m2_tick_count){
     case 0:
+        /* IO Read Breakpoints */
+        if (z80_breakpoints[z80.read_address & 0x00FF]){
+            if (z80.write_is_io && (z80_breakpoints[z80.read_address & 0x00FF] & Z80_BREAK_IO_RD))
+                if (z80_break_io) z80_break_io(z80.write_address, 1);
+        }
+        /* Memory read breakpoints */
+        if (z80_breakpoints[z80.read_address]){
+            if ((!z80.write_is_io) && (z80_breakpoints[z80.read_address] & Z80_BREAK_RD))
+                if (z80_break_mem) z80_break_mem(z80.write_address, 1);
+        }
+        /* ------------------------- */
         //1st rising edge
         //Write address to address bus.
         z80_address = z80.read_address;

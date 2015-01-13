@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <iostream>
 #include <SDL/SDL.h>
+#include <assert.h>
 
 
 //FLTK and dialogs
@@ -21,6 +22,10 @@
 #include <vdp/vdp.h>
 #include <z80/z80.h>
 #include "sms-emu.h" /*<-- Refactor me!*/
+
+//Control variables
+uint8_t is_running = 1; //<-- When this becomes false, the app exits
+uint32_t is_clocked = 0; //<-- When this becames false, the execution is paused.
 
 // --- Helper functions & macros ---
 
@@ -78,11 +83,31 @@ int emu_init(){
     //Setup SDL
     ///@note Implement me
     SDL_Init(SDL_INIT_EVERYTHING);
+    return 1;
 }
 
 void emu_cleanup(){
     SDL_Quit();
     emu_log("Bye!", EMU_LOG_INFO);
+}
+
+// --- Breakpoint callbacks ---
+void emu_mem_breakpoint_cb(uint16_t address, uint8_t read){
+    fl_beep();
+    fl_alert("%s MEMORY breakpoint at: 0x%X", (read ? "READ" : "WRITE"), address);
+    is_clocked = 1;
+}
+
+void emu_io_breakpoint_cb(uint16_t address, uint8_t read){
+    fl_beep();
+    fl_alert("%s IO breakpoint at: 0x%X", (read ? "READ" : "WRITE"), address);
+    is_clocked = 1;
+}
+
+void emu_pc_breakpoint_cb(uint16_t address){
+    fl_beep();
+    fl_alert("EXECUTION breakpoint at: 0x%X", address);
+    is_clocked = 1;
 }
 
 // --- Emulator ---
@@ -100,9 +125,12 @@ int main(int argc, char** argv){
     dlg_z80->windowDialog->show();
 
     //Control variables
-    uint8_t is_running = 1; //<-- When this becomes false, the app exits
-    uint32_t is_clocked = 0; //<-- When this becames false, the execution is paused.
     unsigned long last_update = 0;
+
+    //Set breakpoint callbacks
+    z80dbg_set_io_breakpoint_cb(emu_io_breakpoint_cb);
+    z80dbg_set_mem_breakpoint_cb(emu_mem_breakpoint_cb);
+    z80dbg_set_pc_breakpoint_cb(emu_pc_breakpoint_cb);
 
     //Provide the UI with relevant variables
     dlg_z80->set_running_ptr((uint32_t*) &is_clocked);
