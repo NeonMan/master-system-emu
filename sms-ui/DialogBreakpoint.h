@@ -38,10 +38,15 @@ private:
   static void cb_checkVdpwrite(Fl_Check_Button*, void*);
 public:
   Fl_Check_Button *checkVcounter;
+private:
+  inline void cb_checkVcounter_i(Fl_Check_Button*, void*);
+  static void cb_checkVcounter(Fl_Check_Button*, void*);
+public:
   Fl_Check_Button *checkHcounter;
   void set_breakpoint_table(uint8_t* p);
 private:
   void vdp_data(uint8_t enable, uint8_t read);
   void vdp_control(uint8_t enable);
+  void vdp_vcounter(uint8_t enable);
 };
 #endif

@@ -25,11 +25,18 @@ void DialogBreakpoints::cb_checkVdpwrite(Fl_Check_Button* o, void* v) {
   ((DialogBreakpoints*)(o->parent()->parent()->user_data()))->cb_checkVdpwrite_i(o,v);
 }
 
+void DialogBreakpoints::cb_checkVcounter_i(Fl_Check_Button* o, void*) {
+  this->vdp_vcounter(o->value());
+}
+void DialogBreakpoints::cb_checkVcounter(Fl_Check_Button* o, void* v) {
+  ((DialogBreakpoints*)(o->parent()->parent()->user_data()))->cb_checkVcounter_i(o,v);
+}
+
 /**
    Dialog constructor
 */
 DialogBreakpoints::DialogBreakpoints() {
-  { windowDialog = new Fl_Double_Window(383, 403, "Breakpoints");
+  { windowDialog = new Fl_Double_Window(375, 395, "Breakpoints");
     windowDialog->user_data((void*)(this));
     { Fl_Group* o = new Fl_Group(10, 285, 340, 95, "New breakpoint");
       o->deactivate();
@@ -73,15 +80,15 @@ DialogBreakpoints::DialogBreakpoints() {
         checkVdpread->callback((Fl_Callback*)cb_checkVdpread);
         checkVdpread->align(Fl_Align(FL_ALIGN_LEFT));
       } // Fl_Check_Button* checkVdpread
-      { checkVdpwrite = new Fl_Check_Button(280, 25, 25, 25, "VDP DataWrite");
+      { checkVdpwrite = new Fl_Check_Button(280, 25, 25, 25, "VDP Data Write");
         checkVdpwrite->down_box(FL_DOWN_BOX);
         checkVdpwrite->callback((Fl_Callback*)cb_checkVdpwrite);
         checkVdpwrite->align(Fl_Align(FL_ALIGN_LEFT));
       } // Fl_Check_Button* checkVdpwrite
       { checkVcounter = new Fl_Check_Button(150, 75, 25, 25, "V Counter");
         checkVcounter->down_box(FL_DOWN_BOX);
+        checkVcounter->callback((Fl_Callback*)cb_checkVcounter);
         checkVcounter->align(Fl_Align(FL_ALIGN_LEFT));
-        checkVcounter->deactivate();
       } // Fl_Check_Button* checkVcounter
       { checkHcounter = new Fl_Check_Button(150, 100, 25, 25, "H Counter");
         checkHcounter->down_box(FL_DOWN_BOX);
@@ -115,5 +122,13 @@ void DialogBreakpoints::vdp_control(uint8_t enable) {
   //Set a read breakpoint at odd ports in range [0x80-0xBF]
   for(int i = 0x81; i<= 0xBF; i+=2){
     bp_table[i] = v;
+  }
+}
+
+void DialogBreakpoints::vdp_vcounter(uint8_t enable) {
+  //Make an io read breakpoint at even ports in range [0x40-0x7f]
+  const uint8_t v = enable ? Z80_BREAK_IO_RD : 0;
+  for(int i = 0x40; i<=0x7F; i+=2){
+     bp_table[i] = v;
   }
 }
