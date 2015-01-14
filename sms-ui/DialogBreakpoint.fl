@@ -19,7 +19,7 @@ class DialogBreakpoints {open
   } {
     Fl_Window windowDialog {
       label Breakpoints open
-      xywh {547 207 383 403} type Double visible
+      xywh {551 211 375 395} type Double visible
     } {
       Fl_Group {} {
         label {New breakpoint} open
@@ -60,7 +60,7 @@ class DialogBreakpoints {open
       } {
         Fl_Check_Button checkVdpcontrol {
           label {VDP Control}
-          callback {vdp_control(o->value());} selected
+          callback {vdp_control(o->value());}
           private xywh {150 50 25 25} down_box DOWN_BOX align 4
         }
         Fl_Check_Button checkPsgwrite {
@@ -73,13 +73,14 @@ class DialogBreakpoints {open
           private xywh {150 25 25 25} down_box DOWN_BOX align 4
         }
         Fl_Check_Button checkVdpwrite {
-          label {VDP DataWrite}
-          callback {this->vdp_data(o->value(), 0);}
+          label {VDP Data Write}
+          callback {this->vdp_data(o->value(), 0);} selected
           private xywh {280 25 25 25} down_box DOWN_BOX align 4
         }
         Fl_Check_Button checkVcounter {
           label {V Counter}
-          xywh {150 75 25 25} down_box DOWN_BOX align 4 deactivate
+          callback {this->vdp_vcounter(o->value());}
+          xywh {150 75 25 25} down_box DOWN_BOX align 4
         }
         Fl_Check_Button checkHcounter {
           label {H Counter}
@@ -103,12 +104,20 @@ for(int i=0x80; i<=0xBF; i+=2){
   bp_table[i] = value;
 }} {}
   }
-  Function {vdp_control(uint8_t enable)} {open private
+  Function {vdp_control(uint8_t enable)} {private
   } {
     code {const uint8_t v = enable ? Z80_BREAK_IO_RD : 0;
 //Set a read breakpoint at odd ports in range [0x80-0xBF]
 for(int i = 0x81; i<= 0xBF; i+=2){
   bp_table[i] = v;
+}} {}
+  }
+  Function {vdp_vcounter(uint8_t enable)} {open private return_type void
+  } {
+    code {//Make an io read breakpoint at even ports in range [0x40-0x7f]
+const uint8_t v = enable ? Z80_BREAK_IO_RD : 0;
+for(int i = 0x40; i<=0x7F; i+=2){
+   bp_table[i] = v;
 }} {}
   }
 } 

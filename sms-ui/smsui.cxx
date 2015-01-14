@@ -29,7 +29,7 @@ uint32_t is_clocked = 0; //<-- When this becames false, the execution is paused.
 
 // --- Helper functions & macros ---
 
-//Update UI, where X is a milisecond delta since last update
+//Update UI
 #define __UPDATE_FLTK \
 { \
     const unsigned long ticks = GetTickCount(); \
@@ -100,7 +100,7 @@ void emu_mem_breakpoint_cb(uint16_t address, uint8_t read){
 
 void emu_io_breakpoint_cb(uint16_t address, uint8_t read){
     fl_beep();
-    fl_alert("%s IO breakpoint at: 0x%X", (read ? "READ" : "WRITE"), address);
+    fl_alert("%s IO breakpoint at: 0x%02X (0x%04X)", (read ? "READ" : "WRITE"), address&0x00FF, address);
     is_clocked = 1;
 }
 

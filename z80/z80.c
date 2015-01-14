@@ -343,13 +343,13 @@ int z80_stage_m2(uint8_t noexec){
     case 0:
         /* IO Read Breakpoints */
         if (z80_breakpoints[z80.read_address & 0x00FF]){
-            if (z80.write_is_io && (z80_breakpoints[z80.read_address & 0x00FF] & Z80_BREAK_IO_RD))
-                if (z80_break_io) z80_break_io(z80.write_address, 1);
+            if (z80.read_is_io && (z80_breakpoints[z80.read_address & 0x00FF] & Z80_BREAK_IO_RD))
+                if (z80_break_io) z80_break_io(z80.read_address, 1);
         }
         /* Memory read breakpoints */
         if (z80_breakpoints[z80.read_address]){
-            if ((!z80.write_is_io) && (z80_breakpoints[z80.read_address] & Z80_BREAK_RD))
-                if (z80_break_mem) z80_break_mem(z80.write_address, 1);
+            if ((!z80.read_is_io) && (z80_breakpoints[z80.read_address] & Z80_BREAK_RD))
+                if (z80_break_mem) z80_break_mem(z80.read_address, 1);
         }
         /* ------------------------- */
         //1st rising edge
