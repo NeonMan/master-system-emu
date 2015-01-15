@@ -30,7 +30,7 @@ void DialogZ80::cb_buttonEdge(Fl_Button* o, void* v) {
 }
 
 DialogZ80::DialogZ80() {
-  { windowDialog = new Fl_Double_Window(675, 307, "z80");
+  { windowDialog = new Fl_Double_Window(667, 331, "z80");
     windowDialog->user_data((void*)(this));
     windowDialog->align(Fl_Align(FL_ALIGN_CLIP|FL_ALIGN_INSIDE));
     { Fl_Group* o = new Fl_Group(0, 20, 165, 265, "Registers");
@@ -136,16 +136,16 @@ DialogZ80::DialogZ80() {
       } // Fl_Check_Button* checkBusack
       o->end();
     } // Fl_Group* o
-    { Fl_Group* o = new Fl_Group(190, 195, 170, 90, "Buses");
-      { textAddress = new Fl_Output(245, 205, 105, 25, "Address");
+    { Fl_Group* o = new Fl_Group(335, 195, 170, 90, "Buses");
+      { textAddress = new Fl_Output(390, 205, 105, 25, "Address");
         textAddress->textfont(13);
       } // Fl_Output* textAddress
-      { textData = new Fl_Output(245, 230, 105, 25, "Data");
+      { textData = new Fl_Output(390, 230, 105, 25, "Data");
         textData->textfont(13);
       } // Fl_Output* textData
       o->end();
     } // Fl_Group* o
-    { Fl_Group* o = new Fl_Group(130, 20, 530, 285, "Internal state");
+    { Fl_Group* o = new Fl_Group(360, 25, 300, 140, "Internal state");
       { textOpcode = new Fl_Output(420, 30, 240, 25, "Opcode");
         textOpcode->textfont(13);
       } // Fl_Output* textOpcode
@@ -177,6 +177,41 @@ DialogZ80::DialogZ80() {
       { buttonStep = new Fl_Button(530, 250, 125, 25, "Step");
         buttonStep->deactivate();
       } // Fl_Button* buttonStep
+      o->end();
+    } // Fl_Group* o
+    { Fl_Group* o = new Fl_Group(175, 195, 150, 105, "Flags");
+      { checkCarry = new Fl_Check_Button(225, 195, 25, 25, "Carry");
+        checkCarry->down_box(FL_DOWN_BOX);
+        checkCarry->align(Fl_Align(FL_ALIGN_LEFT));
+      } // Fl_Check_Button* checkCarry
+      { checkAdd = new Fl_Check_Button(225, 220, 25, 25, "Add");
+        checkAdd->down_box(FL_DOWN_BOX);
+        checkAdd->align(Fl_Align(FL_ALIGN_LEFT));
+      } // Fl_Check_Button* checkAdd
+      { checkParity = new Fl_Check_Button(225, 245, 25, 25, "Parity");
+        checkParity->down_box(FL_DOWN_BOX);
+        checkParity->align(Fl_Align(FL_ALIGN_LEFT));
+      } // Fl_Check_Button* checkParity
+      { checkUnk3 = new Fl_Check_Button(225, 270, 25, 25, "Unk. (3)");
+        checkUnk3->down_box(FL_DOWN_BOX);
+        checkUnk3->align(Fl_Align(FL_ALIGN_LEFT));
+      } // Fl_Check_Button* checkUnk3
+      { checkHCarry = new Fl_Check_Button(300, 195, 25, 25, "HCarry");
+        checkHCarry->down_box(FL_DOWN_BOX);
+        checkHCarry->align(Fl_Align(FL_ALIGN_LEFT));
+      } // Fl_Check_Button* checkHCarry
+      { checkUnk5 = new Fl_Check_Button(300, 220, 25, 25, "Unk. (5)");
+        checkUnk5->down_box(FL_DOWN_BOX);
+        checkUnk5->align(Fl_Align(FL_ALIGN_LEFT));
+      } // Fl_Check_Button* checkUnk5
+      { checkZero = new Fl_Check_Button(300, 245, 25, 25, "Zero");
+        checkZero->down_box(FL_DOWN_BOX);
+        checkZero->align(Fl_Align(FL_ALIGN_LEFT));
+      } // Fl_Check_Button* checkZero
+      { checkSign = new Fl_Check_Button(300, 270, 25, 25, "Sign");
+        checkSign->down_box(FL_DOWN_BOX);
+        checkSign->align(Fl_Align(FL_ALIGN_LEFT));
+      } // Fl_Check_Button* checkSign
       o->end();
     } // Fl_Group* o
     windowDialog->end();
@@ -235,6 +270,17 @@ void DialogZ80::update_values() {
       char tmp_str[__TMP_STR_LEN];
       memset(tmp_str,0,__TMP_STR_LEN);
       
+      // --- Flags ---
+      checkCarry->value(1  && (Z80_F & Z80_FLAG_CARRY));
+      checkAdd->value(1    && (Z80_F & Z80_FLAG_ADD));
+      checkParity->value(1 && (Z80_F & Z80_FLAG_PARITY));
+      checkUnk3->value(1   && (Z80_F & Z80_FLAG_UNK3));
+  
+      checkHCarry->value(1 && (Z80_F & Z80_FLAG_HC));
+      checkUnk5->value(1   && (Z80_F & Z80_FLAG_UNK5));
+      checkZero->value(1   && (Z80_F & Z80_FLAG_ZERO));
+      checkSign->value(1   && (Z80_F & Z80_FLAG_SIGN));
+  
       // --- Update z80 registers ---
       //AF
       sprintf(tmp_str, "0x%04X", Z80_AF);

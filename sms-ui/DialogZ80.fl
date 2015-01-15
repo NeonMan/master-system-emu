@@ -29,7 +29,7 @@ class DialogZ80 {
   } {
     Fl_Window windowDialog {
       label z80 open
-      xywh {385 197 675 307} type Double align 80 visible
+      xywh {389 201 667 331} type Double align 80 visible
     } {
       Fl_Group {} {
         label Registers
@@ -151,20 +151,20 @@ class DialogZ80 {
       }
       Fl_Group {} {
         label Buses
-        private xywh {190 195 170 90}
+        private xywh {335 195 170 90}
       } {
         Fl_Output textAddress {
           label Address
-          private xywh {245 205 105 25} textfont 13
+          private xywh {390 205 105 25} textfont 13
         }
         Fl_Output textData {
           label Data
-          private xywh {245 230 105 25} textfont 13
+          private xywh {390 230 105 25} textfont 13
         }
       }
       Fl_Group {} {
         label {Internal state} open
-        private xywh {130 20 530 285}
+        private xywh {360 25 300 140}
       } {
         Fl_Output textOpcode {
           label Opcode
@@ -200,7 +200,7 @@ class DialogZ80 {
       *rp = UINT32_MAX;
     else
       *rp = 0;
-  }} selected
+  }}
           private xywh {530 200 125 25}
         }
         Fl_Button buttonEdge {
@@ -209,15 +209,52 @@ class DialogZ80 {
   
   if(this->running_ptr){
       *rp = (uint32_t) spinEdgecount->value();;
-  }} selected
+  }}
           private xywh {530 225 75 25}
         }
-        Fl_Spinner spinEdgecount {selected
+        Fl_Spinner spinEdgecount {
           private xywh {605 225 50 25}
         }
         Fl_Button buttonStep {
-          label Step selected
+          label Step
           private xywh {530 250 125 25} deactivate
+        }
+      }
+      Fl_Group {} {
+        label Flags open
+        xywh {175 195 150 105}
+      } {
+        Fl_Check_Button checkCarry {
+          label Carry
+          xywh {225 195 25 25} down_box DOWN_BOX align 4
+        }
+        Fl_Check_Button checkAdd {
+          label Add
+          xywh {225 220 25 25} down_box DOWN_BOX align 4
+        }
+        Fl_Check_Button checkParity {
+          label Parity
+          xywh {225 245 25 25} down_box DOWN_BOX align 4
+        }
+        Fl_Check_Button checkUnk3 {
+          label {Unk. (3)}
+          xywh {225 270 25 25} down_box DOWN_BOX align 4
+        }
+        Fl_Check_Button checkHCarry {
+          label HCarry
+          xywh {300 195 25 25} down_box DOWN_BOX align 4
+        }
+        Fl_Check_Button checkUnk5 {
+          label {Unk. (5)}
+          xywh {300 220 25 25} down_box DOWN_BOX align 4
+        }
+        Fl_Check_Button checkZero {
+          label Zero
+          xywh {300 245 25 25} down_box DOWN_BOX align 4
+        }
+        Fl_Check_Button checkSign {
+          label Sign
+          xywh {300 270 25 25} down_box DOWN_BOX align 4
         }
       }
     }
@@ -269,6 +306,17 @@ this->buttonRunning->value(1);
     char tmp_str[__TMP_STR_LEN];
     memset(tmp_str,0,__TMP_STR_LEN);
     
+    // --- Flags ---
+    checkCarry->value(1  && (Z80_F & Z80_FLAG_CARRY));
+    checkAdd->value(1    && (Z80_F & Z80_FLAG_ADD));
+    checkParity->value(1 && (Z80_F & Z80_FLAG_PARITY));
+    checkUnk3->value(1   && (Z80_F & Z80_FLAG_UNK3));
+
+    checkHCarry->value(1 && (Z80_F & Z80_FLAG_HC));
+    checkUnk5->value(1   && (Z80_F & Z80_FLAG_UNK5));
+    checkZero->value(1   && (Z80_F & Z80_FLAG_ZERO));
+    checkSign->value(1   && (Z80_F & Z80_FLAG_SIGN));
+
     // --- Update z80 registers ---
     //AF
     sprintf(tmp_str, "0x%04X", Z80_AF);
@@ -364,6 +412,7 @@ this->buttonRunning->value(1);
     sprintf(tmp_str, "%s ;(Size: %d)", op.opcode_str, op.size);
     textDasm->value(tmp_str);
     \#undef z80
-  }} {}
+  }} {selected
+    }
   }
 } 
