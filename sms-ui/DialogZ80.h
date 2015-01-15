@@ -77,6 +77,14 @@ private:
   Fl_Spinner *spinEdgecount;
   Fl_Button *buttonStep;
 public:
+  Fl_Check_Button *checkCarry;
+  Fl_Check_Button *checkAdd;
+  Fl_Check_Button *checkParity;
+  Fl_Check_Button *checkUnk3;
+  Fl_Check_Button *checkHCarry;
+  Fl_Check_Button *checkUnk5;
+  Fl_Check_Button *checkZero;
+  Fl_Check_Button *checkSign;
   void set_running_ptr(uint32_t* p);
   void set_z80_ptr(struct z80_s* p);
   void update_values();

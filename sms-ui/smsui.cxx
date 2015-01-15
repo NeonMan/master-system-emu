@@ -48,9 +48,13 @@ void emu_log(const char* msg, int level){
 
 int emu_init(){
     emu_log("Hello!", EMU_LOG_INFO);
+    //Redirect stderr/stdout
+    *stderr = *fopen("err.txt", "wb");
+    //*stdout = *fopen("out.txt", "wb");
+
     //Init emulator modules
     vdp_init();
-    z80_init(0, 0); ///<-- @note No SDSC callbacks
+    z80_init(sdsc_write, sdsc_control); ///<-- @note No SDSC callbacks
 
     //Load ROM
     const char* f_path = fl_file_chooser("Open ROM", "Mastersystem ROM (*.{sms,bin})", "", 1);
@@ -89,6 +93,9 @@ int emu_init(){
 void emu_cleanup(){
     SDL_Quit();
     emu_log("Bye!", EMU_LOG_INFO);
+
+    fclose(stderr);
+    fclose(stdout);
 }
 
 // --- Breakpoint callbacks ---
