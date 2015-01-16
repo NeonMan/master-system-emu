@@ -8,6 +8,8 @@ declblock {\#if 1} {open public after {\#endif}
   }
   decl {\#include <z80/z80_macros.h>} {public global
   }
+  decl {\#include <string>} {public global
+  }
 } 
 
 class DialogBreakpoints {open
@@ -19,44 +21,75 @@ class DialogBreakpoints {open
   } {
     Fl_Window windowDialog {
       label Breakpoints open
-      xywh {551 211 375 395} type Double visible
+      xywh {499 219 384 465} type Double visible
     } {
       Fl_Group {} {
         label {New breakpoint} open
-        private xywh {10 285 340 95} deactivate
+        private xywh {15 235 340 95}
       } {
         Fl_Input textAddress {
           label Address
-          private xywh {65 300 80 25} textfont 13
+          private xywh {70 275 80 25} textfont 13
+        }
+        Fl_Check_Button checkIo {
+          label IO
+          private xywh {35 250 25 25} down_box DOWN_BOX align 4
         }
         Fl_Check_Button checkPc {
           label PC
-          private xywh {175 300 25 25} down_box DOWN_BOX align 4
+          private xywh {90 250 25 25} down_box DOWN_BOX align 4
         }
         Fl_Check_Button checkRead {
           label Read
-          private xywh {235 300 25 25} down_box DOWN_BOX align 4
+          private xywh {150 250 25 25} down_box DOWN_BOX align 4
         }
         Fl_Check_Button checkWrite {
           label Write
-          private xywh {295 300 25 25} down_box DOWN_BOX align 4
+          private xywh {210 250 25 25} down_box DOWN_BOX align 4
         }
         Fl_Input textNote {
           label Note
-          private xywh {65 325 260 25} textfont 13
+          private xywh {195 275 135 25} textfont 13
         }
         Fl_Button buttonCreate {
           label Create
-          private xywh {10 355 80 25}
+          callback {//Parse the address
+const unsigned long addr = std::stol(textAddress->value(), 0, 16);
+
+//Is a PC breakpoint?
+if(checkPc->value()){
+  bp_table[addr] |= Z80_BREAK_PC;
+}
+//Is IO ?
+else if (checkIo->value()){
+  //Is IO write?
+  if(checkWrite->value())
+    bp_table[addr] |= Z80_BREAK_IO_WR;
+  //Is IO read?
+  if(checkRead->value())
+    bp_table[addr] |= Z80_BREAK_IO_RD;
+}
+//Is Memory bp
+else{
+  //Is Mem write?
+  if(checkWrite->value())
+    bp_table[addr] |= Z80_BREAK_WR;
+  //Is Mem read?
+  if(checkRead->value())
+    bp_table[addr] |= Z80_BREAK_RD;
+}} selected
+          private xywh {15 305 80 25}
         }
         Fl_Button buttonRemove {
           label Remove
-          private xywh {90 355 80 25}
+          callback {const unsigned long addr = std::stol(textAddress->value(), 0, 16);
+bp_table[addr] = 0;}
+          private xywh {95 305 80 25}
         }
       }
       Fl_Group {} {
         label {Common breakpoints} open
-        private xywh {15 20 355 160}
+        private xywh {15 20 355 145}
       } {
         Fl_Check_Button checkVdpcontrol {
           label {VDP Control}
@@ -74,17 +107,17 @@ class DialogBreakpoints {open
         }
         Fl_Check_Button checkVdpwrite {
           label {VDP Data Write}
-          callback {this->vdp_data(o->value(), 0);} selected
+          callback {this->vdp_data(o->value(), 0);}
           private xywh {280 25 25 25} down_box DOWN_BOX align 4
         }
         Fl_Check_Button checkVcounter {
           label {V Counter}
           callback {this->vdp_vcounter(o->value());}
-          xywh {150 75 25 25} down_box DOWN_BOX align 4
+          private xywh {150 75 25 25} down_box DOWN_BOX align 4
         }
         Fl_Check_Button checkHcounter {
           label {H Counter}
-          xywh {150 100 25 25} down_box DOWN_BOX align 4 deactivate
+          private xywh {150 100 25 25} down_box DOWN_BOX align 4 deactivate
         }
       }
     }
@@ -92,7 +125,8 @@ class DialogBreakpoints {open
 textAddress->value("0x0000");
 textNote->value("Pointless pointer breakpoint");} {}
   }
-  Function {set_breakpoint_table(uint8_t* p)} {} {
+  Function {set_breakpoint_table(uint8_t* p)} {open
+  } {
     code {this->bp_table = p;} {}
   }
   Function {vdp_data(uint8_t enable, uint8_t read)} {private

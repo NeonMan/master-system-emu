@@ -30,7 +30,7 @@ void DialogZ80::cb_buttonEdge(Fl_Button* o, void* v) {
 }
 
 DialogZ80::DialogZ80() {
-  { windowDialog = new Fl_Double_Window(667, 331, "z80");
+  { windowDialog = new Fl_Double_Window(659, 323, "z80");
     windowDialog->user_data((void*)(this));
     windowDialog->align(Fl_Align(FL_ALIGN_CLIP|FL_ALIGN_INSIDE));
     { Fl_Group* o = new Fl_Group(0, 20, 165, 265, "Registers");
@@ -283,7 +283,7 @@ void DialogZ80::update_values() {
   
       // --- Update z80 registers ---
       //AF
-      sprintf(tmp_str, "0x%04X", Z80_AF);
+      sprintf(tmp_str, "0x%02X%02X", Z80_A, Z80_F);
       textAF->value(tmp_str);
       //BC
       sprintf(tmp_str, "0x%04X", Z80_BC);
@@ -308,7 +308,7 @@ void DialogZ80::update_values() {
       textPC->value(tmp_str);
       
       //AF'
-      sprintf(tmp_str, "0x%04X", Z80_AFp);
+      sprintf(tmp_str, "0x%02X%02X", Z80_Ap, Z80_Fp);
       textAFp->value(tmp_str);
       //BC'
       sprintf(tmp_str, "0x%04X", Z80_BCp);

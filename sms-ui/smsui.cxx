@@ -4,6 +4,7 @@
 #include <iostream>
 #include <SDL/SDL.h>
 #include <assert.h>
+#include <time.h>
 
 
 //FLTK and dialogs
@@ -58,7 +59,7 @@ int emu_init(){
 
     //Load ROM
     const char* f_path = fl_file_chooser("Open ROM", "Mastersystem ROM (*.{sms,bin})", "", 1);
-    const char* f_default = "zexdoc.sms";
+    const char* f_default = "zexdoc_sdsc.sms";
     FILE* in_f = 0;
     if (f_path){
         in_f = fopen(f_path, "rb");

@@ -4,6 +4,45 @@
 #if 1
 #endif
 
+void DialogBreakpoints::cb_buttonCreate_i(Fl_Button*, void*) {
+  //Parse the address
+const unsigned long addr = std::stol(textAddress->value(), 0, 16);
+
+//Is a PC breakpoint?
+if(checkPc->value()){
+  bp_table[addr] |= Z80_BREAK_PC;
+}
+//Is IO ?
+else if (checkIo->value()){
+  //Is IO write?
+  if(checkWrite->value())
+    bp_table[addr] |= Z80_BREAK_IO_WR;
+  //Is IO read?
+  if(checkRead->value())
+    bp_table[addr] |= Z80_BREAK_IO_RD;
+}
+//Is Memory bp
+else{
+  //Is Mem write?
+  if(checkWrite->value())
+    bp_table[addr] |= Z80_BREAK_WR;
+  //Is Mem read?
+  if(checkRead->value())
+    bp_table[addr] |= Z80_BREAK_RD;
+};
+}
+void DialogBreakpoints::cb_buttonCreate(Fl_Button* o, void* v) {
+  ((DialogBreakpoints*)(o->parent()->parent()->user_data()))->cb_buttonCreate_i(o,v);
+}
+
+void DialogBreakpoints::cb_buttonRemove_i(Fl_Button*, void*) {
+  const unsigned long addr = std::stol(textAddress->value(), 0, 16);
+bp_table[addr] = 0;
+}
+void DialogBreakpoints::cb_buttonRemove(Fl_Button* o, void* v) {
+  ((DialogBreakpoints*)(o->parent()->parent()->user_data()))->cb_buttonRemove_i(o,v);
+}
+
 void DialogBreakpoints::cb_checkVdpcontrol_i(Fl_Check_Button* o, void*) {
   vdp_control(o->value());
 }
@@ -36,35 +75,40 @@ void DialogBreakpoints::cb_checkVcounter(Fl_Check_Button* o, void* v) {
    Dialog constructor
 */
 DialogBreakpoints::DialogBreakpoints() {
-  { windowDialog = new Fl_Double_Window(375, 395, "Breakpoints");
+  { windowDialog = new Fl_Double_Window(384, 465, "Breakpoints");
     windowDialog->user_data((void*)(this));
-    { Fl_Group* o = new Fl_Group(10, 285, 340, 95, "New breakpoint");
-      o->deactivate();
-      { textAddress = new Fl_Input(65, 300, 80, 25, "Address");
+    { Fl_Group* o = new Fl_Group(15, 235, 340, 95, "New breakpoint");
+      { textAddress = new Fl_Input(70, 275, 80, 25, "Address");
         textAddress->textfont(13);
       } // Fl_Input* textAddress
-      { checkPc = new Fl_Check_Button(175, 300, 25, 25, "PC");
+      { checkIo = new Fl_Check_Button(35, 250, 25, 25, "IO");
+        checkIo->down_box(FL_DOWN_BOX);
+        checkIo->align(Fl_Align(FL_ALIGN_LEFT));
+      } // Fl_Check_Button* checkIo
+      { checkPc = new Fl_Check_Button(90, 250, 25, 25, "PC");
         checkPc->down_box(FL_DOWN_BOX);
         checkPc->align(Fl_Align(FL_ALIGN_LEFT));
       } // Fl_Check_Button* checkPc
-      { checkRead = new Fl_Check_Button(235, 300, 25, 25, "Read");
+      { checkRead = new Fl_Check_Button(150, 250, 25, 25, "Read");
         checkRead->down_box(FL_DOWN_BOX);
         checkRead->align(Fl_Align(FL_ALIGN_LEFT));
       } // Fl_Check_Button* checkRead
-      { checkWrite = new Fl_Check_Button(295, 300, 25, 25, "Write");
+      { checkWrite = new Fl_Check_Button(210, 250, 25, 25, "Write");
         checkWrite->down_box(FL_DOWN_BOX);
         checkWrite->align(Fl_Align(FL_ALIGN_LEFT));
       } // Fl_Check_Button* checkWrite
-      { textNote = new Fl_Input(65, 325, 260, 25, "Note");
+      { textNote = new Fl_Input(195, 275, 135, 25, "Note");
         textNote->textfont(13);
       } // Fl_Input* textNote
-      { buttonCreate = new Fl_Button(10, 355, 80, 25, "Create");
+      { buttonCreate = new Fl_Button(15, 305, 80, 25, "Create");
+        buttonCreate->callback((Fl_Callback*)cb_buttonCreate);
       } // Fl_Button* buttonCreate
-      { buttonRemove = new Fl_Button(90, 355, 80, 25, "Remove");
+      { buttonRemove = new Fl_Button(95, 305, 80, 25, "Remove");
+        buttonRemove->callback((Fl_Callback*)cb_buttonRemove);
       } // Fl_Button* buttonRemove
       o->end();
     } // Fl_Group* o
-    { Fl_Group* o = new Fl_Group(15, 20, 355, 160, "Common breakpoints");
+    { Fl_Group* o = new Fl_Group(15, 20, 355, 145, "Common breakpoints");
       { checkVdpcontrol = new Fl_Check_Button(150, 50, 25, 25, "VDP Control");
         checkVdpcontrol->down_box(FL_DOWN_BOX);
         checkVdpcontrol->callback((Fl_Callback*)cb_checkVdpcontrol);
