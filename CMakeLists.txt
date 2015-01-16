@@ -27,6 +27,7 @@ endif(OPENMP_FOUND)
 
 # --- Dependencies ---
 include_directories(${PROJECT_SOURCE_DIR})
+add_subdirectory (glue)
 add_subdirectory (psg)
 add_subdirectory (ram)
 add_subdirectory (rom)

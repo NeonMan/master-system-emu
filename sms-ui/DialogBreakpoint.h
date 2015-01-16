@@ -6,6 +6,7 @@
 #if 1
 #include <stdint.h>
 #include <z80/z80_macros.h>
+#include <string>
 #endif
 #include <FL/Fl_Double_Window.H>
 #include <FL/Fl_Group.H>
@@ -20,12 +21,17 @@ public:
   Fl_Double_Window *windowDialog;
 private:
   Fl_Input *textAddress;
+  Fl_Check_Button *checkIo;
   Fl_Check_Button *checkPc;
   Fl_Check_Button *checkRead;
   Fl_Check_Button *checkWrite;
   Fl_Input *textNote;
   Fl_Button *buttonCreate;
+  inline void cb_buttonCreate_i(Fl_Button*, void*);
+  static void cb_buttonCreate(Fl_Button*, void*);
   Fl_Button *buttonRemove;
+  inline void cb_buttonRemove_i(Fl_Button*, void*);
+  static void cb_buttonRemove(Fl_Button*, void*);
   Fl_Check_Button *checkVdpcontrol;
   inline void cb_checkVdpcontrol_i(Fl_Check_Button*, void*);
   static void cb_checkVdpcontrol(Fl_Check_Button*, void*);
@@ -36,13 +42,11 @@ private:
   Fl_Check_Button *checkVdpwrite;
   inline void cb_checkVdpwrite_i(Fl_Check_Button*, void*);
   static void cb_checkVdpwrite(Fl_Check_Button*, void*);
-public:
   Fl_Check_Button *checkVcounter;
-private:
   inline void cb_checkVcounter_i(Fl_Check_Button*, void*);
   static void cb_checkVcounter(Fl_Check_Button*, void*);
-public:
   Fl_Check_Button *checkHcounter;
+public:
   void set_breakpoint_table(uint8_t* p);
 private:
   void vdp_data(uint8_t enable, uint8_t read);
