@@ -66,4 +66,4 @@ target_link_libraries (test-vdp vdp SDL2 SDL2main)
 
 # --- sms-emu
 add_executable (emu sms-emu.c)
-target_link_libraries (glue emu smsrom smsio smsram psg z80 peripherial vdp sdsc SDL2 SDL2main)
+target_link_libraries (emu glue smsrom smsio smsram psg z80 peripherial vdp sdsc SDL2 SDL2main)

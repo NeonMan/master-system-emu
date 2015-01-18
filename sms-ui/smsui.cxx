@@ -33,7 +33,7 @@ uint32_t is_clocked = 0; //<-- When this becames false, the execution is paused.
 //Update UI
 #define __UPDATE_FLTK \
 { \
-    const unsigned long ticks = GetTickCount(); \
+    const unsigned long ticks = SDL_GetTicks(); \
     if ((ticks - last_update) > 100){ \
       Fl::check();  /*Refresh FLTK every .1 seconds*/ \
       dlg_z80->update_values(); \
