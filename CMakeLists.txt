@@ -13,6 +13,11 @@ if (CMAKE_COMPILER_IS_GNUCC)
     SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99")
 endif (CMAKE_COMPILER_IS_GNUCC)
 
+# --- Enable C++11 on G++
+if (CMAKE_COMPILER_IS_GNUCXX)
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+endif (CMAKE_COMPILER_IS_GNUCXX)
+
 # --- Tell MSVC to shut the fuck up about _CRT_SECURE_NO_WARNINGS
 if (MSVC)
     add_definitions( -D_CRT_SECURE_NO_WARNINGS )
