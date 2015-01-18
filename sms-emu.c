@@ -14,7 +14,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_mixer.h>
 
 #include "sms-emu.h"
 
@@ -86,10 +85,12 @@ int emu_init(){
     }
     size_t read_bytes = fread(full_rom, 1, ROM_MAX_SIZE, in_f);
     char read_bytes_s[32];
-    _itoa(read_bytes, read_bytes_s, 10);
+    char num_str[32];
+    sprintf(read_bytes_s, "%lu", read_bytes);
     emu_log("ROM Loaded. Size:", EMU_LOG_DEBUG0);
     emu_log(read_bytes_s, EMU_LOG_DEBUG0);
-    _itoa(ROM_MAX_SIZE, read_bytes_s, 10);
+
+    sprintf(read_bytes_s, "%d", ROM_MAX_SIZE);
     emu_log("Max:", EMU_LOG_DEBUG0);
     emu_log(read_bytes_s, EMU_LOG_DEBUG0);
     fclose(in_f);
