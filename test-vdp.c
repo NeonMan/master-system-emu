@@ -1,5 +1,5 @@
-#include <SDL/SDL.h>
-#include <SDL/SDL_version.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_version.h>
 #include <stdio.h>
 #include <stdint.h>
 #include <assert.h>
