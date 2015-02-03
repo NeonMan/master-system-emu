@@ -42,14 +42,8 @@ add_subdirectory (io)
 add_subdirectory (vdp)
 add_subdirectory (sdsc)
 add_subdirectory (sms-ui)
-
-
-
-# Z80 assembler tests are only compiled on unix
-if (UNIX)
-  # --- Z80Tests
-  add_subdirectory (z80tests)
-endif (UNIX)
+#z80 tests not CMake-ready yet
+#add_subdirectory (z80tests)
 
 # --- The project executables ---
 
