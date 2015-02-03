@@ -12,39 +12,32 @@
 ; See the License for the specific language governing permissions and
 ; limitations under the License.
 
+; WLA-DX banking setup
+.memorymap
+defaultslot 0
+slotsize $8000
+slot 0 $0000
+.endme
+
+.rombankmap
+bankstotal 1
+banksize $8000
+banks 1
+.endro
+
+.bank 0 slot 0
+.org $0000
 ;Write 'HELLO!' to the SDSC debug console
-        org 00h
-        LD A, 'H'
-        OUT (0fdh), A
-        LD A, 'A'
-        OUT (0fdh), A
-        LD A, 'L'
-        OUT (0fdh), A
-        OUT (0fdh), A
-        LD A, 'O'
-        OUT (0fdh), A
-        LD A, '!'
-        OUT (0fdh), A
-        LD A, '\n'
-        OUT (0fdh), A
-;Clear screen
-		LD A, 002h
-		OUT (0fch), A
-;Write HELLO! again
-        LD A, 'H'
-        OUT (0fdh), A
-        LD A, 'E'
-        OUT (0fdh), A
-        LD A, 'L'
-        OUT (0fdh), A
-        OUT (0fdh), A
-        LD A, 'O'
-        OUT (0fdh), A
-        LD A, '!'
-        OUT (0fdh), A
-        LD A, '\n'
-        OUT (0fdh), A
+main:
+	LD HL, hello
+	LD C, $FD
+	LD B, $0C
+	OTIR
 
 loop:
         NOP
         JP loop
+
+hello:
+.ASC "HELLO WORLD!"
+helloend:

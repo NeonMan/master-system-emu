@@ -1,6 +1,6 @@
 # Sega Master System Emulator #
 
-A yet to be named emulator of the aster System console by SEGA. This project
+A yet to be named emulator of the Master System console by SEGA. This project
 aims to create an accurate emulator under a permissive free software license.
 
 ## Current state ##
