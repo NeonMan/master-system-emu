@@ -29,15 +29,27 @@ banks 1
 .org $0000
 ;Write 'HELLO!' to the SDSC debug console
 main:
-	LD HL, hello              ;Point to the hello string
-	LD C, $FD                 ;SDSC Data port
-	LD B, (helloend - hello)  ;String length
-	OTIR                      ;Perform the write
+  ; Test print_s
+	ld HL, s_hello
+	call print_s
+  
+  ; Test print_a
+  ld HL, s_8bit
+  call print_s
+  ld A, $42
+  call print_a
 
 loop:
         NOP
         JP loop
 
-hello:
-.ASC "HELLO WORLD!"
-helloend:
+s_hello:
+.ASC "HELLO WORLD!!"
+.DB $0A, $00
+
+s_8bit:
+.ASC "Print A: 0x"
+.DB $00
+
+
+.include "sdsc_print.inc"

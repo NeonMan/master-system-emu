@@ -360,9 +360,111 @@ int z80_instruction_decode_CB(){
     //Second opcode byte
     case 2:
         switch (x[1]){
-        case 0:                                     /*rotation r[z]; Size: 2; Flags: ?*/
-            assert(0); //Unimplemented
-            return Z80_STAGE_RESET;
+        case 0:                                     /*rotation[y] r[z]; Size: 2; Flags: ?*/
+            switch (z80.opcode[1] & (Z80_OPCODE_Y_MASK |Z80_OPCODE_Z_MASK)){
+            case Z80_OPCODE_YZ(0, 0): //
+            case Z80_OPCODE_YZ(0, 1): //
+            case Z80_OPCODE_YZ(0, 2): //
+            case Z80_OPCODE_YZ(0, 3): //
+            case Z80_OPCODE_YZ(0, 4): //
+            case Z80_OPCODE_YZ(0, 5): //
+            case Z80_OPCODE_YZ(0, 6): //
+            case Z80_OPCODE_YZ(0, 7): // RLC r[z]
+                assert(0); //Unimplemented
+                return Z80_STAGE_RESET;
+
+            case Z80_OPCODE_YZ(1, 0): //
+            case Z80_OPCODE_YZ(1, 1): //
+            case Z80_OPCODE_YZ(1, 2): //
+            case Z80_OPCODE_YZ(1, 3): //
+            case Z80_OPCODE_YZ(1, 4): //
+            case Z80_OPCODE_YZ(1, 5): //
+            case Z80_OPCODE_YZ(1, 6): //
+            case Z80_OPCODE_YZ(1, 7): // RRC r[z]
+                assert(0); //Unimplemented
+                return Z80_STAGE_RESET;
+
+            case Z80_OPCODE_YZ(2, 0): //
+            case Z80_OPCODE_YZ(2, 1): //
+            case Z80_OPCODE_YZ(2, 2): //
+            case Z80_OPCODE_YZ(2, 3): //
+            case Z80_OPCODE_YZ(2, 4): //
+            case Z80_OPCODE_YZ(2, 5): //
+            case Z80_OPCODE_YZ(2, 6): //
+            case Z80_OPCODE_YZ(2, 7): // RL r[z]
+                assert(0); //Unimplemented
+                return Z80_STAGE_RESET;
+
+            case Z80_OPCODE_YZ(3, 0): //
+            case Z80_OPCODE_YZ(3, 1): //
+            case Z80_OPCODE_YZ(3, 2): //
+            case Z80_OPCODE_YZ(3, 3): //
+            case Z80_OPCODE_YZ(3, 4): //
+            case Z80_OPCODE_YZ(3, 5): //
+            case Z80_OPCODE_YZ(3, 6): //
+            case Z80_OPCODE_YZ(3, 7): // RR r[z]
+                assert(0); //Unimplemented
+                return Z80_STAGE_RESET;
+
+            case Z80_OPCODE_YZ(4, 0): //
+            case Z80_OPCODE_YZ(4, 1): //
+            case Z80_OPCODE_YZ(4, 2): //
+            case Z80_OPCODE_YZ(4, 3): //
+            case Z80_OPCODE_YZ(4, 4): //
+            case Z80_OPCODE_YZ(4, 5): //
+            case Z80_OPCODE_YZ(4, 6): //
+            case Z80_OPCODE_YZ(4, 7): // SLA r[z]
+                assert(0); //Unimplemented
+                return Z80_STAGE_RESET;
+
+            case Z80_OPCODE_YZ(5, 0): //
+            case Z80_OPCODE_YZ(5, 1): //
+            case Z80_OPCODE_YZ(5, 2): //
+            case Z80_OPCODE_YZ(5, 3): //
+            case Z80_OPCODE_YZ(5, 4): //
+            case Z80_OPCODE_YZ(5, 5): //
+            case Z80_OPCODE_YZ(5, 6): //
+            case Z80_OPCODE_YZ(5, 7): // SRA r[z]
+                assert(0); //Unimplemented
+                return Z80_STAGE_RESET;
+
+            case Z80_OPCODE_YZ(6, 0): //
+            case Z80_OPCODE_YZ(6, 1): //
+            case Z80_OPCODE_YZ(6, 2): //
+            case Z80_OPCODE_YZ(6, 3): //
+            case Z80_OPCODE_YZ(6, 4): //
+            case Z80_OPCODE_YZ(6, 5): //
+            case Z80_OPCODE_YZ(6, 6): //
+            case Z80_OPCODE_YZ(6, 7): // SLL r[z]
+                assert(0); //Unimplemented
+                return Z80_STAGE_RESET;
+
+            case Z80_OPCODE_YZ(7, 0): //
+            case Z80_OPCODE_YZ(7, 1): //
+            case Z80_OPCODE_YZ(7, 2): //
+            case Z80_OPCODE_YZ(7, 3): //
+            case Z80_OPCODE_YZ(7, 4): //
+            case Z80_OPCODE_YZ(7, 5): //
+            case Z80_OPCODE_YZ(7, 6): //
+            case Z80_OPCODE_YZ(7, 7): // SRL r[z]
+                if (z80_r[z[1]]){
+                    const uint8_t old_r = *(z80_r[z[1]]);
+                    *(z80_r[z[1]]) = (*(z80_r[z[1]])) >> 1;
+                    Z80_F = 0;
+                    Z80_F |= old_r & 1 ? Z80_FLAG_CARRY : 0;
+                    Z80_F |= Z80_SETFLAG_ZERO(*(z80_r[z[1]]));
+                    Z80_F |= Z80_SETFLAG_PARITY(*(z80_r[z[1]]));
+                    return Z80_STAGE_RESET;
+                }
+                else{ //SRL (HL)
+                    assert(0); //Unimplemented
+                }
+                assert(0); //Unimplemented
+                return Z80_STAGE_RESET;
+
+            default:
+                assert(0); //Should never get here
+            }
         case 1:                                /*BIT y,r[z]; Size: 2; Flags: _S,Z,H,_P,N*/
             Z80_F = (Z80_F & (Z80_CLRFLAG_ZERO & Z80_CLRFLAG_ADD)); //Clear Z,N
             Z80_F = Z80_F | (((1 << y[1]) & (*z80_r[z[1]])) ? 0 : Z80_CLRFLAG_ZERO);
