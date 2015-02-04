@@ -36,9 +36,37 @@ main:
   ; Test print_a
   ld HL, s_8bit
   call print_s
+  ld HL, s_0x
   ld A, $42
+  
+  -:
+  cp $52
+  jp Z, +
+  call print_s
   call print_a
-
+  call print_nl
+  inc A
+  jp -
+  +:
+  
+  ;Test print_bc
+  ld HL, s_printbc
+  call print_s
+  ld HL, s_0x
+  
+  ld BC, $CAFE
+  call print_s
+  call print_bc
+  call print_nl
+  inc BC
+  call print_s
+  call print_bc
+  call print_nl
+  
+  ;BYE!
+  ld HL, s_bye
+  call print_s
+  
 loop:
         NOP
         JP loop
@@ -47,9 +75,20 @@ s_hello:
 .ASC "HELLO WORLD!!"
 .DB $0A, $00
 
-s_8bit:
-.ASC "Print A: 0x"
+s_0x:
+.ASC "0x"
 .DB $00
 
+s_8bit:
+.ASC "Print A:"
+.DB $0a, $00
+
+s_printbc:
+.ASC "Print BC:"
+.DB $0A, $00
+
+s_bye:
+.ASC "BYE!"
+.DB $0a, $00
 
 .include "sdsc_print.inc"
