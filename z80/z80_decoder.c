@@ -1366,6 +1366,9 @@ int z80_instruction_decode(){
                 case Z80_ALUOP_SBC:
                 case Z80_ALUOP_AND:
                 case Z80_ALUOP_XOR:
+                    assert(0); //Unimplemented
+                    return Z80_STAGE_RESET;
+
                 case Z80_ALUOP_OR:                                /*OR n; Size: 1; Flags:ALL*/
                 {
                     const uint8_t orig_a = Z80_A;
