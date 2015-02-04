@@ -1361,10 +1361,28 @@ int z80_instruction_decode(){
                 //Select ALU operation by 'y'
                 switch (y[0]){
                 case Z80_ALUOP_ADD:
+                    assert(0); //Unimplemented
+                    return Z80_STAGE_RESET;
                 case Z80_ALUOP_ADC:
+                    assert(0); //Unimplemented
+                    return Z80_STAGE_RESET;
                 case Z80_ALUOP_SUB:
+                    assert(0); //Unimplemented
+                    return Z80_STAGE_RESET;
                 case Z80_ALUOP_SBC:
+                    assert(0); //Unimplemented
+                    return Z80_STAGE_RESET;
                 case Z80_ALUOP_AND:
+                {
+                    const uint8_t orig_a = Z80_A;
+                    Z80_A = Z80_A & z80.opcode[1];
+                    Z80_F = 0;
+                    Z80_F |= Z80_SETFLAG_SIGN(Z80_A);
+                    Z80_F |= Z80_SETFLAG_ZERO(Z80_A);
+                    Z80_F |= Z80_SETFLAG_OVERFLOW(orig_a, Z80_A);
+                    Z80_F |= Z80_FLAG_HC;
+                    return Z80_STAGE_RESET;
+                }
                 case Z80_ALUOP_XOR:
                     assert(0); //Unimplemented
                     return Z80_STAGE_RESET;

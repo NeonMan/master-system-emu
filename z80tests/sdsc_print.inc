@@ -71,5 +71,33 @@ print_a:
   pop AF
   ret
 
+; Prints the contents of the BC reg
+;     BC --- Value to be printed
+print_bc:
+  push AF
+  ld A, B
+  call print_a
+  ld A, C
+  call print_a
+  pop AF
+  ret
+
+; Prints the value pointed by HL
+;     (HL) --- Value to be printed
+print_hl_p:
+  push AF
+  ld A, (HL)
+  call print_a
+  pop AF
+  ret
+  
+;Prints a newline
+print_nl:
+  push AF
+  LD A, $0A
+  OUT ($FD), A
+  pop AF
+  ret
+  
 hex_lut:
 .ASC "0123456789ABCDEF"
