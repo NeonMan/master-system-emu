@@ -1,1 +1,0 @@
-ALU operations are not correctly decoded. See print_a function at sdsc_print.inc
