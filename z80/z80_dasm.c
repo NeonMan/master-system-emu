@@ -19,7 +19,7 @@
 
 const char* z80d_r[8] = { "B", "C", "D", "E", "H", "L", "(HL)", "A" };
 const char* z80d_rp[4] = { "BC", "DE", "HL", "SP" };
-const char* z80d_rp2[4] = { "DB", "DE", "HL", "AF" };
+const char* z80d_rp2[4] = { "BC", "DE", "HL", "AF" };
 const char* const z80d_cc[8] = { "NZ", "Z", "NC", "C", "PO", "PE", "P", "M" };
 const char* const z80d_alu[8] = { "ADD A,", "ADC A,", "SUB", "SBC A,", "AND", "XOR", "OR", "CP" };
 const char* const z80d_rot[8] = { "RLC", "RRC", "RL", "RR", "SLA", "SRA", "SLL", "SRL" };
