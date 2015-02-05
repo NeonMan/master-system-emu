@@ -29,6 +29,13 @@ int z80_op_ADD_n(){
     return Z80_STAGE_RESET;
 }
 
+///DEC(rp[p]); Size: 1; Flags: None
+int z80_op_DEC_rp(){
+    Z80_OPCODE_SUBDIV;
+    --(*(z80_rp[p[0]]));
+    return Z80_STAGE_RESET;
+}
+
 ///EX AF, AFp; Size: 1; Flags: None
 int z80_op_EX(){
     const uint16_t tmp_af = Z80_AF;
@@ -37,8 +44,57 @@ int z80_op_EX(){
     return Z80_STAGE_RESET;
 }
 
-///LD A, DE
-int z80_op_LD_A_DE(){
+///INC (HL)
+int z80_op_INC_HLp(){
+    //Memory read
+    if (z80.read_index == 0){
+        z80.read_address = Z80_HL;
+        return Z80_STAGE_M2;
+    }
+    else if (z80.write_index == 0){
+        const uint8_t old_r = z80.read_buffer[0];
+        z80.write_address = Z80_HL;
+        z80.write_buffer[0] = old_r + 1;
+        Z80_F = (Z80_F & (
+            Z80_CLRFLAG_SIGN & Z80_CLRFLAG_ZERO & Z80_CLRFLAG_HC
+            & Z80_CLRFLAG_PARITY & Z80_CLRFLAG_ADD)
+            )  //Clear S,Z,H,P,N (7,6,4,2,1) ***V0-
+            | Z80_SETFLAG_SIGN(old_r + 1)
+            | Z80_SETFLAG_ZERO(old_r + 1)
+            | Z80_SETFLAG_HC(old_r, old_r + 1)
+            | Z80_SETFLAG_OVERFLOW(old_r, old_r + 1);
+        return Z80_STAGE_M3;
+    }
+    else{
+        return Z80_STAGE_RESET;
+    }
+}
+
+///INC r
+int z80_op_INC_r(){
+    Z80_OPCODE_SUBDIV;
+    uint8_t old_r = *z80_r[y[0]];
+    ++(*(z80_r[y[0]]));
+    Z80_F = (Z80_F & (
+        Z80_CLRFLAG_SIGN & Z80_CLRFLAG_ZERO & Z80_CLRFLAG_HC
+        & Z80_CLRFLAG_PARITY & Z80_CLRFLAG_ADD)
+        )  //Clear S,Z,H,P,N (7,6,4,2,1) ***V0-
+        | Z80_SETFLAG_SIGN(*z80_r[y[0]])
+        | Z80_SETFLAG_ZERO(*z80_r[y[0]])
+        | Z80_SETFLAG_HC(old_r, *z80_r[y[0]])
+        | Z80_SETFLAG_OVERFLOW(old_r, *z80_r[y[0]]);
+    return Z80_STAGE_RESET;
+}
+
+///INC(rp[p]); Size: 1; Flags: None
+int z80_op_INC_rp(){
+    Z80_OPCODE_SUBDIV;
+    ++(*(z80_rp[p[0]]));
+    return Z80_STAGE_RESET;
+}
+
+///LD A,(DE); Size: 1; Flags: None
+int z80_op_LD_A_DEp(){
     if (z80.read_index == 0){
         z80.read_address = Z80_DE;
         return Z80_STAGE_M2;
@@ -50,7 +106,7 @@ int z80_op_LD_A_DE(){
 }
 
 ///LD (BC), A; Size:1; Flags: None
-int z80_op_LD_BC_A(){
+int z80_op_LD_BCp_A(){
     //If the write has not been performed, request it
     if (z80.write_index == 0){
         z80.write_address = Z80_BC;
@@ -64,7 +120,7 @@ int z80_op_LD_BC_A(){
 }
 
 ///LD (DE), A; Size: 1; Flags: None
-int z80_op_LD_DE_A(){
+int z80_op_LD_DEp_A(){
     if (z80.write_index == 0){
         z80.write_address = Z80_DE;
         z80.write_buffer[0] = Z80_A;

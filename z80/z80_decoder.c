@@ -535,9 +535,9 @@ int z80_instruction_decode(){
             //Select by q
             if (!(q[0])){
                 if (p[0] == 0)                             /*LD (BC), A; Size:1; Flags: None*/
-                    return z80_op_LD_BC_A();
+                    return z80_op_LD_BCp_A();
                 else if (p[0] == 1)                        /*LD (DE), A; Size: 1; Flags: None*/
-                    return z80_op_LD_DE_A();
+                    return z80_op_LD_DEp_A();
                 else if (p[0] == 2)                       /*LD (nn),HL; Size: 3; Flags: None*/
                     return Z80_STAGE_M1; //Needs two extra bytes
                 else if (p[0] == 3)                        /*LD (nn),A; Size: 3; Flags: None*/
@@ -549,7 +549,7 @@ int z80_instruction_decode(){
                     return Z80_STAGE_RESET;
                 }
                 else if (p[0] == 1)                        /*LD A,(DE); Size: 1; Flags: None*/
-                    return z80_op_LD_A_DE();
+                    return z80_op_LD_A_DEp();
                 else if (p[0] == 2)                       /*LD HL,(nn); Size: 3; Flags: None*/
                     return Z80_STAGE_M1; //2 extra bytes
                 else if (p[0] == 3)                        /*LD A,(nn); Size: 3; Flags: None*/
@@ -558,55 +558,15 @@ int z80_instruction_decode(){
 
         case Z80_OPCODE_XZ(0, 3):
             //Select by q
-            if (!(q[0])){                                 /*INC(rp[p]); Size: 1; Flags: None*/
-                ++(*(z80_rp[p[0]]));
-                return Z80_STAGE_RESET;
-            }
-            else{                                         /*DEC(rp[p]); Size: 1; Flags: None*/
-                --(*(z80_rp[p[0]]));
-                return Z80_STAGE_RESET;
-            }
-
+            if (!(q[0]))                                  /*INC(rp[p]); Size: 1; Flags: None*/
+                return z80_op_INC_rp();
+            else                                          /*DEC(rp[p]); Size: 1; Flags: None*/
+                return z80_op_DEC_rp();
         case Z80_OPCODE_XZ(0, 4):                     /*INC(r[y]); Size: 1; Flags: S,Z,H,V,N*/
-        {
-            if (y[0] == 6){ //INC (HL)
-                //Memory read
-                if (z80.read_index == 0){
-                    z80.read_address = Z80_HL;
-                    return Z80_STAGE_M2;
-                }
-                else if (z80.write_index == 0){
-                    const uint8_t old_r = z80.read_buffer[0];
-                    z80.write_address = Z80_HL;
-                    z80.write_buffer[0] = old_r + 1;
-                    Z80_F = (Z80_F & (
-                        Z80_CLRFLAG_SIGN & Z80_CLRFLAG_ZERO & Z80_CLRFLAG_HC
-                        & Z80_CLRFLAG_PARITY & Z80_CLRFLAG_ADD)
-                        )  //Clear S,Z,H,P,N (7,6,4,2,1) ***V0-
-                        | Z80_SETFLAG_SIGN(old_r + 1)
-                        | Z80_SETFLAG_ZERO(old_r + 1)
-                        | Z80_SETFLAG_HC(old_r, old_r + 1)
-                        | Z80_SETFLAG_OVERFLOW(old_r, old_r + 1);
-                    return Z80_STAGE_M3;
-                }
-                else{
-                    return Z80_STAGE_RESET;
-                }
-            }
-            else{ //INC register
-                uint8_t old_r = *z80_r[y[0]];
-                ++(*(z80_r[y[0]]));
-                Z80_F = (Z80_F & (
-                    Z80_CLRFLAG_SIGN & Z80_CLRFLAG_ZERO & Z80_CLRFLAG_HC
-                    & Z80_CLRFLAG_PARITY & Z80_CLRFLAG_ADD)
-                    )  //Clear S,Z,H,P,N (7,6,4,2,1) ***V0-
-                    | Z80_SETFLAG_SIGN(*z80_r[y[0]])
-                    | Z80_SETFLAG_ZERO(*z80_r[y[0]])
-                    | Z80_SETFLAG_HC(old_r, *z80_r[y[0]])
-                    | Z80_SETFLAG_OVERFLOW(old_r, *z80_r[y[0]]);
-                return Z80_STAGE_RESET;
-            }
-        }
+            if (y[0] == 6)  //INC (HL)
+                return z80_op_INC_HLp();
+            else  //INC register
+                return z80_op_INC_r();
         case Z80_OPCODE_XZ(0, 5):                      /*DEC(r[y]); Size:1; Flags: S,Z,H,P,N*/
         {
             const uint8_t old_r = *z80_r[y[0]];

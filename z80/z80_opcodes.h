@@ -5,10 +5,14 @@
 
 int z80_op_ADD_HL_rp();
 int z80_op_ADD_n();
-int z80_op_LD_A_DE();
-int z80_op_LD_BC_A();
-int z80_op_LD_DE_A();
-int z80_op_NOP();
+int z80_op_DEC_rp();
 int z80_op_EX();
+int z80_op_INC_HLp();
+int z80_op_INC_r();
+int z80_op_INC_rp();
+int z80_op_LD_A_DEp();
+int z80_op_LD_BCp_A();
+int z80_op_LD_DEp_A();
+int z80_op_NOP();
 
 #endif
