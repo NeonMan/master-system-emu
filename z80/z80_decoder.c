@@ -15,6 +15,7 @@
 #include "z80_decoder.h"
 #include "z80_macros.h"
 #include "z80_register_lut.h"
+#include "z80_opcodes.h"
 #include <assert.h>
 
 /*
@@ -1362,6 +1363,7 @@ int z80_instruction_decode(){
                 switch (y[0]){
                 case Z80_ALUOP_ADD:                               /*ADD n; Size 2; Flags:ALL*/
                 {
+                    /*
                     const uint8_t orig_a = Z80_A;
                     Z80_A = Z80_A + z80.opcode[1];
                     Z80_F = 0;
@@ -1371,6 +1373,8 @@ int z80_instruction_decode(){
                     Z80_F |= Z80_SETFLAG_OVERFLOW(orig_a, Z80_A);
                     Z80_F |= Z80_SETFLAG_CARRY(orig_a, Z80_A);
                     return Z80_STAGE_RESET;
+                    */
+                    return z80_opcode_ADD();
                 }
                 case Z80_ALUOP_ADC:
                     assert(0); //Unimplemented
