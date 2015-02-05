@@ -568,68 +568,29 @@ int z80_instruction_decode(){
             else  //INC register
                 return z80_op_INC_r();
         case Z80_OPCODE_XZ(0, 5):                      /*DEC(r[y]); Size:1; Flags: S,Z,H,P,N*/
-        {
-            const uint8_t old_r = *z80_r[y[0]];
-            --(*(z80_r[y[0]]));
-            Z80_F = (Z80_F & (
-                Z80_CLRFLAG_SIGN & Z80_CLRFLAG_ZERO & Z80_CLRFLAG_HC
-                & Z80_CLRFLAG_PARITY & Z80_CLRFLAG_ADD)
-                )  //Clear S,Z,H,P,N (7,6,4,2,1) ***V0-
-                | Z80_SETFLAG_SIGN(*z80_r[y[0]])
-                | Z80_SETFLAG_ZERO(*z80_r[y[0]])
-                | Z80_SETFLAG_HC(old_r, *z80_r[y[0]])
-                | Z80_SETFLAG_OVERFLOW(*z80_r[y[0]], old_r);
-            return Z80_STAGE_RESET;
-        }
+            return z80_op_DEC_r(); 
         case Z80_OPCODE_XZ(0, 6):                         /*LD(r[y],n); Size: 2; Flags: None*/
             return Z80_STAGE_M1; //Needs one extra byte
 
         case Z80_OPCODE_XZ(0, 7):
             switch (y[0]){
             case 0:                                            /*RLCA; Size: 1; Flags: H,N,C*/
-                Z80_A = (Z80_A << 1) | (Z80_A & (1 << 7) ? 1 : 0);
-                Z80_F = (Z80_F & (Z80_CLRFLAG_HC & Z80_CLRFLAG_ADD & Z80_CLRFLAG_CARRY))
-                    | ((Z80_F & (1)) ? Z80_FLAG_CARRY : 0);
-                return Z80_STAGE_RESET;
-
+                return z80_op_RLCA();
             case 1:                                            /*RRCA; Size: 1; Flags: H,N,C*/
-                Z80_A = (Z80_A >> 1) | (Z80_A & 1 ? (1 << 7) : 0);
-                Z80_F = (Z80_F & (Z80_CLRFLAG_HC & Z80_CLRFLAG_ADD & Z80_CLRFLAG_CARRY))
-                    | ((Z80_F & (1<<7)) ? Z80_FLAG_CARRY : 0);
-                return Z80_STAGE_RESET;
-
+                return z80_op_RRCA();
             case 2:                                             /*RLA; Size: 1; Flags: H,N,C*/
-            {
-                const uint8_t next_carry = Z80_A & (1 << 7);
-                Z80_A = (Z80_A << 1) | (Z80_F & Z80_FLAG_CARRY ? 1 : 0);
-                Z80_F = (Z80_F & (Z80_CLRFLAG_HC & Z80_CLRFLAG_ADD & Z80_CLRFLAG_CARRY))
-                    | (next_carry ? Z80_FLAG_CARRY : 0);
-                return Z80_STAGE_RESET;
-            }
+                return z80_op_RLA();
             case 3:                                             /*RRA; Size: 1; Flags: H,N,C*/
-            {
-                const uint8_t next_carry = Z80_A & (1);
-                Z80_A = (Z80_A >> 1) | (Z80_F & Z80_FLAG_CARRY ? (1 << 7) : 0);
-                Z80_F = (Z80_F & (Z80_CLRFLAG_HC & Z80_CLRFLAG_ADD & Z80_CLRFLAG_CARRY))
-                    | (next_carry ? Z80_FLAG_CARRY : 0);
-                return Z80_STAGE_RESET;
-            }
+                return z80_op_RRA();
             case 4:                                         /*DAA; Size: 1; Flags: S,Z,H,P,C*/
                 assert(0); //Unimplemented
                 return Z80_STAGE_RESET;
-
             case 5:                                               /*CPL; Size: 1; Flags: H,N*/
-                Z80_A = ~Z80_A;
-                Z80_F = Z80_F | Z80_FLAG_HC | Z80_FLAG_ADD;
-                return Z80_STAGE_RESET;
-
+                return z80_op_CPL();
             case 6:                                                 /*SCF; Size: 1; Flags: C*/
-                Z80_F = (Z80_F & (Z80_CLRFLAG_HC & Z80_CLRFLAG_ADD)) | Z80_FLAG_CARRY;
-                return Z80_STAGE_RESET;
-
+                return z80_op_SCF();
             case 7:                                                 /*CCF; Size: 1; Flags: C*/
-                Z80_F = (Z80_F ^ Z80_FLAG_CARRY) & Z80_CLRFLAG_ADD;
-                return Z80_STAGE_RESET;
+                return z80_op_CCF();
             }
 
         case Z80_OPCODE_XZ(1, 0):                       /* */
@@ -639,41 +600,15 @@ int z80_instruction_decode(){
         case Z80_OPCODE_XZ(1, 4):                       /* */
         case Z80_OPCODE_XZ(1, 5):                       /* */
         case Z80_OPCODE_XZ(1, 7):                       /*LD r[y],r[z]; Size: 1; Flags: None*/
-            //Source can never be (HL). That implies z[0]==6
-            //Target can be (HL)
-            if (z80_r[y[0]]){ //If target != (HL)
-                *(z80_r[y[0]]) = *(z80_r[z[0]]);
-                return Z80_STAGE_RESET;
-            }
-            else{ //Target is (HL)
-                if (z80.write_index == 0){
-                    z80.write_address = Z80_HL;
-                    assert(z80_r[z[0]]);
-                    z80.write_buffer[0] = *(z80_r[z[0]]);
-                    return Z80_STAGE_M3;
-                }
-                else{
-                    return Z80_STAGE_RESET;
-                }
-            }
-
+            return z80_op_LD_r_r();
 
         case Z80_OPCODE_XZ(1, 6):
-            if (y[0] == 6){                                         /*HALT; Size: 1; Flags: None*/
-                assert(0); /*Unimplemented*/ return Z80_STAGE_RESET;
+            if (y[0] == 6){                                     /*HALT; Size: 1; Flags: None*/
+                assert(0); /*Unimplemented*/
+                return Z80_STAGE_RESET;
             }
-            else{                                       /*LD r[y], (HL); Size:1; Flags: None*/
-                //Source is always (HL, Target is never (HL)
-                if (z80.read_index == 0){
-                    z80.read_address = Z80_HL;
-                    return Z80_STAGE_M2;
-                }
-                else{
-                    *(z80_r[y[0]]) = z80.read_buffer[0];
-                    return Z80_STAGE_RESET;
-                }
-            }
-
+            else                                        /*LD r[y], (HL); Size:1; Flags: None*/
+                return z80_op_LD_r_HLp();
         case Z80_OPCODE_XZ(2, 0):                            /* */
         case Z80_OPCODE_XZ(2, 1):                            /* */
         case Z80_OPCODE_XZ(2, 2):                            /* */
