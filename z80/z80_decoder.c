@@ -705,9 +705,8 @@ int z80_instruction_decode(){
         case Z80_OPCODE_XZ(3, 0):                          /*RET cc[y]; Size: 1; Flags: None*/
             return z80_op_RET_cc();
         case Z80_OPCODE_XZ(3, 1):
-            if (!q[0]){                                   /*POP rp2[p]; Size: 1; Flags: None*/
+            if (!q[0])                                    /*POP rp2[p]; Size: 1; Flags: None*/
                 return z80_op_POP_rp2();
-            }
             else{
                 switch (p[0]){
                 case 0:                                          /*RET; Size: 1; Flags: None*/
@@ -737,41 +736,17 @@ int z80_instruction_decode(){
             case 4:                                      /*EX (SP), HL; Size: 1; Flags: None*/
                 assert(0); /*Unimplemented*/ return Z80_STAGE_RESET;
             case 5:                                        /*EX(DE,HL); Size: 1; Flags: None*/
-            {
-                const uint16_t old_de = Z80_DE;
-                Z80_DE = Z80_HL;
-                Z80_HL = old_de;
-                return Z80_STAGE_RESET;
-            }
+                return z80_op_EX_DE_HL();
             case 6:                                               /*DI; Size: 1; Flags: None*/
-                z80.iff[0] = 0;
-                z80.iff[1] = 0;
-                return Z80_STAGE_RESET;
+                return z80_op_DI();
             case 7:                                               /*EI; Size: 1; Flags: None*/
-                z80.iff[0] = 1;
-                z80.iff[1] = 1;
-                return Z80_STAGE_RESET;
+                return z80_op_EI();
             }
-
         case Z80_OPCODE_XZ(3, 4):                     /*CALL cc[y], nn; Size: 3; Flags: None*/
             return Z80_STAGE_M1; //+2 bytes
-
         case Z80_OPCODE_XZ(3, 5):
-            if (!q[0]){ /*PUSH rp2[p]; Size: 1; Flags: None*/
-                //Prepare a write if needed
-                if (z80.write_index == 0){
-                    z80.write_address = Z80_SP - 2;
-                    *((uint16_t*)z80.write_buffer) = *(z80_rp2[p[0]]); ///<-- @bug Endianness
-                    return Z80_STAGE_M3;
-                }
-                else if (z80.write_index == 1){
-                    ++z80.write_address;
-                    return Z80_STAGE_M3;
-                }
-                else{
-                    Z80_SP -= 2;
-                    return Z80_STAGE_RESET;
-                }
+            if (!q[0]){                                  /*PUSH rp2[p]; Size: 1; Flags: None*/
+                return z80_op_PUSH_rp2();
             }
             else{
                 switch (p[0]){
@@ -1431,7 +1406,7 @@ int z80_instruction_decode(){
             assert(0); //Unimplemented
             return Z80_STAGE_RESET;
         }
-        assert(0); /*Should never get here */ return Z80_STAGE_RESET;
+        assert(0); /*Should never get here */
         return Z80_STAGE_RESET;
     }
     //Opcode_index > 4

@@ -67,11 +67,33 @@ int z80_op_DEC_rp(){
     return Z80_STAGE_RESET;
 }
 
+///DI; Size: 1; Flags: None
+int z80_op_DI(){
+    z80.iff[0] = 0;
+    z80.iff[1] = 0;
+    return Z80_STAGE_RESET;
+}
+
+///EI; Size: 1; Flags: None
+int z80_op_EI(){
+    z80.iff[0] = 1;
+    z80.iff[1] = 1;
+    return Z80_STAGE_RESET;
+}
+
 ///EX AF, AFp; Size: 1; Flags: None
 int z80_op_EX(){
     const uint16_t tmp_af = Z80_AF;
     Z80_AF = Z80_AFp;
     Z80_AFp = tmp_af;
+    return Z80_STAGE_RESET;
+}
+
+///EX(DE,HL); Size: 1; Flags: None
+int z80_op_EX_DE_HL(){
+    const uint16_t old_de = Z80_DE;
+    Z80_DE = Z80_HL;
+    Z80_HL = old_de;
     return Z80_STAGE_RESET;
 }
 
@@ -237,6 +259,25 @@ int z80_op_POP_rp2(){
     }
 }
 
+///PUSH rp2[p]; Size: 1; Flags: None
+int z80_op_PUSH_rp2(){
+    Z80_OPCODE_SUBDIV;
+    //Prepare a write if needed
+    if (z80.write_index == 0){
+        z80.write_address = Z80_SP - 2;
+        *((uint16_t*)z80.write_buffer) = *(z80_rp2[p[0]]); ///<-- @bug Endianness
+        return Z80_STAGE_M3;
+    }
+    else if (z80.write_index == 1){
+        ++z80.write_address;
+        return Z80_STAGE_M3;
+    }
+    else{
+        Z80_SP -= 2;
+        return Z80_STAGE_RESET;
+    }
+}
+
 ///RET; Size: 1; Flags: None
 int z80_op_RET(){
     //Read stack
@@ -317,4 +358,3 @@ int z80_op_SCF(){
     Z80_F = (Z80_F & (Z80_CLRFLAG_HC & Z80_CLRFLAG_ADD)) | Z80_FLAG_CARRY;
     return Z80_STAGE_RESET;
 }
-
