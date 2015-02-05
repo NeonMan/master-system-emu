@@ -703,76 +703,17 @@ int z80_instruction_decode(){
             }
 
         case Z80_OPCODE_XZ(3, 0):                          /*RET cc[y]; Size: 1; Flags: None*/
-            if ((Z80_F & z80_cc[y[0]]) == z80_cc_stat[y[0]]){
-                //POP stack, update PC
-                if (z80.read_index == 0){
-                    z80.read_address = Z80_SP;
-                    return Z80_STAGE_M2;
-                }
-                else if (z80.read_index == 1){
-                    ++(z80.read_address);
-                    return Z80_STAGE_M2;
-                }
-                else{
-                    Z80_PC = *((uint16_t*)(z80.read_buffer));
-                    Z80_SP += 2;
-                    return Z80_STAGE_RESET;
-                }
-            }
-            else{
-                return Z80_STAGE_RESET;
-            }
-
+            return z80_op_RET_cc();
         case Z80_OPCODE_XZ(3, 1):
             if (!q[0]){                                   /*POP rp2[p]; Size: 1; Flags: None*/
-                //Read stack
-                if (z80.read_index == 0){
-                    z80.read_address = Z80_SP;
-                    return Z80_STAGE_M2;
-                }
-                else if (z80.read_index == 1){
-                    ++z80.read_address;
-                    return Z80_STAGE_M2;
-                }
-                //Update state
-                else{
-                    Z80_SP += 2;
-                    *(z80_rp2[p[0]]) = *((uint16_t*)z80.read_buffer); ///<-- @bug Endianness!
-                    return Z80_STAGE_RESET;
-                }
-                assert(0); /*Unimplemented*/ return Z80_STAGE_RESET;
+                return z80_op_POP_rp2();
             }
             else{
                 switch (p[0]){
                 case 0:                                          /*RET; Size: 1; Flags: None*/
-                    //Read stack
-                    if (z80.read_index == 0){
-                        z80.read_address = Z80_SP;
-                        return Z80_STAGE_M2;
-                    }
-                    else if (z80.read_index == 1){
-                        ++z80.read_address;
-                        return Z80_STAGE_M2;
-                    }
-                    else{
-                        Z80_SP += 2;
-                        Z80_PC = *((uint16_t*)z80.read_buffer); ///<-- @bug Endianness!
-                        return Z80_STAGE_RESET;
-                    }
-                    assert(0); /*Unimplemented*/ return Z80_STAGE_RESET;
+                    return z80_op_RET();
                 case 1:                                          /*EXX; Size: 1; Flags: None*/
-                {
-                    const uint16_t old_bc = Z80_BC;
-                    const uint16_t old_de = Z80_DE;
-                    const uint16_t old_hl = Z80_HL;
-                    Z80_BC = Z80_BCp;
-                    Z80_DE = Z80_DEp;
-                    Z80_HL = Z80_HLp;
-                    Z80_BCp = old_bc;
-                    Z80_DEp = old_de;
-                    Z80_HLp = old_hl;
-                    return Z80_STAGE_RESET;
-                }
+                    return z80_op_EXX();
                 case 2:                                      /*JP (HL); Size: 1; Flags: None*/
                     assert(0); /*unimplemented*/ return Z80_STAGE_RESET;
                 case 3:                                     /*LD SP,HL; Size: 1; Flags: None*/
