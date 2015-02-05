@@ -29,6 +29,10 @@ banks 1
 .org $0000
 ;Write 'HELLO!' to the SDSC debug console
 main:
+  di
+  im 1
+  ld SP, $dff0
+  
   ; Test print_s
 	ld HL, s_hello
 	call print_s
@@ -39,13 +43,14 @@ main:
   ld HL, s_0x
   ld A, $42
   
+  ;Print numbers from 0x42 to 0x51
   -:
-  cp $52
-  jp Z, +
-  call print_s
-  call print_a
-  call print_nl
-  inc A
+    cp $52
+    jp Z, +
+    call print_s
+    call print_a
+    call print_nl
+    inc A
   jp -
   +:
   

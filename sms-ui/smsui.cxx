@@ -24,6 +24,7 @@
 //FLTK and dialogs
 #include <FL/Fl.H>
 #include <FL/Fl_File_Chooser.H>
+#include <FL/Fl_Native_File_Chooser.H>
 #include "DialogZ80.h"
 #include "DialogBreakpoint.h"
 
@@ -72,7 +73,20 @@ int emu_init(){
     z80_init(sdsc_write, sdsc_control); ///<-- @note No SDSC callbacks
 
     //Load ROM
-    const char* f_path = fl_file_chooser("Open ROM", "Mastersystem ROM (*.{sms,bin})", "", 1);
+    const char* f_path = NULL;
+    Fl_Native_File_Chooser fnfc;
+    fnfc.title("Open ROM");
+    fnfc.type(Fl_Native_File_Chooser::BROWSE_FILE);
+    fnfc.filter("Mastersystem ROM\t*.{sms,bin}");
+    fnfc.directory(".");
+    switch (fnfc.show()){
+    case -1: 
+    case 1:
+        break;
+    default:
+        f_path = fnfc.filename();
+    }
+
     const char* f_default = "zexdoc_sdsc.sms";
     FILE* in_f = 0;
     if (f_path){

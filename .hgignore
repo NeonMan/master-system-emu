@@ -26,6 +26,9 @@ doxygen\/
 \.bin$
 \.sms$
 \.user$
+\.sym
+\.link
+\.exe
 
 #Other
 Makefile$

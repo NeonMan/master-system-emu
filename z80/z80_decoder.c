@@ -1360,9 +1360,18 @@ int z80_instruction_decode(){
             case Z80_OPCODE_XZ(3, 6):            /*alu + 8bit immediate; Size: 2; Flags: ALL*/
                 //Select ALU operation by 'y'
                 switch (y[0]){
-                case Z80_ALUOP_ADD:
-                    assert(0); //Unimplemented
+                case Z80_ALUOP_ADD:                               /*ADD n; Size 2; Flags:ALL*/
+                {
+                    const uint8_t orig_a = Z80_A;
+                    Z80_A = Z80_A + z80.opcode[1];
+                    Z80_F = 0;
+                    Z80_F |= Z80_SETFLAG_SIGN(Z80_A);
+                    Z80_F |= Z80_SETFLAG_ZERO(Z80_A);
+                    Z80_F |= Z80_SETFLAG_HC(orig_a, Z80_A);
+                    Z80_F |= Z80_SETFLAG_OVERFLOW(orig_a, Z80_A);
+                    Z80_F |= Z80_SETFLAG_CARRY(orig_a, Z80_A);
                     return Z80_STAGE_RESET;
+                }
                 case Z80_ALUOP_ADC:
                     assert(0); //Unimplemented
                     return Z80_STAGE_RESET;
@@ -1372,7 +1381,7 @@ int z80_instruction_decode(){
                 case Z80_ALUOP_SBC:
                     assert(0); //Unimplemented
                     return Z80_STAGE_RESET;
-                case Z80_ALUOP_AND:
+                case Z80_ALUOP_AND:                               /*AND n; Size 2; Flags:ALL*/
                 {
                     const uint8_t orig_a = Z80_A;
                     Z80_A = Z80_A & z80.opcode[1];
@@ -1387,7 +1396,7 @@ int z80_instruction_decode(){
                     assert(0); //Unimplemented
                     return Z80_STAGE_RESET;
 
-                case Z80_ALUOP_OR:                                /*OR n; Size: 1; Flags:ALL*/
+                case Z80_ALUOP_OR:                                /*OR n; Size: 2; Flags:ALL*/
                 {
                     const uint8_t orig_a = Z80_A;
                     Z80_A = Z80_A | z80.opcode[1];

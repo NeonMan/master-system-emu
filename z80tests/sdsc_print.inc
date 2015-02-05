@@ -12,6 +12,13 @@
 ; See the License for the specific language governing permissions and
 ; limitations under the License.
 
+; [Inner function]
+; Outputs a byte to SDSC console
+;     A -- Byte to output
+_print_out:
+  out ($FD), A
+  ret
+
 ; Prints a string to SDSC console
 ;     (HL) -- Null-terminated string
 print_s:
@@ -21,14 +28,14 @@ print_s:
     ld A, (HL)
     cp $00
     jp Z, +
-    out ($FD), A
+    call _print_out
     inc HL
     jr -
   +:  
   pop HL
   pop AF
   ret
-  
+
 ; Prints byte stored in A reg to SDSC
 ;     A -- Byte to print
 print_a:
@@ -56,14 +63,14 @@ print_a:
   LD E, B        ;
   ADD HL, DE     ; Point to hex_lut + nibble value
   LD A, (HL)
-  OUT ($FD), A   ; Print to SDSC
+  call _print_out
   ;Print lower nibble (C)
   LD HL, hex_lut ;
   LD DE, $0000   ;
   LD E, C        ;
   ADD HL, DE     ; Point to hex_lut + nibble value
   LD A, (HL)
-  OUT ($FD), A   ; Print to SDSC
+  call _print_out
   
   pop HL
   pop DE
@@ -95,7 +102,7 @@ print_hl_p:
 print_nl:
   push AF
   LD A, $0A
-  OUT ($FD), A
+  call _print_out
   pop AF
   ret
   
