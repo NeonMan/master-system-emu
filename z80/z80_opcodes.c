@@ -75,6 +75,20 @@ int z80_op_EX(){
     return Z80_STAGE_RESET;
 }
 
+///EXX; Size: 1; Flags: None
+int z80_op_EXX(){
+    const uint16_t old_bc = Z80_BC;
+    const uint16_t old_de = Z80_DE;
+    const uint16_t old_hl = Z80_HL;
+    Z80_BC = Z80_BCp;
+    Z80_DE = Z80_DEp;
+    Z80_HL = Z80_HLp;
+    Z80_BCp = old_bc;
+    Z80_DEp = old_de;
+    Z80_HLp = old_hl;
+    return Z80_STAGE_RESET;
+}
+
 ///INC (HL)
 int z80_op_INC_HLp(){
     //Memory read
@@ -201,6 +215,68 @@ int z80_op_LD_r_r(){
 ///NOP; Size: 1; Flags: None
 int z80_op_NOP(){
     return Z80_STAGE_RESET;
+}
+
+///POP rp2[p]; Size: 1; Flags: None
+int z80_op_POP_rp2(){
+    Z80_OPCODE_SUBDIV;
+    //Read stack
+    if (z80.read_index == 0){
+        z80.read_address = Z80_SP;
+        return Z80_STAGE_M2;
+    }
+    else if (z80.read_index == 1){
+        ++z80.read_address;
+        return Z80_STAGE_M2;
+    }
+    //Update state
+    else{
+        Z80_SP += 2;
+        *(z80_rp2[p[0]]) = *((uint16_t*)z80.read_buffer); ///<-- @bug Endianness!
+        return Z80_STAGE_RESET;
+    }
+}
+
+///RET; Size: 1; Flags: None
+int z80_op_RET(){
+    //Read stack
+    if (z80.read_index == 0){
+        z80.read_address = Z80_SP;
+        return Z80_STAGE_M2;
+    }
+    else if (z80.read_index == 1){
+        ++z80.read_address;
+        return Z80_STAGE_M2;
+    }
+    else{
+        Z80_SP += 2;
+        Z80_PC = *((uint16_t*)z80.read_buffer); ///<-- @bug Endianness!
+        return Z80_STAGE_RESET;
+    }
+}
+
+///RET cc[y]; Size: 1; Flags: None
+int z80_op_RET_cc(){
+    Z80_OPCODE_SUBDIV;
+    if ((Z80_F & z80_cc[y[0]]) == z80_cc_stat[y[0]]){
+        //POP stack, update PC
+        if (z80.read_index == 0){
+            z80.read_address = Z80_SP;
+            return Z80_STAGE_M2;
+        }
+        else if (z80.read_index == 1){
+            ++(z80.read_address);
+            return Z80_STAGE_M2;
+        }
+        else{
+            Z80_PC = *((uint16_t*)(z80.read_buffer));
+            Z80_SP += 2;
+            return Z80_STAGE_RESET;
+        }
+    }
+    else{
+        return Z80_STAGE_RESET;
+    }
 }
 
 int z80_op_RLA(){
