@@ -70,14 +70,14 @@ int emu_init(){
 
     //Init emulator modules
     vdp_init();
-    z80_init(sdsc_write, sdsc_control); ///<-- @note No SDSC callbacks
+    z80_init(sdsc_write, sdsc_control); 
 
     //Load ROM
     const char* f_path = NULL;
     Fl_Native_File_Chooser fnfc;
     fnfc.title("Open ROM");
     fnfc.type(Fl_Native_File_Chooser::BROWSE_FILE);
-    fnfc.filter("Mastersystem ROM\t*.{sms,bin}");
+    fnfc.filter("Mastersystem ROM\t*.{sms,bin,sg}");
     fnfc.directory(".");
     switch (fnfc.show()){
     case -1: 
