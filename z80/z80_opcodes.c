@@ -1,3 +1,17 @@
+// Copyright 2015 Juan Luis Álvarez Martínez
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+// http ://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 #include "z80_opcodes.h"
 #include "z80_macros.h"
 #include "z80_register_lut.h"
@@ -42,6 +56,39 @@ int z80_op_AND_n(){
     return Z80_STAGE_RESET;
 }
 
+///AND r[z]; Size: 1; Flags: All
+int z80_op_AND_r(){
+    Z80_OPCODE_SUBDIV;
+    //Request M2 read if required
+    if ((z80_r[z[0]] == 0) && (z80.read_index == 0)){
+        z80.read_address = Z80_HL;
+        return Z80_STAGE_M2;
+    }
+
+    const uint8_t orig_a = Z80_A;
+    if (z80_r[z[0]]){                            /*AND r[z]; Size: 1; Flags: All*/
+        Z80_A = Z80_A & *(z80_r[z[0]]);
+    }
+    else{                                        /*AND (HL); Size: 1; Flags: All*/
+        Z80_A = Z80_A & z80.read_buffer[0];
+    }
+    Z80_F = 0;
+    Z80_F |= Z80_SETFLAG_SIGN(Z80_A);
+    Z80_F |= Z80_SETFLAG_ZERO(Z80_A);
+    Z80_F |= Z80_FLAG_HC;
+    Z80_F |= Z80_SETFLAG_OVERFLOW(orig_a, Z80_A);
+    return Z80_STAGE_RESET;
+}
+
+///BIT y,r[z]; Size: 2; Flags: _S,Z,H,_P,N
+int z80_op_BIT_y_r(){
+    Z80_OPCODE_SUBDIV;
+    Z80_F = (Z80_F & (Z80_CLRFLAG_ZERO & Z80_CLRFLAG_ADD)); //Clear Z,N
+    Z80_F = Z80_F | (((1 << y[1]) & (*z80_r[z[1]])) ? 0 : Z80_CLRFLAG_ZERO);
+    Z80_F = Z80_F | Z80_FLAG_HC;
+    return Z80_STAGE_RESET;
+}
+
 ///CALL cc[y] nn; Size: 3; Flags: None
 int z80_op_CALL_cc_nn(){
     Z80_OPCODE_SUBDIV;
@@ -73,7 +120,7 @@ int z80_op_CALL_cc_nn(){
     }
 }
 
-///
+///CALL nn; Size: 3; Flags: None
 int z80_op_CALL_nn(){
     if (z80.write_index == 0){
         //Push PC to the stack (M3 write of current PC)
@@ -111,6 +158,31 @@ int z80_op_CP_n(){
     Z80_F |= Z80_SETFLAG_HC(Z80_A, Z80_A - z80.opcode[1]);
     Z80_F |= Z80_SETFLAG_OVERFLOW(Z80_A, Z80_A - z80.opcode[1]);
     Z80_F |= Z80_SETFLAG_BORROW(Z80_A, Z80_A - z80.opcode[1]);
+    return Z80_STAGE_RESET;
+}
+
+///CP r[z]; Size: 1; Flags: All
+int z80_op_CP_r(){
+    Z80_OPCODE_SUBDIV;
+    //Request M2 read if required
+    if ((z80_r[z[0]] == 0) && (z80.read_index == 0)){
+        z80.read_address = Z80_HL;
+        return Z80_STAGE_M2;
+    }
+
+    uint8_t new_a;
+    if (z80_r[z[0]]){
+        new_a = Z80_A - *(z80_r[z[0]]);
+    }
+    else{                                         /*CP (HL); Size: 1; Flags: All*/
+        new_a = Z80_A - z80.read_buffer[0];
+    }
+    Z80_F = Z80_SETFLAG_SIGN(Z80_A)
+        | Z80_SETFLAG_ZERO(Z80_A)
+        | Z80_SETFLAG_HC(Z80_A, new_a)
+        | Z80_SETFLAG_OVERFLOW(Z80_A, new_a)
+        | Z80_FLAG_ADD
+        | Z80_SETFLAG_BORROW(Z80_A, new_a);
     return Z80_STAGE_RESET;
 }
 
@@ -521,6 +593,30 @@ int z80_op_OR_n(){
     return Z80_STAGE_RESET;
 }
 
+///OR r[z]; Size: 1; Flags: All
+int z80_op_OR_r(){
+    Z80_OPCODE_SUBDIV;
+    //Request M2 read if required
+    if ((z80_r[z[0]] == 0) && (z80.read_index == 0)){
+        z80.read_address = Z80_HL;
+        return Z80_STAGE_M2;
+    }
+
+    const uint8_t orig_a = Z80_A;
+    if (z80_r[z[0]]){
+        Z80_A = Z80_A | *(z80_r[z[0]]);
+    }
+    else{                                          /*OR (HL); Size: 1; Flags:ALL*/
+        //Data retrieved from (HL)
+        Z80_A = Z80_A | z80.read_buffer[0];
+    }
+    Z80_F = 0;
+    Z80_F |= Z80_SETFLAG_SIGN(Z80_A);
+    Z80_F |= Z80_SETFLAG_ZERO(Z80_A);
+    Z80_F |= Z80_SETFLAG_OVERFLOW(orig_a, Z80_A);
+    return Z80_STAGE_RESET;
+}
+
 ///OTIR; Size: 2; Flags: Z,N
 int z80_op_OTIR(){
     //(C)<-(HL), B<-B – 1, HL<-HL + 1; B? repeat : end
@@ -603,6 +699,13 @@ int z80_op_PUSH_rp2(){
         Z80_SP -= 2;
         return Z80_STAGE_RESET;
     }
+}
+
+///RES y,r[z]; Size: 2; Flags: None
+int z80_op_RES_y_r(){
+    Z80_OPCODE_SUBDIV;
+    *(z80_r[z[1]]) = *(z80_r[z[1]]) & (~(1 << y[1]));
+    return Z80_STAGE_RESET;
 }
 
 ///RET; Size: 1; Flags: None
@@ -699,3 +802,45 @@ int z80_op_SCF(){
     Z80_F = (Z80_F & (Z80_CLRFLAG_HC & Z80_CLRFLAG_ADD)) | Z80_FLAG_CARRY;
     return Z80_STAGE_RESET;
 }
+
+///SRL r[z]; Size: 2; Flags: ?
+int z80_op_SRL_r(){
+    Z80_OPCODE_SUBDIV;
+    if (z80_r[z[1]]){
+        const uint8_t old_r = *(z80_r[z[1]]);
+        *(z80_r[z[1]]) = (*(z80_r[z[1]])) >> 1;
+        Z80_F = 0;
+        Z80_F |= old_r & 1 ? Z80_FLAG_CARRY : 0;
+        Z80_F |= Z80_SETFLAG_ZERO(*(z80_r[z[1]]));
+        Z80_F |= Z80_SETFLAG_PARITY(*(z80_r[z[1]]));
+        return Z80_STAGE_RESET;
+    }
+    else{ //SRL (HL)
+        assert(0); //Unimplemented
+    }
+    assert(0); //Unimplemented
+    return Z80_STAGE_RESET;
+}
+
+///XOR r[z]; Size: 1; Flags: All
+int z80_op_XOR_r(){
+    Z80_OPCODE_SUBDIV;
+    //Request M2 read if required
+    if ((z80_r[z[0]] == 0) && (z80.read_index == 0)){
+        z80.read_address = Z80_HL;
+        return Z80_STAGE_M2;
+    }
+    if (z80_r[z[0]]){
+        Z80_A = Z80_A ^ *(z80_r[z[0]]);
+    }
+    else{                                         /*XOR (HL); Size: 1; Flags:ALL*/
+        //Data retrieved from (HL)
+        Z80_A = Z80_A ^ z80.read_buffer[0];
+    }
+    Z80_F = 0;
+    Z80_F |= Z80_SETFLAG_SIGN(Z80_A);
+    Z80_F |= Z80_SETFLAG_ZERO(Z80_A);
+    Z80_F |= Z80_SETFLAG_PARITY(Z80_A);
+    return Z80_STAGE_RESET;
+}
+
