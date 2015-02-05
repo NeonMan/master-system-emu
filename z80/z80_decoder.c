@@ -1061,12 +1061,8 @@ int z80_instruction_decode(){
             //3-byte. Unprefixed
             switch (z80.opcode[0] & (Z80_OPCODE_X_MASK | Z80_OPCODE_Z_MASK)){
             case Z80_OPCODE_XZ(0, 1):
-                if (!q[0]){                           /* LD rp[n], mm; Size: 3; Flags: None */
-                    //mm is stored in the opcode's bytes 1,2.
-                    const uint16_t immediate = *((uint16_t*)(z80.opcode + 1));
-                    *z80_rp[p[0]] = immediate; ///<-- @bug Endianness!
-                    return Z80_STAGE_RESET;
-                }
+                if (!q[0])                             /* LD rp[n], nn; Size: 3; Flags: None*/
+                    return z80_op_LD_rp_nn();
                 else{
                     assert(0); //Unimplemented stuff
                     return Z80_STAGE_RESET;
@@ -1079,111 +1075,34 @@ int z80_instruction_decode(){
                         assert(0); //No opcode reaches this point
                         return Z80_STAGE_RESET;
                     case 2:                              /*LD (nn), HL; size: 3; Flags: None*/
-                        if (z80.write_index == 0){
-                            z80.write_address = *((uint16_t*)(z80.opcode + 1));
-                            z80.write_buffer[0] = Z80_H;
-                            z80.write_buffer[1] = Z80_L;
-                            return Z80_STAGE_M3;
-                        }
-                        else if (z80.write_index == 1){
-                            ++(z80.write_address);
-                            return Z80_STAGE_M3;
-                        }
-                        else{
-                            return Z80_STAGE_RESET;
-                        }
+                        return z80_op_LD_nnp_HL();
                     case 3:                               /*LD (nn), A; Size: 3; Flags: None*/
-                        //Perform the byte write
-                        if (z80.write_index == 0){
-                            z80.write_address = *((uint16_t*)(z80.opcode + 1)); ///<-- @bug endianness!
-                            z80.write_buffer[0] = Z80_A;
-                            return Z80_STAGE_M3;
-                        }
-                        else{
-                            return Z80_STAGE_RESET;
-                        }
+                        return z80_op_LD_nnp_A();
                     }
                 }
                 else{
                     switch (p[0]){
                     case 2:                              /*LD HL, (nn); Size: 3; Flags: None*/
-                        if (z80.read_index == 0){
-                            z80.read_address = *((uint16_t*)(z80.opcode + 1)); ///<-- @bug endianness!
-                            return Z80_STAGE_M2;
-                        }
-                        else if (z80.read_index == 1){
-                            ++z80.read_address;
-                            return Z80_STAGE_M2;
-                        }
-                        else{
-                            Z80_H = z80.read_buffer[0];
-                            Z80_L = z80.read_buffer[1];
-                            return Z80_STAGE_RESET;
-                        }
+                        return z80_op_LD_HL_nnp();
                     case 3:                               /*LD A, (nn); Size: 3; Flags: None*/
-                        if (z80.read_index == 0){
-                            z80.read_address = *((uint16_t*)(z80.opcode + 1)); ///<-- @bug endianness!
-                            return Z80_STAGE_M2;
-                        }
-                        else{
-                            Z80_A = z80.read_buffer[0];
-                            return Z80_STAGE_RESET;
-                        }
+                        return z80_op_LD_A_nnp();
                     default:
                         assert(0); //No opcode should get here
                         return Z80_STAGE_M1;
                     }
                 }
             case Z80_OPCODE_XZ(3, 2):                  /* JP cc[y], nn; Size: 3; Flags: None*/
-                //Test condition
-                if ((Z80_F & (z80_cc[y[0]])) == (z80_cc_stat[y[0]])){
-                    const uint16_t new_pc = *((uint16_t*)(z80.opcode + 1));
-                    Z80_PC = new_pc; ///<-- @bug Endianness!
-                    return Z80_STAGE_RESET;
-                }
-                else{
-                    return Z80_STAGE_RESET;
-                }
+                return z80_op_JP_cc_nn();
             case Z80_OPCODE_XZ(3, 3):
                 switch (y[0]){
                 case 0:                                       /* JP nn; Size: 3; Flags: None*/
-                {
-                    ///New PC stored in opcode's last bytes. @bug Endianness.
-                    const uint16_t new_pc = *((uint16_t*)(z80.opcode + 1));
-                    Z80_PC = new_pc;
-                    return Z80_STAGE_RESET;
-                }
+                    return z80_op_JP_nn();
                 default:
                     assert(0); //Unimplemented stuff
                     return Z80_STAGE_RESET;
                 }
             case Z80_OPCODE_XZ(3, 4):                 /* CALL cc[y] nn; Size: 3; Flags: None*/
-                //Check condition
-                if ((Z80_F & z80_cc[y[0]]) == (z80_cc_stat[y[0]])){
-                    //Push PC onto the stack
-                    if (z80.write_index == 0){
-                        //Push PC to the stack (M3 write of current PC)
-                        *((uint16_t*)(z80.write_buffer)) = Z80_PC; ///<-- @bug Endianness!
-                        z80.write_address = Z80_SP - 2;
-                        return Z80_STAGE_M3;
-                    }
-                    else if (z80.write_index == 1){
-                        //Write the second byte
-                        ++z80.write_address;
-                        return Z80_STAGE_M3;
-                    }
-                    else{
-                        //Update SP
-                        Z80_SP -= 2;
-                        //Update PC
-                        const uint16_t new_pc = *((uint16_t*)(z80.opcode + 1)); ///<-- @bug Endiannes!
-                        Z80_PC = new_pc;
-                        return Z80_STAGE_RESET;
-                    }
-                }
-                else{
-                    return Z80_STAGE_RESET;
-                }
+                return z80_op_CALL_cc_nn();
 
             case Z80_OPCODE_XZ(3, 5):
                 if (!q[0]){
@@ -1191,33 +1110,17 @@ int z80_instruction_decode(){
                     return Z80_STAGE_RESET;
                 }
                 else{
-                    if (p[0] == 0){                         /* CALL nn; Size: 3; Flags: None*/
-                        if (z80.write_index == 0){
-                            //Push PC to the stack (M3 write of current PC)
-                            *((uint16_t*)(z80.write_buffer)) = Z80_PC; ///<-- @bug Endianness!
-                            z80.write_address = Z80_SP - 2;
-                            return Z80_STAGE_M3;
-                        }
-                        else if (z80.write_index == 1){
-                            //Write the second byte
-                            ++z80.write_address;
-                            return Z80_STAGE_M3;
-                        }
-                        else{
-                            //Update SP
-                            Z80_SP -= 2;
-                            //Update PC
-                            const uint16_t new_pc = *((uint16_t*)(z80.opcode + 1)); ///<-- @bug Endiannes!
-                            Z80_PC = new_pc;
-                            return Z80_STAGE_RESET;
-                        }
-                        assert(0); //Will never get here
-                    }
+                    if (p[0] == 0)                          /* CALL nn; Size: 3; Flags: None*/
+                        return z80_op_CALL_nn();
+                    else
+                        assert(0); //Unimplemented (?)
                 }
             }
-            assert(0); /*Unimplemented*/ return Z80_STAGE_RESET;
+            assert(0); /*Unimplemented*/
+            return Z80_STAGE_RESET;
         }
-        assert(0); /*Should never get here */ return Z80_STAGE_RESET;
+        assert(0); /*Should never get here */
+        return Z80_STAGE_RESET;
 
     case 4: //Fourth opcode byte
         //Test prefixes
