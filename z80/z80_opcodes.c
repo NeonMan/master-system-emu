@@ -753,7 +753,7 @@ int z80_op_RET_cc(){
 int z80_op_RLA(){
     const uint8_t next_carry = Z80_A & (1 << 7);
     Z80_A = (Z80_A << 1) | (Z80_F & Z80_FLAG_CARRY ? 1 : 0);
-    Z80_F = (Z80_F & (Z80_CLRFLAG_HC & Z80_CLRFLAG_ADD & Z80_CLRFLAG_CARRY))
+    Z80_F = (Z80_A & (Z80_CLRFLAG_HC & Z80_CLRFLAG_ADD & Z80_CLRFLAG_CARRY))
         | (next_carry ? Z80_FLAG_CARRY : 0);
     return Z80_STAGE_RESET;
 }
@@ -762,7 +762,7 @@ int z80_op_RLA(){
 int z80_op_RLCA(){
     Z80_A = (Z80_A << 1) | (Z80_A & (1 << 7) ? 1 : 0);
     Z80_F = (Z80_F & (Z80_CLRFLAG_HC & Z80_CLRFLAG_ADD & Z80_CLRFLAG_CARRY))
-        | ((Z80_F & (1)) ? Z80_FLAG_CARRY : 0);
+        | ((Z80_A & (1)) ? Z80_FLAG_CARRY : 0);
     return Z80_STAGE_RESET;
 }
 
@@ -770,7 +770,7 @@ int z80_op_RLCA(){
 int z80_op_RRA(){
     const uint8_t next_carry = Z80_A & (1);
     Z80_A = (Z80_A >> 1) | (Z80_F & Z80_FLAG_CARRY ? (1 << 7) : 0);
-    Z80_F = (Z80_F & (Z80_CLRFLAG_HC & Z80_CLRFLAG_ADD & Z80_CLRFLAG_CARRY))
+    Z80_F = (Z80_A & (Z80_CLRFLAG_HC & Z80_CLRFLAG_ADD & Z80_CLRFLAG_CARRY))
         | (next_carry ? Z80_FLAG_CARRY : 0);
     return Z80_STAGE_RESET;
 }
@@ -779,7 +779,7 @@ int z80_op_RRA(){
 int z80_op_RRCA(){
     Z80_A = (Z80_A >> 1) | (Z80_A & 1 ? (1 << 7) : 0);
     Z80_F = (Z80_F & (Z80_CLRFLAG_HC & Z80_CLRFLAG_ADD & Z80_CLRFLAG_CARRY))
-        | ((Z80_F & (1 << 7)) ? Z80_FLAG_CARRY : 0);
+        | ((Z80_A & (1 << 7)) ? Z80_FLAG_CARRY : 0);
     return Z80_STAGE_RESET;
 }
 

@@ -1,6 +1,24 @@
 # Quick and dirty hack to compile under windows
 
-all: hello_world.sms nop_loop.sms sdsc_hello.sms print_hello.sms
+all: test_shift.sms hello_world.sms nop_loop.sms sdsc_hello.sms print_hello.sms
+
+# -------------
+# --- Tests ---
+# -------------
+
+# --- Bit shifting ---
+test_shift.link: test_shift.o test_shift.asm
+	echo [objects] > $@
+	echo $< >> $@
+test_shift.o: test_shift.asm 
+	wla-z80 -o $< $@
+test_shift.sms: test_shift.link test_shift.o
+	wlalink -rsv $< $@
+
+
+
+
+
 
 # --- Maxim's hello world.
 hello_world.link: hello_world.o hello_world.asm
