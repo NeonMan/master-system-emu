@@ -129,83 +129,6 @@ test_rlca:
   ;RLCA test endm
   call print_nl
   ret
-
-test_rla:
-  ;Prepare test
-  ld HL, s_rla
-  call print_s
-  call print_nl
-  ld A, $00
-  
-  ;Shift 1
-  SCF
-  RLA
-  call nc, msg_ok
-  call c, msg_err
-  cp $01
-  call z, msg_ok
-  call nz, msg_err
-  ;Shift 2
-  SCF
-  RLA
-  call nc, msg_ok
-  call c, msg_err
-  cp $03
-  call z, msg_ok
-  call nz, msg_err
-  ;Shift 3
-  SCF
-  RLA
-  call nc, msg_ok
-  call c, msg_err
-  cp $07
-  call z, msg_ok
-  call nz, msg_err
-  ;Shift 4
-  SCF
-  RLA
-  call nc, msg_ok
-  call c, msg_err
-  cp $0f
-  call z, msg_ok
-  call nz, msg_err
-  
-  call print_nl
-  
-  ;Shift 5
-  SCF
-  RLA
-  call nc, msg_ok
-  call c, msg_err
-  cp $1f
-  call z, msg_ok
-  call nz, msg_err
-  ;Shift 6
-  SCF
-  RLA
-  call nc, msg_ok
-  call c, msg_err
-  cp $3f
-  call z, msg_ok
-  call nz, msg_err
-  ;Shift 7
-  SCF
-  RLA
-  call nc, msg_ok
-  call c, msg_err
-  cp $7f
-  call z, msg_ok
-  call nz, msg_err
-  ;Shift 8
-  SCF
-  RLA
-  call nc, msg_ok
-  call c, msg_err
-  cp $ff
-  call z, msg_ok
-  call nz, msg_err
-  
-  ret
   
 main:  
   ;Say hello!
@@ -216,8 +139,6 @@ main:
   
   ;RLCA
   call test_rlca
-  ;RLA
-  call test_rla
   
   ;Say bye
   call print_nl
@@ -227,4 +148,4 @@ main:
 -:
   jr -  
   
-.include "sdsc_print.inc"
+.include "./inc/sdsc_print.inc"

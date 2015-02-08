@@ -96,4 +96,4 @@ s_bye:
 .ASC "BYE!"
 .DB $0a, $00
 
-.include "sdsc_print.inc"
+.include "./inc/sdsc_print.inc"
