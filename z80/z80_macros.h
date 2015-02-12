@@ -71,7 +71,7 @@ const uint8_t q[4] = { z80.opcode[0] & (1 << 3), z80.opcode[1] & (1 << 3), z80.o
 //Sub-byte opcode masks
 #define Z80_OPCODE_XZ(X,Z) (((X&0x3)<<6)|(Z&0x7))
 #define Z80_OPCODE_YZ(Y,Z) (((Y&0x7)<<3)|(Z&0x7))
-#define Z80_OPCODE_XYZ(X,Y,Z) (((Y&0x7)<<3)|(Z&0x7)|((X&0x3)<<6))
+#define Z80_OPCODE_XYZ(X,Y,Z) ( ((X&0x3)<<6) | ((Y&0x7)<<3) | (Z&0x7) )
 #define Z80_OPCODE_XPQZ(X,P,Q,Z) (Z80_OPCODE_XYZ(X,0,Z) | ((P&0x3)<<4) | ((Q&0x1)<<3))
 #define Z80_OPCODE_X_MASK (3<<6)
 #define Z80_OPCODE_Y_MASK (7<<3)
