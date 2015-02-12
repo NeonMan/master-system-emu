@@ -57,7 +57,6 @@ int z80_op_LD_A_nnp();
 int z80_op_LD_BCp_A();
 int z80_op_LD_HL_nnp();
 int z80_op_LD_DEp_A();
-int z80_op_LD_r_HLp();
 int z80_op_LD_r_n();
 int z80_op_LD_r_r();
 int z80_op_LD_rp_nn();
