@@ -38,7 +38,7 @@ void z80_instruction_unprefix(){
 
 ///Decodes DDCB/FDCB prefix opcodes
 ///First two bytes already decoded (0xDDCB/0xFDCB)
-int z80_instruction_decode_DDCB_FDCB(){
+int z80_decode_DDCB_FDCB(){
 
     //Relevant sub-byte divisions, for each of the 4 bytes (max) in an opcode.
     const uint8_t x[4] = { z80.opcode[0] >> 6, z80.opcode[1] >> 6, z80.opcode[2] >> 6, z80.opcode[3] >> 6 };
@@ -57,7 +57,7 @@ int z80_instruction_decode_DDCB_FDCB(){
 }
 
 ///Decodes DD/FD prefix
-int z80_instruction_decode_DD_FD(){
+int z80_decode_DD_FD(){
 
     //Relevant sub-byte divisions, for each of the 4 bytes (max) in an opcode.
     const uint8_t x[4] = { z80.opcode[0] >> 6, z80.opcode[1] >> 6, z80.opcode[2] >> 6, z80.opcode[3] >> 6 };
@@ -265,7 +265,7 @@ int z80_instruction_decode_DD_FD(){
     case 3:
         //---Check xxCB prefix---
         if (z80.opcode[1] == 0xCB) //DDCB/FDCB prefix, call its own decoder.
-            return z80_instruction_decode_DDCB_FDCB();
+            return z80_decode_DDCB_FDCB();
 
         switch (z80.opcode[1] & (Z80_OPCODE_X_MASK | Z80_OPCODE_Z_MASK)){
         case Z80_OPCODE_XZ(0, 1):
@@ -348,7 +348,7 @@ int z80_instruction_decode_DD_FD(){
 }
 
 ///Decodes the CB-prefixed opcodes.
-int z80_instruction_decode_CB(){
+int z80_decode_CB(){
 
     //Relevant sub-byte divisions, for each of the 4 bytes (max) in an opcode.
     const uint8_t x[4] = { z80.opcode[0] >> 6, z80.opcode[1] >> 6, z80.opcode[2] >> 6, z80.opcode[3] >> 6 };
@@ -473,9 +473,14 @@ int z80_instruction_decode_CB(){
 
 
 ///Decodes ED prefixed opcodes
-int z80_instruction_decode_ED(){
-    assert(0); ///<-- Unimplemented
-    return Z80_STAGE_RESET;
+int z80_decode_ED(){
+    switch (z80.opcode_index){
+    case 1:
+        return Z80_STAGE_M1;
+    default:
+        assert(0); ///<-- Unimplemented
+        return Z80_STAGE_RESET;
+    }
 }
 
 /**
@@ -483,9 +488,9 @@ int z80_instruction_decode_ED(){
 *
 * Decode a z80 opcode, if the opcode is completly read, execute it.
 * If a memory read/write is needed, signal it by returning the apropriate
-* information.
+* Z80_STAGE value.
 *
-* @return Signal wether we need a read/write/fetch or none.
+* @return Signal wether we need a fetch/read/write or reset.
 */
 int z80_instruction_decode(){
 
@@ -736,7 +741,7 @@ int z80_instruction_decode(){
         case Z80_OPCODE_XYZ(3, 1, 0): return z80_op_RET_cc();             /*RET cc (size: 1)*/
         case Z80_OPCODE_XPQZ(3, 0, 1, 1): return z80_op_RET();               /*RET (size: 1)*/
         case Z80_OPCODE_XYZ(3, 1, 2): return Z80_STAGE_M1;             /*JP cc, nn (size: 3)*/
-        case Z80_OPCODE_XYZ(3, 1, 3): return z80_instruction_decode_CB();      /*0xCB Prefix*/
+        case Z80_OPCODE_XYZ(3, 1, 3): return z80_decode_CB();      /*0xCB Prefix*/
         case Z80_OPCODE_XYZ(3, 1, 4): return Z80_STAGE_M1;           /*CALL cc, nn (size: 3)*/
         case Z80_OPCODE_XPQZ(3, 0, 1, 5): return Z80_STAGE_M1;           /*CALL nn (size: 3)*/
         case Z80_OPCODE_XPQZ(3, 0, 1, 6): return Z80_STAGE_M1;             /*ADC n (size: 2)*/
@@ -756,7 +761,7 @@ int z80_instruction_decode(){
         case Z80_OPCODE_XYZ(3, 3, 2): return Z80_STAGE_M1;             /*JP cc, nn (size: 3)*/
         case Z80_OPCODE_XYZ(3, 3, 3): return Z80_STAGE_M1;             /*IN A, (n) (size: 2)*/
         case Z80_OPCODE_XYZ(3, 3, 4): return Z80_STAGE_M1;           /*CALL cc, nn (size: 3)*/
-        case Z80_OPCODE_XPQZ(3, 1, 1, 5): return z80_instruction_decode_DD_FD(); /*DD prefix*/
+        case Z80_OPCODE_XPQZ(3, 1, 1, 5): return z80_decode_DD_FD(); /*DD prefix*/
         case Z80_OPCODE_XPQZ(3, 1, 1, 6): return Z80_STAGE_M1;             /*SBC n (size: 2)*/
         case Z80_OPCODE_XYZ(3, 3, 7): return z80_op_RST_y();               /*RST y (size: 1)*/
 
@@ -774,7 +779,7 @@ int z80_instruction_decode(){
         case Z80_OPCODE_XYZ(3, 5, 2): return Z80_STAGE_M1;             /*JP cc, nn (size: 3)*/
         case Z80_OPCODE_XYZ(3, 5, 3): return z80_op_EX_DE_HL();        /*EX DE, HL (size: 1)*/
         case Z80_OPCODE_XYZ(3, 5, 4): return Z80_STAGE_M1;           /*CALL cc, nn (size: 3)*/
-        case Z80_OPCODE_XPQZ(3, 2, 1, 5): return z80_instruction_decode_ED();    /*ED prefix*/
+        case Z80_OPCODE_XPQZ(3, 2, 1, 5): return z80_decode_ED();    /*ED prefix*/
         case Z80_OPCODE_XPQZ(3, 2, 1, 6): return Z80_STAGE_M1;             /*XOR n (size: 2)*/
         case Z80_OPCODE_XYZ(3, 5, 7): return z80_op_RST_y();               /*RST y (size: 1)*/
 
@@ -792,7 +797,7 @@ int z80_instruction_decode(){
         case Z80_OPCODE_XYZ(3, 7, 2): return Z80_STAGE_M1;             /*JP cc, nn (size: 3)*/
         case Z80_OPCODE_XYZ(3, 7, 3): return z80_op_EI();                     /*EI (size: 1)*/
         case Z80_OPCODE_XYZ(3, 7, 4): return Z80_STAGE_M1;           /*CALL cc, nn (size: 3)*/
-        case Z80_OPCODE_XPQZ(3, 3, 1, 5): return z80_instruction_decode_DD_FD(); /*FD prefix*/
+        case Z80_OPCODE_XPQZ(3, 3, 1, 5): return z80_decode_DD_FD(); /*FD prefix*/
         case Z80_OPCODE_XPQZ(3, 3, 1, 6): return Z80_STAGE_M1;             /*CP  n (size: 2)*/
         case Z80_OPCODE_XYZ(3, 7, 7): return z80_op_RST_y();               /*RST y (size: 1)*/
 
@@ -805,7 +810,7 @@ int z80_instruction_decode(){
         //Test prefixes
         switch (z80.opcode[0]){
         case 0xCB: // --- 0xCB prefixed opcodes
-            return z80_instruction_decode_CB();
+            return z80_decode_CB();
         case 0xDD: // --- 0xDD prefixed opcodes
             if (z80.opcode[1] == 0xDD){
                 z80.opcode_index--; //0xDDDD = 0xDD
@@ -823,7 +828,7 @@ int z80_instruction_decode(){
                 return Z80_STAGE_M1;
             }
             //0xDD prefixed opcodes below
-            return z80_instruction_decode_DD_FD();
+            return z80_decode_DD_FD();
 
         case 0xFD: // --- 0xFD prefixed opcodes
             if (z80.opcode[1] == 0xFD){
@@ -842,7 +847,7 @@ int z80_instruction_decode(){
                 return Z80_STAGE_M1;
             }
             //0xFD prefixed opcodes below
-            return z80_instruction_decode_DD_FD();
+            return z80_decode_DD_FD();
 
         case 0xED: // --- 0xED prefixed opcodes
             //Select by X/Z
