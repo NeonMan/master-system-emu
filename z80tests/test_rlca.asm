@@ -29,12 +29,18 @@ banks 1
 
 .bank 0 slot 0
 .org $0000
+; -------------------
+; --- Entry point ---
+; -------------------
 boot:
   di
   im 1
   ld SP, $dff0
   jp main
 
+; --- Includes ---
+.include "./inc/sdsc_print.inc"
+  
 ; --- Strings ---
 s_hello:
 .ASC "Bit shifting tests"
@@ -42,10 +48,6 @@ s_hello:
 
 s_rlca:
 .ASC "RLCA"
-.DB $00
-
-s_rla:
-.ASC "RLA"
 .DB $00
 
 s_bye:
@@ -61,10 +63,16 @@ s_err:
 .DB $00
 
 ; --- Test cases ---
-t_rlca_a:
-.DB $1E, $C3, $87, $0F, $1E, $3C, $78, $F0
-t_rlca_c:
-.DB $01, $01, $01, $01, $00, $00, $00, $00
+t_rlca:
+.DB $1E, $01
+.DB $C3, $01
+.DB $87, $01
+.DB $0F, $01
+.DB $1E, $00
+.DB $3C, $00
+.DB $78, $00
+.DB $F0, $00
+t_rlca_end:
 
 msg_ok:
   push AF
@@ -85,49 +93,59 @@ msg_err:
   ret
 
 test_rlca:
-  ;Prepare RLCA test
   ld HL, s_rlca
   call print_s
   call print_nl
-  ld HL, t_rlca_a
-  ld BC, t_rlca_c
-  ld A, $F0
- 
-  ;Shift 1
-  rlca
-  call c, msg_ok
-  call nc, msg_err  
-  ;Shift 2
-  rlca
-  call c, msg_ok
-  call nc, msg_err
-  ;Shift 3
-  rlca
-  call c, msg_ok
-  call nc, msg_err
-  ;Shift 4
-  rlca
-  call c, msg_ok
-  call nc, msg_err
   
-  ;Shift 5
-  rlca
-  call nc, msg_ok
-  call c, msg_err
-  ;Shift 6
-  rlca
-  call nc, msg_ok
-  call c, msg_err
-  ;Shift 7
-  rlca
-  call nc, msg_ok
-  call c, msg_err
-  ;Shift 8
-  rlca
-  call nc, msg_ok
-  call c, msg_err
-  ;RLCA test endm
-  call print_nl
+  ;Prepare RLCA test
+  ;D contains the iteration counter
+  ld D, $08
+  ;Initial A value
+  ld A, $F0
+
+  ; ---------------------------
+  ; --- Run the instruction ---
+  ; ---------------------------
+  inst_loop:
+    ;Perform the rotation
+    rlca
+    ;Store the results in the stack
+    push AF
+    ;Decrement iteration counter
+    dec D
+    jp NZ, inst_loop
+    
+  ; ------------------------------------
+  ; --- Compare against known values ---
+  ; ------------------------------------
+  ;use A as iteration counter
+  ld A, $08
+  ;HL points to the test cases
+  ld HL, t_rlca_end - 1
+  check_loop:
+    ;Move counter to shadow register
+    ex AF, AF'
+    pop BC     ;Get calculated AF result
+    ld D, (HL) ;Get stored F
+    dec HL
+    ld E, (HL) ;Get stored A
+    dec HL
+    
+    ld A, C          ;
+    cp E             ;
+    call NZ, msg_err ;
+    call Z,  msg_ok  ;Check 'A'
+    
+    ld A, B          ;
+    and $01
+    cp C             ;
+    call NZ, msg_err ;
+    call Z,  msg_ok  ;Check 'F'
+    
+    ;Retrieve iteration counter form shadow reg
+    ex AF, AF'
+    dec A  ;Decrement counter
+    jp NZ, check_loop
   ret
   
 main:  
@@ -147,5 +165,3 @@ main:
   
 -:
   jr -  
-  
-.include "./inc/sdsc_print.inc"

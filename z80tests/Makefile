@@ -1,10 +1,19 @@
 # Quick and dirty hack to compile under windows
 
-all: test_rlca.sms print_hello.sms
+all: test_rla.sms test_rlca.sms print_hello.sms
 
 # -------------
 # --- Tests ---
 # -------------
+
+# --- RLA test ---
+test_rla.link: test_rla.o test_rla.asm
+	echo [objects] > $@
+	echo $< >> $@
+test_rla.o: test_rla.asm ./inc/sdsc_print.inc
+	wla-z80 -o $< $@
+test_rla.sms: test_rla.link test_rla.o
+	wlalink -rsv $< $@
 
 # --- RLCA test ---
 test_rlca.link: test_rlca.o test_rlca.asm
