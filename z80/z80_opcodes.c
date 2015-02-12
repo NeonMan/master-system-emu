@@ -19,6 +19,12 @@
 
 extern struct z80_s z80; //<-- Access to z80 internals
 
+///ADC r; Size: 1; Flags: ???
+int z80_op_ADC_r(){
+    assert(0);
+    return Z80_STAGE_RESET;
+}
+
 ///ADD HL, rp[p] ; Size: 1; Flags N,C
 int z80_op_ADD_HL_rp(){
     Z80_OPCODE_SUBDIV;
@@ -41,6 +47,12 @@ int z80_op_ADD_n(){
     Z80_F |= Z80_SETFLAG_HC(orig_a, Z80_A);
     Z80_F |= Z80_SETFLAG_OVERFLOW(orig_a, Z80_A);
     Z80_F |= Z80_SETFLAG_CARRY(orig_a, Z80_A);
+    return Z80_STAGE_RESET;
+}
+
+///ADD r; Size: 1; Flags:ALL
+int z80_op_ADD_r(){
+    assert(0);
     return Z80_STAGE_RESET;
 }
 
@@ -193,6 +205,12 @@ int z80_op_CPL(){
     return Z80_STAGE_RESET;
 }
 
+///DAA; Size: 1; Flags: ???
+int z80_op_DAA(){
+    assert(0); ///<-- Unimplemented
+    return Z80_STAGE_RESET;
+}
+
 ///DEC(r[y]); Size:1; Flags: S,Z,H,P,N
 ///@bug will crash on (HL)
 int z80_op_DEC_r(){
@@ -250,11 +268,17 @@ int z80_op_EX(){
     return Z80_STAGE_RESET;
 }
 
-///EX(DE,HL); Size: 1; Flags: None
+///EX DE, HL; Size: 1; Flags: None
 int z80_op_EX_DE_HL(){
     const uint16_t old_de = Z80_DE;
     Z80_DE = Z80_HL;
     Z80_HL = old_de;
+    return Z80_STAGE_RESET;
+}
+
+///EX (SP), HL; Size: 1; Flags: ???
+int z80_op_EX_SPp_HL(){
+    assert(0); ///<-- Unimplemented
     return Z80_STAGE_RESET;
 }
 
@@ -269,6 +293,12 @@ int z80_op_EXX(){
     Z80_BCp = old_bc;
     Z80_DEp = old_de;
     Z80_HLp = old_hl;
+    return Z80_STAGE_RESET;
+}
+
+///HALT; Size: 1; Flags: ???
+int z80_op_HALT(){
+    assert(0); ///<-- Unimplemented
     return Z80_STAGE_RESET;
 }
 
@@ -364,6 +394,12 @@ int z80_op_JP_cc_nn(){
     }
 }
 
+///JP HL; Size: 1; Flags: ???
+int z80_op_JP_HL(){
+    assert(0); ///<-- Unimplemented
+    return Z80_STAGE_RESET;
+}
+
 ///JR cc, e; Size: 2; Flags: None
 int z80_op_JR_cc(){
     //Test required flag
@@ -381,6 +417,12 @@ int z80_op_JR_e(){
     const int8_t pc_shift = *((int8_t*)&z80.opcode[1]); ///<-- @bug Endianness
     const int32_t next_pc = Z80_PC + pc_shift; //Signed relative jump
     Z80_PC = (next_pc & 0xFFFF);
+    return Z80_STAGE_RESET;
+}
+
+///LD A, (BC); Size: 1; Flags: ???
+int z80_op_LD_A_BCp(){
+    assert(0); ///<-- Unimplemented
     return Z80_STAGE_RESET;
 }
 
@@ -514,6 +556,12 @@ int z80_op_LD_rp_nn(){
     Z80_OPCODE_SUBDIV;
     const uint16_t immediate = *((uint16_t*)(z80.opcode + 1)); ///<-- @bug Endianness!
     *z80_rp[p[0]] = immediate; ///<-- @bug Endianness!
+    return Z80_STAGE_RESET;
+}
+
+///LD SP, HL; Size: 1; Flags: ???
+int z80_op_LD_SP_HL(){
+    assert(0); ///<-- Unimplemented
     return Z80_STAGE_RESET;
 }
 
@@ -783,6 +831,12 @@ int z80_op_RRCA(){
     return Z80_STAGE_RESET;
 }
 
+///RST y; Size: 1; Flags: ???
+int z80_op_RST_y(){
+    assert(0); ///<-- Unimplemented
+    return Z80_STAGE_RESET;
+}
+
 ///SBC HL,rp[p]; Size: 2; Flags: ?
 int z80_op_SBC_HL_rp(){
     Z80_OPCODE_SUBDIV;
@@ -794,6 +848,12 @@ int z80_op_SBC_HL_rp(){
         | Z80_SETFLAG_ZERO(Z80_HL)
         | Z80_SETFLAG_HC((old_hl >> 8), (Z80_HL >> 8))
         | Z80_SETFLAG_OVERFLOW(old_hl, Z80_HL);
+    return Z80_STAGE_RESET;
+}
+
+///SBC r; Size: 1; Flags: ???
+int z80_op_SBC_r(){
+    assert(0);
     return Z80_STAGE_RESET;
 }
 
@@ -819,6 +879,12 @@ int z80_op_SRL_r(){
         assert(0); //Unimplemented
     }
     assert(0); //Unimplemented
+    return Z80_STAGE_RESET;
+}
+
+///SUB r; Size: 1; Flags: ???
+int z80_op_SUB_r(){
+    assert(0);
     return Z80_STAGE_RESET;
 }
 
