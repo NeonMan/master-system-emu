@@ -17,6 +17,7 @@
 
 #include "z80.h"
 
+int z80_op_ADC_n();
 int z80_op_ADC_r();
 int z80_op_ADD_HL_rp();
 int z80_op_ADD_n();
@@ -34,7 +35,7 @@ int z80_op_DAA();
 int z80_op_DEC_r();
 int z80_op_DEC_rp();
 int z80_op_DI();
-int z80_op_DJNZ_e();
+int z80_op_DJNZ_d();
 int z80_op_EI();
 int z80_op_EX();
 int z80_op_EX_DE_HL();
@@ -49,8 +50,8 @@ int z80_op_INC_rp();
 int z80_op_JP_nn();
 int z80_op_JP_cc_nn();
 int z80_op_JP_HL();
-int z80_op_JR_cc();
-int z80_op_JR_e();
+int z80_op_JR_cc_d();
+int z80_op_JR_d();
 int z80_op_LD_A_BCp();
 int z80_op_LD_A_DEp();
 int z80_op_LD_A_nnp();
@@ -80,10 +81,13 @@ int z80_op_RRA();
 int z80_op_RRCA();
 int z80_op_RST_y();
 int z80_op_SBC_HL_rp();
+int z80_op_SBC_n();
 int z80_op_SBC_r();
 int z80_op_SCF();
 int z80_op_SRL_r();
+int z80_op_SUB_n();
 int z80_op_SUB_r();
+int z80_op_XOR_n();
 int z80_op_XOR_r();
 
 #endif
