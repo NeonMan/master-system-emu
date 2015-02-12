@@ -493,20 +493,6 @@ int z80_op_LD_DEp_A(){
     }
 }
 
-///LD r[y], (HL); Size:1; Flags: None
-int z80_op_LD_r_HLp(){
-    //Source is always (HL, Target is never (HL)
-    Z80_OPCODE_SUBDIV;
-    if (z80.read_index == 0){
-        z80.read_address = Z80_HL;
-        return Z80_STAGE_M2;
-    }
-    else{
-        *(z80_r[y[0]]) = z80.read_buffer[0];
-        return Z80_STAGE_RESET;
-    }
-}
-
 ///LD r, n; Size: 2; Flags: None
 int z80_op_LD_r_n(){
     //If target is HL, perform write
@@ -530,22 +516,34 @@ int z80_op_LD_r_n(){
 
 ///LD r[y],r[z]; Size: 1; Flags: None
 int z80_op_LD_r_r(){
-    //Source can never be (HL). That implies z[0]==6
-    //Target can be (HL)
     Z80_OPCODE_SUBDIV;
-    if (z80_r[y[0]]){ //If target != (HL)
-        *(z80_r[y[0]]) = *(z80_r[z[0]]);
-        return Z80_STAGE_RESET;
-    }
-    else{ //Target is (HL)
-        if (z80.write_index == 0){
-            z80.write_address = Z80_HL;
-            assert(z80_r[z[0]]);
-            z80.write_buffer[0] = *(z80_r[z[0]]);
-            return Z80_STAGE_M3;
+    //If source is (HL), target is a regular reg.
+    if (z80_r[z[0]] == 0){
+        if (z80.read_index == 0){
+            z80.read_address = Z80_HL;
+            return Z80_STAGE_M2;
         }
         else{
+            *(z80_r[y[0]]) = z80.read_buffer[0];
             return Z80_STAGE_RESET;
+        }
+    }
+    //If source is a regular reg, target *can* be (HL)
+    else{
+        if (z80_r[y[0]]){ //If target != (HL)
+            *(z80_r[y[0]]) = *(z80_r[z[0]]);
+            return Z80_STAGE_RESET;
+        }
+        else{ //Target is (HL)
+            if (z80.write_index == 0){
+                z80.write_address = Z80_HL;
+                assert(z80_r[z[0]]);
+                z80.write_buffer[0] = *(z80_r[z[0]]);
+                return Z80_STAGE_M3;
+            }
+            else{
+                return Z80_STAGE_RESET;
+            }
         }
     }
 }
