@@ -53,12 +53,99 @@ int z80_decode_DDCB_FDCB(){
 
 ///Decodes DD/FD prefix
 int z80_decode_DD_FD(){
-
-    //Relevant sub-byte divisions, for each of the 4 bytes (max) in an opcode.
     Z80_OPCODE_SUBDIV;
+    //If only the prefix has been decoded, fetch one more byte.
+    if (z80.opcode_index == 1)
+        return Z80_STAGE_M1;
+    //DDCB/FDCB opcodes should *not* be decoded here
+    assert(z80.opcode[1] != 0xCB);
 
-    assert(0); ///<-- Unimplemented
-    return Z80_STAGE_RESET;
+    //A bunch of opcodes are unaffected by prefixing
+    //In that case, we strip the prefix and call
+    //The decoder recursively
+    switch (z80.opcode[1]){
+    case Z80_OPCODE_XYZ(0, 0, 0):                                        /*NOP (Size: 1)*/
+    case Z80_OPCODE_XPQZ(0, 0, 0, 2):                             /*LD (BC), A (size: 1)*/
+    case Z80_OPCODE_XYZ(0, 0, 7):                                       /*RLCA (size: 1)*/
+    case Z80_OPCODE_XYZ(0, 1, 0):                                 /*EX AF, AF' (Size: 1)*/
+    case Z80_OPCODE_XPQZ(0, 0, 1, 2):                             /*LD A, (BC) (size: 1)*/
+    case Z80_OPCODE_XYZ(0, 1, 7):                                       /*RRCA (size: 1)*/
+    case Z80_OPCODE_XYZ(0, 2, 0):                                     /*DJNZ d (size: 2)*/
+    case Z80_OPCODE_XPQZ(0, 1, 0, 2):                             /*LD (DE), A (size: 1)*/
+    case Z80_OPCODE_XYZ(0, 2, 7):                                        /*RLA (size: 1)*/
+    case Z80_OPCODE_XYZ(0, 3, 0):                                       /*JR d (size: 2)*/
+    case Z80_OPCODE_XPQZ(0, 1, 1, 2):                              /*LD A,(DE) (size: 1)*/
+    case Z80_OPCODE_XYZ(0, 3, 7):                                        /*RRA (size: 1)*/
+    case Z80_OPCODE_XYZ(0, 4, 0):                                    /*JR cc, d (size 2)*/
+    case Z80_OPCODE_XYZ(0, 4, 7):                                        /*DAA (size: 1)*/
+    case Z80_OPCODE_XYZ(0, 5, 0):                                    /*JR cc, d (size 2)*/
+    case Z80_OPCODE_XYZ(0, 5, 7):                                        /*CPL (size: 1)*/
+    case Z80_OPCODE_XYZ(0, 6, 0):                                    /*JR cc, d (size 2)*/
+    case Z80_OPCODE_XPQZ(0, 3, 0, 2):                             /*LD (nn), A (size: 3)*/
+    case Z80_OPCODE_XYZ(0, 6, 7):                                        /*SCF (size: 1)*/
+    case Z80_OPCODE_XYZ(0, 7, 0):                                    /*JR cc, d (size 2)*/
+    case Z80_OPCODE_XPQZ(0, 3, 1, 2):                             /*LD A, (nn) (size: 3)*/
+    case Z80_OPCODE_XYZ(0, 7, 7):                                        /*CCF (size: 1)*/
+    case Z80_OPCODE_XYZ(1, 6, 6):                                       /*HALT (size: 1)*/
+    case Z80_OPCODE_XYZ(3, 0, 0):                                     /*RET cc (size: 1)*/
+    case Z80_OPCODE_XYZ(3, 0, 2):                                  /*JP cc, nn (size: 3)*/
+    case Z80_OPCODE_XYZ(3, 0, 3):                                      /*JP nn (size: 3)*/
+    case Z80_OPCODE_XYZ(3, 0, 4):                                /*CALL cc, nn (size: 3)*/
+    case Z80_OPCODE_XPQZ(3, 0, 0, 6):                                  /*ADD n (size: 2)*/
+    case Z80_OPCODE_XYZ(3, 0, 7):                                      /*RST y (size: 1)*/
+    case Z80_OPCODE_XYZ(3, 1, 0):                                     /*RET cc (size: 1)*/
+    case Z80_OPCODE_XPQZ(3, 0, 1, 1):                                    /*RET (size: 1)*/
+    case Z80_OPCODE_XYZ(3, 1, 2):                                  /*JP cc, nn (size: 3)*/
+    case Z80_OPCODE_XYZ(3, 1, 4):                                /*CALL cc, nn (size: 3)*/
+    case Z80_OPCODE_XPQZ(3, 0, 1, 5):                                /*CALL nn (size: 3)*/
+    case Z80_OPCODE_XPQZ(3, 0, 1, 6):                                  /*ADC n (size: 2)*/
+    case Z80_OPCODE_XYZ(3, 1, 7):                                      /*RST y (size: 1)*/
+    case Z80_OPCODE_XYZ(3, 2, 0):                                     /*RET cc (size: 1)*/
+    case Z80_OPCODE_XYZ(3, 2, 2):                                  /*JP cc, nn (size: 3)*/
+    case Z80_OPCODE_XYZ(3, 2, 3):                                 /*OUT (n), A (size: 2)*/
+    case Z80_OPCODE_XYZ(3, 2, 4):                                /*CALL cc, nn (size: 3)*/
+    case Z80_OPCODE_XPQZ(3, 1, 0, 6):                                  /*SUB n (size: 2)*/
+    case Z80_OPCODE_XYZ(3, 2, 7):                                      /*RST y (size: 1)*/
+    case Z80_OPCODE_XYZ(3, 3, 0):                                     /*RET cc (size: 1)*/
+    case Z80_OPCODE_XPQZ(3, 1, 1, 1):                                    /*EXX (size: 1)*/
+    case Z80_OPCODE_XYZ(3, 3, 2):                                  /*JP cc, nn (size: 3)*/
+    case Z80_OPCODE_XYZ(3, 3, 3):                                  /*IN A, (n) (size: 2)*/
+    case Z80_OPCODE_XYZ(3, 3, 4):                                /*CALL cc, nn (size: 3)*/
+    case Z80_OPCODE_XPQZ(3, 1, 1, 6):                                  /*SBC n (size: 2)*/
+    case Z80_OPCODE_XYZ(3, 3, 7):                                      /*RST y (size: 1)*/
+    case Z80_OPCODE_XYZ(3, 4, 0):                                     /*RET cc (size: 1)*/
+    case Z80_OPCODE_XYZ(3, 4, 2):                                  /*JP cc, nn (size: 3)*/
+    case Z80_OPCODE_XYZ(3, 4, 4):                                /*CALL cc, nn (size: 3)*/
+    case Z80_OPCODE_XPQZ(3, 2, 0, 6):                                  /*AND n (size: 2)*/
+    case Z80_OPCODE_XYZ(3, 4, 7):                                      /*RST y (size: 1)*/
+    case Z80_OPCODE_XYZ(3, 5, 0):                                     /*RET cc (size: 1)*/
+    case Z80_OPCODE_XYZ(3, 5, 2):                                  /*JP cc, nn (size: 3)*/
+    case Z80_OPCODE_XYZ(3, 5, 3):                                  /*EX DE, HL (size: 1)*/ /*Uses HL but is explicitly unaffected*/
+    case Z80_OPCODE_XYZ(3, 5, 4):                                /*CALL cc, nn (size: 3)*/
+    case Z80_OPCODE_XPQZ(3, 2, 1, 6):                                  /*XOR n (size: 2)*/
+    case Z80_OPCODE_XYZ(3, 5, 7):                                      /*RST y (size: 1)*/
+    case Z80_OPCODE_XYZ(3, 6, 0):                                     /*RET cc (size: 1)*/
+    case Z80_OPCODE_XYZ(3, 6, 2):                                  /*JP cc, nn (size: 3)*/
+    case Z80_OPCODE_XYZ(3, 6, 3):                                         /*DI (size: 1)*/
+    case Z80_OPCODE_XYZ(3, 6, 4):                                /*CALL cc, nn (size: 3)*/
+    case Z80_OPCODE_XPQZ(3, 3, 0, 6):                                  /*OR  n (size: 2)*/
+    case Z80_OPCODE_XYZ(3, 6, 7):                                      /*RST y (size: 1)*/
+    case Z80_OPCODE_XYZ(3, 7, 0):                                     /*RET cc (size: 1)*/
+    case Z80_OPCODE_XYZ(3, 7, 2):                                  /*JP cc, nn (size: 3)*/
+    case Z80_OPCODE_XYZ(3, 7, 3):                                         /*EI (size: 1)*/
+    case Z80_OPCODE_XYZ(3, 7, 4):                                /*CALL cc, nn (size: 3)*/
+    case Z80_OPCODE_XPQZ(3, 3, 1, 6):                                  /*CP  n (size: 2)*/
+    case Z80_OPCODE_XYZ(3, 7, 7):                                      /*RST y (size: 1)*/
+        z80_instruction_unprefix(); //<-- Remove prefix.
+        return z80_instruction_decode(); //<-- Decode like a normal opcode.
+    }
+
+    //Instructions using 'r', 'rp' or 'HL' will be affected.
+    switch (z80.opcode[1]){
+    default:
+        assert(0); ///<-- Unimplemented
+        return Z80_STAGE_RESET;
+    }
 }
 
 ///Decodes the CB-prefixed opcodes.
