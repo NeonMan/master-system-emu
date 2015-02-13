@@ -41,11 +41,7 @@ void z80_instruction_unprefix(){
 int z80_decode_DDCB_FDCB(){
 
     //Relevant sub-byte divisions, for each of the 4 bytes (max) in an opcode.
-    const uint8_t x[4] = { z80.opcode[0] >> 6, z80.opcode[1] >> 6, z80.opcode[2] >> 6, z80.opcode[3] >> 6 };
-    const uint8_t y[4] = { (z80.opcode[0] >> 3) & 0x7, (z80.opcode[1] >> 3) & 0x7, (z80.opcode[2] >> 3) & 0x7, (z80.opcode[3] >> 3) & 0x7 };
-    const uint8_t z[4] = { z80.opcode[0] & 0x7, z80.opcode[1] & 0x7, z80.opcode[2] & 0x7, z80.opcode[3] & 0x7 };
-    const uint8_t p[4] = { (z80.opcode[0] >> 4) & 0x3, (z80.opcode[1] >> 4) & 0x3, (z80.opcode[2] >> 4) & 0x3, (z80.opcode[3] >> 4) & 0x3 };
-    const uint8_t q[4] = { z80.opcode[0] & (1 << 3), z80.opcode[1] & (1 << 3), z80.opcode[2] & (1 << 3), z80.opcode[3] & (1 << 3) };
+    Z80_OPCODE_SUBDIV;
 
     //DDCB/FDCB always require an extra 2 bytes.
     if (z80.opcode_index == 3)
@@ -60,11 +56,7 @@ int z80_decode_DDCB_FDCB(){
 int z80_decode_DD_FD(){
 
     //Relevant sub-byte divisions, for each of the 4 bytes (max) in an opcode.
-    const uint8_t x[4] = { z80.opcode[0] >> 6, z80.opcode[1] >> 6, z80.opcode[2] >> 6, z80.opcode[3] >> 6 };
-    const uint8_t y[4] = { (z80.opcode[0] >> 3) & 0x7, (z80.opcode[1] >> 3) & 0x7, (z80.opcode[2] >> 3) & 0x7, (z80.opcode[3] >> 3) & 0x7 };
-    const uint8_t z[4] = { z80.opcode[0] & 0x7, z80.opcode[1] & 0x7, z80.opcode[2] & 0x7, z80.opcode[3] & 0x7 };
-    const uint8_t p[4] = { (z80.opcode[0] >> 4) & 0x3, (z80.opcode[1] >> 4) & 0x3, (z80.opcode[2] >> 4) & 0x3, (z80.opcode[3] >> 4) & 0x3 };
-    const uint8_t q[4] = { z80.opcode[0] & (1 << 3), z80.opcode[1] & (1 << 3), z80.opcode[2] & (1 << 3), z80.opcode[3] & (1 << 3) };
+    Z80_OPCODE_SUBDIV;
 
     /* From z80.info.
      *
@@ -351,11 +343,7 @@ int z80_decode_DD_FD(){
 int z80_decode_CB(){
 
     //Relevant sub-byte divisions, for each of the 4 bytes (max) in an opcode.
-    const uint8_t x[4] = { z80.opcode[0] >> 6, z80.opcode[1] >> 6, z80.opcode[2] >> 6, z80.opcode[3] >> 6 };
-    const uint8_t y[4] = { (z80.opcode[0] >> 3) & 0x7, (z80.opcode[1] >> 3) & 0x7, (z80.opcode[2] >> 3) & 0x7, (z80.opcode[3] >> 3) & 0x7 };
-    const uint8_t z[4] = { z80.opcode[0] & 0x7, z80.opcode[1] & 0x7, z80.opcode[2] & 0x7, z80.opcode[3] & 0x7 };
-    const uint8_t p[4] = { (z80.opcode[0] >> 4) & 0x3, (z80.opcode[1] >> 4) & 0x3, (z80.opcode[2] >> 4) & 0x3, (z80.opcode[3] >> 4) & 0x3 };
-    const uint8_t q[4] = { z80.opcode[0] & (1 << 3), z80.opcode[1] & (1 << 3), z80.opcode[2] & (1 << 3), z80.opcode[3] & (1 << 3) };
+    Z80_OPCODE_SUBDIV;
 
     switch (z80.opcode_index){
     case 1:
@@ -474,11 +462,118 @@ int z80_decode_CB(){
 
 ///Decodes ED prefixed opcodes
 int z80_decode_ED(){
-    switch (z80.opcode_index){
-    case 1:
+    Z80_OPCODE_SUBDIV;
+
+    //If only the prefix was decoded, ask for another byte
+    if (z80.opcode_index == 1)
         return Z80_STAGE_M1;
+
+    //If X==0 or X==3, reset. (NONI/NOP)
+    if ((x[1] == 0) || (x[1] == 3))
+        return Z80_STAGE_RESET;
+
+    //Otherwise, decode.
+    //Note that the decoder cases are *NOT* sorted in ascending order unlike
+    //the base decoder function
+    switch (z80.opcode_index){
+    case 2:
+        switch (z80.opcode[1]){
+        case Z80_OPCODE_XYZ(1, 0, 0): /*fall-through*/
+        case Z80_OPCODE_XYZ(1, 1, 0): /*fall-through*/
+        case Z80_OPCODE_XYZ(1, 2, 0): /*fall-through*/
+        case Z80_OPCODE_XYZ(1, 3, 0): /*fall-through*/
+        case Z80_OPCODE_XYZ(1, 4, 0): /*fall-through*/
+        case Z80_OPCODE_XYZ(1, 5, 0): /*fall-through*/
+        case Z80_OPCODE_XYZ(1, 7, 0): return z80_op_IN_r_Cp();         /*IN r, (C) (size: 2)*/
+        case Z80_OPCODE_XYZ(1, 6, 0): return z80_op_IN_Cp();              /*IN (C) (Size: 2)*/
+
+        case Z80_OPCODE_XYZ(1, 0, 1): /*fall-through*/
+        case Z80_OPCODE_XYZ(1, 1, 1): /*fall-through*/
+        case Z80_OPCODE_XYZ(1, 2, 1): /*fall-through*/
+        case Z80_OPCODE_XYZ(1, 3, 1): /*fall-through*/
+        case Z80_OPCODE_XYZ(1, 4, 1): /*fall-through*/
+        case Z80_OPCODE_XYZ(1, 5, 1): /*fall-through*/
+        case Z80_OPCODE_XYZ(1, 7, 1): return z80_op_OUT_Cp_r();       /*OUT (C), r (size: 2)*/
+        case Z80_OPCODE_XYZ(1, 6, 1): return z80_op_OUT_Cp_0();       /*OUT (C), 0 (Size: 2)*/
+
+        case Z80_OPCODE_XPQZ(1, 0, 0, 2): /*fall-through*/
+        case Z80_OPCODE_XPQZ(1, 1, 0, 2): /*fall-through*/
+        case Z80_OPCODE_XPQZ(1, 2, 0, 2): /*fall-through*/
+        case Z80_OPCODE_XPQZ(1, 3, 0, 2): return z80_op_SBC_HL_rp();  /*SBC HL, rp (size: 2)*/
+        case Z80_OPCODE_XPQZ(1, 0, 1, 2): /*fall-through*/
+        case Z80_OPCODE_XPQZ(1, 1, 1, 2): /*fall-through*/
+        case Z80_OPCODE_XPQZ(1, 2, 1, 2): /*fall-through*/
+        case Z80_OPCODE_XPQZ(1, 3, 1, 2): return z80_op_ADC_HL_rp();  /*ADC HL, rp (size: 2)*/
+
+        case Z80_OPCODE_XPQZ(1, 0, 0, 3): /*fall-through*/
+        case Z80_OPCODE_XPQZ(1, 1, 0, 3): /*fall-through*/
+        case Z80_OPCODE_XPQZ(1, 2, 0, 3): /*fall-through*/
+        case Z80_OPCODE_XPQZ(1, 3, 0, 3): return Z80_STAGE_M1;       /*LD (nn), rp (Size: 4)*/
+        case Z80_OPCODE_XPQZ(1, 0, 1, 3): /*fall-through*/
+        case Z80_OPCODE_XPQZ(1, 1, 1, 3): /*fall-through*/
+        case Z80_OPCODE_XPQZ(1, 2, 1, 3): /*fall-through*/
+        case Z80_OPCODE_XPQZ(1, 3, 1, 3): return Z80_STAGE_M1;       /*LD rp, (nn) (size: 4)*/
+
+        case Z80_OPCODE_XYZ(1, 0, 4): /*fall-through*/
+        case Z80_OPCODE_XYZ(1, 1, 4): /*fall-through*/
+        case Z80_OPCODE_XYZ(1, 2, 4): /*fall-through*/
+        case Z80_OPCODE_XYZ(1, 3, 4): /*fall-through*/
+        case Z80_OPCODE_XYZ(1, 4, 4): /*fall-through*/
+        case Z80_OPCODE_XYZ(1, 5, 4): /*fall-through*/
+        case Z80_OPCODE_XYZ(1, 6, 4): /*fall-through*/
+        case Z80_OPCODE_XYZ(1, 7, 4): return z80_op_NEG();                   /*NEG (Size: 2)*/
+
+        case Z80_OPCODE_XYZ(1, 0, 5): /*fall-through*/
+        case Z80_OPCODE_XYZ(1, 2, 5): /*fall-through*/
+        case Z80_OPCODE_XYZ(1, 3, 5): /*fall-through*/
+        case Z80_OPCODE_XYZ(1, 4, 5): /*fall-through*/
+        case Z80_OPCODE_XYZ(1, 5, 5): /*fall-through*/
+        case Z80_OPCODE_XYZ(1, 6, 5): /*fall-through*/
+        case Z80_OPCODE_XYZ(1, 7, 5): return z80_op_RETN();                 /*RETN (size: 2)*/
+        case Z80_OPCODE_XYZ(1, 1, 5): return z80_op_RETI();                 /*RETI (size: 2)*/
+
+        case Z80_OPCODE_XYZ(1, 0, 6): /*fall-through*/
+        case Z80_OPCODE_XYZ(1, 1, 6): /*fall-through*/
+        case Z80_OPCODE_XYZ(1, 2, 6): /*fall-through*/
+        case Z80_OPCODE_XYZ(1, 3, 6): /*fall-through*/
+        case Z80_OPCODE_XYZ(1, 4, 6): /*fall-through*/
+        case Z80_OPCODE_XYZ(1, 5, 6): /*fall-through*/
+        case Z80_OPCODE_XYZ(1, 6, 6): /*fall-through*/
+        case Z80_OPCODE_XYZ(1, 7, 6): return z80_op_IM();                   /*IM y (size: 2)*/
+
+        case Z80_OPCODE_XYZ(1, 0, 7): return z80_op_LD_I_A();            /*LD I, A (size: 2)*/
+        case Z80_OPCODE_XYZ(1, 1, 7): return z80_op_LD_R_A();            /*LD R, A (size: 2)*/
+        case Z80_OPCODE_XYZ(1, 2, 7): return z80_op_LD_A_I();            /*LD A, I (size: 2)*/
+        case Z80_OPCODE_XYZ(1, 3, 7): return z80_op_LD_A_R();            /*LD A, R (size: 2)*/
+        case Z80_OPCODE_XYZ(1, 4, 7): return z80_op_RRD();                   /*RRD (size: 2)*/
+        case Z80_OPCODE_XYZ(1, 5, 7): return z80_op_RLD();                   /*RLD (size: 2)*/
+        case Z80_OPCODE_XYZ(1, 6, 7): /*fall-through*/
+        case Z80_OPCODE_XYZ(1, 7, 7): return z80_op_NOP();                   /*NOP (size: 2)*/
+
+        default:
+            assert(0); ///<-- Should never get here
+            return Z80_STAGE_RESET;
+        }
+    case 3:
+        assert(0); ///<-- There are no 0xED prefixed opcodes of length 3
+        return Z80_STAGE_RESET;
+    case 4:
+        switch (z80.opcode[1]){
+        case Z80_OPCODE_XPQZ(1, 0, 0, 3): /*fall-through*/
+        case Z80_OPCODE_XPQZ(1, 1, 0, 3): /*fall-through*/
+        case Z80_OPCODE_XPQZ(1, 2, 0, 3): /*fall-through*/
+        case Z80_OPCODE_XPQZ(1, 3, 0, 3): return z80_op_LD_nnp_rp(); /*LD (nn), rp (Size: 4)*/
+        case Z80_OPCODE_XPQZ(1, 0, 1, 3): /*fall-through*/
+        case Z80_OPCODE_XPQZ(1, 1, 1, 3): /*fall-through*/
+        case Z80_OPCODE_XPQZ(1, 2, 1, 3): /*fall-through*/
+        case Z80_OPCODE_XPQZ(1, 3, 1, 3): return z80_op_LD_rp_nnp(); /*LD rp, (nn) (size: 4)*/
+
+        default:
+            assert(0); ///<-- Should never get here
+            return Z80_STAGE_RESET;
+        }
     default:
-        assert(0); ///<-- Unimplemented
+        assert(0); ///<-- Opcode overflow
         return Z80_STAGE_RESET;
     }
 }
@@ -495,11 +590,7 @@ int z80_decode_ED(){
 int z80_instruction_decode(){
 
     //Relevant sub-byte divisions, for each of the 4 bytes (max) in an opcode.
-    const uint8_t x[4] = { z80.opcode[0] >> 6, z80.opcode[1] >> 6, z80.opcode[2] >> 6, z80.opcode[3] >> 6 };
-    const uint8_t y[4] = { (z80.opcode[0] >> 3) & 0x7, (z80.opcode[1] >> 3) & 0x7, (z80.opcode[2] >> 3) & 0x7, (z80.opcode[3] >> 3) & 0x7 };
-    const uint8_t z[4] = { z80.opcode[0] & 0x7, z80.opcode[1] & 0x7, z80.opcode[2] & 0x7, z80.opcode[3] & 0x7 };
-    const uint8_t p[4] = { (z80.opcode[0] >> 4) & 0x3, (z80.opcode[1] >> 4) & 0x3, (z80.opcode[2] >> 4) & 0x3, (z80.opcode[3] >> 4) & 0x3 };
-    const uint8_t q[4] = { z80.opcode[0] & (1 << 3), z80.opcode[1] & (1 << 3), z80.opcode[2] & (1 << 3), z80.opcode[3] & (1 << 3) };
+    Z80_OPCODE_SUBDIV;
 
     //Select by X/Z at the same time
     switch (z80.opcode_index){
