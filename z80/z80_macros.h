@@ -69,6 +69,8 @@ const uint8_t q[4] = { z80.opcode[0] & (1 << 3), z80.opcode[1] & (1 << 3), z80.o
 #define Z80_ALUOP_CP  7
 
 //Sub-byte opcode masks
+#define Z80_OPCODE_X(X) (((X&0x3)<<6))
+#define Z80_OPCODE_Y(Y) (((Y&0x7)<<3))
 #define Z80_OPCODE_XZ(X,Z) (((X&0x3)<<6)|(Z&0x7))
 #define Z80_OPCODE_YZ(Y,Z) (((Y&0x7)<<3)|(Z&0x7))
 #define Z80_OPCODE_XYZ(X,Y,Z) ( ((X&0x3)<<6) | ((Y&0x7)<<3) | (Z&0x7) )
