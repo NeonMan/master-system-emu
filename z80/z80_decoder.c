@@ -185,13 +185,43 @@ int z80_decode_ED(){
         case Z80_OPCODE_XYZ(1, 6, 7): /*fall-through*/
         case Z80_OPCODE_XYZ(1, 7, 7): return z80_op_NOP();                   /*NOP (size: 2)*/
 
+        case Z80_OPCODE_XYZ(2, 4, 0): return z80_op_LDI();                   /*LDI (size: 2)*/
+        case Z80_OPCODE_XYZ(2, 4, 1): return z80_op_CPI();                   /*CPI (size: 2)*/
+        case Z80_OPCODE_XYZ(2, 4, 2): return z80_op_INI();                   /*INI (size: 2)*/
+        case Z80_OPCODE_XYZ(2, 4, 3): return z80_op_OUTI();                 /*OUTI (size: 2)*/
+
+        case Z80_OPCODE_XYZ(2, 5, 0): return z80_op_LDD();                   /*LDD (size: 2)*/
+        case Z80_OPCODE_XYZ(2, 5, 1): return z80_op_CPD();                   /*CPD (size: 2)*/
+        case Z80_OPCODE_XYZ(2, 5, 2): return z80_op_IND();                   /*IND (size: 2)*/
+        case Z80_OPCODE_XYZ(2, 5, 3): return z80_op_OUTD();                 /*OUTD (size: 2)*/
+
+        case Z80_OPCODE_XYZ(2, 6, 0): return z80_op_LDIR();                 /*LDIR (size: 2)*/
+        case Z80_OPCODE_XYZ(2, 6, 1): return z80_op_CPIR();                 /*CPIR (size: 2)*/
+        case Z80_OPCODE_XYZ(2, 6, 2): return z80_op_INIR();                 /*INIR (size: 2)*/
+        case Z80_OPCODE_XYZ(2, 6, 3): return z80_op_OTIR();                 /*OTIR (size: 2)*/
+
+        case Z80_OPCODE_XYZ(2, 7, 0): return z80_op_LDDR();                 /*LDDR (size: 2)*/
+        case Z80_OPCODE_XYZ(2, 7, 1): return z80_op_CPDR();                 /*CPDR (size: 2)*/
+        case Z80_OPCODE_XYZ(2, 7, 2): return z80_op_INDR();                 /*INDR (size: 2)*/
+        case Z80_OPCODE_XYZ(2, 7, 3): return z80_op_OTDR();                 /*OTDR (size: 2)*/
         default:
             assert(0); ///<-- Should never get here
             return Z80_STAGE_RESET;
         }
     case 3:
-        assert(0); ///<-- There are no 0xED prefixed opcodes of length 3
-        return Z80_STAGE_RESET;
+        switch (z80.opcode[1]){
+        case Z80_OPCODE_XPQZ(1, 0, 0, 3): /*fall-through*/
+        case Z80_OPCODE_XPQZ(1, 1, 0, 3): /*fall-through*/
+        case Z80_OPCODE_XPQZ(1, 2, 0, 3): /*fall-through*/
+        case Z80_OPCODE_XPQZ(1, 3, 0, 3): return Z80_STAGE_M1;       /*LD (nn), rp (Size: 4)*/
+        case Z80_OPCODE_XPQZ(1, 0, 1, 3): /*fall-through*/
+        case Z80_OPCODE_XPQZ(1, 1, 1, 3): /*fall-through*/
+        case Z80_OPCODE_XPQZ(1, 2, 1, 3): /*fall-through*/
+        case Z80_OPCODE_XPQZ(1, 3, 1, 3): return Z80_STAGE_M1;       /*LD rp, (nn) (size: 4)*/
+        default:
+            assert(0); ///<-- should never get here (There are no length 3 0xED opcodes)
+            return Z80_STAGE_RESET;
+        }
     case 4:
         switch (z80.opcode[1]){
         case Z80_OPCODE_XPQZ(1, 0, 0, 3): /*fall-through*/
