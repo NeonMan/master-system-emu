@@ -902,8 +902,20 @@ int z80_op_RLCA(){
     return Z80_STAGE_RESET;
 }
 
+///RLC r; Size: 2; Flags: ???
+int z80_op_RLC_r(){
+    assert(0); ///<-- Unimplemented
+    return Z80_STAGE_RESET;
+}
+
 ///RLD; Size: 2; Flags: ???
 int z80_op_RLD(){
+    assert(0); ///<-- Unimplemented
+    return Z80_STAGE_RESET;
+}
+
+///RL r; Size: 2; Flags: ???
+int z80_op_RL_r(){
     assert(0); ///<-- Unimplemented
     return Z80_STAGE_RESET;
 }
@@ -925,8 +937,20 @@ int z80_op_RRCA(){
     return Z80_STAGE_RESET;
 }
 
+///RRC r; Size: 2; Flags: ???
+int z80_op_RRC_r(){
+    assert(0); ///<-- Unimplemented
+    return Z80_STAGE_RESET;
+}
+
 ///RRD; Size: 2; Flags: ???
 int z80_op_RRD(){
+    assert(0); ///<-- Unimplemented
+    return Z80_STAGE_RESET;
+}
+
+///RR r; Size: 2; Flags: ???
+int z80_op_RR_r(){
     assert(0); ///<-- Unimplemented
     return Z80_STAGE_RESET;
 }
@@ -963,9 +987,33 @@ int z80_op_SBC_r(){
     return Z80_STAGE_RESET;
 }
 
+///SET y, r; Size: 2; Flags: ???
+int z80_op_SET_y_r(){
+    assert(0); ///<-- Unimplemented
+    return Z80_STAGE_RESET;
+}
+
 ///SCF; Size: 1; Flags: C
 int z80_op_SCF(){
     Z80_F = (Z80_F & (Z80_CLRFLAG_HC & Z80_CLRFLAG_ADD)) | Z80_FLAG_CARRY;
+    return Z80_STAGE_RESET;
+}
+
+///SLA r; Size: 2; Flags: ???
+int z80_op_SLA_r(){
+    assert(0); ///<-- Unimplemented
+    return Z80_STAGE_RESET;
+}
+
+///SLL r; Size: 2; Flags: ???
+int z80_op_SLL_r(){
+    assert(0); ///<-- Unimplemented
+    return Z80_STAGE_RESET;
+}
+
+///SRA r; Size: 2; Flags: ???
+int z80_op_SRA_r(){
+    assert(0); ///<-- Unimplemented
     return Z80_STAGE_RESET;
 }
 

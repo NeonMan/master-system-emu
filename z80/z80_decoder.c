@@ -37,17 +37,16 @@ void z80_instruction_unprefix(){
 }
 
 ///Decodes DDCB/FDCB prefix opcodes
-///First two bytes already decoded (0xDDCB/0xFDCB)
 int z80_decode_DDCB_FDCB(){
 
     //Relevant sub-byte divisions, for each of the 4 bytes (max) in an opcode.
     Z80_OPCODE_SUBDIV;
 
-    //DDCB/FDCB always require an extra 2 bytes.
-    if (z80.opcode_index == 3)
+    //DDCB/FDCB are always 4-byte long
+    if (z80.opcode_index < 4)
         return Z80_STAGE_M1;
 
-    //Fourth byte
+    //Decode
     assert(0);
     return Z80_STAGE_RESET;
 }
@@ -58,285 +57,8 @@ int z80_decode_DD_FD(){
     //Relevant sub-byte divisions, for each of the 4 bytes (max) in an opcode.
     Z80_OPCODE_SUBDIV;
 
-    /* From z80.info.
-     *
-     * "If the next byte is a DD, ED or FD prefix, the current DD prefix is 
-     *  ignored (it's equivalent to a NONI) and processing continues with
-     *  the next byte." <-- This part is done in main decoder function.
-     *
-     * "If the next byte is a CB prefix, the instruction will be decoded as
-     *  stated in section 7, DDCB-prefixed opcodes." <-- DDCB_FDCB decoder.
-     *
-     * "If the next opcode makes use of HL, H, L, but not (HL), any occurrence
-     *  of these will be replaced by IX, IXH, IXL respectively. An exception
-     *  of this is EX DE, HL which is unaffected."
-     *
-     *  For this opcodes, overwritting the register LUT may work.
-     *
-     * "If the next opcode makes use of (HL), it will be replaced by (IX+d), 
-     *  where d is a signed 8-bit displacement immediately following the
-     *  opcode (any immediate data, i.e. n, will follow the displacement byte),
-     *  and any other instances of H and L will be unaffected. Therefore, an
-     *  instruction like LD IXH, (IX+d) does not exist, but LD H, (IX+d) does."
-     *
-     *  This instructions must be decoded here.
-     */
-
-    switch (z80.opcode_index){
-    case 1:
-        return Z80_STAGE_M1;
-    case 2:
-        //---Check xxCB prefix---
-        if (z80.opcode[1] == 0xCB) //DDCB/FDCB prefix, read one more byte
-            return Z80_STAGE_M1;
-        switch (z80.opcode[1] & (Z80_OPCODE_X_MASK | Z80_OPCODE_Z_MASK)){
-        case Z80_OPCODE_XZ(0, 0): //
-        case Z80_OPCODE_XZ(0, 7): //
-        case Z80_OPCODE_XZ(3, 0): //
-        case Z80_OPCODE_XZ(3, 2): //
-        case Z80_OPCODE_XZ(3, 4): //
-        case Z80_OPCODE_XZ(3, 7): // Unaffected opcodes
-            z80_instruction_unprefix();      //
-            return z80_instruction_decode(); //<-- Remove prefix, execute as a normal opcode
-
-        case Z80_OPCODE_XZ(0, 1):
-            if (!q[1])                                  /*LD rp[p], nn; Size: 4; Flags: None*/
-                return Z80_STAGE_M1; //+2 bytes
-            else{                                       /*ADD HL, rp[p]; Size:2; Flags: None*/
-                assert(0);
-                return Z80_STAGE_RESET;
-            }
-
-        case Z80_OPCODE_XZ(0, 2):
-            if (p[1] == 2){
-                if (!q[1]){                              /*LD (nn), HL; Size: 4; Flags: None*/
-                    return Z80_STAGE_M1; //+2 bytes
-                }
-                else{                                    /*LD HL, (nn); Size: 4; Flags: None*/
-                    return Z80_STAGE_M1; //+2 bytes
-                }
-            }
-            else{ /*Unprefix and reevaluate*/
-                z80_instruction_unprefix();
-                return z80_instruction_decode();
-            }
-
-        case Z80_OPCODE_XZ(0, 3):
-            if (!q[1]){                                     /*INC rp[p]; Size: 2; Flags: All*/
-                assert(0);
-                return Z80_STAGE_RESET;
-            }
-            else{                                           /*DEC rp[p]; Size: 2; Flags: All*/
-                assert(0);
-                return Z80_STAGE_RESET;
-            }
-
-        case Z80_OPCODE_XZ(0, 4):                            /*INC r[y]; Size: 2; Flags: All*/
-            assert(0);
-            return Z80_STAGE_RESET;
-
-        case Z80_OPCODE_XZ(0, 5):                            /*DEC r[y]; Size: 2; Flags: All*/
-            assert(0);
-            return Z80_STAGE_RESET;
-
-        case Z80_OPCODE_XZ(0, 6):                            /*LD r[y]; Size: 3; Flags: None*/
-            return Z80_STAGE_M1;
-
-        case Z80_OPCODE_XZ(1, 0):                      /**/
-        case Z80_OPCODE_XZ(1, 1):                      /**/
-        case Z80_OPCODE_XZ(1, 2):                      /**/
-        case Z80_OPCODE_XZ(1, 3):                      /**/
-        case Z80_OPCODE_XZ(1, 4):                      /**/
-        case Z80_OPCODE_XZ(1, 5):                      /**/
-        case Z80_OPCODE_XZ(1, 6):                      /**/
-        case Z80_OPCODE_XZ(1, 7):                      /*LD r[y], r[z]; Size: 2; Flags: None*/
-            if ((y[1] == 6) && (z[1] == 6)){ /*HALT*/
-                z80_instruction_unprefix();
-                return z80_instruction_decode();
-            }
-            else{
-                assert(0);
-                return Z80_STAGE_RESET;
-            }
-
-        case Z80_OPCODE_XZ(2, 0):
-        case Z80_OPCODE_XZ(2, 1):
-        case Z80_OPCODE_XZ(2, 2):
-        case Z80_OPCODE_XZ(2, 3):
-        case Z80_OPCODE_XZ(2, 4):
-        case Z80_OPCODE_XZ(2, 5):
-        case Z80_OPCODE_XZ(2, 6):
-        case Z80_OPCODE_XZ(2, 7):
-            /*4,5,6 use H,L,(HL)*/
-            if ((z[1] >= 4) && (z[1] <= 6)){                      /*alu; Size: 2; Flags: All*/
-                assert(0);
-                return Z80_STAGE_RESET;
-            }
-            else{
-                z80_instruction_unprefix();
-                return z80_instruction_decode();
-            }
-
-        case Z80_OPCODE_XZ(3, 1):
-            if (!q[1]){                                   /*POP rp2[p]; Size: 2; Flags: None*/
-                //Otherwise, perform the operation as usual
-                if (z80.read_index == 0){
-                    z80.read_address = Z80_SP;
-                    return Z80_STAGE_M2;
-                }
-                else if (z80.read_index == 1){
-                    ++(z80.read_address);
-                    return Z80_STAGE_M2;
-                }
-                else{
-                    Z80_SP += 2;
-                    if (z80.opcode[0] == 0xDD)
-                        *z80_rp2_ix[p[1]] = *((uint16_t*)(z80.read_buffer)); ///<-- @bug Endianness
-                    else
-                        *z80_rp2_iy[p[1]] = *((uint16_t*)(z80.read_buffer)); ///<-- @bug Endianness
-                    return Z80_STAGE_RESET;
-                }
-            }
-            else{
-                if (p[1] >= 2){                     /*JP HL; LD SP, HL; Size: 2; Flags: None*/
-                    assert(0);
-                    return Z80_STAGE_RESET;
-                }
-                else{
-                    z80_instruction_unprefix();
-                    return z80_instruction_decode();
-                }
-            }
-
-        case Z80_OPCODE_XZ(3, 3):
-            if (y[1] == 4){                              /*EX (SP), HL; Size: 2; Flags: None*/
-                assert(0);
-                return Z80_STAGE_RESET;
-            }
-            else if (y[1] == 5){                           /*EX DE, HL; Size: 2; Flags: None*/
-                assert(0);
-                return Z80_STAGE_RESET;
-            }
-            else{
-                z80_instruction_unprefix();
-                return z80_instruction_decode();
-            }
-
-        case Z80_OPCODE_XZ(3, 5):
-            if (!q[1]){
-                if (p[1] == 2){                          /*PUSH aX; Size: 2; Flags: None*/
-                    if (z80.write_index == 0){
-                        z80.write_address = Z80_SP - 2;
-                        *((uint16_t*)z80.write_buffer) = Z80_INDIRECT(z80.opcode[0]); ///<-- @bug Endianness
-                        return Z80_STAGE_M3;
-                    }
-                    else if (z80.write_index == 1){
-                        ++ z80.write_address;
-                        return Z80_STAGE_M3;
-                    }
-                    else{
-                        Z80_SP -= 2;
-                        return Z80_STAGE_RESET;
-                    }
-                }
-                else{
-                    z80_instruction_unprefix();
-                    return z80_instruction_decode();
-                }
-            }
-            else{                                            /*CALL nn; Size: 4; Flags: None*/
-                return Z80_STAGE_M1; //+2 bytes
-            }
-
-        case Z80_OPCODE_XZ(3, 6):                     /*alu + immediate; Size: 3; Flags: All*/
-            return Z80_STAGE_M1; //+1 bytes
-        }
-        assert(0); /*unimplemented*/
-        return Z80_STAGE_RESET;
-
-    case 3:
-        //---Check xxCB prefix---
-        if (z80.opcode[1] == 0xCB) //DDCB/FDCB prefix, call its own decoder.
-            return z80_decode_DDCB_FDCB();
-
-        switch (z80.opcode[1] & (Z80_OPCODE_X_MASK | Z80_OPCODE_Z_MASK)){
-        case Z80_OPCODE_XZ(0, 1):
-            if (!q[1]){                                  /*LD rp[p], nn; Size: 4; Flags: None*/
-                return Z80_STAGE_M1; //+1 bytes
-            }
-            else{
-                assert(0);
-                return Z80_STAGE_RESET;
-            }
-
-        case Z80_OPCODE_XZ(0, 2):
-            if (p[1] == 2){
-                if (!q[1]){                              /*LD (nn), HL; Size: 4; Flags: None*/
-                    return Z80_STAGE_M1; //+1 bytes
-                }
-                else{                                    /*LD HL, (nn); Size: 4; Flags: None*/
-                    return Z80_STAGE_M1; //+1 bytes
-                }
-            }
-            else{ 
-                assert(0);
-                return Z80_STAGE_RESET;
-            }
-
-        case Z80_OPCODE_XZ(0, 6):                            /*LD r[y]; Size: 3; Flags: None*/
-            assert(0);
-            return Z80_STAGE_RESET;
-
-        case Z80_OPCODE_XZ(3, 5):
-            if (q[1]){                                       /*CALL nn; Size: 4; Flags: None*/
-                return Z80_STAGE_M1; //+1 bytes
-            }
-            assert(0);
-            return Z80_STAGE_RESET;
-
-        case Z80_OPCODE_XZ(3, 6):                     /*alu + immediate; Size: 3; Flags: All*/
-            assert(0);
-            return Z80_STAGE_RESET;
-        }
-        assert(0); /*unimplemented*/
-        return Z80_STAGE_RESET;
-
-    case 4:
-        switch (z80.opcode[1] & (Z80_OPCODE_X_MASK | Z80_OPCODE_Z_MASK)){
-        case Z80_OPCODE_XZ(0, 1):
-            if (!q[1]){                                  /*LD rp[p], nn; Size: 4; Flags: None*/
-                assert(0);
-                return Z80_STAGE_RESET;
-            }
-            else{
-                assert(0);
-                return Z80_STAGE_RESET;
-            }
-
-        case Z80_OPCODE_XZ(0, 2):
-            if (p[1] == 2){
-                if (!q[1]){                              /*LD (nn), HL; Size: 4; Flags: None*/
-                    assert(0);
-                    return Z80_STAGE_RESET;
-                }
-                else{                                    /*LD HL, (nn); Size: 4; Flags: None*/
-                    assert(0);
-                    return Z80_STAGE_RESET;
-                }
-            }
-            else{
-                assert(0);
-                return Z80_STAGE_RESET;
-            }
-        default:
-            assert(0); /*unimplemented*/
-            return Z80_STAGE_RESET;
-        }
-
-    default:
-        assert(0); /*unimplemented*/
-        return Z80_STAGE_RESET;
-    }
+    assert(0); ///<-- Unimplemented
+    return Z80_STAGE_RESET;
 }
 
 ///Decodes the CB-prefixed opcodes.
@@ -345,116 +67,29 @@ int z80_decode_CB(){
     //Relevant sub-byte divisions, for each of the 4 bytes (max) in an opcode.
     Z80_OPCODE_SUBDIV;
 
-    switch (z80.opcode_index){
-    case 1:
+    //If only the prefix has been decoded, fetch one more byte
+    if (z80.opcode_index == 1)
         return Z80_STAGE_M1;
-    //Second opcode byte
-    case 2:
-        switch (x[1]){
-        case 0:                                     /*rotation[y] r[z]; Size: 2; Flags: ?*/
-            switch (z80.opcode[1] & (Z80_OPCODE_Y_MASK |Z80_OPCODE_Z_MASK)){
-            case Z80_OPCODE_YZ(0, 0): //
-            case Z80_OPCODE_YZ(0, 1): //
-            case Z80_OPCODE_YZ(0, 2): //
-            case Z80_OPCODE_YZ(0, 3): //
-            case Z80_OPCODE_YZ(0, 4): //
-            case Z80_OPCODE_YZ(0, 5): //
-            case Z80_OPCODE_YZ(0, 6): //
-            case Z80_OPCODE_YZ(0, 7): // RLC r[z]
-                assert(0); //Unimplemented
-                return Z80_STAGE_RESET;
 
-            case Z80_OPCODE_YZ(1, 0): //
-            case Z80_OPCODE_YZ(1, 1): //
-            case Z80_OPCODE_YZ(1, 2): //
-            case Z80_OPCODE_YZ(1, 3): //
-            case Z80_OPCODE_YZ(1, 4): //
-            case Z80_OPCODE_YZ(1, 5): //
-            case Z80_OPCODE_YZ(1, 6): //
-            case Z80_OPCODE_YZ(1, 7): // RRC r[z]
-                assert(0); //Unimplemented
-                return Z80_STAGE_RESET;
+    //Decode X==[1,3]
+    switch (z80.opcode[1] & Z80_OPCODE_X_MASK){
+    case Z80_OPCODE_X(1): return z80_op_BIT_y_r();                      /*BIT y, r (size: 2)*/
+    case Z80_OPCODE_X(2): return z80_op_RES_y_r();                      /*RES y, r (size: 2)*/
+    case Z80_OPCODE_X(3): return z80_op_SET_y_r();                      /*SET y, r (size: 2)*/
+    }
 
-            case Z80_OPCODE_YZ(2, 0): //
-            case Z80_OPCODE_YZ(2, 1): //
-            case Z80_OPCODE_YZ(2, 2): //
-            case Z80_OPCODE_YZ(2, 3): //
-            case Z80_OPCODE_YZ(2, 4): //
-            case Z80_OPCODE_YZ(2, 5): //
-            case Z80_OPCODE_YZ(2, 6): //
-            case Z80_OPCODE_YZ(2, 7): // RL r[z]
-                assert(0); //Unimplemented
-                return Z80_STAGE_RESET;
-
-            case Z80_OPCODE_YZ(3, 0): //
-            case Z80_OPCODE_YZ(3, 1): //
-            case Z80_OPCODE_YZ(3, 2): //
-            case Z80_OPCODE_YZ(3, 3): //
-            case Z80_OPCODE_YZ(3, 4): //
-            case Z80_OPCODE_YZ(3, 5): //
-            case Z80_OPCODE_YZ(3, 6): //
-            case Z80_OPCODE_YZ(3, 7): // RR r[z]
-                assert(0); //Unimplemented
-                return Z80_STAGE_RESET;
-
-            case Z80_OPCODE_YZ(4, 0): //
-            case Z80_OPCODE_YZ(4, 1): //
-            case Z80_OPCODE_YZ(4, 2): //
-            case Z80_OPCODE_YZ(4, 3): //
-            case Z80_OPCODE_YZ(4, 4): //
-            case Z80_OPCODE_YZ(4, 5): //
-            case Z80_OPCODE_YZ(4, 6): //
-            case Z80_OPCODE_YZ(4, 7): // SLA r[z]
-                assert(0); //Unimplemented
-                return Z80_STAGE_RESET;
-
-            case Z80_OPCODE_YZ(5, 0): //
-            case Z80_OPCODE_YZ(5, 1): //
-            case Z80_OPCODE_YZ(5, 2): //
-            case Z80_OPCODE_YZ(5, 3): //
-            case Z80_OPCODE_YZ(5, 4): //
-            case Z80_OPCODE_YZ(5, 5): //
-            case Z80_OPCODE_YZ(5, 6): //
-            case Z80_OPCODE_YZ(5, 7): // SRA r[z]
-                assert(0); //Unimplemented
-                return Z80_STAGE_RESET;
-
-            case Z80_OPCODE_YZ(6, 0): //
-            case Z80_OPCODE_YZ(6, 1): //
-            case Z80_OPCODE_YZ(6, 2): //
-            case Z80_OPCODE_YZ(6, 3): //
-            case Z80_OPCODE_YZ(6, 4): //
-            case Z80_OPCODE_YZ(6, 5): //
-            case Z80_OPCODE_YZ(6, 6): //
-            case Z80_OPCODE_YZ(6, 7): // SLL r[z]
-                assert(0); //Unimplemented
-                return Z80_STAGE_RESET;
-
-            case Z80_OPCODE_YZ(7, 0): //
-            case Z80_OPCODE_YZ(7, 1): //
-            case Z80_OPCODE_YZ(7, 2): //
-            case Z80_OPCODE_YZ(7, 3): //
-            case Z80_OPCODE_YZ(7, 4): //
-            case Z80_OPCODE_YZ(7, 5): //
-            case Z80_OPCODE_YZ(7, 6): //
-            case Z80_OPCODE_YZ(7, 7): // SRL r[z]
-                return z80_op_SRL_r();
-
-            default:
-                assert(0); //Should never get here
-            }
-        case 1:                                /*BIT y,r[z]; Size: 2; Flags: _S,Z,H,_P,N*/
-            return z80_op_BIT_y_r();
-        case 2:                                     /*RES y,r[z]; Size: 2; Flags: None*/
-            return z80_op_RES_y_r();
-        case 3:                                     /*SET y,r[z]; Size: 2; Flags: None*/
-            assert(0); /*Unimplemented*/
-            return Z80_STAGE_RESET;
-        }
-
-    //No more opcode bytes
+    //Decode X==0 (select by y)
+    switch (z80.opcode[1] & Z80_OPCODE_Y_MASK){
+    case Z80_OPCODE_Y(0): return z80_op_RLC_r();
+    case Z80_OPCODE_Y(1): return z80_op_RRC_r();
+    case Z80_OPCODE_Y(2): return z80_op_RL_r();
+    case Z80_OPCODE_Y(3): return z80_op_RR_r();
+    case Z80_OPCODE_Y(4): return z80_op_SLA_r();
+    case Z80_OPCODE_Y(5): return z80_op_SRA_r();
+    case Z80_OPCODE_Y(6): return z80_op_SLL_r();
+    case Z80_OPCODE_Y(7): return z80_op_SRL_r();
     default:
-        assert(0);
+        assert(0); ///<-- Will never get here
         return Z80_STAGE_RESET;
     }
 }
