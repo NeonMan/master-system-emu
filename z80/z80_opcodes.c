@@ -173,6 +173,30 @@ int z80_op_CCF(){
     return Z80_STAGE_RESET;
 }
 
+///CPD; Size: 2; Flags: ???
+int z80_op_CPD(){
+    assert(0); ///<-- Unimplemented
+    return Z80_STAGE_RESET;
+}
+
+///CPI; Size: 2; Flags: ???
+int z80_op_CPI(){
+    assert(0); ///<-- Unimplemented
+    return Z80_STAGE_RESET;
+}
+
+///CPDR; Size: 2; Flags: ???
+int z80_op_CPDR(){
+    assert(0); ///<-- Unimplemented
+    return Z80_STAGE_RESET;
+}
+
+///CPIR; Size: 2; Flags: ???
+int z80_op_CPIR(){
+    assert(0); ///<-- Unimplemented
+    return Z80_STAGE_RESET;
+}
+
 ///CP n; Size: 2; Flags: All
 int z80_op_CP_n(){
     Z80_F = 0;
@@ -393,6 +417,30 @@ int z80_op_INC_r(){
 int z80_op_INC_rp(){
     Z80_OPCODE_SUBDIV;
     ++(*(z80_rp[p[0]]));
+    return Z80_STAGE_RESET;
+}
+
+///IND; Size: 2; Flags: ???
+int z80_op_IND(){
+    assert(0); ///<-- Unimplemented
+    return Z80_STAGE_RESET;
+}
+
+///INDR; Size: 2; Flags: ???
+int z80_op_INDR(){
+    assert(0); ///<-- Unimplemented
+    return Z80_STAGE_RESET;
+}
+
+///INI; Size: 2; Flags: ???
+int z80_op_INI(){
+    assert(0); ///<-- Unimplemented
+    return Z80_STAGE_RESET;
+}
+
+///INIR; Size: 2; Flags: ???
+int z80_op_INIR(){
+    assert(0); ///<-- Unimplemented
     return Z80_STAGE_RESET;
 }
 
@@ -653,6 +701,24 @@ int z80_op_LD_nnp_HL(){
     }
 }
 
+///LDD; Size: 2; Flags: ???
+int z80_op_LDD(){
+    assert(0); ///<-- Unimplemented
+    return Z80_STAGE_RESET;
+}
+
+///LDI; Size: 2; Flags: ???
+int z80_op_LDI(){
+    assert(0); ///<-- Unimplemented
+    return Z80_STAGE_RESET;
+}
+
+///LDDR; Size: 2; Flags: ???
+int z80_op_LDDR(){
+    assert(0); ///<-- Unimplemented
+    return Z80_STAGE_RESET;
+}
+
 ///LDIR; Size: 2; Flags: H,P,N (cleared)
 int z80_op_LDIR(){
     //(DE) <-- (HL); ++DE; ++HL; --BC; BC? repeat : end;
@@ -729,6 +795,12 @@ int z80_op_OR_r(){
     return Z80_STAGE_RESET;
 }
 
+///OTDR; Size: 2; Flags: ???
+int z80_op_OTDR(){
+    assert(0); ///<-- Unimplemented
+    return Z80_STAGE_RESET;
+}
+
 ///OTIR; Size: 2; Flags: Z,N
 int z80_op_OTIR(){
     //(C)<-(HL), B<-B – 1, HL<-HL + 1; B? repeat : end
@@ -782,6 +854,18 @@ int z80_op_OUT_Cp_0(){
 
 ///OUT (C), r; Size: 2; Flags: ???
 int z80_op_OUT_Cp_r(){
+    assert(0); ///<-- Unimplemented
+    return Z80_STAGE_RESET;
+}
+
+///OUTD; Size: 2; Flags: ???
+int z80_op_OUTD(){
+    assert(0); ///<-- Unimplemented
+    return Z80_STAGE_RESET;
+}
+
+///OUTI; Size: 2; Flags: ???
+int z80_op_OUTI(){
     assert(0); ///<-- Unimplemented
     return Z80_STAGE_RESET;
 }
