@@ -585,7 +585,22 @@ int z80_op_LD_DEp_A(){
 
 ///LD (nn), rp; Size:4; Flags: ??
 int z80_op_LD_nnp_rp(){
-    assert(0); ///<-- Unimplemented
+    Z80_OPCODE_SUBDIV;
+    
+    if (z80.write_index == 0){
+        //First write
+        *((uint16_t*)z80.write_buffer) = *((uint16_t*)(z80_rp[p[1]]));
+        z80.write_address = (z80.opcode[2]) + (((uint16_t) z80.opcode[3]) << 8);
+        return Z80_STAGE_M3;
+    }
+    else if (z80.write_index == 1){
+        ++(z80.write_address);
+        return Z80_STAGE_M3;
+    }
+    else{
+        return Z80_STAGE_RESET;
+    }
+    
     return Z80_STAGE_RESET;
 }
 
