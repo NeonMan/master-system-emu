@@ -59,6 +59,8 @@ int z80_decode_DD_FD(){
         return Z80_STAGE_M1;
     //DDCB/FDCB opcodes should *not* be decoded here
     assert(z80.opcode[1] != 0xCB);
+    //DDED/FDED are invalid prefixes
+    assert(z80.opcode[1] != 0xED);
 
     //A bunch of opcodes are unaffected by prefixing
     //In that case, we strip the prefix and call

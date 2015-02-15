@@ -1288,4 +1288,3 @@ int z80_op_XOR_r(){
     Z80_F |= Z80_SETFLAG_PARITY(Z80_A);
     return Z80_STAGE_RESET;
 }
-
