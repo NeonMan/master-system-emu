@@ -16,7 +16,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 
-} {selected in_source in_header
+} {in_source in_header
 } 
 
 declblock {\#if 1} {open public after {\#endif}
@@ -46,7 +46,7 @@ class DialogZ80 {
   } {
     Fl_Window windowDialog {
       label z80 open
-      xywh {397 209 651 315} type Double align 80 visible
+      xywh {360 174 676 307} type Double align 80 visible
     } {
       Fl_Group {} {
         label Registers
@@ -239,39 +239,39 @@ class DialogZ80 {
       }
       Fl_Group {} {
         label Flags open
-        xywh {175 195 150 105}
+        private xywh {175 195 150 105}
       } {
         Fl_Check_Button checkCarry {
           label Carry
-          xywh {225 195 25 25} down_box DOWN_BOX align 4
+          private xywh {225 195 25 25} down_box DOWN_BOX align 4
         }
         Fl_Check_Button checkAdd {
           label Add
-          xywh {225 220 25 25} down_box DOWN_BOX align 4
+          private xywh {225 220 25 25} down_box DOWN_BOX align 4
         }
         Fl_Check_Button checkParity {
           label Parity
-          xywh {225 245 25 25} down_box DOWN_BOX align 4
+          private xywh {225 245 25 25} down_box DOWN_BOX align 4
         }
         Fl_Check_Button checkUnk3 {
           label {Unk. (3)}
-          xywh {225 270 25 25} down_box DOWN_BOX align 4
+          private xywh {225 270 25 25} down_box DOWN_BOX align 4
         }
         Fl_Check_Button checkHCarry {
           label HCarry
-          xywh {300 195 25 25} down_box DOWN_BOX align 4
+          private xywh {300 195 25 25} down_box DOWN_BOX align 4
         }
         Fl_Check_Button checkUnk5 {
           label {Unk. (5)}
-          xywh {300 220 25 25} down_box DOWN_BOX align 4
+          private xywh {300 220 25 25} down_box DOWN_BOX align 4
         }
         Fl_Check_Button checkZero {
           label Zero
-          xywh {300 245 25 25} down_box DOWN_BOX align 4
+          private xywh {300 245 25 25} down_box DOWN_BOX align 4
         }
         Fl_Check_Button checkSign {
           label Sign
-          xywh {300 270 25 25} down_box DOWN_BOX align 4
+          private xywh {300 270 25 25} down_box DOWN_BOX align 4
         }
       }
     }
@@ -299,7 +299,8 @@ this->textOpcode->value("NOP ?");
 this->textStage->value("M1 ?");
 //Buttons
 this->buttonRunning->value(1);
-// --- END Initial values ---} {}
+// --- END Initial values ---} {selected
+    }
   }
   Function {set_running_ptr(uint32_t* p)} {
     comment {Sets a pointer to the clock on/of var.} return_type void
