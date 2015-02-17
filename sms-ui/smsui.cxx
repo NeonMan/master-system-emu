@@ -71,13 +71,17 @@ int emu_init(){
     //Init emulator modules
     vdp_init();
     z80_init(sdsc_write, sdsc_control); 
+    //Init RAM
+    uint8_t* ram_ptr = (uint8_t*) ramdbg_get_mem();
+    for (int i = 0; i < RAM_SIZE; i++)
+        *ram_ptr = i & 0xFF;
 
     //Load ROM
     const char* f_path = NULL;
     Fl_Native_File_Chooser fnfc;
     fnfc.title("Open ROM");
     fnfc.type(Fl_Native_File_Chooser::BROWSE_FILE);
-    fnfc.filter("Mastersystem ROM\t*.{sms,bin,sg}");
+    fnfc.filter("Supported formats\t*.{bin,sg,sms}\nMastersystem ROM\t*.{sms,bin}\nSG 1000 ROM\t*.{sg,bin}");
     fnfc.directory(".");
     switch (fnfc.show()){
     case -1: 
@@ -147,9 +151,6 @@ void emu_pc_breakpoint_cb(uint16_t address){
 }
 
 // --- Emulator ---
-
-
-
 int main(int argc, char** argv){
     emu_init();
     //Create dialogs

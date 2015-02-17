@@ -138,11 +138,35 @@ int z80_decode_DD_FD(){
     case Z80_OPCODE_XYZ(3, 7, 4):                                /*CALL cc, nn (size: 3)*/
     case Z80_OPCODE_XPQZ(3, 3, 1, 6):                                  /*CP  n (size: 2)*/
     case Z80_OPCODE_XYZ(3, 7, 7):                                      /*RST y (size: 1)*/
+        assert(0); ///<-- @note Replace with a waring. No sane program *should* get here.
         z80_instruction_unprefix(); //<-- Remove prefix.
         return z80_instruction_decode(); //<-- Decode like a normal opcode.
     }
 
     //Instructions using 'r', 'rp' or 'HL' will be affected.
+    //more specifically, any use of HL, H, L and (HL) will be changed
+    //to IXH, IXL, IX, and (IX+d); or to IYH, IYL, IY and (IY+d).
+    //Otherwise, it executes as an unprefixed opcode. No 'sane' assembler
+    //would do such a thing even if the z80 itself will accept this kind 
+    //of opcodes so every execution of that kind of opcode should raise
+    //a warning of some sort.
+    //
+    //Opcode parameters that *will* be affected:
+    //  * rp[2]  (resolves HL)
+    //  * rp2[2] (   "     HL)
+    //  * r[4]   (   "     H)
+    //  * r[5]   (   "     L)
+    //  * r[6]   (   "     (HL))
+    //
+    // Opcodes with implicit use of HL except `EX DE, HL` will be changed
+    //  * LD (nn), HL
+    //  * LD HL, (nn)
+    //  * JP HL
+    //  * LD SP, HL
+    //  * EX (SP), HL
+    //  * SBC HL, rp
+    //  * ADC HL, rp
+    //  * EXX [?]
     switch (z80.opcode[1]){
     default:
         assert(0); ///<-- Unimplemented
