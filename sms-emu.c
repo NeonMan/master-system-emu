@@ -99,7 +99,6 @@ int emu_init(){
     }
     size_t read_bytes = fread(full_rom, 1, ROM_MAX_SIZE, in_f);
     char read_bytes_s[32];
-    char num_str[32];
     sprintf(read_bytes_s, "%lu", read_bytes);
     emu_log("ROM Loaded. Size:", EMU_LOG_DEBUG0);
     emu_log(read_bytes_s, EMU_LOG_DEBUG0);
