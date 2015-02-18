@@ -168,14 +168,14 @@ int z80_decode_DD_FD(){
         case Z80_OPCODE_XYZ(2, 6, 5): z80_op_OR_r(1);                       /*OR r (Size: 2)*/
         case Z80_OPCODE_XYZ(2, 6, 6): return Z80_STAGE_M1;             /*OR (Ix+d) (Size: 3)*/
         case Z80_OPCODE_XYZ(2, 7, 4): /*fall-through*/
-        case Z80_OPCODE_XYZ(2, 7, 5): z80_op_CP_r(1);                        /*CP r (Size: 2)*/
+        case Z80_OPCODE_XYZ(2, 7, 5): z80_op_CP_r(1);                       /*CP r (Size: 2)*/
         case Z80_OPCODE_XYZ(2, 7, 6): return Z80_STAGE_M1;             /*CP (Ix+d) (Size: 3)*/
-        case Z80_OPCODE_XPQZ(3, 2, 0, 1): return z80_op_POP_rp2(1);      /*POP Ix (size: 2)*/
+        case Z80_OPCODE_XPQZ(3, 2, 0, 1): return z80_op_POP_rp2(1);       /*POP Ix (size: 2)*/
         case Z80_OPCODE_XPQZ(3, 1, 1, 1): assert(0);                     /*EXX [?] (size: 2)*/
         case Z80_OPCODE_XPQZ(3, 2, 1, 1): assert(0);                       /*JP HL (size: 2)*/
         case Z80_OPCODE_XPQZ(3, 3, 1, 1): assert(0);                   /*LD SP, Ix (size: 2)*/
         case Z80_OPCODE_XYZ(3, 4, 3): assert(0);                     /*EX (SP), Ix (size: 2)*/
-        case Z80_OPCODE_XPQZ(3, 2, 0, 5): return z80_op_PUSH_rp2(1);    /*PUSH Ix (size: 2)*/
+        case Z80_OPCODE_XPQZ(3, 2, 0, 5): return z80_op_PUSH_rp2(1);     /*PUSH Ix (size: 2)*/
 
         default:
             assert(0); ///<-- @note Replace with a waring. No sane program *should* get here.
@@ -355,25 +355,25 @@ int z80_decode_ED(){
         case Z80_OPCODE_XYZ(1, 6, 7): /*fall-through*/
         case Z80_OPCODE_XYZ(1, 7, 7): return z80_op_NOP();                   /*NOP (size: 2)*/
 
-        case Z80_OPCODE_XYZ(2, 4, 0): return z80_op_LDI();                   /*LDI (size: 2)*/
-        case Z80_OPCODE_XYZ(2, 4, 1): return z80_op_CPI();                   /*CPI (size: 2)*/
-        case Z80_OPCODE_XYZ(2, 4, 2): return z80_op_INI();                   /*INI (size: 2)*/
-        case Z80_OPCODE_XYZ(2, 4, 3): return z80_op_OUTI();                 /*OUTI (size: 2)*/
+        case Z80_OPCODE_XYZ(2, 4, 0): return z80_op_LDI(0);                  /*LDI (size: 2)*/
+        case Z80_OPCODE_XYZ(2, 4, 1): return z80_op_CPI(0);                  /*CPI (size: 2)*/
+        case Z80_OPCODE_XYZ(2, 4, 2): return z80_op_INI(0);                  /*INI (size: 2)*/
+        case Z80_OPCODE_XYZ(2, 4, 3): return z80_op_OUTI(0);                /*OUTI (size: 2)*/
 
-        case Z80_OPCODE_XYZ(2, 5, 0): return z80_op_LDD();                   /*LDD (size: 2)*/
-        case Z80_OPCODE_XYZ(2, 5, 1): return z80_op_CPD();                   /*CPD (size: 2)*/
-        case Z80_OPCODE_XYZ(2, 5, 2): return z80_op_IND();                   /*IND (size: 2)*/
-        case Z80_OPCODE_XYZ(2, 5, 3): return z80_op_OUTD();                 /*OUTD (size: 2)*/
+        case Z80_OPCODE_XYZ(2, 5, 0): return z80_op_LDD(0);                  /*LDD (size: 2)*/
+        case Z80_OPCODE_XYZ(2, 5, 1): return z80_op_CPD(0);                  /*CPD (size: 2)*/
+        case Z80_OPCODE_XYZ(2, 5, 2): return z80_op_IND(0);                  /*IND (size: 2)*/
+        case Z80_OPCODE_XYZ(2, 5, 3): return z80_op_OUTD(0);                /*OUTD (size: 2)*/
 
-        case Z80_OPCODE_XYZ(2, 6, 0): return z80_op_LDIR();                 /*LDIR (size: 2)*/
-        case Z80_OPCODE_XYZ(2, 6, 1): return z80_op_CPIR();                 /*CPIR (size: 2)*/
-        case Z80_OPCODE_XYZ(2, 6, 2): return z80_op_INIR();                 /*INIR (size: 2)*/
-        case Z80_OPCODE_XYZ(2, 6, 3): return z80_op_OTIR();                 /*OTIR (size: 2)*/
+        case Z80_OPCODE_XYZ(2, 6, 0): return z80_op_LDIR(0);                /*LDIR (size: 2)*/
+        case Z80_OPCODE_XYZ(2, 6, 1): return z80_op_CPIR(0);                /*CPIR (size: 2)*/
+        case Z80_OPCODE_XYZ(2, 6, 2): return z80_op_INIR(0);                /*INIR (size: 2)*/
+        case Z80_OPCODE_XYZ(2, 6, 3): return z80_op_OTIR(0);                /*OTIR (size: 2)*/
 
-        case Z80_OPCODE_XYZ(2, 7, 0): return z80_op_LDDR();                 /*LDDR (size: 2)*/
-        case Z80_OPCODE_XYZ(2, 7, 1): return z80_op_CPDR();                 /*CPDR (size: 2)*/
-        case Z80_OPCODE_XYZ(2, 7, 2): return z80_op_INDR();                 /*INDR (size: 2)*/
-        case Z80_OPCODE_XYZ(2, 7, 3): return z80_op_OTDR();                 /*OTDR (size: 2)*/
+        case Z80_OPCODE_XYZ(2, 7, 0): return z80_op_LDDR(0);                /*LDDR (size: 2)*/
+        case Z80_OPCODE_XYZ(2, 7, 1): return z80_op_CPDR(0);                /*CPDR (size: 2)*/
+        case Z80_OPCODE_XYZ(2, 7, 2): return z80_op_INDR(0);                /*INDR (size: 2)*/
+        case Z80_OPCODE_XYZ(2, 7, 3): return z80_op_OTDR(0);                /*OTDR (size: 2)*/
         default:
             assert(0); ///<-- Should never get here
             return Z80_STAGE_RESET;
