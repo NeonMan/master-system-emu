@@ -34,14 +34,16 @@ int z80_op_ADC_HL_rp(){
 }
 
 ///ADC r; Size: 1; Flags: ???
-int z80_op_ADC_r(){
+int z80_op_ADC_r(uint8_t prefixed){
+    assert(prefixed == 0); //<-- Prefix unimplemented
     assert(z80.opcode_index == 1); 
     assert(0); ///<-- Unimplemented
     return Z80_STAGE_RESET;
 }
 
 ///ADD HL, rp[p] ; Size: 1; Flags N,C
-int z80_op_ADD_HL_rp(){
+int z80_op_ADD_HL_rp(uint8_t prefixed){
+    assert(prefixed == 0); //<-- Prefix unimplemented
     assert(z80.opcode_index == 1); 
     Z80_OPCODE_SUBDIV;
     const uint16_t old_hl = Z80_HL;
@@ -68,7 +70,8 @@ int z80_op_ADD_n(){
 }
 
 ///ADD r; Size: 1; Flags:ALL
-int z80_op_ADD_r(){
+int z80_op_ADD_r(uint8_t prefixed){
+    assert(prefixed == 0); //<-- Prefix unimplemented
     assert(z80.opcode_index == 1);
     assert(0);
     return Z80_STAGE_RESET;
@@ -88,7 +91,8 @@ int z80_op_AND_n(){
 }
 
 ///AND r[z]; Size: 1; Flags: All
-int z80_op_AND_r(){
+int z80_op_AND_r(uint8_t prefixed){
+    assert(prefixed == 0); //<-- Prefix unimplemented
     assert(z80.opcode_index == 1);
     Z80_OPCODE_SUBDIV;
     //Request M2 read if required
@@ -227,7 +231,8 @@ int z80_op_CP_n(){
 }
 
 ///CP r[z]; Size: 1; Flags: All
-int z80_op_CP_r(){
+int z80_op_CP_r(uint8_t prefixed){
+    assert(prefixed == 0); //<-- Prefix unimplemented
     assert(z80.opcode_index == 1);
     Z80_OPCODE_SUBDIV;
     //Request M2 read if required
@@ -269,7 +274,8 @@ int z80_op_DAA(){
 
 ///DEC(r[y]); Size:1; Flags: S,Z,H,P,N
 ///@bug will crash on (HL)
-int z80_op_DEC_r(){
+int z80_op_DEC_r(uint8_t prefixed){
+    assert(prefixed == 0); //<-- Prefix unimplemented
     assert(z80.opcode_index == 1);
     Z80_OPCODE_SUBDIV;
     const uint8_t old_r = *z80_r[y[0]];
@@ -286,7 +292,8 @@ int z80_op_DEC_r(){
 }
 
 ///DEC(rp[p]); Size: 1; Flags: None
-int z80_op_DEC_rp(){
+int z80_op_DEC_rp(uint8_t prefixed){
+    assert(prefixed == 0); //<-- Prefix unimplemented
     assert(z80.opcode_index == 1);
     Z80_OPCODE_SUBDIV;
     --(*(z80_rp[p[0]]));
@@ -406,7 +413,8 @@ int z80_op_IN_r_Cp(){
 }
 
 ///INC (HL); Size: 1; Flags: All 
-int z80_op_INC_HLp(){
+int z80_op_INC_HLp(uint8_t prefixed){
+    assert(prefixed == 0); //<-- Prefix unimplemented
     assert(z80.opcode_index == 1);
     //Memory read
     if (z80.read_index == 0){
@@ -433,11 +441,12 @@ int z80_op_INC_HLp(){
 }
 
 ///INC r; Size: 1; Flags: All
-int z80_op_INC_r(){
+int z80_op_INC_r(uint8_t prefixed){
+    assert(prefixed == 0); //<-- Prefix unimplemented
     assert(z80.opcode_index == 1);
     Z80_OPCODE_SUBDIV;
     //If target is (HL)
-    if (!(z80_r[y[0]])) return z80_op_INC_HLp();
+    if (!(z80_r[y[0]])) return z80_op_INC_HLp(prefixed);
     
     uint8_t old_r = *z80_r[y[0]];
     ++(*(z80_r[y[0]]));
@@ -453,7 +462,8 @@ int z80_op_INC_r(){
 }
 
 ///INC(rp[p]); Size: 1; Flags: None
-int z80_op_INC_rp(){
+int z80_op_INC_rp(uint8_t prefixed){
+    assert(prefixed == 0); //<-- Prefix unimplemented
     assert(z80.opcode_index == 1);
     Z80_OPCODE_SUBDIV;
     ++(*(z80_rp[p[0]]));
@@ -642,7 +652,8 @@ int z80_op_LD_DEp_A(){
 }
 
 ///LD (nn), rp; Size:4; Flags: ??
-int z80_op_LD_nnp_rp(){
+int z80_op_LD_nnp_rp(uint8_t prefixed){
+    assert(prefixed == 0); //<-- Unimplemented prefixed opcodes
     assert(z80.opcode_index == 4);
     Z80_OPCODE_SUBDIV;
     
@@ -671,7 +682,8 @@ int z80_op_LD_R_A(){
 }
 
 ///LD r, n; Size: 2; Flags: None
-int z80_op_LD_r_n(){
+int z80_op_LD_r_n(uint8_t prefixed){
+    assert(prefixed == 0); //<-- Unimplemented prefixed opcodes
     assert(z80.opcode_index == 2);
     //If target is HL, perform write
     Z80_OPCODE_SUBDIV;
@@ -693,7 +705,8 @@ int z80_op_LD_r_n(){
 }
 
 ///LD r[y],r[z]; Size: 1; Flags: None
-int z80_op_LD_r_r(){
+int z80_op_LD_r_r(uint8_t prefixed){
+    assert(prefixed == 0); //<-- Unimplemented prefixed opcodes
     assert(z80.opcode_index == 1);
     Z80_OPCODE_SUBDIV;
     //If source is (HL), target is a regular reg.
@@ -728,7 +741,8 @@ int z80_op_LD_r_r(){
 }
 
 ///LD rp[n], nn; Size: 3; Flags: None
-int z80_op_LD_rp_nn(){
+int z80_op_LD_rp_nn(uint8_t prefixed){
+    assert(prefixed == 0); //<-- Unimplemented prefixed opcodes
     assert(z80.opcode_index == 3);
     //nn is stored in the opcode's bytes 1,2.
     Z80_OPCODE_SUBDIV;
@@ -861,7 +875,8 @@ int z80_op_OR_n(){
 }
 
 ///OR r[z]; Size: 1; Flags: All
-int z80_op_OR_r(){
+int z80_op_OR_r(uint8_t prefixed){
+    assert(prefixed == 0); //<-- Prefix unimplemented
     assert(z80.opcode_index == 1);
     Z80_OPCODE_SUBDIV;
     //Request M2 read if required
@@ -968,7 +983,8 @@ int z80_op_OUTI(){
 }
 
 ///POP rp2[p]; Size: 1; Flags: None
-int z80_op_POP_rp2(){
+int z80_op_POP_rp2(uint8_t prefixed){
+    assert(prefixed == 0); //<-- Unimplemented prefixed opcodes
     assert(z80.opcode_index == 1);
     Z80_OPCODE_SUBDIV;
     //Read stack
@@ -989,7 +1005,8 @@ int z80_op_POP_rp2(){
 }
 
 ///PUSH rp2[p]; Size: 1; Flags: None
-int z80_op_PUSH_rp2(){
+int z80_op_PUSH_rp2(uint8_t prefixed){
+    assert(prefixed == 0); //<-- Unimplemented prefixed opcodes
     assert(z80.opcode_index == 1);
     Z80_OPCODE_SUBDIV;
     //Prepare a write if needed
@@ -1094,7 +1111,8 @@ int z80_op_RLCA(){
 }
 
 ///RLC r; Size: 2; Flags: ???
-int z80_op_RLC_r(){
+int z80_op_RLC_r(uint8_t prefixed){
+    assert(prefixed == 0); //<-- Unimplemented prefixed opcodes
     assert(z80.opcode_index == 2);
     assert(0); ///<-- Unimplemented
     return Z80_STAGE_RESET;
@@ -1108,7 +1126,8 @@ int z80_op_RLD(){
 }
 
 ///RL r; Size: 2; Flags: ???
-int z80_op_RL_r(){
+int z80_op_RL_r(uint8_t prefixed){
+    assert(prefixed == 0); //<-- Unimplemented prefixed opcodes
     assert(z80.opcode_index == 2);
     assert(0); ///<-- Unimplemented
     return Z80_STAGE_RESET;
@@ -1134,7 +1153,8 @@ int z80_op_RRCA(){
 }
 
 ///RRC r; Size: 2; Flags: ???
-int z80_op_RRC_r(){
+int z80_op_RRC_r(uint8_t prefixed){
+    assert(prefixed == 0); //<-- Unimplemented prefixed opcodes
     assert(z80.opcode_index == 2);
     assert(0); ///<-- Unimplemented
     return Z80_STAGE_RESET;
@@ -1148,7 +1168,8 @@ int z80_op_RRD(){
 }
 
 ///RR r; Size: 2; Flags: ???
-int z80_op_RR_r(){
+int z80_op_RR_r(uint8_t prefixed){
+    assert(prefixed == 0); //<-- Unimplemented prefixed opcodes
     assert(z80.opcode_index == 2);
     assert(0); ///<-- Unimplemented
     return Z80_STAGE_RESET;
@@ -1184,7 +1205,8 @@ int z80_op_SBC_n(){
 }
 
 ///SBC r; Size: 1; Flags: ???
-int z80_op_SBC_r(){
+int z80_op_SBC_r(uint8_t prefixed){
+    assert(prefixed == 0); //<-- Prefix unimplemented
     assert(z80.opcode_index == 1);
     assert(0);
     return Z80_STAGE_RESET;
@@ -1205,28 +1227,32 @@ int z80_op_SCF(){
 }
 
 ///SLA r; Size: 2; Flags: ???
-int z80_op_SLA_r(){
+int z80_op_SLA_r(uint8_t prefixed){
+    assert(prefixed == 0); //<-- Unimplemented prefixed opcodes
     assert(z80.opcode_index == 2);
     assert(0); ///<-- Unimplemented
     return Z80_STAGE_RESET;
 }
 
 ///SLL r; Size: 2; Flags: ???
-int z80_op_SLL_r(){
+int z80_op_SLL_r(uint8_t prefixed){
+    assert(prefixed == 0); //<-- Unimplemented prefixed opcodes
     assert(z80.opcode_index == 2);
     assert(0); ///<-- Unimplemented
     return Z80_STAGE_RESET;
 }
 
 ///SRA r; Size: 2; Flags: ???
-int z80_op_SRA_r(){
+int z80_op_SRA_r(uint8_t prefixed){
+    assert(prefixed == 0); //<-- Unimplemented prefixed opcodes
     assert(z80.opcode_index == 2);
     assert(0); ///<-- Unimplemented
     return Z80_STAGE_RESET;
 }
 
 ///SRL r[z]; Size: 2; Flags: ?
-int z80_op_SRL_r(){
+int z80_op_SRL_r(uint8_t prefixed){
+    assert(prefixed == 0); //<-- Unimplemented prefixed opcodes
     assert(z80.opcode_index == 2);
     Z80_OPCODE_SUBDIV;
     if (z80_r[z[1]]){
@@ -1253,7 +1279,8 @@ int z80_op_SUB_n(){
 }
 
 ///SUB r; Size: 1; Flags: ???
-int z80_op_SUB_r(){
+int z80_op_SUB_r(uint8_t prefixed){
+    assert(prefixed == 0); //<-- Prefix unimplemented
     assert(z80.opcode_index == 1);
     assert(0);
     return Z80_STAGE_RESET;
@@ -1267,7 +1294,8 @@ int z80_op_XOR_n(){
 }
 
 ///XOR r[z]; Size: 1; Flags: All
-int z80_op_XOR_r(){
+int z80_op_XOR_r(uint8_t prefixed){
+    assert(prefixed == 0); //<-- Prefix unimplemented
     assert(z80.opcode_index == 1);
     Z80_OPCODE_SUBDIV;
     //Request M2 read if required

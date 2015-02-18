@@ -97,40 +97,40 @@ int z80_decode_DD_FD(){
         case Z80_OPCODE_XPQZ(0, 3, 1, 1): assert(0);                  /*ADD Ix, rp (size: 2)*/
         case Z80_OPCODE_XPQZ(0, 2, 0, 2): return Z80_STAGE_M1;       /*LD (nn), Ix (size: 4)*/
         case Z80_OPCODE_XPQZ(0, 2, 1, 2): return Z80_STAGE_M1;       /*LD Ix, (nn) (size: 4)*/
-        case Z80_OPCODE_XPQZ(0, 2, 0, 3): assert(0);                      /*INC Ix (size: 2)*/
-        case Z80_OPCODE_XPQZ(0, 2, 1, 3): assert(0);                      /*DEC Ix (size: 2)*/
+        case Z80_OPCODE_XPQZ(0, 2, 0, 3): return z80_op_INC_rp(1);        /*INC Ix (size: 2)*/
+        case Z80_OPCODE_XPQZ(0, 2, 1, 3): return z80_op_INC_rp(1);        /*DEC Ix (size: 2)*/
         case Z80_OPCODE_XYZ(0, 4, 4): /*fall-through*/
-        case Z80_OPCODE_XYZ(0, 5, 4): assert(0);
-        case Z80_OPCODE_XYZ(0, 6, 4): return Z80_STAGE_M1;               /*INC r (size: 2/3)*/
+        case Z80_OPCODE_XYZ(0, 5, 4): return z80_op_INC_r(1);              /*INC r (size: 2)*/
+        case Z80_OPCODE_XYZ(0, 6, 4): return Z80_STAGE_M1;            /*INC (Ix+d) (size: 3)*/
         case Z80_OPCODE_XYZ(0, 4, 5): /*fall-through*/
-        case Z80_OPCODE_XYZ(0, 5, 5): assert(0);
-        case Z80_OPCODE_XYZ(0, 6, 5): return Z80_STAGE_M1;               /*DEC r (size: 2/3)*/
+        case Z80_OPCODE_XYZ(0, 5, 5): return z80_op_DEC_r(1);              /*DEC r (size: 2)*/
+        case Z80_OPCODE_XYZ(0, 6, 5): return Z80_STAGE_M1;            /*DEC (Ix+d) (size: 3)*/
         case Z80_OPCODE_XYZ(0, 4, 6): /*fall-through*/
-        case Z80_OPCODE_XYZ(0, 5, 6): assert(0);
-        case Z80_OPCODE_XYZ(0, 6, 6): return Z80_STAGE_M1;             /*LD r, n (size: 2/3)*/
+        case Z80_OPCODE_XYZ(0, 5, 6): return z80_op_LD_r_n(1);           /*LD r, n (size: 2)*/
+        case Z80_OPCODE_XYZ(0, 6, 6): return Z80_STAGE_M1;          /*LD (Ix+d), n (size: 3)*/
         case Z80_OPCODE_XYZ(1, 4, 0): /*fall-through*/
         case Z80_OPCODE_XYZ(1, 4, 1): /*fall-through*/
         case Z80_OPCODE_XYZ(1, 4, 2): /*fall-through*/
         case Z80_OPCODE_XYZ(1, 4, 3): /*fall-through*/
         case Z80_OPCODE_XYZ(1, 4, 4): /*fall-through*/
-        case Z80_OPCODE_XYZ(1, 4, 5): assert(0);
-        case Z80_OPCODE_XYZ(1, 4, 6): return Z80_STAGE_M1;
+        case Z80_OPCODE_XYZ(1, 4, 5): return z80_op_LD_r_r(1);            /*LD r, r (Size:2)*/
+        case Z80_OPCODE_XYZ(1, 4, 6): return Z80_STAGE_M1;          /*LD (Ix+d), r (size: 3)*/
         case Z80_OPCODE_XYZ(1, 4, 7): /*fall-through*/
         case Z80_OPCODE_XYZ(1, 5, 0): /*fall-through*/
         case Z80_OPCODE_XYZ(1, 5, 1): /*fall-through*/
         case Z80_OPCODE_XYZ(1, 5, 2): /*fall-through*/
         case Z80_OPCODE_XYZ(1, 5, 3): /*fall-through*/
         case Z80_OPCODE_XYZ(1, 5, 4): /*fall-through*/
-        case Z80_OPCODE_XYZ(1, 5, 5): assert(0);
-        case Z80_OPCODE_XYZ(1, 5, 6): return Z80_STAGE_M1;
-        case Z80_OPCODE_XYZ(1, 5, 7): assert(0);
+        case Z80_OPCODE_XYZ(1, 5, 5): return z80_op_LD_r_r(1);            /*LD r, r (Size:2)*/
+        case Z80_OPCODE_XYZ(1, 5, 6): return Z80_STAGE_M1;          /*LD (Ix+d), r (size: 3)*/
+        case Z80_OPCODE_XYZ(1, 5, 7): return z80_op_LD_r_r(1);            /*LD r, r (Size:2)*/
         case Z80_OPCODE_XYZ(1, 6, 0): /*fall-through*/
         case Z80_OPCODE_XYZ(1, 6, 1): /*fall-through*/
         case Z80_OPCODE_XYZ(1, 6, 2): /*fall-through*/
         case Z80_OPCODE_XYZ(1, 6, 3): /*fall-through*/
         case Z80_OPCODE_XYZ(1, 6, 4): /*fall-through*/
         case Z80_OPCODE_XYZ(1, 6, 5): /*fall-through*/
-        case Z80_OPCODE_XYZ(1, 6, 7): return Z80_STAGE_M1;
+        case Z80_OPCODE_XYZ(1, 6, 7): return Z80_STAGE_M1;          /*LD (Ix+d), r (size: 3)*/
         case Z80_OPCODE_XYZ(1, 0, 4): /*fall-through*/
         case Z80_OPCODE_XYZ(1, 1, 4): /*fall-through*/
         case Z80_OPCODE_XYZ(1, 2, 4): /*fall-through*/
@@ -140,42 +140,42 @@ int z80_decode_DD_FD(){
         case Z80_OPCODE_XYZ(1, 1, 5): /*fall-through*/
         case Z80_OPCODE_XYZ(1, 2, 5): /*fall-through*/
         case Z80_OPCODE_XYZ(1, 3, 5): /*fall-through*/
-        case Z80_OPCODE_XYZ(1, 7, 5): assert(0);
+        case Z80_OPCODE_XYZ(1, 7, 5): return z80_op_LD_r_r(1);            /*LD r, r (Size:2)*/
         case Z80_OPCODE_XYZ(1, 0, 6): /*fall-through*/
         case Z80_OPCODE_XYZ(1, 1, 6): /*fall-through*/
         case Z80_OPCODE_XYZ(1, 2, 6): /*fall-through*/
         case Z80_OPCODE_XYZ(1, 3, 6): /*fall-through*/
-        case Z80_OPCODE_XYZ(1, 7, 6): return Z80_STAGE_M1;  /*LD indr, r; LD r, indr (size: 2/3)*/
+        case Z80_OPCODE_XYZ(1, 7, 6): return Z80_STAGE_M1;          /*LD r, (Ix+d) (size: 3)*/
         case Z80_OPCODE_XYZ(2, 0, 4): /*fall-through*/
-        case Z80_OPCODE_XYZ(2, 0, 5): assert(0);
-        case Z80_OPCODE_XYZ(2, 0, 6): return Z80_STAGE_M1;            /*ADD indr (Size: 2/3)*/
+        case Z80_OPCODE_XYZ(2, 0, 5): z80_op_ADD_r(1);                     /*ADD r (Size: 2)*/
+        case Z80_OPCODE_XYZ(2, 0, 6): return Z80_STAGE_M1;            /*ADD (Ix+d) (Size: 3)*/
         case Z80_OPCODE_XYZ(2, 1, 4): /*fall-through*/
-        case Z80_OPCODE_XYZ(2, 1, 5): assert(0);
-        case Z80_OPCODE_XYZ(2, 1, 6): return Z80_STAGE_M1;            /*ADC indr (Size: 2/3)*/
+        case Z80_OPCODE_XYZ(2, 1, 5): z80_op_ADC_r(1);                     /*ADC r (Size: 2)*/
+        case Z80_OPCODE_XYZ(2, 1, 6): return Z80_STAGE_M1;            /*ADC (Ix+d) (Size: 3)*/
         case Z80_OPCODE_XYZ(2, 2, 4): /*fall-through*/
-        case Z80_OPCODE_XYZ(2, 2, 5): assert(0);
-        case Z80_OPCODE_XYZ(2, 2, 6): return Z80_STAGE_M1;            /*SUB indr (Size: 2/3)*/
+        case Z80_OPCODE_XYZ(2, 2, 5): z80_op_SUB_r(1);                     /*SUB r (Size: 2)*/
+        case Z80_OPCODE_XYZ(2, 2, 6): return Z80_STAGE_M1;            /*SUB (Ix+d) (Size: 3)*/
         case Z80_OPCODE_XYZ(2, 3, 4): /*fall-through*/
-        case Z80_OPCODE_XYZ(2, 3, 5): assert(0);
-        case Z80_OPCODE_XYZ(2, 3, 6): return Z80_STAGE_M1;            /*SBC indr (Size: 2/3)*/
+        case Z80_OPCODE_XYZ(2, 3, 5): z80_op_SBC_r(1);                     /*SBC r (Size: 2)*/
+        case Z80_OPCODE_XYZ(2, 3, 6): return Z80_STAGE_M1;            /*SBC (Ix+d) (Size: 3)*/
         case Z80_OPCODE_XYZ(2, 4, 4): /*fall-through*/
-        case Z80_OPCODE_XYZ(2, 4, 5): assert(0);
-        case Z80_OPCODE_XYZ(2, 4, 6): return Z80_STAGE_M1;            /*AND indr (Size: 2/3)*/
+        case Z80_OPCODE_XYZ(2, 4, 5): z80_op_AND_r(1);                     /*AND r (Size: 2)*/
+        case Z80_OPCODE_XYZ(2, 4, 6): return Z80_STAGE_M1;            /*AND (Ix+d) (Size: 3)*/
         case Z80_OPCODE_XYZ(2, 5, 4): /*fall-through*/
-        case Z80_OPCODE_XYZ(2, 5, 5): assert(0);
-        case Z80_OPCODE_XYZ(2, 5, 6): return Z80_STAGE_M1;            /*XOR indr (Size: 2/3)*/
+        case Z80_OPCODE_XYZ(2, 5, 5): z80_op_XOR_r(1);                     /*XOR r (Size: 2)*/
+        case Z80_OPCODE_XYZ(2, 5, 6): return Z80_STAGE_M1;            /*XOR (Ix+d) (Size: 3)*/
         case Z80_OPCODE_XYZ(2, 6, 4): /*fall-through*/
-        case Z80_OPCODE_XYZ(2, 6, 5): assert(0);
-        case Z80_OPCODE_XYZ(2, 6, 6): return Z80_STAGE_M1;             /*OR indr (Size: 2/3)*/
+        case Z80_OPCODE_XYZ(2, 6, 5): z80_op_OR_r(1);                       /*OR r (Size: 2)*/
+        case Z80_OPCODE_XYZ(2, 6, 6): return Z80_STAGE_M1;             /*OR (Ix+d) (Size: 3)*/
         case Z80_OPCODE_XYZ(2, 7, 4): /*fall-through*/
-        case Z80_OPCODE_XYZ(2, 7, 5): assert(0);
-        case Z80_OPCODE_XYZ(2, 7, 6): return Z80_STAGE_M1;             /*CP indr (Size: 2/3)*/
-        case Z80_OPCODE_XPQZ(3, 2, 0, 1): assert(0);                      /*POP Ix (size: 2)*/
+        case Z80_OPCODE_XYZ(2, 7, 5): z80_op_CP_r(1);                        /*CP r (Size: 2)*/
+        case Z80_OPCODE_XYZ(2, 7, 6): return Z80_STAGE_M1;             /*CP (Ix+d) (Size: 3)*/
+        case Z80_OPCODE_XPQZ(3, 2, 0, 1): return z80_op_POP_rp2(1);      /*POP Ix (size: 2)*/
         case Z80_OPCODE_XPQZ(3, 1, 1, 1): assert(0);                     /*EXX [?] (size: 2)*/
         case Z80_OPCODE_XPQZ(3, 2, 1, 1): assert(0);                       /*JP HL (size: 2)*/
         case Z80_OPCODE_XPQZ(3, 3, 1, 1): assert(0);                   /*LD SP, Ix (size: 2)*/
         case Z80_OPCODE_XYZ(3, 4, 3): assert(0);                     /*EX (SP), Ix (size: 2)*/
-        case Z80_OPCODE_XPQZ(3, 2, 0, 5): assert(0);                     /*PUSH Ix (size: 2)*/
+        case Z80_OPCODE_XPQZ(3, 2, 0, 5): return z80_op_PUSH_rp2(1);    /*PUSH Ix (size: 2)*/
 
         default:
             assert(0); ///<-- @note Replace with a waring. No sane program *should* get here.
@@ -185,9 +185,9 @@ int z80_decode_DD_FD(){
     case 3: /*Byte 3 (2 after prefix)*/
         switch (z80.opcode[1]){
         case Z80_OPCODE_XPQZ(0, 2, 0, 1): return Z80_STAGE_M1;         /*LD Ix, nn (size: 4)*/
-        case Z80_OPCODE_XYZ(0, 6, 4): assert(0);                    /*INC (Ix+d) (size:   3)*/
-        case Z80_OPCODE_XYZ(0, 6, 5): assert(0);                    /*DEC (Ix+d) (size:   3)*/
-        case Z80_OPCODE_XYZ(0, 6, 6): assert(0);                  /*LD (Ix+d), n (size:   3)*/
+        case Z80_OPCODE_XYZ(0, 6, 4): return z80_op_INC_r(1);      /*INC (Ix+d) (size:   3)*/
+        case Z80_OPCODE_XYZ(0, 6, 5): return z80_op_DEC_r(1);      /*DEC (Ix+d) (size:   3)*/
+        case Z80_OPCODE_XYZ(0, 6, 6): return z80_op_LD_r_n(1);   /*LD (Ix+d), n (size:   3)*/
         case Z80_OPCODE_XYZ(1, 4, 6): /*fall-through*/
         case Z80_OPCODE_XYZ(1, 5, 6): /*fall-through*/
         case Z80_OPCODE_XYZ(1, 5, 7): /*fall-through*/
@@ -203,15 +203,15 @@ int z80_decode_DD_FD(){
         case Z80_OPCODE_XYZ(1, 1, 6): /*fall-through*/
         case Z80_OPCODE_XYZ(1, 2, 6): /*fall-through*/
         case Z80_OPCODE_XYZ(1, 3, 6): /*fall-through*/
-        case Z80_OPCODE_XYZ(1, 7, 6): assert(0);      /*LD (Ix+d), r; LD r, (Ix+d) (size: 3)*/
-        case Z80_OPCODE_XYZ(2, 0, 6): assert(0);                      /*ADD (Ix+d) (Size: 3)*/
-        case Z80_OPCODE_XYZ(2, 1, 6): assert(0);                      /*ADC (Ix+d) (Size: 3)*/
-        case Z80_OPCODE_XYZ(2, 2, 6): assert(0);                      /*SUB (Ix+d) (Size: 3)*/
-        case Z80_OPCODE_XYZ(2, 3, 6): assert(0);                      /*SBC (Ix+d) (Size: 3)*/
-        case Z80_OPCODE_XYZ(2, 4, 6): assert(0);                      /*AND (Ix+d) (Size: 3)*/
-        case Z80_OPCODE_XYZ(2, 5, 6): assert(0);                      /*XOR (Ix+d) (Size: 3)*/
-        case Z80_OPCODE_XYZ(2, 6, 6): assert(0);                       /*OR (Ix+d) (Size: 3)*/
-        case Z80_OPCODE_XYZ(2, 7, 6): assert(0);                       /*CP (Ix+d) (Size: 3)*/
+        case Z80_OPCODE_XYZ(1, 7, 6): return z80_op_LD_r_r(1); /*LD (Ix+d), r; LD r, (Ix+d) (size: 3)*/
+        case Z80_OPCODE_XYZ(2, 0, 6): return z80_op_ADD_r(1);         /*ADD (Ix+d) (Size: 3)*/
+        case Z80_OPCODE_XYZ(2, 1, 6): return z80_op_ADC_r(1);         /*ADC (Ix+d) (Size: 3)*/
+        case Z80_OPCODE_XYZ(2, 2, 6): return z80_op_SUB_r(1);         /*SUB (Ix+d) (Size: 3)*/
+        case Z80_OPCODE_XYZ(2, 3, 6): return z80_op_SBC_r(1);         /*SBC (Ix+d) (Size: 3)*/
+        case Z80_OPCODE_XYZ(2, 4, 6): return z80_op_AND_r(1);         /*AND (Ix+d) (Size: 3)*/
+        case Z80_OPCODE_XYZ(2, 5, 6): return z80_op_XOR_r(1);         /*XOR (Ix+d) (Size: 3)*/
+        case Z80_OPCODE_XYZ(2, 6, 6): return z80_op_OR_r(1);           /*OR (Ix+d) (Size: 3)*/
+        case Z80_OPCODE_XYZ(2, 7, 6): return z80_op_CP_r(1);           /*CP (Ix+d) (Size: 3)*/
         default:
             assert(0); ///<-- Should never get here
             return Z80_STAGE_RESET;
@@ -219,7 +219,7 @@ int z80_decode_DD_FD(){
         assert(0); ///<-- Unimplemented
     case 4: /*Byte 4 (3 after prefix)*/
         switch (z80.opcode[1]){
-        case Z80_OPCODE_XPQZ(0, 2, 0, 1): assert(0);                   /*LD Ix, nn (size: 4)*/
+        case Z80_OPCODE_XPQZ(0, 2, 0, 1): return z80_op_LD_rp_nn(1);   /*LD Ix, nn (size: 4)*/
         default:
             assert(0); ///<-- Should never get here
             return Z80_STAGE_RESET;
@@ -250,14 +250,14 @@ int z80_decode_CB(){
 
     //Decode X==0 (select by y)
     switch (z80.opcode[1] & Z80_OPCODE_Y_MASK){
-    case Z80_OPCODE_Y(0): return z80_op_RLC_r();
-    case Z80_OPCODE_Y(1): return z80_op_RRC_r();
-    case Z80_OPCODE_Y(2): return z80_op_RL_r();
-    case Z80_OPCODE_Y(3): return z80_op_RR_r();
-    case Z80_OPCODE_Y(4): return z80_op_SLA_r();
-    case Z80_OPCODE_Y(5): return z80_op_SRA_r();
-    case Z80_OPCODE_Y(6): return z80_op_SLL_r();
-    case Z80_OPCODE_Y(7): return z80_op_SRL_r();
+    case Z80_OPCODE_Y(0): return z80_op_RLC_r(0);
+    case Z80_OPCODE_Y(1): return z80_op_RRC_r(0);
+    case Z80_OPCODE_Y(2): return z80_op_RL_r(0);
+    case Z80_OPCODE_Y(3): return z80_op_RR_r(0);
+    case Z80_OPCODE_Y(4): return z80_op_SLA_r(0);
+    case Z80_OPCODE_Y(5): return z80_op_SRA_r(0);
+    case Z80_OPCODE_Y(6): return z80_op_SLL_r(0);
+    case Z80_OPCODE_Y(7): return z80_op_SRL_r(0);
     default:
         assert(0); ///<-- Will never get here
         return Z80_STAGE_RESET;
@@ -308,7 +308,7 @@ int z80_decode_ED(){
         case Z80_OPCODE_XPQZ(1, 0, 1, 2): /*fall-through*/
         case Z80_OPCODE_XPQZ(1, 1, 1, 2): /*fall-through*/
         case Z80_OPCODE_XPQZ(1, 2, 1, 2): /*fall-through*/
-        case Z80_OPCODE_XPQZ(1, 3, 1, 2): return z80_op_ADC_HL_rp();  /*ADC HL, rp (size: 2)*/
+        case Z80_OPCODE_XPQZ(1, 3, 1, 2): return z80_op_ADC_HL_rp(0); /*ADC HL, rp (size: 2)*/
 
         case Z80_OPCODE_XPQZ(1, 0, 0, 3): /*fall-through*/
         case Z80_OPCODE_XPQZ(1, 1, 0, 3): /*fall-through*/
@@ -439,72 +439,72 @@ int z80_instruction_decode(){
         case Z80_OPCODE_XYZ(0, 0, 0): return z80_op_NOP();                   /*NOP (Size: 1)*/
         case Z80_OPCODE_XYZ(0, 0, 1): return Z80_STAGE_M1;             /*LD rp, nn (size: 3)*/
         case Z80_OPCODE_XPQZ(0, 0, 0, 2): return z80_op_LD_BCp_A();   /*LD (BC), A (size: 1)*/
-        case Z80_OPCODE_XYZ(0, 0, 3): return z80_op_INC_rp();             /*INC rp (size: 1)*/
-        case Z80_OPCODE_XYZ(0, 0, 4): return z80_op_INC_r();               /*INC r (Size: 1)*/
-        case Z80_OPCODE_XYZ(0, 0, 5): return z80_op_DEC_r();               /*DEC r (size: 1)*/
+        case Z80_OPCODE_XYZ(0, 0, 3): return z80_op_INC_rp(0);            /*INC rp (size: 1)*/
+        case Z80_OPCODE_XYZ(0, 0, 4): return z80_op_INC_r(0);              /*INC r (Size: 1)*/
+        case Z80_OPCODE_XYZ(0, 0, 5): return z80_op_DEC_r(0);              /*DEC r (size: 1)*/
         case Z80_OPCODE_XYZ(0, 0, 6): return Z80_STAGE_M1;               /*LD r, n (size: 2)*/
         case Z80_OPCODE_XYZ(0, 0, 7): return z80_op_RLCA();                 /*RLCA (size: 1)*/
 
         case Z80_OPCODE_XYZ(0, 1, 0): return z80_op_EX();             /*EX AF, AF' (Size: 1)*/
-        case Z80_OPCODE_XYZ(0, 1, 1): return z80_op_ADD_HL_rp();      /*ADD HL, rp (size: 1)*/
+        case Z80_OPCODE_XYZ(0, 1, 1): return z80_op_ADD_HL_rp(0);     /*ADD HL, rp (size: 1)*/
         case Z80_OPCODE_XPQZ(0, 0, 1, 2): return z80_op_LD_A_BCp();   /*LD A, (BC) (size: 1)*/
-        case Z80_OPCODE_XYZ(0, 1, 3): return z80_op_DEC_rp();             /*DEC rp (size: 1)*/
-        case Z80_OPCODE_XYZ(0, 1, 4): return z80_op_INC_r();               /*INC r (Size: 1)*/
-        case Z80_OPCODE_XYZ(0, 1, 5): return z80_op_DEC_r();               /*DEC r (size: 1)*/
+        case Z80_OPCODE_XYZ(0, 1, 3): return z80_op_DEC_rp(0);            /*DEC rp (size: 1)*/
+        case Z80_OPCODE_XYZ(0, 1, 4): return z80_op_INC_r(0);              /*INC r (Size: 1)*/
+        case Z80_OPCODE_XYZ(0, 1, 5): return z80_op_DEC_r(0);              /*DEC r (size: 1)*/
         case Z80_OPCODE_XYZ(0, 1, 6): return Z80_STAGE_M1;               /*LD r, n (size: 2)*/
         case Z80_OPCODE_XYZ(0, 1, 7): return z80_op_RRCA();                 /*RRCA (size: 1)*/
 
         case Z80_OPCODE_XYZ(0, 2, 0): return Z80_STAGE_M1;                /*DJNZ d (size: 2)*/
         case Z80_OPCODE_XYZ(0, 2, 1): return Z80_STAGE_M1;             /*LD rp, nn (size: 3)*/
         case Z80_OPCODE_XPQZ(0, 1, 0, 2): return z80_op_LD_DEp_A();   /*LD (DE), A (size: 1)*/
-        case Z80_OPCODE_XYZ(0, 2, 3): return z80_op_INC_rp();             /*INC rp (size: 1)*/
-        case Z80_OPCODE_XYZ(0, 2, 4): return z80_op_INC_r();               /*INC r (Size: 1)*/
-        case Z80_OPCODE_XYZ(0, 2, 5): return z80_op_DEC_r();               /*DEC r (size: 1)*/
+        case Z80_OPCODE_XYZ(0, 2, 3): return z80_op_INC_rp(0);            /*INC rp (size: 1)*/
+        case Z80_OPCODE_XYZ(0, 2, 4): return z80_op_INC_r(0);              /*INC r (Size: 1)*/
+        case Z80_OPCODE_XYZ(0, 2, 5): return z80_op_DEC_r(0);              /*DEC r (size: 1)*/
         case Z80_OPCODE_XYZ(0, 2, 6): return Z80_STAGE_M1;               /*LD r, n (size: 2)*/
         case Z80_OPCODE_XYZ(0, 2, 7): return z80_op_RLA();                   /*RLA (size: 1)*/
 
         case Z80_OPCODE_XYZ(0, 3, 0): return Z80_STAGE_M1;                  /*JR d (size: 2)*/
-        case Z80_OPCODE_XYZ(0, 3, 1): return z80_op_ADD_HL_rp();      /*ADD HL, rp (size: 1)*/
+        case Z80_OPCODE_XYZ(0, 3, 1): return z80_op_ADD_HL_rp(0);     /*ADD HL, rp (size: 1)*/
         case Z80_OPCODE_XPQZ(0, 1, 1, 2): return z80_op_LD_A_DEp();    /*LD A,(DE) (size: 1)*/
-        case Z80_OPCODE_XYZ(0, 3, 3): return z80_op_DEC_rp();             /*DEC rp (size: 1)*/
-        case Z80_OPCODE_XYZ(0, 3, 4): return z80_op_INC_r();               /*INC r (Size: 1)*/
-        case Z80_OPCODE_XYZ(0, 3, 5): return z80_op_DEC_r();               /*DEC r (size: 1)*/
+        case Z80_OPCODE_XYZ(0, 3, 3): return z80_op_DEC_rp(0);            /*DEC rp (size: 1)*/
+        case Z80_OPCODE_XYZ(0, 3, 4): return z80_op_INC_r(0);              /*INC r (Size: 1)*/
+        case Z80_OPCODE_XYZ(0, 3, 5): return z80_op_DEC_r(0);              /*DEC r (size: 1)*/
         case Z80_OPCODE_XYZ(0, 3, 6): return Z80_STAGE_M1;               /*LD r, n (size: 2)*/
         case Z80_OPCODE_XYZ(0, 3, 7): return z80_op_RRA();                   /*RRA (size: 1)*/
 
         case Z80_OPCODE_XYZ(0, 4, 0): return Z80_STAGE_M1;               /*JR cc, d (size 2)*/
         case Z80_OPCODE_XYZ(0, 4, 1): return Z80_STAGE_M1;             /*LD rp, nn (size: 3)*/
         case Z80_OPCODE_XPQZ(0, 2, 0, 2): return Z80_STAGE_M1;       /*LD (nn), HL (size: 3)*/
-        case Z80_OPCODE_XYZ(0, 4, 3): return z80_op_INC_rp();             /*INC rp (size: 1)*/
-        case Z80_OPCODE_XYZ(0, 4, 4): return z80_op_INC_r();               /*INC r (Size: 1)*/
-        case Z80_OPCODE_XYZ(0, 4, 5): return z80_op_DEC_r();               /*DEC r (size: 1)*/
+        case Z80_OPCODE_XYZ(0, 4, 3): return z80_op_INC_rp(0);            /*INC rp (size: 1)*/
+        case Z80_OPCODE_XYZ(0, 4, 4): return z80_op_INC_r(0);              /*INC r (Size: 1)*/
+        case Z80_OPCODE_XYZ(0, 4, 5): return z80_op_DEC_r(0);              /*DEC r (size: 1)*/
         case Z80_OPCODE_XYZ(0, 4, 6): return Z80_STAGE_M1;               /*LD r, n (size: 2)*/
         case Z80_OPCODE_XYZ(0, 4, 7): return z80_op_DAA();                   /*DAA (size: 1)*/
 
         case Z80_OPCODE_XYZ(0, 5, 0): return Z80_STAGE_M1;               /*JR cc, d (size 2)*/
-        case Z80_OPCODE_XYZ(0, 5, 1): return z80_op_ADD_HL_rp();      /*ADD HL, rp (size: 1)*/
+        case Z80_OPCODE_XYZ(0, 5, 1): return z80_op_ADD_HL_rp(0);      /*ADD HL, rp (size: 1)*/
         case Z80_OPCODE_XPQZ(0, 2, 1, 2): return Z80_STAGE_M1;       /*LD HL, (nn) (size: 3)*/
-        case Z80_OPCODE_XYZ(0, 5, 3): return z80_op_DEC_rp();             /*DEC rp (size: 1)*/
-        case Z80_OPCODE_XYZ(0, 5, 4): return z80_op_INC_r();               /*INC r (Size: 1)*/
-        case Z80_OPCODE_XYZ(0, 5, 5): return z80_op_DEC_r();               /*DEC r (size: 1)*/
+        case Z80_OPCODE_XYZ(0, 5, 3): return z80_op_DEC_rp(0);            /*DEC rp (size: 1)*/
+        case Z80_OPCODE_XYZ(0, 5, 4): return z80_op_INC_r(0);              /*INC r (Size: 1)*/
+        case Z80_OPCODE_XYZ(0, 5, 5): return z80_op_DEC_r(0);              /*DEC r (size: 1)*/
         case Z80_OPCODE_XYZ(0, 5, 6): return Z80_STAGE_M1;               /*LD r, n (size: 2)*/
         case Z80_OPCODE_XYZ(0, 5, 7): return z80_op_CPL();                   /*CPL (size: 1)*/
 
         case Z80_OPCODE_XYZ(0, 6, 0): return Z80_STAGE_M1;               /*JR cc, d (size 2)*/
         case Z80_OPCODE_XYZ(0, 6, 1): return Z80_STAGE_M1;             /*LD rp, nn (size: 3)*/
         case Z80_OPCODE_XPQZ(0, 3, 0, 2): return Z80_STAGE_M1;        /*LD (nn), A (size: 3)*/
-        case Z80_OPCODE_XYZ(0, 6, 3): return z80_op_INC_rp();             /*INC rp (size: 1)*/
-        case Z80_OPCODE_XYZ(0, 6, 4): return z80_op_INC_r();               /*INC r (Size: 1)*/
-        case Z80_OPCODE_XYZ(0, 6, 5): return z80_op_DEC_r();               /*DEC r (size: 1)*/
+        case Z80_OPCODE_XYZ(0, 6, 3): return z80_op_INC_rp(0);            /*INC rp (size: 1)*/
+        case Z80_OPCODE_XYZ(0, 6, 4): return z80_op_INC_r(0);              /*INC r (Size: 1)*/
+        case Z80_OPCODE_XYZ(0, 6, 5): return z80_op_DEC_r(0);              /*DEC r (size: 1)*/
         case Z80_OPCODE_XYZ(0, 6, 6): return Z80_STAGE_M1;               /*LD r, n (size: 2)*/
         case Z80_OPCODE_XYZ(0, 6, 7): return z80_op_SCF();                   /*SCF (size: 1)*/
 
         case Z80_OPCODE_XYZ(0, 7, 0): return Z80_STAGE_M1;               /*JR cc, d (size 2)*/
-        case Z80_OPCODE_XYZ(0, 7, 1): return z80_op_ADD_HL_rp();      /*ADD HL, rp (size: 1)*/
+        case Z80_OPCODE_XYZ(0, 7, 1): return z80_op_ADD_HL_rp(0);     /*ADD HL, rp (size: 1)*/
         case Z80_OPCODE_XPQZ(0, 3, 1, 2): return Z80_STAGE_M1;        /*LD A, (nn) (size: 3)*/
-        case Z80_OPCODE_XYZ(0, 7, 3): return z80_op_DEC_rp();             /*DEC rp (size: 1)*/
-        case Z80_OPCODE_XYZ(0, 7, 4): return z80_op_INC_r();               /*INC r (Size: 1)*/
-        case Z80_OPCODE_XYZ(0, 7, 5): return z80_op_DEC_r();               /*DEC r (size: 1)*/
+        case Z80_OPCODE_XYZ(0, 7, 3): return z80_op_DEC_rp(0);            /*DEC rp (size: 1)*/
+        case Z80_OPCODE_XYZ(0, 7, 4): return z80_op_INC_r(0);              /*INC r (Size: 1)*/
+        case Z80_OPCODE_XYZ(0, 7, 5): return z80_op_DEC_r(0);              /*DEC r (size: 1)*/
         case Z80_OPCODE_XYZ(0, 7, 6): return Z80_STAGE_M1;               /*LD r, n (size: 2)*/
         case Z80_OPCODE_XYZ(0, 7, 7): return z80_op_CCF();                   /*CCF (size: 1)*/
 
@@ -568,7 +568,7 @@ int z80_instruction_decode(){
         case Z80_OPCODE_XYZ(1, 6, 2): /*Fall-through*/
         case Z80_OPCODE_XYZ(1, 6, 3): /*Fall-through*/
         case Z80_OPCODE_XYZ(1, 6, 4): /*Fall-through*/
-        case Z80_OPCODE_XYZ(1, 6, 5): return z80_op_LD_r_r();            /*LD r, r (size: 1)*/
+        case Z80_OPCODE_XYZ(1, 6, 5): return z80_op_LD_r_r(0);           /*LD r, r (size: 1)*/
         case Z80_OPCODE_XYZ(1, 6, 6): return z80_op_HALT();                 /*HALT (size: 1)*/ /*Replaces LD (HL), (HL)*/
         case Z80_OPCODE_XYZ(1, 6, 7): /*Fall-through*/
 
@@ -579,7 +579,7 @@ int z80_instruction_decode(){
         case Z80_OPCODE_XYZ(1, 7, 4): /*Fall-through*/
         case Z80_OPCODE_XYZ(1, 7, 5): /*Fall-through*/
         case Z80_OPCODE_XYZ(1, 7, 6): /*Fall-through*/
-        case Z80_OPCODE_XYZ(1, 7, 7): return z80_op_LD_r_r();            /*LD r, r (size: 1)*/
+        case Z80_OPCODE_XYZ(1, 7, 7): return z80_op_LD_r_r(0);           /*LD r, r (size: 1)*/
 
         //X==2
         case Z80_OPCODE_XYZ(2, 0, 0): /*fall-through*/
@@ -589,7 +589,7 @@ int z80_instruction_decode(){
         case Z80_OPCODE_XYZ(2, 0, 4): /*fall-through*/
         case Z80_OPCODE_XYZ(2, 0, 5): /*fall-through*/
         case Z80_OPCODE_XYZ(2, 0, 6): /*fall-through*/
-        case Z80_OPCODE_XYZ(2, 0, 7): return z80_op_ADD_r();               /*ADD r (size: 1)*/
+        case Z80_OPCODE_XYZ(2, 0, 7): return z80_op_ADD_r(0);              /*ADD r (size: 1)*/
 
         case Z80_OPCODE_XYZ(2, 1, 0): /*fall-through*/
         case Z80_OPCODE_XYZ(2, 1, 1): /*fall-through*/
@@ -598,7 +598,7 @@ int z80_instruction_decode(){
         case Z80_OPCODE_XYZ(2, 1, 4): /*fall-through*/
         case Z80_OPCODE_XYZ(2, 1, 5): /*fall-through*/
         case Z80_OPCODE_XYZ(2, 1, 6): /*fall-through*/
-        case Z80_OPCODE_XYZ(2, 1, 7): return z80_op_ADC_r();               /*ADC r (size: 1)*/
+        case Z80_OPCODE_XYZ(2, 1, 7): return z80_op_ADC_r(0);              /*ADC r (size: 1)*/
 
         case Z80_OPCODE_XYZ(2, 2, 0): /*fall-through*/
         case Z80_OPCODE_XYZ(2, 2, 1): /*fall-through*/
@@ -607,7 +607,7 @@ int z80_instruction_decode(){
         case Z80_OPCODE_XYZ(2, 2, 4): /*fall-through*/
         case Z80_OPCODE_XYZ(2, 2, 5): /*fall-through*/
         case Z80_OPCODE_XYZ(2, 2, 6): /*fall-through*/
-        case Z80_OPCODE_XYZ(2, 2, 7): return z80_op_SUB_r();               /*SUB r (size: 1)*/
+        case Z80_OPCODE_XYZ(2, 2, 7): return z80_op_SUB_r(0);              /*SUB r (size: 1)*/
 
         case Z80_OPCODE_XYZ(2, 3, 0): /*fall-through*/
         case Z80_OPCODE_XYZ(2, 3, 1): /*fall-through*/
@@ -616,7 +616,7 @@ int z80_instruction_decode(){
         case Z80_OPCODE_XYZ(2, 3, 4): /*fall-through*/
         case Z80_OPCODE_XYZ(2, 3, 5): /*fall-through*/
         case Z80_OPCODE_XYZ(2, 3, 6): /*fall-through*/
-        case Z80_OPCODE_XYZ(2, 3, 7): return z80_op_SBC_r();               /*SBC r (size: 1)*/
+        case Z80_OPCODE_XYZ(2, 3, 7): return z80_op_SBC_r(0);              /*SBC r (size: 1)*/
 
         case Z80_OPCODE_XYZ(2, 4, 0): /*fall-through*/
         case Z80_OPCODE_XYZ(2, 4, 1): /*fall-through*/
@@ -625,7 +625,7 @@ int z80_instruction_decode(){
         case Z80_OPCODE_XYZ(2, 4, 4): /*fall-through*/
         case Z80_OPCODE_XYZ(2, 4, 5): /*fall-through*/
         case Z80_OPCODE_XYZ(2, 4, 6): /*fall-through*/
-        case Z80_OPCODE_XYZ(2, 4, 7): return z80_op_AND_r();               /*AND r (size: 1)*/
+        case Z80_OPCODE_XYZ(2, 4, 7): return z80_op_AND_r(0);              /*AND r (size: 1)*/
 
         case Z80_OPCODE_XYZ(2, 5, 0): /*fall-through*/
         case Z80_OPCODE_XYZ(2, 5, 1): /*fall-through*/
@@ -634,7 +634,7 @@ int z80_instruction_decode(){
         case Z80_OPCODE_XYZ(2, 5, 4): /*fall-through*/
         case Z80_OPCODE_XYZ(2, 5, 5): /*fall-through*/
         case Z80_OPCODE_XYZ(2, 5, 6): /*fall-through*/
-        case Z80_OPCODE_XYZ(2, 5, 7): return z80_op_XOR_r();               /*XOR r (size: 1)*/
+        case Z80_OPCODE_XYZ(2, 5, 7): return z80_op_XOR_r(0);              /*XOR r (size: 1)*/
 
         case Z80_OPCODE_XYZ(2, 6, 0): /*fall-through*/
         case Z80_OPCODE_XYZ(2, 6, 1): /*fall-through*/
@@ -643,7 +643,7 @@ int z80_instruction_decode(){
         case Z80_OPCODE_XYZ(2, 6, 4): /*fall-through*/
         case Z80_OPCODE_XYZ(2, 6, 5): /*fall-through*/
         case Z80_OPCODE_XYZ(2, 6, 6): /*fall-through*/
-        case Z80_OPCODE_XYZ(2, 6, 7): return z80_op_OR_r();                 /*OR r (size: 1)*/
+        case Z80_OPCODE_XYZ(2, 6, 7): return z80_op_OR_r(0);                /*OR r (size: 1)*/
 
         case Z80_OPCODE_XYZ(2, 7, 0): /*fall-through*/
         case Z80_OPCODE_XYZ(2, 7, 1): /*fall-through*/
@@ -652,15 +652,15 @@ int z80_instruction_decode(){
         case Z80_OPCODE_XYZ(2, 7, 4): /*fall-through*/
         case Z80_OPCODE_XYZ(2, 7, 5): /*fall-through*/
         case Z80_OPCODE_XYZ(2, 7, 6): /*fall-through*/
-        case Z80_OPCODE_XYZ(2, 7, 7): return z80_op_CP_r();                 /*CP r (size: 1)*/
+        case Z80_OPCODE_XYZ(2, 7, 7): return z80_op_CP_r(0);                /*CP r (size: 1)*/
 
         //X==3
         case Z80_OPCODE_XYZ(3, 0, 0): return z80_op_RET_cc();             /*RET cc (size: 1)*/
-        case Z80_OPCODE_XPQZ(3, 0, 0, 1): return z80_op_POP_rp2();       /*POP rp2 (size: 1)*/
+        case Z80_OPCODE_XPQZ(3, 0, 0, 1): return z80_op_POP_rp2(0);      /*POP rp2 (size: 1)*/
         case Z80_OPCODE_XYZ(3, 0, 2): return Z80_STAGE_M1;             /*JP cc, nn (size: 3)*/
         case Z80_OPCODE_XYZ(3, 0, 3): return Z80_STAGE_M1;                 /*JP nn (size: 3)*/
         case Z80_OPCODE_XYZ(3, 0, 4): return Z80_STAGE_M1;           /*CALL cc, nn (size: 3)*/
-        case Z80_OPCODE_XPQZ(3, 0, 0, 5): return z80_op_PUSH_rp2();     /*PUSH rp2 (size: 1)*/
+        case Z80_OPCODE_XPQZ(3, 0, 0, 5): return z80_op_PUSH_rp2(0);    /*PUSH rp2 (size: 1)*/
         case Z80_OPCODE_XPQZ(3, 0, 0, 6): return Z80_STAGE_M1;             /*ADD n (size: 2)*/
         case Z80_OPCODE_XYZ(3, 0, 7): return z80_op_RST_y();               /*RST y (size: 1)*/
 
@@ -674,11 +674,11 @@ int z80_instruction_decode(){
         case Z80_OPCODE_XYZ(3, 1, 7): return z80_op_RST_y();               /*RST y (size: 1)*/
 
         case Z80_OPCODE_XYZ(3, 2, 0): return z80_op_RET_cc();             /*RET cc (size: 1)*/
-        case Z80_OPCODE_XPQZ(3, 1, 0, 1): return z80_op_POP_rp2();       /*POP rp2 (size: 1)*/
+        case Z80_OPCODE_XPQZ(3, 1, 0, 1): return z80_op_POP_rp2(0);      /*POP rp2 (size: 1)*/
         case Z80_OPCODE_XYZ(3, 2, 2): return Z80_STAGE_M1;             /*JP cc, nn (size: 3)*/
         case Z80_OPCODE_XYZ(3, 2, 3): return Z80_STAGE_M1;            /*OUT (n), A (size: 2)*/
         case Z80_OPCODE_XYZ(3, 2, 4): return Z80_STAGE_M1;           /*CALL cc, nn (size: 3)*/
-        case Z80_OPCODE_XPQZ(3, 1, 0, 5): return z80_op_PUSH_rp2();     /*PUSH rp2 (size: 1)*/
+        case Z80_OPCODE_XPQZ(3, 1, 0, 5): return z80_op_PUSH_rp2(0);    /*PUSH rp2 (size: 1)*/
         case Z80_OPCODE_XPQZ(3, 1, 0, 6): return Z80_STAGE_M1;             /*SUB n (size: 2)*/
         case Z80_OPCODE_XYZ(3, 2, 7): return z80_op_RST_y();               /*RST y (size: 1)*/
 
@@ -692,11 +692,11 @@ int z80_instruction_decode(){
         case Z80_OPCODE_XYZ(3, 3, 7): return z80_op_RST_y();               /*RST y (size: 1)*/
 
         case Z80_OPCODE_XYZ(3, 4, 0): return z80_op_RET_cc();             /*RET cc (size: 1)*/
-        case Z80_OPCODE_XPQZ(3, 2, 0, 1): return z80_op_POP_rp2();       /*POP rp2 (size: 1)*/
+        case Z80_OPCODE_XPQZ(3, 2, 0, 1): return z80_op_POP_rp2(0);      /*POP rp2 (size: 1)*/
         case Z80_OPCODE_XYZ(3, 4, 2): return Z80_STAGE_M1;             /*JP cc, nn (size: 3)*/
         case Z80_OPCODE_XYZ(3, 4, 3): return z80_op_EX_SPp_HL();     /*EX (SP), HL (size: 1)*/
         case Z80_OPCODE_XYZ(3, 4, 4): return Z80_STAGE_M1;           /*CALL cc, nn (size: 3)*/
-        case Z80_OPCODE_XPQZ(3, 2, 0, 5): return z80_op_PUSH_rp2();     /*PUSH rp2 (size: 1)*/
+        case Z80_OPCODE_XPQZ(3, 2, 0, 5): return z80_op_PUSH_rp2(0);    /*PUSH rp2 (size: 1)*/
         case Z80_OPCODE_XPQZ(3, 2, 0, 6): return Z80_STAGE_M1;             /*AND n (size: 2)*/
         case Z80_OPCODE_XYZ(3, 4, 7): return z80_op_RST_y();               /*RST y (size: 1)*/
 
@@ -710,11 +710,11 @@ int z80_instruction_decode(){
         case Z80_OPCODE_XYZ(3, 5, 7): return z80_op_RST_y();               /*RST y (size: 1)*/
 
         case Z80_OPCODE_XYZ(3, 6, 0): return z80_op_RET_cc();             /*RET cc (size: 1)*/
-        case Z80_OPCODE_XPQZ(3, 3, 0, 1): return z80_op_POP_rp2();       /*POP rp2 (size: 1)*/
+        case Z80_OPCODE_XPQZ(3, 3, 0, 1): return z80_op_POP_rp2(0);      /*POP rp2 (size: 1)*/
         case Z80_OPCODE_XYZ(3, 6, 2): return Z80_STAGE_M1;             /*JP cc, nn (size: 3)*/
         case Z80_OPCODE_XYZ(3, 6, 3): return z80_op_DI();                     /*DI (size: 1)*/
         case Z80_OPCODE_XYZ(3, 6, 4): return Z80_STAGE_M1;           /*CALL cc, nn (size: 3)*/
-        case Z80_OPCODE_XPQZ(3, 3, 0, 5): return z80_op_PUSH_rp2();     /*PUSH rp2 (size: 1)*/
+        case Z80_OPCODE_XPQZ(3, 3, 0, 5): return z80_op_PUSH_rp2(0);    /*PUSH rp2 (size: 1)*/
         case Z80_OPCODE_XPQZ(3, 3, 0, 6): return Z80_STAGE_M1;             /*OR  n (size: 2)*/
         case Z80_OPCODE_XYZ(3, 6, 7): return z80_op_RST_y();               /*RST y (size: 1)*/
 
@@ -780,26 +780,26 @@ int z80_instruction_decode(){
         switch (z80.opcode[0]){
 
         case Z80_OPCODE_XYZ(0, 0, 1): return Z80_STAGE_M1;             /*LD rp, nn (size: 3)*/
-        case Z80_OPCODE_XYZ(0, 0, 6): return z80_op_LD_r_n();            /*LD r, n (size: 2)*/
-        case Z80_OPCODE_XYZ(0, 1, 6): return z80_op_LD_r_n();            /*LD r, n (size: 2)*/
+        case Z80_OPCODE_XYZ(0, 0, 6): return z80_op_LD_r_n(0);           /*LD r, n (size: 2)*/
+        case Z80_OPCODE_XYZ(0, 1, 6): return z80_op_LD_r_n(0);           /*LD r, n (size: 2)*/
         case Z80_OPCODE_XYZ(0, 2, 0): return z80_op_DJNZ_d();             /*DJNZ d (size: 2)*/
         case Z80_OPCODE_XYZ(0, 2, 1): return Z80_STAGE_M1;             /*LD rp, nn (size: 3)*/
-        case Z80_OPCODE_XYZ(0, 2, 6): return z80_op_LD_r_n();            /*LD r, n (size: 2)*/
+        case Z80_OPCODE_XYZ(0, 2, 6): return z80_op_LD_r_n(0);           /*LD r, n (size: 2)*/
         case Z80_OPCODE_XYZ(0, 3, 0): return z80_op_JR_d();                 /*JR d (size: 2)*/
-        case Z80_OPCODE_XYZ(0, 3, 6): return z80_op_LD_r_n();            /*LD r, n (size: 2)*/
+        case Z80_OPCODE_XYZ(0, 3, 6): return z80_op_LD_r_n(0);           /*LD r, n (size: 2)*/
         case Z80_OPCODE_XYZ(0, 4, 0): return z80_op_JR_cc_d();           /*JR cc, d (size 2)*/
         case Z80_OPCODE_XYZ(0, 4, 1): return Z80_STAGE_M1;             /*LD rp, nn (size: 3)*/
-        case Z80_OPCODE_XYZ(0, 4, 6): return z80_op_LD_r_n();            /*LD r, n (size: 2)*/
+        case Z80_OPCODE_XYZ(0, 4, 6): return z80_op_LD_r_n(0);           /*LD r, n (size: 2)*/
         case Z80_OPCODE_XPQZ(0, 2, 0, 2): return Z80_STAGE_M1;       /*LD (nn), HL (size: 3)*/
         case Z80_OPCODE_XYZ(0, 5, 0): return z80_op_JR_cc_d();           /*JR cc, d (size 2)*/
         case Z80_OPCODE_XPQZ(0, 2, 1, 2): return Z80_STAGE_M1;       /*LD HL, (nn) (size: 3)*/
-        case Z80_OPCODE_XYZ(0, 5, 6): return z80_op_LD_r_n();            /*LD r, n (size: 2)*/
+        case Z80_OPCODE_XYZ(0, 5, 6): return z80_op_LD_r_n(0);           /*LD r, n (size: 2)*/
         case Z80_OPCODE_XYZ(0, 6, 0): return z80_op_JR_cc_d();           /*JR cc, d (size 2)*/
         case Z80_OPCODE_XYZ(0, 6, 1): return Z80_STAGE_M1;             /*LD rp, nn (size: 3)*/
-        case Z80_OPCODE_XYZ(0, 6, 6): return z80_op_LD_r_n();            /*LD r, n (size: 2)*/
+        case Z80_OPCODE_XYZ(0, 6, 6): return z80_op_LD_r_n(0);           /*LD r, n (size: 2)*/
         case Z80_OPCODE_XPQZ(0, 3, 0, 2): return Z80_STAGE_M1;        /*LD (nn), A (size: 3)*/
         case Z80_OPCODE_XYZ(0, 7, 0): return z80_op_JR_cc_d();           /*JR cc, d (size 2)*/
-        case Z80_OPCODE_XYZ(0, 7, 6): return z80_op_LD_r_n();            /*LD r, n (size: 2)*/
+        case Z80_OPCODE_XYZ(0, 7, 6): return z80_op_LD_r_n(0);           /*LD r, n (size: 2)*/
         case Z80_OPCODE_XPQZ(0, 3, 1, 2): return Z80_STAGE_M1;        /*LD A, (nn) (size: 3)*/
         case Z80_OPCODE_XYZ(3, 0, 2): return Z80_STAGE_M1;             /*JP cc, nn (size: 3)*/
         case Z80_OPCODE_XYZ(3, 0, 3): return Z80_STAGE_M1;                 /*JP nn (size: 3)*/
@@ -849,10 +849,10 @@ int z80_instruction_decode(){
         switch (z80.opcode[0]){
         case Z80_OPCODE_XYZ(0, 0, 1): /*fall-through*/                 /*LD rp, nn (size: 3)*/
         case Z80_OPCODE_XYZ(0, 2, 1): /*fall-through*/                 /*LD rp, nn (size: 3)*/
-        case Z80_OPCODE_XYZ(0, 4, 1): return z80_op_LD_rp_nn();        /*LD rp, nn (size: 3)*/
+        case Z80_OPCODE_XYZ(0, 4, 1): return z80_op_LD_rp_nn(0);       /*LD rp, nn (size: 3)*/
         case Z80_OPCODE_XPQZ(0, 2, 0, 2): return z80_op_LD_nnp_HL(); /*LD (nn), HL (size: 3)*/
         case Z80_OPCODE_XPQZ(0, 2, 1, 2): return z80_op_LD_HL_nnp(); /*LD HL, (nn) (size: 3)*/
-        case Z80_OPCODE_XYZ(0, 6, 1): return z80_op_LD_rp_nn();        /*LD rp, nn (size: 3)*/
+        case Z80_OPCODE_XYZ(0, 6, 1): return z80_op_LD_rp_nn(0);       /*LD rp, nn (size: 3)*/
         case Z80_OPCODE_XPQZ(0, 3, 0, 2): return z80_op_LD_nnp_A();   /*LD (nn), A (size: 3)*/
         case Z80_OPCODE_XPQZ(0, 3, 1, 2): return z80_op_LD_A_nnp();   /*LD A, (nn) (size: 3)*/
         case Z80_OPCODE_XYZ(3, 0, 2): return z80_op_JP_cc_nn();        /*JP cc, nn (size: 3)*/

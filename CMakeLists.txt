@@ -10,17 +10,21 @@ enable_language (CXX)
 
 # --- Enable C99 on GCC
 if (CMAKE_COMPILER_IS_GNUCC)
-    SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99")
+    SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Werror -std=c99")
 endif (CMAKE_COMPILER_IS_GNUCC)
 
 # --- Enable C++11 on G++
 if (CMAKE_COMPILER_IS_GNUCXX)
-    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror -std=c++11")
 endif (CMAKE_COMPILER_IS_GNUCXX)
 
-# --- Tell MSVC to shut the fuck up about _CRT_SECURE_NO_WARNINGS
+# --- MSVC configs
 if (MSVC)
+    #Tell MSVC to shut the fuck up about _CRT_SECURE_NO_WARNINGS.
     add_definitions( -D_CRT_SECURE_NO_WARNINGS )
+    #Make it a little more verbose and set warnings-as-errors.
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W3 /WX")
+    SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /W3 /WX")
 endif (MSVC)
 
 # --- Enable OpenMP if available
