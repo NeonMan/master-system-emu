@@ -190,28 +190,32 @@ int z80_op_CCF(){
 }
 
 ///CPD; Size: 2; Flags: ???
-int z80_op_CPD(){
+int z80_op_CPD(uint8_t prefixed){
+    assert(prefixed == 0); //<-- Prefix unimplemented
     assert(z80.opcode_index == 2);
     assert(0); ///<-- Unimplemented
     return Z80_STAGE_RESET;
 }
 
 ///CPI; Size: 2; Flags: ???
-int z80_op_CPI(){
+int z80_op_CPI(uint8_t prefixed){
+    assert(prefixed == 0); //<-- Prefix unimplemented
     assert(z80.opcode_index == 2);
     assert(0); ///<-- Unimplemented
     return Z80_STAGE_RESET;
 }
 
 ///CPDR; Size: 2; Flags: ???
-int z80_op_CPDR(){
+int z80_op_CPDR(uint8_t prefixed){
+    assert(prefixed == 0); //<-- Prefix unimplemented
     assert(z80.opcode_index == 2);
     assert(0); ///<-- Unimplemented
     return Z80_STAGE_RESET;
 }
 
 ///CPIR; Size: 2; Flags: ???
-int z80_op_CPIR(){
+int z80_op_CPIR(uint8_t prefixed){
+    assert(prefixed == 0); //<-- Prefix unimplemented
     assert(z80.opcode_index == 2);
     assert(0); ///<-- Unimplemented
     return Z80_STAGE_RESET;
@@ -471,28 +475,32 @@ int z80_op_INC_rp(uint8_t prefixed){
 }
 
 ///IND; Size: 2; Flags: ???
-int z80_op_IND(){
+int z80_op_IND(uint8_t prefixed){
+    assert(prefixed == 0); //<-- Prefix unimplemented
     assert(z80.opcode_index == 2);
     assert(0); ///<-- Unimplemented
     return Z80_STAGE_RESET;
 }
 
 ///INDR; Size: 2; Flags: ???
-int z80_op_INDR(){
+int z80_op_INDR(uint8_t prefixed){
+    assert(prefixed == 0); //<-- Prefix unimplemented
     assert(z80.opcode_index == 2);
     assert(0); ///<-- Unimplemented
     return Z80_STAGE_RESET;
 }
 
 ///INI; Size: 2; Flags: ???
-int z80_op_INI(){
+int z80_op_INI(uint8_t prefixed){
+    assert(prefixed == 0); //<-- Prefix unimplemented
     assert(z80.opcode_index == 2);
     assert(0); ///<-- Unimplemented
     return Z80_STAGE_RESET;
 }
 
 ///INIR; Size: 2; Flags: ???
-int z80_op_INIR(){
+int z80_op_INIR(uint8_t prefixed){
+    assert(prefixed == 0); //<-- Prefix unimplemented
     assert(z80.opcode_index == 2);
     assert(0); ///<-- Unimplemented
     return Z80_STAGE_RESET;
@@ -798,28 +806,32 @@ int z80_op_LD_nnp_HL(){
 }
 
 ///LDD; Size: 2; Flags: ???
-int z80_op_LDD(){
+int z80_op_LDD(uint8_t prefixed){
+    assert(prefixed == 0); //<-- Prefix unimplemented
     assert(z80.opcode_index == 2);
     assert(0); ///<-- Unimplemented
     return Z80_STAGE_RESET;
 }
 
 ///LDI; Size: 2; Flags: ???
-int z80_op_LDI(){
+int z80_op_LDI(uint8_t prefixed){
+    assert(prefixed == 0); //<-- Prefix unimplemented
     assert(z80.opcode_index == 2);
     assert(0); ///<-- Unimplemented
     return Z80_STAGE_RESET;
 }
 
 ///LDDR; Size: 2; Flags: ???
-int z80_op_LDDR(){
+int z80_op_LDDR(uint8_t prefixed){
+    assert(prefixed == 0); //<-- Prefix unimplemented
     assert(z80.opcode_index == 2);
     assert(0); ///<-- Unimplemented
     return Z80_STAGE_RESET;
 }
 
 ///LDIR; Size: 2; Flags: H,P,N (cleared)
-int z80_op_LDIR(){
+int z80_op_LDIR(uint8_t prefixed){
+    assert(prefixed == 0); //<-- Prefix unimplemented
     assert(z80.opcode_index == 2);
     //(DE) <-- (HL); ++DE; ++HL; --BC; BC? repeat : end;
     //Perform a read
@@ -901,14 +913,16 @@ int z80_op_OR_r(uint8_t prefixed){
 }
 
 ///OTDR; Size: 2; Flags: ???
-int z80_op_OTDR(){
+int z80_op_OTDR(uint8_t prefixed){
+    assert(prefixed == 0); //<-- Prefix unimplemented
     assert(z80.opcode_index == 2);
     assert(0); ///<-- Unimplemented
     return Z80_STAGE_RESET;
 }
 
 ///OTIR; Size: 2; Flags: Z,N
-int z80_op_OTIR(){
+int z80_op_OTIR(uint8_t prefixed){
+    assert(prefixed == 0); //<-- Prefix unimplemented
     assert(z80.opcode_index == 2);
     //(C)<-(HL), B<-B – 1, HL<-HL + 1; B? repeat : end
     //Perform read
@@ -969,14 +983,16 @@ int z80_op_OUT_Cp_r(){
 }
 
 ///OUTD; Size: 2; Flags: ???
-int z80_op_OUTD(){
+int z80_op_OUTD(uint8_t prefixed){
+    assert(prefixed == 0); //<-- Prefix unimplemented
     assert(z80.opcode_index == 2);
     assert(0); ///<-- Unimplemented
     return Z80_STAGE_RESET;
 }
 
 ///OUTI; Size: 2; Flags: ???
-int z80_op_OUTI(){
+int z80_op_OUTI(uint8_t prefixed){
+    assert(prefixed == 0); //<-- Prefix unimplemented
     assert(z80.opcode_index == 2);
     assert(0); ///<-- Unimplemented
     return Z80_STAGE_RESET;
