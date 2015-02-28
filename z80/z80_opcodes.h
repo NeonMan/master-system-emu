@@ -132,16 +132,4 @@ int z80_op_SUB_r(uint8_t prefixed);
 int z80_op_XOR_n();
 int z80_op_XOR_r(uint8_t prefixed);
 
-/* ---------------------------------- */
-/* --- 0xDD/0xFD prefixed opcodes --- */
-/* ---------------------------------- */
-
-// Empty
-
-/* -------------------------------------- */
-/* --- 0xDDCB/0xFDCB prefixed opcodes --- */
-/* -------------------------------------- */
-
-// Empty
-
 #endif

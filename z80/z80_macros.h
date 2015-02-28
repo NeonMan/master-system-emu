@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 // 
-// http ://www.apache.org/licenses/LICENSE-2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 // 
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -157,7 +157,7 @@ const uint8_t q[4] = { z80.opcode[0] & (1 << 3), z80.opcode[1] & (1 << 3), z80.o
 #define Z80_SETFLAG_ADD(A) (A ? 0 : (1<<1)) /**<-- [N] Set Add/Subtract flag (bit 1)*/
 #define Z80_SETFLAG_CARRY(O,N) (O > N ? 1 : 0) /**<-- [C] Set Carry flag, adition (bit 0)*/
 #define Z80_SETFLAG_BORROW(O,N) (O < N ? 1 : 0) /**<-- [C] Set carry flag, subtraction, (bit 0)*/
-///@bug Deacimal Adjust Accumulate is not implemented
+///@bug Decimal Adjust Accumulate is not implemented
 
 // --- Flag masks
 #define Z80_FLAG_SIGN   (1<<7)
@@ -186,6 +186,16 @@ const uint8_t q[4] = { z80.opcode[0] & (1 << 3), z80.opcode[1] & (1 << 3), z80.o
 #define Z80_BREAK_IO_RD  (1 << 3) /*Break on IO read*/
 #define Z80_BREAK_IO_WR  (1 << 4) /*Break on IO write*/
 #define Z80_BREAK_IO_16B (1 << 5) /*Use 16-bit IO Addressing*/
+
+// --- IX/IY register lut selection macros ---
+//This macros provide a pointer to the IX/IY version of the register
+//look-up tables. It is presumed a z80 struct is present wherever
+//this macro is invoked. Note that any non-0xDD prefix will be
+//considered a 0xFD prefix so the decoder must discriminate invalid
+//prefixes first.  Return type is `uint16_t* const *`
+#define Z80_PREFIX_R_LUT   (((z80.opcode[0]) == 0xDD) ? z80_r_ix : z80_r_iy)
+#define Z80_PREFIX_RP_LUT  (((z80.opcode[0]) == 0xDD) ? z80_rp_ix : z80_rp_iy) 
+#define Z80_PREFIX_RP2_LUT (((z80.opcode[0]) == 0xDD) ? z80_rp2_ix : z80_rp2_iy) 
 
 // --- Constants ---
 #define Z80_ADDRESS_SIZE (65536) /*Address space. 2^16*/
