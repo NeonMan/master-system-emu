@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 // 
-// http ://www.apache.org/licenses/LICENSE-2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 // 
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -661,25 +661,46 @@ int z80_op_LD_DEp_A(){
 
 ///LD (nn), rp; Size:4; Flags: ??
 int z80_op_LD_nnp_rp(uint8_t prefixed){
-    assert(prefixed == 0); //<-- Unimplemented prefixed opcodes
-    assert(z80.opcode_index == 4);
     Z80_OPCODE_SUBDIV;
-    
-    if (z80.write_index == 0){
-        //First write
-        *((uint16_t*)z80.write_buffer) = *((uint16_t*)(z80_rp[p[1]]));
-        z80.write_address = (z80.opcode[2]) + (((uint16_t) z80.opcode[3]) << 8);
-        return Z80_STAGE_M3;
-    }
-    else if (z80.write_index == 1){
-        ++(z80.write_address);
-        return Z80_STAGE_M3;
+    assert(0); ///<-- @Quarantined. Opcode size mismatch
+    return Z80_STAGE_RESET;
+    /*
+    if (!prefixed){
+        //Unprefixed opcode 
+        assert(z80.opcode_index == 3);
+        if (z80.write_index == 0){
+            //First write
+            *((uint16_t*)z80.write_buffer) = *((uint16_t*)(z80_rp[p[1]]));
+            z80.write_address = (z80.opcode[2]) + (((uint16_t)z80.opcode[3]) << 8);
+            return Z80_STAGE_M3;
+        }
+        if (z80.write_index == 1){
+            ++(z80.write_address);
+            return Z80_STAGE_M3;
+        }
+        else{
+            return Z80_STAGE_RESET;
+        }
     }
     else{
-        return Z80_STAGE_RESET;
+        //Prefixed opcode
+        uint16_t* const *p_rp = Z80_PREFIX_RP_LUT; //<-- Get the required register LUT
+        assert(z80.opcode_index == 4);
+        if (z80.write_index == 0){
+            //First write
+            *((uint16_t*)z80.write_buffer) = *((uint16_t*)(p_rp[p[1]]));
+            z80.write_address = (z80.opcode[3]) + (((uint16_t)z80.opcode[4]) << 8);
+            return Z80_STAGE_M3;
+        }
+        if (z80.write_index == 1){
+            ++(z80.write_address);
+            return Z80_STAGE_M3;
+        }
+        else{
+            return Z80_STAGE_RESET;
+        }
     }
-    
-    return Z80_STAGE_RESET;
+    */
 }
 
 ///LD R, A; Size: 2; Flags: ???

@@ -46,6 +46,7 @@ add_subdirectory (io)
 add_subdirectory (vdp)
 add_subdirectory (sdsc)
 add_subdirectory (sms-ui)
+add_subdirectory (test)
 #z80 tests not CMake-ready yet
 #add_subdirectory (z80tests)
 
