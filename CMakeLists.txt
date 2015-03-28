@@ -34,6 +34,9 @@ if (OPENMP_FOUND)
     set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
 endif(OPENMP_FOUND)
 
+# --- Find python3 for unit tests ---
+find_package(PythonInterp 3)
+
 # --- Dependencies ---
 include_directories(${PROJECT_SOURCE_DIR})
 add_subdirectory (glue)
@@ -46,7 +49,10 @@ add_subdirectory (io)
 add_subdirectory (vdp)
 add_subdirectory (sdsc)
 add_subdirectory (sms-ui)
-add_subdirectory (test)
+if (PYTHONINTERP_FOUND)
+  add_subdirectory (test)
+endif (PYTHONINTERP_FOUND)
+
 #z80 tests not CMake-ready yet
 #add_subdirectory (z80tests)
 

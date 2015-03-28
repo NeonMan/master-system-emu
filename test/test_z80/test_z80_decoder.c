@@ -30,13 +30,13 @@
 #include <string.h>
 
 //Test macros
-#define TEST_AF(E,F)  TEST_ASSERT_EQUAL(E.rAF[0],F.rAF[0]);  TEST_ASSERT_EQUAL(E.rAF[1],F.rAF[1]);
+#define TEST_AF(E,F)  TEST_ASSERT_EQUAL(E.rAF[0], F.rAF[0]); TEST_ASSERT_EQUAL(E.rAF[1], F.rAF[1]);
 #define TEST_AFp(E,F) TEST_ASSERT_EQUAL(E.rAF[2], F.rAF[2]); TEST_ASSERT_EQUAL(E.rAF[3], F.rAF[3]);
-#define TEST_BC(E,F)  TEST_ASSERT_EQUAL(E.rBC[0],F.rBC[0]);  TEST_ASSERT_EQUAL(E.rBC[1],F.rBC[1]);
+#define TEST_BC(E,F)  TEST_ASSERT_EQUAL(E.rBC[0], F.rBC[0]); TEST_ASSERT_EQUAL(E.rBC[1], F.rBC[1]);
 #define TEST_BCp(E,F) TEST_ASSERT_EQUAL(E.rBC[2], F.rBC[2]); TEST_ASSERT_EQUAL(E.rBC[3], F.rBC[3]);
-#define TEST_DE(E,F)  TEST_ASSERT_EQUAL(E.rDE[0],F.rDE[0]);  TEST_ASSERT_EQUAL(E.rDE[1],F.rDE[1]);
+#define TEST_DE(E,F)  TEST_ASSERT_EQUAL(E.rDE[0], F.rDE[0]); TEST_ASSERT_EQUAL(E.rDE[1], F.rDE[1]);
 #define TEST_DEp(E,F) TEST_ASSERT_EQUAL(E.rDE[2], F.rDE[2]); TEST_ASSERT_EQUAL(E.rDE[3], F.rDE[3]);
-#define TEST_HL(E,F)  TEST_ASSERT_EQUAL(E.rHL[0],F.rHL[0]);  TEST_ASSERT_EQUAL(E.rHL[1],F.rHL[1]);
+#define TEST_HL(E,F)  TEST_ASSERT_EQUAL(E.rHL[0], F.rHL[0]); TEST_ASSERT_EQUAL(E.rHL[1], F.rHL[1]);
 #define TEST_HLp(E,F) TEST_ASSERT_EQUAL(E.rHL[2], F.rHL[2]); TEST_ASSERT_EQUAL(E.rHL[3], F.rHL[3]);
 
 #define TEST_PC(E,F)  TEST_ASSERT_EQUAL(E.rPC,F.rPC);
@@ -88,16 +88,40 @@ TEST_TEAR_DOWN(unprefixed){
 
 //NOP
 TEST(unprefixed, opcode_NOP){
-    z80.opcode[0] = 0x00;
+    z80.opcode[0]    = 0x00;
     z80.opcode_index = 1;
     z80_expected = z80;
     TEST_ASSERT_EQUAL(Z80_STAGE_RESET, z80_instruction_decode());
     TEST_REGS(z80_expected, z80);
 }
 
+//EX AF, AF'
+TEST(unprefixed, opcode_EX_AF_AFp){
+    z80.opcode[0]    = Z80_OPCODE_XYZ(0, 1, 0);
+    z80.opcode_index = 1;
+    Z80_A = 0xAA; Z80_Ap = 0xBB;
+    Z80_F = 0x55; Z80_Fp = 0x66;
+    TEST_ASSERT_EQUAL(Z80_STAGE_RESET, z80_instruction_decode());
+    TEST_ASSERT_EQUAL(0xBB, Z80_A);
+    TEST_ASSERT_EQUAL(0xAA, Z80_Ap);
+    TEST_ASSERT_EQUAL(0x66, Z80_F);
+    TEST_ASSERT_EQUAL(0x55, Z80_Fp);
+}
+
+//DJNZ
+IGNORE_TEST(unprefixed, opcode_DJNZ_d){
+    //DJNZ 16
+    z80.opcode[0] = Z80_OPCODE_XYZ(0, 2, 0);
+    z80.opcode[1] = 16;
+    z80.opcode_index = 2;
+
+}
+
 // --- Test runner ---
 TEST_GROUP_RUNNER(unprefixed){
     RUN_TEST_CASE(unprefixed, opcode_NOP);
+    RUN_TEST_CASE(unprefixed, opcode_EX_AF_AFp);
+    RUN_TEST_CASE(unprefixed, opcode_DJNZ_d);
 }
 
 // ----------------------
