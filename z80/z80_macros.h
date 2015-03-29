@@ -157,7 +157,7 @@ const uint8_t q[4] = { z80.opcode[0] & (1 << 3), z80.opcode[1] & (1 << 3), z80.o
 
 
 // --- Flag update macros
-#define Z80_SETFLAG_SIGN(X) (((X)<0) ? (1 << 7) : 0) /**<-- [S] Set sign flag (bit 7)*/
+#define Z80_SETFLAG_SIGN(X) (((X)&(1<<7)) ? (1 << 7) : 0) /**<-- [S] Set sign flag (bit 7)*/
 #define Z80_SETFLAG_ZERO(X) (((X) == 0) ? (1 << 6) : 0) /**<-- [Z] Set Zero flag (bit 6)*/
 #define Z80_SETFLAG_HC(O,N) (((O & (1 << 3)) == 0) && ((N) & (1 << 3)) ? (1 << 4) : 0) /**<-- [H] Set Half-carry flag (bit 4)*/
 #define Z80_SETFLAG_PARITY(X) (z80_parity_lut[X]) /**<-- [P] Set parity flag (bit 2)*/
