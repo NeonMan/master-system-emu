@@ -108,8 +108,23 @@ TEST(z80_macros, pins){
     TEST_ASSERT_EQUAL_HEX8(0x55, Z80_ADDRL);
 }
 
-IGNORE_TEST(z80_macros, flags){
+TEST(z80_macros, flags){
+    /*Carry*/
+    /*Add/Subtract*/
+    /*Parity/Overflow*/
+    /*Half-carry*/
 
+    /*Zero*/
+    TEST_ASSERT_EQUAL(0, Z80_SETFLAG_ZERO(0xFF));
+    TEST_ASSERT_EQUAL(Z80_FLAG_ZERO, Z80_SETFLAG_ZERO(0x00));
+    TEST_ASSERT_EQUAL(0, Z80_SETFLAG_ZERO(0x01));
+    /*Sign*/
+    TEST_ASSERT_EQUAL(Z80_FLAG_SIGN, Z80_SETFLAG_SIGN((uint8_t)((int8_t)-128)));
+    TEST_ASSERT_EQUAL(Z80_FLAG_SIGN, Z80_SETFLAG_SIGN((uint8_t)((int8_t)-1)));
+    TEST_ASSERT_EQUAL(0, Z80_SETFLAG_SIGN((uint8_t)((int8_t)127)));
+    TEST_ASSERT_EQUAL(0, Z80_SETFLAG_SIGN((uint8_t)((int8_t)0)));
+
+    TEST_FAIL_MESSAGE("Test is not complete.");
 }
 
 IGNORE_TEST(z80_macros, register_lut){
