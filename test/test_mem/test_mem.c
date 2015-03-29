@@ -129,5 +129,11 @@ int main(int argc, char**argv){
         printf("--- RAM Error ---\n");
 
     free(full_rom);
-    return 0;
+
+    if (all_ok){
+        return 0;
+    }
+    else{
+        return -1;
+    }
 }

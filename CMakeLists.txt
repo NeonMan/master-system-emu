@@ -7,6 +7,7 @@ project (SMS-Emu)
 # --- Explicitly enable C
 enable_language (C)
 enable_language (CXX)
+enable_testing()
 
 # --- Enable C99 on GCC
 if (CMAKE_COMPILER_IS_GNUCC)
@@ -61,10 +62,6 @@ endif (PYTHONINTERP_FOUND)
 # --- psg-play
 add_executable (psg-play psg-play.c)
 target_link_libraries (psg-play psg SDL2 SDL2main)
-
-# --- test-mem
-add_executable (test-mem test-mem.c)
-target_link_libraries (test-mem smsrom smsio smsram)
 
 # --- test-vdp (SDL2 is presumed to be available)
 add_executable (test-vdp test-vdp.c)
