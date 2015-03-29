@@ -51,6 +51,7 @@ const uint8_t y[4] = { (z80.opcode[0] >> 3) & 0x7, (z80.opcode[1] >> 3) & 0x7, (
 const uint8_t z[4] = { z80.opcode[0] & 0x7, z80.opcode[1] & 0x7, z80.opcode[2] & 0x7, z80.opcode[3] & 0x7 };\
 const uint8_t p[4] = { (z80.opcode[0] >> 4) & 0x3, (z80.opcode[1] >> 4) & 0x3, (z80.opcode[2] >> 4) & 0x3, (z80.opcode[3] >> 4) & 0x3 };\
 const uint8_t q[4] = { z80.opcode[0] & (1 << 3), z80.opcode[1] & (1 << 3), z80.opcode[2] & (1 << 3), z80.opcode[3] & (1 << 3) };
+//------------------------
 
 //Stage enumerations
 #define Z80_STAGE_RESET 0
@@ -69,22 +70,29 @@ const uint8_t q[4] = { z80.opcode[0] & (1 << 3), z80.opcode[1] & (1 << 3), z80.o
 #define Z80_ALUOP_CP  7
 
 //Sub-byte opcode masks
-#define Z80_OPCODE_X(X) (((X&0x3)<<6))
-#define Z80_OPCODE_Y(Y) (((Y&0x7)<<3))
-#define Z80_OPCODE_XZ(X,Z) (((X&0x3)<<6)|(Z&0x7))
-#define Z80_OPCODE_YZ(Y,Z) (((Y&0x7)<<3)|(Z&0x7))
-#define Z80_OPCODE_XYZ(X,Y,Z) ( ((X&0x3)<<6) | ((Y&0x7)<<3) | (Z&0x7) )
-#define Z80_OPCODE_XPQZ(X,P,Q,Z) (Z80_OPCODE_XYZ(X,0,Z) | ((P&0x3)<<4) | ((Q&0x1)<<3))
+#define Z80_OPCODE_X(X) ((X&0x03)<<6)
+#define Z80_OPCODE_Y(Y) ((Y&0x07)<<3)
+#define Z80_OPCODE_Z(Z) ((Z&0x07))
+#define Z80_OPCODE_P(P) ((P&0x03)<<4)
+#define Z80_OPCODE_Q(Q) ((Q&0x01)<<3)
+
+#define Z80_OPCODE_XYZ(X,Y,Z)    (Z80_OPCODE_X(X) | Z80_OPCODE_Y(Y) | Z80_OPCODE_Z(Z))
+#define Z80_OPCODE_XPQZ(X,P,Q,Z) (Z80_OPCODE_XYZ(X,0,Z) | Z80_OPCODE_P(P) | Z80_OPCODE_Q(Q))
+#define Z80_OPCODE_XZ(X,Z)       (Z80_OPCODE_XYZ(X,0,Z))
+#define Z80_OPCODE_YZ(Y,Z)       (Z80_OPCODE_XYZ(0,Y,Z))
+
 #define Z80_OPCODE_X_MASK (3<<6)
 #define Z80_OPCODE_Y_MASK (7<<3)
 #define Z80_OPCODE_Z_MASK (7)
+#define Z80_OPCODE_P_MASK (3<<4)
+#define Z80_OPCODE_Q_MASK (1<<3)
 
 //Register macros. *BEWARE* some macros are endianness sensitive!
 //Little endian (x86) is presumed unless noted otherwise.
 
 //Address H/L
-#define Z80_ADDRH (*((uint8_t*)(&z80_address)))
-#define Z80_ADDRL (*((uint8_t*)((&z80_address) + 1)))
+#define Z80_ADDRL (*((uint8_t*)(&z80_address)))
+#define Z80_ADDRH (*(((uint8_t*)(&z80_address)) + 1))
 
 //I (endianness insensitive)
 #define Z80_I  (z80.rI)
@@ -93,10 +101,10 @@ const uint8_t q[4] = { z80.opcode[0] & (1 << 3), z80.opcode[1] & (1 << 3), z80.o
 #define Z80_R  (z80.rR)
 
 //AF
-#define Z80_A  (z80.rAF[0])
-#define Z80_Ap (z80.rAF[2])
-#define Z80_F  (z80.rAF[1])
-#define Z80_Fp (z80.rAF[3])
+#define Z80_A  (z80.rAF[1])
+#define Z80_Ap (z80.rAF[3])
+#define Z80_F  (z80.rAF[0])
+#define Z80_Fp (z80.rAF[2])
 #define Z80_AF  (*((uint16_t*) z80.rAF))
 #define Z80_AFp (*((uint16_t*) (z80.rAF + 2)))
 
@@ -139,10 +147,10 @@ const uint8_t q[4] = { z80.opcode[0] & (1 << 3), z80.opcode[1] & (1 << 3), z80.o
 #define Z80_PC z80.rPC
 
 //Index bytes
-#define Z80_IXH (*((uint8_t*)&Z80_IX))
-#define Z80_IXL (*((uint8_t*)(&Z80_IX + 1)))
-#define Z80_IYH (*((uint8_t*)&Z80_IY))
-#define Z80_IYL (*((uint8_t*)(&Z80_IY + 1)))
+#define Z80_IXL (*((uint8_t*)&Z80_IX))
+#define Z80_IXH (*(((uint8_t*)&Z80_IX) + 1))
+#define Z80_IYL (*((uint8_t*)&Z80_IY))
+#define Z80_IYH (*(((uint8_t*)&Z80_IY) + 1))
 
 //IX/IY selection macro. IX if param == 0xDD use IX; IY otherwise.
 #define Z80_INDIRECT(PREFIX) (*(PREFIX == 0xDD ? &Z80_IX : &Z80_IY))
