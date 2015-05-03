@@ -26,12 +26,14 @@ doxygen\/
 \.bin$
 \.sms$
 \.user$
-\.sym
-\.link
-\.exe
+\.sym$
+\.link$
+\.exe$
+\.cbp$
 
 #Other
 Makefile$
+err\.txt$
 
 syntax: glob
 
@@ -47,3 +49,4 @@ sms-ui/smsui
 test/test_mem/test_mem
 test/test_z80/test_z80_decoder
 test/test_z80/test_z80_macros
+
