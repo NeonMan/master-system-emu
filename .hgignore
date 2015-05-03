@@ -41,3 +41,9 @@ CMakeCache.txt
 #Executables
 psg-play
 test-mem
+emu
+test-vdp
+sms-ui/smsui
+test/test_mem/test_mem
+test/test_z80/test_z80_decoder
+test/test_z80/test_z80_macros
