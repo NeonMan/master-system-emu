@@ -397,7 +397,7 @@ int z80_decode_ED(){
         case Z80_OPCODE_XPQZ(1, 0, 0, 3): /*fall-through*/
         case Z80_OPCODE_XPQZ(1, 1, 0, 3): /*fall-through*/
         case Z80_OPCODE_XPQZ(1, 2, 0, 3): /*fall-through*/
-        case Z80_OPCODE_XPQZ(1, 3, 0, 3): return z80_op_LD_nnp_rp(); /*LD (nn), rp (Size: 4)*/
+        case Z80_OPCODE_XPQZ(1, 3, 0, 3): return z80_op_LD_nnp_rp(0xED); /*LD (nn), rp (Size: 4)*/
         case Z80_OPCODE_XPQZ(1, 0, 1, 3): /*fall-through*/
         case Z80_OPCODE_XPQZ(1, 1, 1, 3): /*fall-through*/
         case Z80_OPCODE_XPQZ(1, 2, 1, 3): /*fall-through*/

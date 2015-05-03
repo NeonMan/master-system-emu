@@ -82,7 +82,7 @@ int z80_op_LD_HL_nnp();
 int z80_op_LD_I_A();
 int z80_op_LD_nnp_A();
 int z80_op_LD_nnp_HL();
-int z80_op_LD_nnp_rp();
+int z80_op_LD_nnp_rp(uint8_t prefixed);
 int z80_op_LD_rp_nn(uint8_t prefixed);
 int z80_op_LD_rp_nnp();
 int z80_op_LD_R_A();
