@@ -1,4 +1,4 @@
-// Copyright 2015 Juan Luis ¡lvarez MartÌnez
+// Copyright 2015 Juan Luis √Ålvarez Mart√≠nez
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -102,12 +102,12 @@ int emu_init(){
     if (!in_f){
         emu_log("Unable to open ROM:", EMU_LOG_CRITICAL);
         emu_log(f_path ? f_path : f_default, EMU_LOG_CRITICAL);
-        exit(-1);
+        quick_exit(-1);
     }
     uint8_t* read_buffer = (uint8_t*) malloc(ROM_MAX_SIZE);
     if (!read_buffer){
         emu_log("Unable to allocate read buffer.", EMU_LOG_CRITICAL);
-        exit(-1);
+        quick_exit(-1);
     }
     memset(read_buffer, 0, ROM_MAX_SIZE);
     fread(read_buffer, 1, ROM_MAX_SIZE, in_f);
