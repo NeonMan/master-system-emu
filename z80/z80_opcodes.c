@@ -1,4 +1,4 @@
-// Copyright 2015 Juan Luis ¡lvarez MartÌnez
+// Copyright 2015 Juan Luis √Ålvarez Mart√≠nez
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -945,7 +945,7 @@ int z80_op_OTDR(uint8_t prefixed){
 int z80_op_OTIR(uint8_t prefixed){
     assert(prefixed == 0); //<-- Prefix unimplemented
     assert(z80.opcode_index == 2);
-    //(C)<-(HL), B<-B ñ 1, HL<-HL + 1; B? repeat : end
+    //(C)<-(HL), B<-B ‚Äì 1, HL<-HL + 1; B? repeat : end
     //Perform read
     if (z80.read_index == 0){
         z80.read_address = Z80_HL;
