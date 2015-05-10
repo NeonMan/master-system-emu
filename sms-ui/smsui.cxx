@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <stdint.h>
-#include <stdlib.h>
-#include <stdio.h>
+#include <cstdint>
+#include <cstdlib>
+#include <cstdio>
 #include <iostream>
 #include <SDL2/SDL.h>
-#include <assert.h>
-#include <time.h>
+#include <cassert>
+#include <ctime>
 
 
 //FLTK and dialogs
@@ -39,6 +39,10 @@
 #include <z80/z80.h>
 #include "sms-emu.h" /*<-- Refactor me!*/
 
+#ifdef _WIN32
+#define quick_exit exit
+#endif
+
 //Control variables
 uint8_t is_running = 1; //<-- When this becomes false, the app exits
 uint32_t is_clocked = 0; //<-- When this becames false, the execution is paused.
@@ -57,6 +61,8 @@ uint32_t is_clocked = 0; //<-- When this becames false, the execution is paused.
     if (!dlg_z80->windowDialog->shown()) \
         is_running = 0; \
 }
+
+using namespace std;
 
 void emu_log(const char* msg, int level){
     std::cerr << "[" << emu_logelvel_names[level][0] << "] " << msg << std::endl;
