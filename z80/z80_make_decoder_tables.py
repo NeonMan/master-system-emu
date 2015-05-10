@@ -186,6 +186,11 @@ def gen_opcode_xxcb(ops, pref):
 # ------------
 if __name__ == '__main__':
   rv = 0
+  print(sys.argv)
+  if len(sys.argv) >= 2:
+    IN_NAME = sys.argv[1]
+  if len(sys.argv) >= 3:
+    OUT_NAME = sys.argv[2]
   f_in  = open(IN_NAME, 'r')
   ops = []
   #Parse CSV file
