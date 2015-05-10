@@ -30,6 +30,7 @@ doxygen\/
 \.link$
 \.exe$
 \.cbp$
+\.orig$
 
 #Other
 Makefile$
