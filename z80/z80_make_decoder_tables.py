@@ -146,7 +146,7 @@ def gen_opcode_xx(ops, pref):
       if ((op.pattern[0] == 0xDD) or (op.pattern[0] == 0xFD)) and ((op.pattern[1] == 0xCB) or (op.pattern[1] == 0xED)):
         continue
       #insert op on matching spots
-      if (i & op.mask[1]) == (op.pattern[1] & 0xFF):
+      if (i & op.mask[1]) == (op.pattern[1] & op.mask[1]):
         if lut[i] == EMPTY_OPCODE:
           lut[i] = op
         else:
@@ -166,10 +166,10 @@ def gen_opcode_xxcb(ops, pref):
   for i in range(256):
     for op in ops:
       #prune unprefixed/other prefix opcodes
-      if (op.pattern[0] != pref) or (op.pattern[1] != 0xCB):
+      if not ((op.pattern[0] == pref) and (op.pattern[1] == 0xCB)):
         continue
       #insert matching ops
-      if (i & op.mask[3]) == (op.pattern[3] & 0xFF):
+      if (i & op.mask[3]) == (op.pattern[3] & op.mask[3]):
         if lut[i] == EMPTY_OPCODE:
           lut[i] = op
         else:
