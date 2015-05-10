@@ -92,11 +92,11 @@ OR A,n	FIXME_80	0b11110110????????	Ambiguity on datasheet! (XOR/OR)
 OR A,(HL)	FIXME_81	0b10110110	Ambiguity on datasheet! (XOR/OR)	
 OR A,(IX+d)	FIXME_82	0b1101110110110110????????	Ambiguity on datasheet! (XOR/OR)	#DD prefix
 OR A,(IY+d)	FIXME_83	0b1111110110110110????????	Ambiguity on datasheet! (XOR/OR)	#FD prefix
-XOR A,r	FIXME_84	0b10110???	Ambiguity on datasheet! (XOR/OR)	
-XOR A,n	FIXME_85	0b11110110????????	Ambiguity on datasheet! (XOR/OR)	
-XOR A,(HL)	FIXME_86	0b10110110	Ambiguity on datasheet! (XOR/OR)	
-XOR A,(IX+d)	FIXME_87	0b1101110110110110????????	Ambiguity on datasheet! (XOR/OR)	#DD prefix
-XOR A,(IY+d)	FIXME_88	0b1111110110110110????????	Ambiguity on datasheet! (XOR/OR)	#FD prefix
+XOR A,r	FIXME_84	0b10101???	Ambiguity on datasheet! (XOR/OR)	
+XOR A,n	FIXME_85	0b11101110????????	Ambiguity on datasheet! (XOR/OR)	
+XOR A,(HL)	FIXME_86	0b10101110	Ambiguity on datasheet! (XOR/OR)	
+XOR A,(IX+d)	FIXME_87	0b1101110110110101????????	Ambiguity on datasheet! (XOR/OR)	#DD prefix
+XOR A,(IY+d)	FIXME_88	0b1111110110110101????????	Ambiguity on datasheet! (XOR/OR)	#FD prefix
 CP A,r	FIXME_89	0b10111???		
 CP A,n	FIXME_90	0b11111110		
 CP (HL)	FIXME_91	0b10111110		
