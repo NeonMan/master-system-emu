@@ -1,4 +1,4 @@
-// Copyright 2015 Juan Luis ¡lvarez MartÌnez
+// Copyright 2015 Juan Luis √Ålvarez Mart√≠nez
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -50,7 +50,7 @@ int main(int argc, char** argv){
     for (int i = 0; i < SDL_GetNumAudioDrivers(); i++){
         printf("%d: %s\n", i, SDL_GetAudioDriver(i));
     }
-    
+
     SDL_Init(SDL_INIT_AUDIO);
     //SDL_AudioInit("disk"); //Uncomment to dump raw samples to sdlaudio.raw
 
