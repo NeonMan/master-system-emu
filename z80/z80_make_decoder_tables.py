@@ -131,7 +131,7 @@ def gen_opcode_1(ops):
   return lut
 
 #XX prefix
-def gen_opcode_xx(ops, pref=0xCB):
+def gen_opcode_xx(ops, pref):
   lut = list()
   #Create a 256 element lut
   for i in range(256):
@@ -156,13 +156,27 @@ def gen_opcode_xx(ops, pref=0xCB):
             print("WARNING: Overlap with same bitmask len: %s <%s>, %s <%s>" % (lut[i].name, lut[i].function, op.name, op.function))
   return lut
 
-# --- Byte 2, unprefixed
-# 16-bit Opcodes **not** starting with CB/ED/DD/FD
-def gen_opcode_2(ops):
+#XXCB prefix
+def gen_opcode_xxcb(ops, pref):
   lut = list()
   #Create a 256 element lut
   for i in range(256):
     lut.append(EMPTY_OPCODE)
+  #set xxCB prefixed opcodes
+  for i in range(256):
+    for op in ops:
+      #prune unprefixed/other prefix opcodes
+      if (op.pattern[0] != pref) or (op.pattern[1] != 0xCB):
+        continue
+      #insert matching ops
+      if (i & op.mask[3]) == (op.pattern[3] & 0xFF):
+        if lut[i] == EMPTY_OPCODE:
+          lut[i] = op
+        else:
+          if count_bits(lut[i].mask[3], 8) < count_bits(op.mask[3], 8):
+            lut[i] = op
+          else:
+            print("WARNING: Overlap with same bitmask len: %s <%s>, %s <%s>" % (lut[i].name, lut[i].function, op.name, op.function))
   return lut
 
 # ------------
@@ -221,14 +235,21 @@ if __name__ == '__main__':
     #DD prefix
     v = "static const opcode_dec_t op_dd[256] = %s;\n" % array_to_c(gen_opcode_xx(ops, 0xdd))
     f_out.write(bytes(v, 'utf-8'))
-    #DD prefix
+    #FD prefix
     v = "static const opcode_dec_t op_fd[256] = %s;\n" % array_to_c(gen_opcode_xx(ops, 0xfd))
     f_out.write(bytes(v, 'utf-8'))
-#  except Exception as e:
-#    print("Error!\n%s" % str(e))
-#    rv = -1
+
+    #DDCB prefix
+    v = "static const opcode_dec_t op_ddcb[256] = %s;\n" % array_to_c(gen_opcode_xxcb(ops, 0xdd))
+    f_out.write(bytes(v, 'utf-8'))
+    #FDCB prefix
+    v = "static const opcode_dec_t op_fdcb[256] = %s;\n" % array_to_c(gen_opcode_xxcb(ops, 0xfd))
+    f_out.write(bytes(v, 'utf-8'))
+    
+  except Exception as e:
+    print("Error!\n%s" % str(e))
+    rv = -1
   finally:
     f_out.close()
   sys.exit(rv)
 
-    
