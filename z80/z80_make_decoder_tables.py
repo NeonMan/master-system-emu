@@ -39,6 +39,13 @@ PREFIX = '''
 #ifndef __Z80_DECODER_TABLES
 #define __Z80_DECODER_TABLES
 
+// --------------------------------------------------
+// ---          DO NOT ALTER THIS FILE!!          ---
+// --------------------------------------------------
+// --- Decoder tables are automatically generated ---
+// --- by 'z80_make_decoder_tables.py'            ---
+// --------------------------------------------------
+
 #include "z80_opcodes.h"
 
 struct opcode_dec_s{
@@ -123,17 +130,20 @@ def gen_opcode_1(ops):
             print("WARNING: Overlap with same bitmask len: %s <%s>, %s <%s>" % (lut[i].name, lut[i].function, op.name, op.function))
   return lut
 
-#CB prefix
-def gen_opcode_cb(ops):
+#XX prefix
+def gen_opcode_xx(ops, pref=0xCB):
   lut = list()
   #Create a 256 element lut
   for i in range(256):
     lut.append(EMPTY_OPCODE)
-  #Set the CB prefixed opcodes
+  #Set the xx prefixed opcodes
   for i in range(256):
     for op in ops:
       #prune unprefixed/other prefix opcode
-      if op.pattern[0] != 0xCB:
+      if op.pattern[0] != pref:
+        continue
+      #prune DDCB/DDED/FDCB/FDED
+      if ((op.pattern[0] == 0xDD) or (op.pattern[0] == 0xFD)) and ((op.pattern[1] == 0xCB) or (op.pattern[1] == 0xED)):
         continue
       #insert op on matching spots
       if (i & op.mask[1]) == (op.pattern[1] & 0xFF):
@@ -203,7 +213,16 @@ if __name__ == '__main__':
     v = "static const opcode_dec_t op_unpref[256] = %s;\n" % array_to_c(gen_opcode_1(ops))
     f_out.write(bytes(v, 'utf-8'))
     #CB prefix
-    v = "static const opcode_dec_t op_cb[256] = %s;\n" % array_to_c(gen_opcode_cb(ops))
+    v = "static const opcode_dec_t op_cb[256] = %s;\n" % array_to_c(gen_opcode_xx(ops, 0xCB))
+    f_out.write(bytes(v, 'utf-8'))
+    #ED prefix
+    v = "static const opcode_dec_t op_ed[256] = %s;\n" % array_to_c(gen_opcode_xx(ops, 0xed))
+    f_out.write(bytes(v, 'utf-8'))
+    #DD prefix
+    v = "static const opcode_dec_t op_dd[256] = %s;\n" % array_to_c(gen_opcode_xx(ops, 0xdd))
+    f_out.write(bytes(v, 'utf-8'))
+    #DD prefix
+    v = "static const opcode_dec_t op_fd[256] = %s;\n" % array_to_c(gen_opcode_xx(ops, 0xfd))
     f_out.write(bytes(v, 'utf-8'))
 #  except Exception as e:
 #    print("Error!\n%s" % str(e))
