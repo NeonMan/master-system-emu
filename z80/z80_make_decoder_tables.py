@@ -175,8 +175,10 @@ def gen_opcode_xxcb(ops, pref):
         else:
           if count_bits(lut[i].mask[3], 8) < count_bits(op.mask[3], 8):
             lut[i] = op
-          else:
+          if count_bits(lut[i].mask[3], 8) == count_bits(op.mask[3], 8):
             print("WARNING: Overlap with same bitmask len: %s <%s>, %s <%s>" % (lut[i].name, lut[i].function, op.name, op.function))
+          else:
+            pass
   return lut
 
 # ------------
