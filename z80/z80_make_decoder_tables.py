@@ -109,21 +109,41 @@ def gen_opcode_1(ops):
   #Set the one-byte (8bit) opcodes
   for i in range(256):
     for op in ops:
-      #if op.size != 8:
-      #  continue
       #Prune prefixed opcodes
-      if (op.pattern[0] == 0xCB) or (op.pattern[0] == 0xED) or (op.pattern[0] == 0xDD) or (op.pattern[0] == 0xFD):
+      if (op.pattern[0] == 0xCB) or (op.pattern[0] == 0xDD) or (op.pattern[0] == 0xED) or (op.pattern[0] == 0xFD):
         continue
+      #Insert op on matching spots
       if (i & op.mask[0]) == (op.pattern[0] & 0xFF):
         if lut[i] == EMPTY_OPCODE:
           lut[i] = op
         else:
-          #print("Overlapping patterns: %s, %s" % (lut[i].function, op.function))
           if count_bits(lut[i].mask[0], 8) < count_bits(op.mask[0], 8):
             lut[i] = op
           else:
             print("WARNING: Overlap with same bitmask len: %s <%s>, %s <%s>" % (lut[i].name, lut[i].function, op.name, op.function))
-        
+  return lut
+
+#CB prefix
+def gen_opcode_cb(ops):
+  lut = list()
+  #Create a 256 element lut
+  for i in range(256):
+    lut.append(EMPTY_OPCODE)
+  #Set the CB prefixed opcodes
+  for i in range(256):
+    for op in ops:
+      #prune unprefixed/other prefix opcode
+      if op.pattern[0] != 0xCB:
+        continue
+      #insert op on matching spots
+      if (i & op.mask[1]) == (op.pattern[1] & 0xFF):
+        if lut[i] == EMPTY_OPCODE:
+          lut[i] = op
+        else:
+          if count_bits(lut[i].mask[1], 8) < count_bits(op.mask[1], 8):
+            lut[i] = op
+          else:
+            print("WARNING: Overlap with same bitmask len: %s <%s>, %s <%s>" % (lut[i].name, lut[i].function, op.name, op.function))
   return lut
 
 # --- Byte 2, unprefixed
@@ -179,8 +199,11 @@ if __name__ == '__main__':
     f_out.write(bytes(LICENSE[1:], 'utf-8'))
     f_out.write(bytes(PREFIX, 'utf-8'))
     #--- Unprefixed opcodes ---
-    #Byte 1
-    v = "static const opcode_dec_t op_b1[256] = %s;\n" % array_to_c(gen_opcode_1(ops))
+    #Unprefixed
+    v = "static const opcode_dec_t op_unpref[256] = %s;\n" % array_to_c(gen_opcode_1(ops))
+    f_out.write(bytes(v, 'utf-8'))
+    #CB prefix
+    v = "static const opcode_dec_t op_cb[256] = %s;\n" % array_to_c(gen_opcode_cb(ops))
     f_out.write(bytes(v, 'utf-8'))
 #  except Exception as e:
 #    print("Error!\n%s" % str(e))
