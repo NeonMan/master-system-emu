@@ -8,6 +8,6 @@ add_library(z80 ${CFILES} ${HFILES})
 #Decoder LUTs
 add_custom_command(OUTPUT  ${PROJECT_SOURCE_DIR}/z80_decoder_tables.h
                    COMMAND ${PYTHON_EXECUTABLE} ARGS ${PROJECT_SOURCE_DIR}/z80_make_decoder_tables.py ${PROJECT_SOURCE_DIR}/z80_decoder_tables.csv ${PROJECT_SOURCE_DIR}/z80_decoder_tables.h
-                   MAIN_DEPENDENCY z80_decoder_tables.csv
-                   COMMENT generating decoder look-up tables.
+                   MAIN_DEPENDENCY z80_decoder_tables.csv z80_make_decoder_tables.py
+                   COMMENT "Generating decoder look-up tables."
                    VERBATIM)
