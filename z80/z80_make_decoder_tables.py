@@ -184,9 +184,10 @@ def gen_opcode_xxcb(ops, pref):
 # ------------
 # --- Main ---
 # ------------
+#
+#Usage: make_tables.py [INPUT_CSV_FILE [OUT_HEADER_FILE]]
 if __name__ == '__main__':
   rv = 0
-  print(sys.argv)
   if len(sys.argv) >= 2:
     IN_NAME = sys.argv[1]
   if len(sys.argv) >= 3:
