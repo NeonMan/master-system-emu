@@ -126,7 +126,7 @@ def gen_opcode_1(ops):
         else:
           if count_bits(lut[i].mask[0], 8) < count_bits(op.mask[0], 8):
             lut[i] = op
-          else:
+          elif count_bits(lut[i].mask[0], 8) == count_bits(op.mask[0], 8):
             print("WARNING: Overlap with same bitmask len: %s <%s>, %s <%s>" % (lut[i].name, lut[i].function, op.name, op.function))
   return lut
 
@@ -152,7 +152,7 @@ def gen_opcode_xx(ops, pref):
         else:
           if count_bits(lut[i].mask[1], 8) < count_bits(op.mask[1], 8):
             lut[i] = op
-          else:
+          elif count_bits(lut[i].mask[1], 8) == count_bits(op.mask[1], 8):
             print("WARNING: Overlap with same bitmask len: %s <%s>, %s <%s>" % (lut[i].name, lut[i].function, op.name, op.function))
   return lut
 
