@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <stdint.h>
-#include <stdlib.h>
-#include <stdio.h>
+#include <cstdint>
+#include <cstdlib>
+#include <cstdio>
 #include <iostream>
 #include <SDL2/SDL.h>
-#include <assert.h>
-#include <time.h>
+#include <cassert>
+#include <ctime>
 
 
 //FLTK and dialogs
@@ -39,6 +39,10 @@
 #include <z80/z80.h>
 #include "sms-emu.h" /*<-- Refactor me!*/
 
+#ifdef _WIN32
+#define quick_exit exit
+#endif
+
 //Control variables
 uint8_t is_running = 1; //<-- When this becomes false, the app exits
 uint32_t is_clocked = 0; //<-- When this becames false, the execution is paused.
@@ -57,6 +61,8 @@ uint32_t is_clocked = 0; //<-- When this becames false, the execution is paused.
     if (!dlg_z80->windowDialog->shown()) \
         is_running = 0; \
 }
+
+using namespace std;
 
 void emu_log(const char* msg, int level){
     std::cerr << "[" << emu_logelvel_names[level][0] << "] " << msg << std::endl;
@@ -102,12 +108,12 @@ int emu_init(){
     if (!in_f){
         emu_log("Unable to open ROM:", EMU_LOG_CRITICAL);
         emu_log(f_path ? f_path : f_default, EMU_LOG_CRITICAL);
-        exit(-1);
+        quick_exit(-1);
     }
     uint8_t* read_buffer = (uint8_t*) malloc(ROM_MAX_SIZE);
     if (!read_buffer){
         emu_log("Unable to allocate read buffer.", EMU_LOG_CRITICAL);
-        exit(-1);
+        quick_exit(-1);
     }
     memset(read_buffer, 0, ROM_MAX_SIZE);
     fread(read_buffer, 1, ROM_MAX_SIZE, in_f);

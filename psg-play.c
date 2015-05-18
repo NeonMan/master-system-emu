@@ -50,7 +50,7 @@ int main(int argc, char** argv){
     for (int i = 0; i < SDL_GetNumAudioDrivers(); i++){
         printf("%d: %s\n", i, SDL_GetAudioDriver(i));
     }
-    
+
     SDL_Init(SDL_INIT_AUDIO);
     //SDL_AudioInit("disk"); //Uncomment to dump raw samples to sdlaudio.raw
 
