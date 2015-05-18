@@ -46,7 +46,7 @@ const char UnityStrResultsIgnored[]         = " Ignored ";
 #ifndef UNITY_EXCLUDE_FLOAT
 // Dividing by these constants produces +/- infinity.
 // The rationale is given in UnityAssertFloatIsInf's body.
-static const _UF f_zero = 0.0f;
+static volatile _UF f_zero = 0.0f;
 #ifndef UNITY_EXCLUDE_DOUBLE
 static const _UD d_zero = 0.0;
 #endif
