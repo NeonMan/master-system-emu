@@ -1,3 +1,3 @@
 # RAM
 project(smsram)
-add_library(smsram ram.c)
+add_library(smsram ram.c ram.h)
