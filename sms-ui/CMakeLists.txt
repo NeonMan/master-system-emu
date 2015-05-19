@@ -1,12 +1,12 @@
 #UI
-SET(FLTK_DIALOGS "DialogZ80.cxx")
-SET(FLTK_DIALOGS ${FLTK_DIALOGS} "DialogBreakpoint.cxx")
+SET(FLTK_DIALOGS "DialogZ80.cxx" "DialogZ80.h")
+SET(FLTK_DIALOGS ${FLTK_DIALOGS} "DialogBreakpoint.cxx" "DialogBreakpoint.h")
 
 #If using MSVC, add an icon to the executable.
 if (MSVC)
-  SET(VC_RESOURCE_FILES "resource.rc" )
+  SET(VC_RESOURCE_FILES "resource.rc" "resource.h")
 endif (MSVC)
 
 project(sms-ui)
-add_executable(smsui smsui.cxx ${VC_RESOURCE_FILES} ${FLTK_DIALOGS})
+add_executable(smsui smsui.cxx sms-emu.h ${VC_RESOURCE_FILES} ${FLTK_DIALOGS})
 target_link_libraries(smsui glue fltk smsrom smsio smsram psg z80 peripherial vdp sdsc SDL2 SDL2main)

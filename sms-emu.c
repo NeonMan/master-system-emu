@@ -82,7 +82,7 @@ int emu_init(){
     vdp_init();
     z80_init(sdsc_write, sdsc_control);
     rv = SDL_Init(SDL_INIT_EVERYTHING);
-    if (!(rv | SDL_INIT_VIDEO))
+    if (!(rv & SDL_INIT_VIDEO))
         return -1;
 
     emu_window = SDL_CreateWindow("SMSE", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 256 + 64, 192 + 64, 0);
@@ -90,13 +90,13 @@ int emu_init(){
         return -2;
 
     // Load a ROM
-    uint8_t* full_rom = malloc(ROM_MAX_SIZE);
-    memset(full_rom, 0, ROM_MAX_SIZE);
     FILE* in_f = fopen("zexdoc.sms", "rb");
     if (in_f == 0){
         emu_log("Failed to load rom", EMU_LOG_CRITICAL);
         return -3;
     }
+    uint8_t* full_rom = malloc(ROM_MAX_SIZE);
+    memset(full_rom, 0, ROM_MAX_SIZE);
     size_t read_bytes = fread(full_rom, 1, ROM_MAX_SIZE, in_f);
     char read_bytes_s[32];
     sprintf(read_bytes_s, "%lu", (unsigned long)read_bytes);
