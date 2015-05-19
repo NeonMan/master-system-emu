@@ -66,164 +66,164 @@ CPIR	Cpir_52	0b1110110110110001
 CPD	Cpd_53	0b1110110110101001		
 CPDR	Cpdr_54	0b1110110110111001		
 #8-Bit arithmetic				
-ADD A,r	FIXME_55	0b10000???		
-ADD A,n	FIXME_56	0b11000110????????		
-ADD A,(HL)	FIXME_57	0b10000110		
-ADD A,(IX+d)	FIXME_58	0b1101110110000110????????	#DD prefix	
-ADD A,(IY+d)	FIXME_59	0b1111110110000110????????	#FD prefix	
-ADC A,r	FIXME_60	0b10001???		
-ADC A,n	FIXME_61	0b11001110????????		
-ADC A,(HL)	FIXME_62	0b10001110		
-ADC A,(IX+d)	FIXME_63	0b1101110110001110????????	#DD prefix	
-ADC A,(IY+d)	FIXME_64	0b1111110110001110????????	#FD prefix	
-SUB A,r	FIXME_65	0b10010???		
-SUB A,n	FIXME_66	0b11010110????????		
-SUB A,(HL)	FIXME_67	0b10010110		
-SUB A,(IX+d)	FIXME_68	0b1101110110010110????????	#DD prefix	
-SUB A,(IY+d)	FIXME_69	0b1111110110010110????????	#FD prefix	
-SBC A,r	FIXME_70	0b10011???		
-SBC A,n	FIXME_71	0b11011110????????		
-SBC A,(HL)	FIXME_72	0b10011110		
-SBC A,(IX+d)	FIXME_73	0b1101110110011110????????	#DD prefix	
-SBC A,(IY+d)	FIXME_74	0b1111110110011110????????	#FD prefix	
-AND A,r	FIXME_75	0b10100???		
-AND A,n	FIXME_76	0b11100110????????		
-AND A,(HL)	FIXME_77	0b10100110		
-AND A,(IX+d)	FIXME_78	0b1101110110100110????????	#DD prefix	
-AND A,(IY+d)	FIXME_79	0b1111110110100110????????	#FD prefix	
-OR A,r	FIXME_80	0b10110???	Ambiguity on datasheet! (XOR/OR)	
-OR A,n	FIXME_81	0b11110110????????	Ambiguity on datasheet! (XOR/OR)	
-OR A,(HL)	FIXME_82	0b10110110	Ambiguity on datasheet! (XOR/OR)	
-OR A,(IX+d)	FIXME_83	0b1101110110110110????????	Ambiguity on datasheet! (XOR/OR)	#DD prefix
-OR A,(IY+d)	FIXME_84	0b1111110110110110????????	Ambiguity on datasheet! (XOR/OR)	#FD prefix
-XOR A,r	FIXME_85	0b10101???	Ambiguity on datasheet! (XOR/OR)	
-XOR A,n	FIXME_86	0b11101110????????	Ambiguity on datasheet! (XOR/OR)	
-XOR A,(HL)	FIXME_87	0b10101110	Ambiguity on datasheet! (XOR/OR)	
-XOR A,(IX+d)	FIXME_88	0b1101110110110101????????	Ambiguity on datasheet! (XOR/OR)	#DD prefix
-XOR A,(IY+d)	FIXME_89	0b1111110110110101????????	Ambiguity on datasheet! (XOR/OR)	#FD prefix
-CP A,r	FIXME_90	0b10111???		
-CP A,n	FIXME_91	0b11111110		
-CP (HL)	FIXME_92	0b10111110		
-CP (IX+d)	FIXME_93	0b1101110110111110????????	#DD prefix	
-CP (IY+d)	FIXME_94	0b1111110110111110????????	#FD prefix	
-INC r	FIXME_95	0b00???100		
-INC (HL)	FIXME_96	0b00110100		
-INC (IX+d)	FIXME_97	0b1101110100110100????????	#DD prefix	
-INC (IY+d)	FIXME_98	0b1111110100110100????????	#FD prefix	
-DEC r	FIXME_99	0b00???101		
-DEC (HL)	FIXME_100	0b00110101		
-DEC (IX+d)	FIXME_101	0b1101110100110101????????	#DD prefix	
-DEC (IY+d)	FIXME_102	0b1111110100110101????????	#FD prefix	
+ADD A,r	add_a_r_55	0b10000???		
+ADD A,n	add_a_n_56	0b11000110????????		
+ADD A,(HL)	add_a_hlp_57	0b10000110		
+ADD A,(IX+d)	add_a_ixp_58	0b1101110110000110????????	#DD prefix	
+ADD A,(IY+d)	add_a_iyp_59	0b1111110110000110????????	#FD prefix	
+ADC A,r	adc_a_r_60	0b10001???		
+ADC A,n	adc_a_n_61	0b11001110????????		
+ADC A,(HL)	adc_a_hlp_62	0b10001110		
+ADC A,(IX+d)	adc_a_ixp_63	0b1101110110001110????????	#DD prefix	
+ADC A,(IY+d)	adc_a_iyp_64	0b1111110110001110????????	#FD prefix	
+SUB A,r	sub_a_r_65	0b10010???		
+SUB A,n	sub_a_n_66	0b11010110????????		
+SUB A,(HL)	sub_a_hlp_67	0b10010110		
+SUB A,(IX+d)	sub_a_ixp_68	0b1101110110010110????????	#DD prefix	
+SUB A,(IY+d)	sub_a_iyp_69	0b1111110110010110????????	#FD prefix	
+SBC A,r	sbc_a_r_70	0b10011???		
+SBC A,n	sbc_a_n_71	0b11011110????????		
+SBC A,(HL)	sbc_a_hlp_72	0b10011110		
+SBC A,(IX+d)	sbc_a_ixp_73	0b1101110110011110????????	#DD prefix	
+SBC A,(IY+d)	sbc_a_iyp_74	0b1111110110011110????????	#FD prefix	
+AND A,r	and_a_r_75	0b10100???		
+AND A,n	and_a_n_76	0b11100110????????		
+AND A,(HL)	and_a_hlp_77	0b10100110		
+AND A,(IX+d)	and_a_ixp_78	0b1101110110100110????????	#DD prefix	
+AND A,(IY+d)	and_a_iyp_79	0b1111110110100110????????	#FD prefix	
+OR A,r	or_a_r_80	0b10110???	Ambiguity on datasheet! (XOR/OR)	
+OR A,n	or_a_n_81	0b11110110????????	Ambiguity on datasheet! (XOR/OR)	
+OR A,(HL)	or_a_hlp_82	0b10110110	Ambiguity on datasheet! (XOR/OR)	
+OR A,(IX+d)	or_a_ixp_83	0b1101110110110110????????	Ambiguity on datasheet! (XOR/OR)	#DD prefix
+OR A,(IY+d)	or_a_iyp_84	0b1111110110110110????????	Ambiguity on datasheet! (XOR/OR)	#FD prefix
+XOR A,r	xor_a_r_85	0b10101???	Ambiguity on datasheet! (XOR/OR)	
+XOR A,n	xor_a_n_86	0b11101110????????	Ambiguity on datasheet! (XOR/OR)	
+XOR A,(HL)	xor_a_hlp_87	0b10101110	Ambiguity on datasheet! (XOR/OR)	
+XOR A,(IX+d)	xor_a_ixp_88	0b1101110110110101????????	Ambiguity on datasheet! (XOR/OR)	#DD prefix
+XOR A,(IY+d)	xor_a_iyp_89	0b1111110110110101????????	Ambiguity on datasheet! (XOR/OR)	#FD prefix
+CP A,r	cp_a_r_90	0b10111???		
+CP A,n	cp_a_n_91	0b11111110		
+CP (HL)	cp_a_hlp_92	0b10111110		
+CP (IX+d)	cp_a_ixp_93	0b1101110110111110????????	#DD prefix	
+CP (IY+d)	cp_a_iyp_94	0b1111110110111110????????	#FD prefix	
+INC r	inc_r_95	0b00???100		
+INC (HL)	inc_hlp_96	0b00110100		
+INC (IX+d)	inc_ixp_97	0b1101110100110100????????	#DD prefix	
+INC (IY+d)	inc_iyp_98	0b1111110100110100????????	#FD prefix	
+DEC r	dec_r_99	0b00???101		
+DEC (HL)	dec_hlp_100	0b00110101		
+DEC (IX+d)	dec_ixp_101	0b1101110100110101????????	#DD prefix	
+DEC (IY+d)	dec_iyp_102	0b1111110100110101????????	#FD prefix	
 #General purpose arithmetic and CPU control groups				
-DAA	FIXME_103	0b00100111		
-CPL	FIXME_104	0b00101111		
+DAA	daa_103	0b00100111		
+CPL	cpl_104	0b00101111		
 NEG	neg_105	0b1110110101???100		
-CCF	FIXME_106	0b00111111		
-SCF	FIXME_107	0b00110111		
-NOP	FIXME_108	0b00000000		
-DI	FIXME_109	0b11110011		
-EI	FIXME_110	0b11111011		
+CCF	ccf_106	0b00111111		
+SCF	scf_107	0b00110111		
+NOP	nop_108	0b00000000		
+DI	di_109	0b11110011		
+EI	ei_110	0b11111011		
 IM 0	im_0_111	0b1110110101?0?110		
 IM 1	im_1_112	0b1110110101?10110		
 IM 2	im_2_113	0b1110110101?11110		
 #16-bit arithmetic group				
-ADD HL,ss	FIXME_114	0b00??1001		
-ADD IX,pp	FIXME_115	0b1101110100??1001	#DD prefix	
-ADD IY,pp	FIXME_116	0b1111110100??1001	#FD prefix	
-ADC HL,ss	FIXME_117	0b1110110101??1010	Missing IX/IY version?	
-SBC HL,ss	FIXME_118	0b1110110101??0010	Missing IX/IY version?	
-INC ss	FIXME_119	0b00??0011		
-INC IX	FIXME_120	0b1101110100100011	#DD prefix	
-INC IY	FIXME_121	0b1111110100100011	#FD prefix	
-DEC ss	FIXME_122	0b00??1011		
-DEC IX	FIXME_123	0b1101110100101011	#DD prefix	
-DEC IY	FIXME_124	0b1111110100101011	#FD prefix	
+ADD HL,ss	add_hl_ss_114	0b00??1001		
+ADD IX,pp	add_ix_pp_115	0b1101110100??1001	#DD prefix	
+ADD IY,pp	add_iy_pp_116	0b1111110100??1001	#FD prefix	
+ADC HL,ss	adc_hl_ss_117	0b1110110101??1010	Missing IX/IY version?	
+SBC HL,ss	sbc_hl_ss_118	0b1110110101??0010	Missing IX/IY version?	
+INC ss	inc_ss_119	0b00??0011		
+INC IX	inc_ix_120	0b1101110100100011	#DD prefix	
+INC IY	inc_iy_121	0b1111110100100011	#FD prefix	
+DEC ss	dec_ss_122	0b00??1011		
+DEC IX	dec_ix_123	0b1101110100101011	#DD prefix	
+DEC IY	dec_iy_124	0b1111110100101011	#FD prefix	
 #Rotate and shift group				
-RLCA	FIXME_125	0b00000111		
-RLA	FIXME_126	0b00010111		
-RRCA	FIXME_127	0b00001111		
-RRA	FIXME_128	0b00011111		
-RLC r	FIXME_129	0b1100101100000???		
-RLC (HL)	FIXME_130	0b1100101100000110		
-RLC (IX+d)	FIXME_131	0b1101110111001011????????00000110	#DD prefix	
-RLC (IY+d)	FIXME_132	0b1111110111001011????????00000110	#FD prefix	
-RL r	FIXME_133	0b1100101100010???		
-RL (HL)	FIXME_134	0b1100101100010110		
-RL (IX+d)	FIXME_135	0b1101110111001011????????00010110	#DD prefix	
-RL (IY+d)	FIXME_136	0b1111110111001011????????00010110	#FD prefix	
-RRC r	FIXME_137	0b1100101100001???		
-RRC (HL)	FIXME_138	0b1100101100001110		
-RRC (IX+d)	FIXME_139	0b1101110111001011????????00001110	#DD prefix	
-RRC (IY+d)	FIXME_140	0b1111110111001011????????00001110	#FD prefix	
-RR r	FIXME_141	0b1100101100011???		
-RR (HL)	FIXME_142	0b1100101100011110		
-RR (IX+d)	FIXME_143	0b1101110111001011????????00011110	#DD prefix	
-RR (IY+d)	FIXME_144	0b1111110111001011????????00011110	#FD prefix	
-SLA r	FIXME_145	0b1100101100100???	Ambiguity on datasheet! SRA r	
-SLA (HL)	FIXME_146	0b1100101100100110		
-SLA (IX+d)	FIXME_147	0b1101110111001011????????00100110	#DD prefix	
-SLA (IY+d)	FIXME_148	0b1111110111001011????????00100110	#FD prefix	
-SRA r	FIXME_149	0b1100101100101???	Ambiguity on datasheet! SLA r	
-SRA (HL)	FIXME_150	0b1100101100101110		
-SRA (IX+d)	FIXME_151	0b1101110111001011????????00101110	#DD prefix	
-SRA (IY+d)	FIXME_152	0b1111110111001011????????00101110	#FD prefix	
-SRL r	FIXME_153	0b1100101100111???		
-SRL (HL)	FIXME_154	0b1100101100111110		
-SRL (IX+d)	FIXME_155	0b1101110111001011????????00111110	#DD prefix	
-SRL (IY+d)	FIXME_156	0b1111110111001011????????00111110	#FD prefix	
-RLD	FIXME_157	0b1110110101101111		
-RRD	FIXME_158	0b1110110101100111		
+RLCA	rlca_125	0b00000111		
+RLA	rla_126	0b00010111		
+RRCA	rrca_127	0b00001111		
+RRA	rra_128	0b00011111		
+RLC r	rlc_r_129	0b1100101100000???		
+RLC (HL)	rlc_hlp_130	0b1100101100000110		
+RLC (IX+d)	rlc_ixp_131	0b1101110111001011????????00000110	#DD prefix	
+RLC (IY+d)	rlc_iyp_132	0b1111110111001011????????00000110	#FD prefix	
+RL r	rl_r_133	0b1100101100010???		
+RL (HL)	rl_hlp_134	0b1100101100010110		
+RL (IX+d)	rl_ixp_135	0b1101110111001011????????00010110	#DD prefix	
+RL (IY+d)	rl_iyp_136	0b1111110111001011????????00010110	#FD prefix	
+RRC r	rrc_r_137	0b1100101100001???		
+RRC (HL)	rrc_hlp_138	0b1100101100001110		
+RRC (IX+d)	rrc_ixp_139	0b1101110111001011????????00001110	#DD prefix	
+RRC (IY+d)	rrc_iyp_140	0b1111110111001011????????00001110	#FD prefix	
+RR r	rr_r_141	0b1100101100011???		
+RR (HL)	rr_hlp_142	0b1100101100011110		
+RR (IX+d)	rr_ixp_143	0b1101110111001011????????00011110	#DD prefix	
+RR (IY+d)	rr_iyp_144	0b1111110111001011????????00011110	#FD prefix	
+SLA r	sla_r_145	0b1100101100100???	Ambiguity on datasheet! SRA r	
+SLA (HL)	sla_hlp_146	0b1100101100100110		
+SLA (IX+d)	sla_ixp_147	0b1101110111001011????????00100110	#DD prefix	
+SLA (IY+d)	sla_iyp_148	0b1111110111001011????????00100110	#FD prefix	
+SRA r	sra_r_149	0b1100101100101???	Ambiguity on datasheet! SLA r	
+SRA (HL)	sra_hlp_150	0b1100101100101110		
+SRA (IX+d)	sra_ixp_151	0b1101110111001011????????00101110	#DD prefix	
+SRA (IY+d)	sra_iyp_152	0b1111110111001011????????00101110	#FD prefix	
+SRL r	srl_r_153	0b1100101100111???		
+SRL (HL)	srl_hlp_154	0b1100101100111110		
+SRL (IX+d)	srl_ixp_155	0b1101110111001011????????00111110	#DD prefix	
+SRL (IY+d)	srl_iyp_156	0b1111110111001011????????00111110	#FD prefix	
+RLD	rld_157	0b1110110101101111		
+RRD	rrd_158	0b1110110101100111		
 #Bit set, reset and test group				
-BIT b,r	FIXME_159	0b1100101101??????		
-BIT b,(HL)	FIXME_160	0b1100101101???110		
-BIT b,(IX+d)	FIXME_161	0b1101110111001011????????01???110	#DD prefix	
-BIT b,(IY+d)	FIXME_162	0b1111110111001011????????01???110	#FD prefix	
-SET b,r	FIXME_163	0b1100101111??????		
-SET b,(HL)	FIXME_164	0b1100101111???110	Ambiguity on datasheet!	
-SET b,(IX+d)	FIXME_165	0b1101110111001011????????11???110	Ambiguity on datasheet!	#DD prefix
-SET b,(IY+d)	FIXME_166	0b1111110111001011????????11???110		#FD prefix
-RES b,r	FIXME_167	0b1100101110??????		
-RES b,(HL)	FIXME_168	0b1100101110???110		
-RES b,(IX+d)	FIXME_169	0b1101110111001011????????10???110	#DD prefix	
-RES b,(IY+d)	FIXME_170	0b1111110111001011????????10???110	#FD prefix	
+BIT b,r	bit_b_r_159	0b1100101101??????		
+BIT b,(HL)	bit_b_hlp_160	0b1100101101???110		
+BIT b,(IX+d)	bit_b_ixp_161	0b1101110111001011????????01???110	#DD prefix	
+BIT b,(IY+d)	bit_b_iyp_162	0b1111110111001011????????01???110	#FD prefix	
+SET b,r	set_b_r_163	0b1100101111??????		
+SET b,(HL)	set_b_hlp_164	0b1100101111???110	Ambiguity on datasheet!	
+SET b,(IX+d)	set_b_ixp_165	0b1101110111001011????????11???110	Ambiguity on datasheet!	#DD prefix
+SET b,(IY+d)	set_b_iyp_166	0b1111110111001011????????11???110		#FD prefix
+RES b,r	res_b_r_167	0b1100101110??????		
+RES b,(HL)	res_b_hlp_168	0b1100101110???110		
+RES b,(IX+d)	res_b_ixp_169	0b1101110111001011????????10???110	#DD prefix	
+RES b,(IY+d)	res_b_iyp_170	0b1111110111001011????????10???110	#FD prefix	
 #Jump group				
-JP nn	FIXME_171	0b11000011????????????????		
-JP cc,nn	FIXME_172	0b11???010????????????????		
-JR e	FIXME_173	0b00011000????????		
-JR C,e	FIXME_174	0b00111000????????		
-JR NC,e	FIXME_175	0b00110000????????		
-JR Z,e	FIXME_176	0b00101000????????		
-JR NZ,e	FIXME_177	0b00100000????????		
-JP (HL)	FIXME_178	0b11101001		
-JP (IX)	FIXME_179	0b1101110111101001	#DD prefix	
-JP (IY)	FIXME_180	0b1111110111101001	#FD prefix	
-DJNZ e	FIXME_181	0b00010000????????		
+JP nn	jp_nn_171	0b11000011????????????????		
+JP cc,nn	jp_cc_nn_172	0b11???010????????????????		
+JR e	jr_e_173	0b00011000????????		
+JR C,e	jr_c_e_174	0b00111000????????		
+JR NC,e	jr_nc_e_175	0b00110000????????		
+JR Z,e	jr_z_e_176	0b00101000????????		
+JR NZ,e	jr_nz_e_177	0b00100000????????		
+JP (HL)	jp_hlp_178	0b11101001		
+JP (IX)	jp_ixp_179	0b1101110111101001	#DD prefix	
+JP (IY)	jp_iyp_180	0b1111110111101001	#FD prefix	
+DJNZ e	djnz_e_181	0b00010000????????		
 #Call and return group				
-CALL nn	FIXME_182	0b11001101????????????????		
-CALL cc,nn	FIXME_183	0b11???100????????????????		
-RET	FIXME_184	0b11001001		
-RET cc	FIXME_185	0b11???000		
+CALL nn	call_nn_182	0b11001101????????????????		
+CALL cc,nn	call_cc_nn_183	0b11???100????????????????		
+RET	ret_184	0b11001001		
+RET cc	ret_cc_185	0b11???000		
 RETI	reti_186	0b1110110101??1101		
 RETN	retn_187	0b1110110101??0101		
-RST p	FIXME_188	0b11???111		
+RST p	rst_p_188	0b11???111		
 #Input/output group				
-IN A,(n)	FIXME_189	0b11011011????????		
-IN r,(C)	FIXME_190	0b1110110101???000		
-INI	FIXME_191	0b1110110110100010		
-INIR	FIXME_192	0b1110110110110010		
-IND	FIXME_193	0b1110110110101010		
-INDR	FIXME_194	0b1110110110111010		
-OUT (n),A	FIXME_195	0b11010011????????		
-OUT (C),r	FIXME_196	0b1110110101???001		
-OUTI	FIXME_197	0b1110110110100011		
-OTIR	FIXME_198	0b1110110110110011		
-OUTD	FIXME_199	0b1110110110101011		
-OTDR	FIXME_200	0b1110110110111011		
+IN A,(n)	in_a_np_189	0b11011011????????		
+IN r,(C)	in_r_cp_190	0b1110110101???000		
+INI	ini_191	0b1110110110100010		
+INIR	inir_192	0b1110110110110010		
+IND	ind_193	0b1110110110101010		
+INDR	indr_194	0b1110110110111010		
+OUT (n),A	out_np_a_195	0b11010011????????		
+OUT (C),r	out_cp_r_196	0b1110110101???001		
+OUTI	outi_197	0b1110110110100011		
+OTIR	otir_198	0b1110110110110011		
+OUTD	outd_199	0b1110110110101011		
+OTDR	otdr_200	0b1110110110111011		
 #Undocumented opcodes				
-SLL r	FIXME_200	0b1100101100110???	#Undocumented(?)	
-SLL (HL)	FIXME_201	0b1100101100110110	#Undocumented(?)	
-SLL (IX+d)	FIXME_202	0b1101110111001011????????00110110	#Undocumented(?)	
-SLL (IY+d)	FIXME_203	0b1111110111001011????????00110110	#Undocumented(?)	
+SLL r	sll_r_200	0b1100101100110???	#Undocumented(?)	
+SLL (HL)	sll_hlp_201	0b1100101100110110	#Undocumented(?)	
+SLL (IX+d)	sll_ixp_202	0b1101110111001011????????00110110	#Undocumented(?)	
+SLL (IY+d)	sll_iyp_203	0b1111110111001011????????00110110	#Undocumented(?)	
 LD r; rot (IX+d)	FIXME_206	0b1101110111001011????????00??????		
 LD r; rot (IY+d)	FIXME_207	0b1111110111001011????????00??????		
 LD r; RES y,(IX+d)	FIXME_208	0b1101110111001011????????10??????		
@@ -232,3 +232,6 @@ LD r; SET y,(IX+d)	FIXME_210	0b1101110111001011????????11??????
 LD r; SET y,(IY+d)	FIXME_211	0b1111110111001011????????11??????		
 BIT b,r	FIXME_212	0b1101110111001011????????01??????	#Longer version of BIT b,r	
 BIT b,r	FIXME_213	0b1111110111001011????????01??????	#Longer version of BIT b,r	
+#NONI/NOP	NONINOP_214	0b????????????????		
+#NONI/NONI/NOP	NONINOP_215	0b????????????????????????		
+#NONI/NONI/NONI/NOP	NONINOP_216	0b????????????????????????????????		
