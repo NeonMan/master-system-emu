@@ -287,7 +287,7 @@ void DialogZ80::update_values() {
       
       // --- Flags ---
       checkCarry->value(1  && (Z80_F & Z80_FLAG_CARRY));
-      checkAdd->value(1    && (Z80_F & Z80_FLAG_ADD));
+      checkAdd->value(1    && (Z80_F & Z80_FLAG_SUBTRACT));
       checkParity->value(1 && (Z80_F & Z80_FLAG_PARITY));
       checkUnk3->value(1   && (Z80_F & Z80_FLAG_UNK3));
   

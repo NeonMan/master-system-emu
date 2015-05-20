@@ -162,30 +162,30 @@ const uint8_t q[4] = { z80.opcode[0] & (1 << 3), z80.opcode[1] & (1 << 3), z80.o
 #define Z80_SETFLAG_HC(O,N) (((O & (1 << 3)) == 0) && ((N) & (1 << 3)) ? (1 << 4) : 0) /**<-- [H] Set Half-carry flag (bit 4)*/
 #define Z80_SETFLAG_PARITY(X) (z80_parity_lut[X]) /**<-- [P] Set parity flag (bit 2)*/
 #define Z80_SETFLAG_OVERFLOW(O,N) (((int16_t)O) > ((int16_t)N) ? 0 : (1 << 2)) /**<-- [V] Set overflow flag (bit 2)*/
-#define Z80_SETFLAG_ADD(A) (A ? 0 : (1<<1)) /**<-- [N] Set Add/Subtract flag (bit 1)*/
+#define Z80_SETFLAG_SUBTRACT(A) (A ? (1<<1) : 0) /**<-- [N] Set Add/Subtract flag (bit 1)*/
 #define Z80_SETFLAG_CARRY(O,N) (O > N ? 1 : 0) /**<-- [C] Set Carry flag, adition (bit 0)*/
 #define Z80_SETFLAG_BORROW(O,N) (O < N ? 1 : 0) /**<-- [C] Set carry flag, subtraction, (bit 0)*/
 ///@bug Decimal Adjust Accumulate is not implemented
 
 // --- Flag masks
-#define Z80_FLAG_SIGN   (1<<7)
-#define Z80_FLAG_ZERO   (1<<6)
-#define Z80_FLAG_UNK5   (1<<5)
-#define Z80_FLAG_HC     (1<<4)
-#define Z80_FLAG_UNK3   (1<<3)
-#define Z80_FLAG_PARITY (1<<2)
-#define Z80_FLAG_ADD    (1<<1)
-#define Z80_FLAG_CARRY  (1)
+#define Z80_FLAG_SIGN     (1<<7)
+#define Z80_FLAG_ZERO     (1<<6)
+#define Z80_FLAG_UNK5     (1<<5)
+#define Z80_FLAG_HC       (1<<4)
+#define Z80_FLAG_UNK3     (1<<3)
+#define Z80_FLAG_PARITY   (1<<2)
+#define Z80_FLAG_SUBTRACT (1<<1)
+#define Z80_FLAG_CARRY    (1)
 
 // --- Inverted flag masks (for bit clearing)
-#define Z80_CLRFLAG_SIGN   (Z80_FLAG_SIGN   ^ 0xFF)
-#define Z80_CLRFLAG_ZERO   (Z80_FLAG_ZERO   ^ 0xFF)
-#define Z80_CLRFLAG_UNK5   (Z80_FLAG_UNK5   ^ 0xFF)
-#define Z80_CLRFLAG_HC     (Z80_FLAG_HC     ^ 0xFF)
-#define Z80_CLRFLAG_UNK3   (Z80_FLAG_UNK3   ^ 0xFF)
-#define Z80_CLRFLAG_PARITY (Z80_FLAG_PARITY ^ 0xFF)
-#define Z80_CLRFLAG_ADD    (Z80_FLAG_ADD    ^ 0xFF)
-#define Z80_CLRFLAG_CARRY  (Z80_FLAG_CARRY  ^ 0xFF)
+#define Z80_CLRFLAG_SIGN     (Z80_FLAG_SIGN     ^ 0xFF)
+#define Z80_CLRFLAG_ZERO     (Z80_FLAG_ZERO     ^ 0xFF)
+#define Z80_CLRFLAG_UNK5     (Z80_FLAG_UNK5     ^ 0xFF)
+#define Z80_CLRFLAG_HC       (Z80_FLAG_HC       ^ 0xFF)
+#define Z80_CLRFLAG_UNK3     (Z80_FLAG_UNK3     ^ 0xFF)
+#define Z80_CLRFLAG_PARITY   (Z80_FLAG_PARITY   ^ 0xFF)
+#define Z80_CLRFLAG_SUBTRACT (Z80_FLAG_SUBTRACT ^ 0xFF)
+#define Z80_CLRFLAG_CARRY    (Z80_FLAG_CARRY    ^ 0xFF)
 
 // --- Breakpoint macros ---
 #define Z80_BREAK_PC     (1 << 0) /*Break on z80 exec (PC)*/
