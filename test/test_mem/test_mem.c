@@ -93,7 +93,8 @@ int main(int argc, char**argv){
             slot2_ok = slot2_ok && (read_byte(i + (16 * 1024 * 2)) == full_rom[i + (bank * 1024 * 16)]);
         }
         if (slot0_ok && slot1_ok && slot2_ok){
-            printf("Bank %d OK\n", bank);
+            ; /*Do nothing*/
+            /*printf("Bank %d OK\n", bank);*/
         }
         else{
             all_ok = 0;
