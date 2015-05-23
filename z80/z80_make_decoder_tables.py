@@ -49,7 +49,7 @@ PREFIX = '''
 #include "z80_opcodes.h"
 
 struct opcode_dec_s{
-  void (*f)();
+  int (*f)();
   signed char size;
 };
 typedef struct opcode_dec_s opcode_dec_t;
@@ -57,7 +57,6 @@ typedef struct opcode_dec_s opcode_dec_t;
 '''
 
 POSTFIX = '''
-
 #endif
 '''
 
@@ -253,6 +252,7 @@ if __name__ == '__main__':
     #FDCB prefix
     v = "static const opcode_dec_t op_fdcb[256] = %s;\n" % array_to_c(gen_opcode_xxcb(ops, 0xfd))
     f_out.write(bytes(v, 'utf-8'))
+    f_out.write(bytes(POSTFIX, 'utf-8'))
     
   except Exception as e:
     print("Error!\n%s" % str(e))
