@@ -102,7 +102,7 @@ XOR A,(HL)	XOR_HLp	0b10101110	Ambiguity on datasheet! (XOR/OR)
 XOR A,(IX+d)	0/*XOR_IXp*/	0b1101110110110101????????	Ambiguity on datasheet! (XOR/OR)	#DD prefix
 XOR A,(IY+d)	0/*XOR_IYp*/	0b1111110110110101????????	Ambiguity on datasheet! (XOR/OR)	#FD prefix
 CP A,r	CP_r	0b10111???		
-CP A,n	CP_n	0b11111110		
+CP A,n	CP_n	0b11111110????????		
 CP (HL)	CP_HLp	0b10111110		
 CP (IX+d)	0/*CP_IXp*/	0b1101110110111110????????	#DD prefix	
 CP (IY+d)	0/*CP_IYp*/	0b1111110110111110????????	#FD prefix	
