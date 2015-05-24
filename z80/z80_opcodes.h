@@ -141,7 +141,6 @@ int SLA_HLp();
 int SLA_r();
 int SLL_HLp();
 int SLL_r();
-int SLLA();
 int SRA_HLp();
 int SRA_r();
 int SRL_HLp();

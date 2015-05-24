@@ -26,6 +26,13 @@ int ADC_n(){
     return Z80_STAGE_RESET;
 }
 
+///ADC (HL); Size: 1; Flags: ???
+int ADC_HLp(){
+    assert(z80.opcode_index == 1);
+    assert(0); ///<-- Unimplemented
+    return Z80_STAGE_RESET;
+}
+
 ///ADC HL, rp; Size: 2; Flags: ???
 int ADC_HL_rp(){
     assert(z80.opcode_index == 2); 
@@ -50,6 +57,13 @@ int ADD_HL_rp(){
     Z80_F = (Z80_F & (Z80_CLRFLAG_CARRY & Z80_CLRFLAG_SUBTRACT))
         //Set carry flag (bit 0)
         | Z80_SETFLAG_CARRY(old_hl, Z80_HL);
+    return Z80_STAGE_RESET;
+}
+
+///ADD (HL); Size: 1; Flags: ???
+int ADD_HLp(){
+    assert(z80.opcode_index == 1);
+    assert(0); ///<-- Unimplemented
     return Z80_STAGE_RESET;
 }
 
@@ -109,6 +123,20 @@ int AND_r(){
     Z80_F |= Z80_SETFLAG_ZERO(Z80_A);
     Z80_F |= Z80_FLAG_HC;
     Z80_F |= Z80_SETFLAG_OVERFLOW(orig_a, Z80_A);
+    return Z80_STAGE_RESET;
+}
+
+///AND (HL); Size: 1; Flags: ???
+int AND_HLp(){
+    assert(z80.opcode_index == 1);
+    assert(0); ///<-- Unimplemented
+    return Z80_STAGE_RESET;
+}
+
+///BIT y, (HL); Size: 2; Flags: ???
+int BIT_b_HLp(){
+    assert(z80.opcode_index == 2);
+    assert(0);
     return Z80_STAGE_RESET;
 }
 
@@ -226,6 +254,13 @@ int CP_n(){
     return Z80_STAGE_RESET;
 }
 
+///CP (HL); Size: 1; Flags: ???
+int CP_HLp(){
+    assert(z80.opcode_index == 1);
+    assert(0); ///<-- Unimplemented
+    return Z80_STAGE_RESET;
+}
+
 ///CP r[z]; Size: 1; Flags: All
 int CP_r(){
     assert(z80.opcode_index == 1);
@@ -282,6 +317,13 @@ int DEC_r(){
         | Z80_SETFLAG_ZERO(*z80_r[y[0]])
         | Z80_SETFLAG_HC(old_r, *z80_r[y[0]])
         | Z80_SETFLAG_OVERFLOW(*z80_r[y[0]], old_r);
+    return Z80_STAGE_RESET;
+}
+
+///DEC (HL); Size: 1; Flags: ???
+int DEC_HLp(){
+    assert(z80.opcode_index == 1);
+    assert(0); ///<-- Unimplemented
     return Z80_STAGE_RESET;
 }
 
@@ -619,6 +661,20 @@ int LD_HL_nnp(){
     }
 }
 
+///LD (HL), n; Size: 2; Flags: ???
+int LD_HLp_n(){
+    assert(z80.opcode_index == 2);
+    assert(0);
+    return Z80_STAGE_RESET;
+}
+
+///LD (HL), r; Size: 1; Flags: ???
+int LD_HLp_r(){
+    assert(z80.opcode_index == 1);
+    assert(0);
+    return Z80_STAGE_RESET;
+}
+
 ///LD I, A; Size: 2; Flags: ???
 int LD_I_A(){
     assert(z80.opcode_index == 2);
@@ -650,6 +706,13 @@ int LD_nnp_rp(){
 int LD_R_A(){
     assert(z80.opcode_index == 2);
     assert(0); ///<-- Unimplemented
+    return Z80_STAGE_RESET;
+}
+
+///LD r, (HL); Size: 1; Flags: ???
+int LD_r_HLp(){
+    assert(z80.opcode_index == 1);
+    assert(0);
     return Z80_STAGE_RESET;
 }
 
@@ -831,6 +894,13 @@ int NOP(){
     return Z80_STAGE_RESET;
 }
 
+///OR (HL); Size: 1; Flags: ???
+int OR_HLp(){
+    assert(z80.opcode_index == 1);
+    assert(0); ///<-- Unimplemented
+    return Z80_STAGE_RESET;
+}
+
 ///OR n; Size: 2; Flags:ALL
 int OR_n(){
     assert(z80.opcode_index == 2);
@@ -991,6 +1061,13 @@ int PUSH_rp2(){
     }
 }
 
+///RES y, (HL); Size: 2; Flags: ???
+int RES_b_HLp(){
+    assert(z80.opcode_index == 2);
+    assert(0);
+    return Z80_STAGE_RESET;
+}
+
 ///RES y,r[z]; Size: 2; Flags: None
 int RES_b_r(){
     assert(z80.opcode_index == 2);
@@ -1090,6 +1167,14 @@ int RLD(){
     return Z80_STAGE_RESET;
 }
 
+///RL (HL); Size: 2; Flags: ???
+int RL_HLp(){
+    assert(z80.opcode_index == 2);
+    assert(0); ///<-- Unimplemented
+    return Z80_STAGE_RESET;
+}
+
+
 ///RL r; Size: 2; Flags: ???
 int RL_r(){
     assert(z80.opcode_index == 2);
@@ -1116,6 +1201,13 @@ int RRCA(){
     return Z80_STAGE_RESET;
 }
 
+///RRC (HL); Size: 2; Flags: ???
+int RRC_HLp(){
+    assert(z80.opcode_index == 2);
+    assert(0); ///<-- Unimplemented
+    return Z80_STAGE_RESET;
+}
+
 ///RRC r; Size: 2; Flags: ???
 int RRC_r(){
     assert(z80.opcode_index == 2);
@@ -1125,6 +1217,13 @@ int RRC_r(){
 
 ///RRD; Size: 2; Flags: ???
 int RRD(){
+    assert(z80.opcode_index == 2);
+    assert(0); ///<-- Unimplemented
+    return Z80_STAGE_RESET;
+}
+
+///RR (HL); Size: 2; Flags: ???
+int RR_HLp(){
     assert(z80.opcode_index == 2);
     assert(0); ///<-- Unimplemented
     return Z80_STAGE_RESET;
@@ -1159,6 +1258,13 @@ int SBC_HL_rp(){
     return Z80_STAGE_RESET;
 }
 
+///SBC (HL); Size: 1; Flags: ???
+int SBC_HLp(){
+    assert(z80.opcode_index == 1);
+    assert(0); ///<-- Unimplemented
+    return Z80_STAGE_RESET;
+}
+
 ///SBC n; Size: 2; Flags: ???
 int SBC_n(){
     assert(z80.opcode_index == 2);
@@ -1169,6 +1275,13 @@ int SBC_n(){
 ///SBC r; Size: 1; Flags: ???
 int SBC_r(){
     assert(z80.opcode_index == 1);
+    assert(0);
+    return Z80_STAGE_RESET;
+}
+
+///SET y, (HL); Size: 2; Flags: ???
+int SET_b_HLp(){
+    assert(z80.opcode_index == 2);
     assert(0);
     return Z80_STAGE_RESET;
 }
@@ -1187,8 +1300,22 @@ int SCF(){
     return Z80_STAGE_RESET;
 }
 
+///SLA (HL); Size: 2; Flags: ???
+int SLA_HLp(){
+    assert(z80.opcode_index == 2);
+    assert(0); ///<-- Unimplemented
+    return Z80_STAGE_RESET;
+}
+
 ///SLA r; Size: 2; Flags: ???
 int SLA_r(){
+    assert(z80.opcode_index == 2);
+    assert(0); ///<-- Unimplemented
+    return Z80_STAGE_RESET;
+}
+
+///SLL (HL); Size: 2; Flags: ???
+int SLL_HLp(){
     assert(z80.opcode_index == 2);
     assert(0); ///<-- Unimplemented
     return Z80_STAGE_RESET;
@@ -1201,8 +1328,22 @@ int SLL_r(){
     return Z80_STAGE_RESET;
 }
 
+///SRA (HL); Size: 2; Flags: ???
+int SRA_HLp(){
+    assert(z80.opcode_index == 2);
+    assert(0); ///<-- Unimplemented
+    return Z80_STAGE_RESET;
+}
+
 ///SRA r; Size: 2; Flags: ???
 int SRA_r(){
+    assert(z80.opcode_index == 2);
+    assert(0); ///<-- Unimplemented
+    return Z80_STAGE_RESET;
+}
+
+///SRL (HL); Size: 2; Flags: ???
+int SRL_HLp(){
     assert(z80.opcode_index == 2);
     assert(0); ///<-- Unimplemented
     return Z80_STAGE_RESET;
@@ -1228,6 +1369,13 @@ int SRL_r(){
     return Z80_STAGE_RESET;
 }
 
+///SUB (HL); Size: 1; Flags: ???
+int SUB_HLp(){
+    assert(z80.opcode_index == 1);
+    assert(0); ///<-- Unimplemented
+    return Z80_STAGE_RESET;
+}
+
 ///SUB n; Size: 2; Flags: ???
 int SUB_n(){
     assert(z80.opcode_index == 2);
@@ -1239,6 +1387,13 @@ int SUB_n(){
 int SUB_r(){
     assert(z80.opcode_index == 1);
     assert(0);
+    return Z80_STAGE_RESET;
+}
+
+///XOR (HL); Size: 1; Flags: ???
+int XOR_HLp(){
+    assert(z80.opcode_index == 1);
+    assert(0); ///<-- Unimplemented
     return Z80_STAGE_RESET;
 }
 
