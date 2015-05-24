@@ -16,6 +16,7 @@
 #include "z80_macros.h"
 #include "z80_register_lut.h"
 #include "z80_opcodes.h"
+#include "z80_decoder_tables.h"
 #include <assert.h>
 
 /*
@@ -46,23 +47,112 @@ void z80_instruction_unprefix(){
 * @return Signal wether we need a fetch/read/write or reset.
 */
 int z80_instruction_decode(){
-
     assert(z80.opcode_index > 0);
+    assert(z80.opcode_index < 5);
 
+    /* Check for 'bad' prefixes */
+    if (z80.opcode_index >= 2){
+        /* DDDD, DDED, DDFD */
+        if (z80.opcode[0] == 0xDD){
+            if ((z80.opcode[1] == 0xDD) || (z80.opcode[1] == 0xED) || (z80.opcode[1] == 0xFD)){
+                z80_instruction_unprefix();
+            }
+        }
+
+        /* FDFD, FDED, FDDD */
+        else if (z80.opcode[0] == 0xFD){
+            if ((z80.opcode[1] == 0xFD) || (z80.opcode[1] == 0xED) || (z80.opcode[1] == 0xDD)){
+                z80_instruction_unprefix();
+            }
+        }
+    }
+
+    /* Decode */
     switch (z80.opcode[0]){
     case 0xCB:
-        assert(0);
+        if (z80.opcode_index == 1){
+            return Z80_STAGE_M1;
+        }
+        assert(op_cb[z80.opcode[1]].size);
+        assert(op_cb[z80.opcode[1]].f);
+        if (op_cb[z80.opcode[1]].size == z80.opcode_index){
+            return op_cb[z80.opcode[1]].f();
+        }
+        else{
+            return Z80_STAGE_M1;
+        }
         break;
     case 0xED:
-        assert(0);
+        if (z80.opcode_index == 1){
+            return Z80_STAGE_M1;
+        }
+        assert(op_ed[z80.opcode[1]].size);
+        assert(op_ed[z80.opcode[1]].f);
+        if (op_ed[z80.opcode[1]].size == z80.opcode_index){
+            return op_ed[z80.opcode[1]].f();
+        }
+        else{
+            return Z80_STAGE_M1;
+        }
         break;
     case 0xDD:
-        assert(0);
+        if (z80.opcode_index == 1){
+            return Z80_STAGE_M1;
+        }
+        if (z80.opcode[1] == 0xCB){
+            /*DDCB opcodes*/
+            if (z80.opcode_index != 4){
+                return Z80_STAGE_M1;
+            }
+            assert(op_ddcb[z80.opcode[3]].f);
+            assert(op_ddcb[z80.opcode[3]].size);
+            return op_ddcb[z80.opcode[3]].f();
+        }
+        else{
+            assert(op_dd[z80.opcode[1]].f);
+            assert(op_dd[z80.opcode[1]].size);
+            if (op_dd[z80.opcode[1]].size == z80.opcode_index){
+                return op_dd[z80.opcode[1]].f();
+            }
+            else{
+                return Z80_STAGE_M1;
+            }
+        }
         break;
     case 0xFD:
-        assert(0);
+        if (z80.opcode_index == 1){
+            return Z80_STAGE_M1;
+        }
+        if (z80.opcode[1] == 0xCB){
+            /*FDCB opcodes*/
+            if (z80.opcode_index != 4){
+                return Z80_STAGE_M1;
+            }
+            assert(op_fdcb[z80.opcode[3]].f);
+            assert(op_fdcb[z80.opcode[3]].size);
+            return op_fdcb[z80.opcode[3]].f();
+        }
+        else{
+            assert(op_fd[z80.opcode[1]].f);
+            assert(op_fd[z80.opcode[1]].size);
+            if (op_fd[z80.opcode[1]].size == z80.opcode_index){
+                return op_fd[z80.opcode[1]].f();
+            }
+            else{
+                return Z80_STAGE_M1;
+            }
+        }
         break;
     default:
+        /* Unprefixed opcodes */
+        assert(op_unpref[z80.opcode[0]].size);
+        assert(op_unpref[z80.opcode[0]].f);
+        if (op_unpref[z80.opcode[0]].size == z80.opcode_index){
+            return op_unpref[z80.opcode[0]].f();
+        }
+        else{
+            return Z80_STAGE_M1;
+        }
         break;
     }
 
