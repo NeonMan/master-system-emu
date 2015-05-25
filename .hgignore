@@ -1,0 +1,54 @@
+syntax: regexp
+
+#Directories
+^Build
+^build
+Debug\/
+Release\/
+CMakeFiles\/
+doxygen\/
+
+#File types
+\.suo$
+\.sdf$
+\.opensdf$
+\.dat$
+\.vgm$
+\.o$
+\.vcxproj$
+\.cmake$
+\.filters$
+\.stamp$
+\.sln$
+\.a$
+\.raw$
+\.wav$
+\.bin$
+\.sms$
+\.user$
+\.sym$
+\.link$
+\.exe$
+\.cbp$
+\.orig$
+
+#Other
+Makefile$
+err\.txt$
+
+syntax: glob
+
+#Individual files
+CMakeCache.txt
+z80/z80_decoder_tables.h
+
+#Executables
+psg-play
+test-mem
+emu
+test-vdp
+sms-ui/smsui
+test/test_mem/test_mem
+test/test_z80/test_z80_decoder
+test/test_z80/test_z80_macros
+
