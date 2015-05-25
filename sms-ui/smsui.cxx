@@ -90,7 +90,7 @@ int emu_init(){
     fnfc.filter("Supported formats\t*.{bin,sg,sms}\nMastersystem ROM\t*.{sms,bin}\nSG 1000 ROM\t*.{sg,bin}");
     fnfc.directory(".");
     switch (fnfc.show()){
-    case -1: 
+    case -1:
     case 1:
         break;
     default:
@@ -116,12 +116,17 @@ int emu_init(){
         quick_exit(-1);
     }
     memset(read_buffer, 0, ROM_MAX_SIZE);
-    fread(read_buffer, 1, ROM_MAX_SIZE, in_f);
+    {
+      char read_bytes_s[12];
+      sprintf(read_bytes_s, "%d", fread(read_buffer, 1, ROM_MAX_SIZE, in_f));
+      emu_log("Rom loaded:", EMU_LOG_INFO);
+      emu_log(f_path ? f_path : f_default, EMU_LOG_INFO);
+      emu_log("Read bytes:", EMU_LOG_INFO);
+      emu_log(read_bytes_s, EMU_LOG_INFO);
+    }
     rom_set_image(read_buffer, ROM_MAX_SIZE);
     free(read_buffer);
     fclose(in_f);
-    emu_log("Rom loaded:", EMU_LOG_INFO);
-    emu_log(f_path ? f_path : f_default, EMU_LOG_INFO);
 
     //Setup SDL
     ///@note Implement me

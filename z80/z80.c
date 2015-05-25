@@ -134,7 +134,7 @@ void z80_dump_reg(){
     printf("   Data latch: 0x%X\n", z80.data_latch);
     printf("   Opcode:");
     {
-        for (int i = 0; (i < 4) || (i < z80.opcode_index); i++)
+        for (int i = 0; (i < 4) && (i < z80.opcode_index); i++)
             printf(" 0x%X", z80.opcode[i]);
         if (z80.opcode_index > 4)
             printf(" [Overflow! Size: %d]\n", z80.opcode_index);
@@ -145,7 +145,7 @@ void z80_dump_reg(){
     printf("   Read addr: 0x%X %s\n", z80.read_address, z80.read_is_io ? "(IO)" : "");
     printf("   Read buff:");
     {
-        for (int i = 0; (i < 2) || (i < z80.read_index); i++){
+        for (int i = 0; (i < 2) && (i < z80.read_index); i++){
             printf(" 0x%X", z80.read_buffer[i]);
         }
         if (z80.read_index > 2)
