@@ -677,7 +677,15 @@ int LD_HLp_n(){
 ///LD (HL), r; Size: 1; Flags: ???
 int LD_HLp_r(){
     assert(z80.opcode_index == 1);
-    assert(0);
+    Z80_OPCODE_SUBDIV;
+    if (z80.write_index == 0){
+        z80.write_address = Z80_HL;
+        z80.write_buffer[0] = *(z80_r[z[0]]);
+        return Z80_STAGE_M3;
+    }
+    else{
+        return Z80_STAGE_RESET;
+    }
     return Z80_STAGE_RESET;
 }
 
@@ -742,21 +750,8 @@ int LD_r_n(){
 int LD_r_r(){
     assert(z80.opcode_index == 1);
     Z80_OPCODE_SUBDIV;
-    if (z80_r[y[0]]){ //If target != (HL)
-        *(z80_r[y[0]]) = *(z80_r[z[0]]);
-        return Z80_STAGE_RESET;
-    }
-    else{ //Target is (HL)
-        if (z80.write_index == 0){
-            z80.write_address = Z80_HL;
-            assert(z80_r[z[0]]);
-            z80.write_buffer[0] = *(z80_r[z[0]]);
-            return Z80_STAGE_M3;
-        }
-        else{
-            return Z80_STAGE_RESET;
-        }
-    }
+    *(z80_r[y[0]]) = *(z80_r[z[0]]);
+    return Z80_STAGE_RESET;
 }
 
 ///LD rp[n], nn; Size: 3; Flags: None
