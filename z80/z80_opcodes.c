@@ -664,14 +664,28 @@ int LD_HL_nnp(){
 ///LD (HL), n; Size: 2; Flags: ???
 int LD_HLp_n(){
     assert(z80.opcode_index == 2);
-    assert(0);
-    return Z80_STAGE_RESET;
+    if (z80.write_index == 0){
+        z80.write_address = Z80_HL;
+        z80.write_buffer[0] = z80.opcode[1];
+        return Z80_STAGE_M3;
+    }
+    else{
+        return Z80_STAGE_RESET;
+    }
 }
 
 ///LD (HL), r; Size: 1; Flags: ???
 int LD_HLp_r(){
     assert(z80.opcode_index == 1);
-    assert(0);
+    Z80_OPCODE_SUBDIV;
+    if (z80.write_index == 0){
+        z80.write_address = Z80_HL;
+        z80.write_buffer[0] = *(z80_r[z[0]]);
+        return Z80_STAGE_M3;
+    }
+    else{
+        return Z80_STAGE_RESET;
+    }
     return Z80_STAGE_RESET;
 }
 
@@ -712,65 +726,32 @@ int LD_R_A(){
 ///LD r, (HL); Size: 1; Flags: ???
 int LD_r_HLp(){
     assert(z80.opcode_index == 1);
-    assert(0);
+    Z80_OPCODE_SUBDIV;
+    if (z80.read_index == 0){
+        z80.read_address = Z80_HL;
+        return Z80_STAGE_M2;
+    }
+    else{
+        *(z80_r[y[0]]) = z80.read_buffer[0];
+        return Z80_STAGE_RESET;
+    }
     return Z80_STAGE_RESET;
 }
 
 ///LD r, n; Size: 2; Flags: None
 int LD_r_n(){
     assert(z80.opcode_index == 2);
-    //If target is HL, perform write
     Z80_OPCODE_SUBDIV;
-    if (z80_r[y[0]] == 0){
-        if (z80.write_index == 0){
-            z80.write_address = Z80_HL;
-            z80.write_buffer[0] = z80.opcode[1];
-            return Z80_STAGE_M3;
-        }
-        else{
-            return Z80_STAGE_RESET;
-        }
-    }
-    //Otherwise
-    else{
-        *(z80_r[y[0]]) = z80.opcode[1];
-        return Z80_STAGE_RESET;
-    }
+    *(z80_r[y[0]]) = z80.opcode[1];
+    return Z80_STAGE_RESET;
 }
 
 ///LD r[y],r[z]; Size: 1; Flags: None
 int LD_r_r(){
     assert(z80.opcode_index == 1);
     Z80_OPCODE_SUBDIV;
-    //If source is (HL), target is a regular reg.
-    if (z80_r[z[0]] == 0){
-        if (z80.read_index == 0){
-            z80.read_address = Z80_HL;
-            return Z80_STAGE_M2;
-        }
-        else{
-            *(z80_r[y[0]]) = z80.read_buffer[0];
-            return Z80_STAGE_RESET;
-        }
-    }
-    //If source is a regular reg, target *can* be (HL)
-    else{
-        if (z80_r[y[0]]){ //If target != (HL)
-            *(z80_r[y[0]]) = *(z80_r[z[0]]);
-            return Z80_STAGE_RESET;
-        }
-        else{ //Target is (HL)
-            if (z80.write_index == 0){
-                z80.write_address = Z80_HL;
-                assert(z80_r[z[0]]);
-                z80.write_buffer[0] = *(z80_r[z[0]]);
-                return Z80_STAGE_M3;
-            }
-            else{
-                return Z80_STAGE_RESET;
-            }
-        }
-    }
+    *(z80_r[y[0]]) = *(z80_r[z[0]]);
+    return Z80_STAGE_RESET;
 }
 
 ///LD rp[n], nn; Size: 3; Flags: None
@@ -897,8 +878,20 @@ int NOP(){
 ///OR (HL); Size: 1; Flags: ???
 int OR_HLp(){
     assert(z80.opcode_index == 1);
-    assert(0); ///<-- Unimplemented
-    return Z80_STAGE_RESET;
+    Z80_OPCODE_SUBDIV;
+    if (z80.read_index == 0){
+        z80.read_address = Z80_HL;
+        return Z80_STAGE_M2;
+    }
+    else{
+        const uint8_t orig_a = Z80_A;
+        Z80_A = Z80_A | z80.read_buffer[0];
+        Z80_F = 0;
+        Z80_F |= Z80_SETFLAG_SIGN(Z80_A);
+        Z80_F |= Z80_SETFLAG_ZERO(Z80_A);
+        Z80_F |= Z80_SETFLAG_OVERFLOW(orig_a, Z80_A);
+        return Z80_STAGE_RESET;
+    }
 }
 
 ///OR n; Size: 2; Flags:ALL
@@ -917,20 +910,9 @@ int OR_n(){
 int OR_r(){
     assert(z80.opcode_index == 1);
     Z80_OPCODE_SUBDIV;
-    //Request M2 read if required
-    if ((z80_r[z[0]] == 0) && (z80.read_index == 0)){
-        z80.read_address = Z80_HL;
-        return Z80_STAGE_M2;
-    }
-
     const uint8_t orig_a = Z80_A;
-    if (z80_r[z[0]]){
-        Z80_A = Z80_A | *(z80_r[z[0]]);
-    }
-    else{                                          /*OR (HL); Size: 1; Flags:ALL*/
-        //Data retrieved from (HL)
-        Z80_A = Z80_A | z80.read_buffer[0];
-    }
+
+    Z80_A = Z80_A | *(z80_r[z[0]]);
     Z80_F = 0;
     Z80_F |= Z80_SETFLAG_SIGN(Z80_A);
     Z80_F |= Z80_SETFLAG_ZERO(Z80_A);
@@ -1424,5 +1406,176 @@ int XOR_r(){
     Z80_F |= Z80_SETFLAG_SIGN(Z80_A);
     Z80_F |= Z80_SETFLAG_ZERO(Z80_A);
     Z80_F |= Z80_SETFLAG_PARITY(Z80_A);
+    return Z80_STAGE_RESET;
+}
+
+/* Stubs for IX/IY/(IX+d)/(IY+d)*/
+int ADD_IX_rp(){
+    assert(0); /*<-- Unimplemented*/
+    return Z80_STAGE_RESET;
+}
+
+int LD_IX_nn(){
+    assert(0); /*<-- Unimplemented*/
+    return Z80_STAGE_RESET;
+}
+
+int LD_nnp_IX(){
+    assert(0); /*<-- Unimplemented*/
+    return Z80_STAGE_RESET;
+}
+
+int INC_IX(){
+    assert(0); /*<-- Unimplemented*/
+    return Z80_STAGE_RESET;
+}
+
+int INC_IXp(){
+    assert(0); /*<-- Unimplemented*/
+    return Z80_STAGE_RESET;
+}
+
+int LD_IX_nnp(){
+    assert(0); /*<-- Unimplemented*/
+    return Z80_STAGE_RESET;
+}
+
+int DEC_IX(){
+    assert(0); /*<-- Unimplemented*/
+    return Z80_STAGE_RESET;
+}
+
+int DEC_IXp(){
+    assert(0); /*<-- Unimplemented*/
+    return Z80_STAGE_RESET;
+}
+
+int LD_IXp_n(){
+    assert(0); /*<-- Unimplemented*/
+    return Z80_STAGE_RESET;
+}
+
+int LD_r_IXp(){
+    assert(0); /*<-- Unimplemented*/
+    return Z80_STAGE_RESET;
+}
+
+int LD_IXp_r(){
+    assert(0); /*<-- Unimplemented*/
+    return Z80_STAGE_RESET;
+}
+
+int ADD_IXp(){
+    assert(0); /*<-- Unimplemented*/
+    return Z80_STAGE_RESET;
+}
+
+int ADC_IXp(){
+    assert(0); /*<-- Unimplemented*/
+    return Z80_STAGE_RESET;
+}
+
+int SUB_IXp(){
+    assert(0); /*<-- Unimplemented*/
+    return Z80_STAGE_RESET;
+}
+
+int SBC_IXp(){
+    assert(0); /*<-- Unimplemented*/
+    return Z80_STAGE_RESET;
+}
+
+int AND_IXp(){
+    assert(0); /*<-- Unimplemented*/
+    return Z80_STAGE_RESET;
+}
+
+int XOR_IXp(){
+    assert(0); /*<-- Unimplemented*/
+    return Z80_STAGE_RESET;
+}
+
+int OR_IXp(){
+    assert(0); /*<-- Unimplemented*/
+    return Z80_STAGE_RESET;
+}
+
+int CP_IXp(){
+    assert(0); /*<-- Unimplemented*/
+    return Z80_STAGE_RESET;
+}
+
+int POP_IX(){
+    assert(0); /*<-- Unimplemented*/
+    return Z80_STAGE_RESET;
+}
+
+int EX_SPp_IX(){
+    assert(0); /*<-- Unimplemented*/
+    return Z80_STAGE_RESET;
+}
+
+int PUSH_IX(){
+    assert(0); /*<-- Unimplemented*/
+    return Z80_STAGE_RESET;
+}
+
+int JP_IXp(){
+    assert(0); /*<-- Unimplemented*/
+    return Z80_STAGE_RESET;
+}
+
+int LD_SP_IX(){
+    assert(0); /*<-- Unimplemented*/
+    return Z80_STAGE_RESET;
+}
+
+int SLL_IXp(){
+    assert(0); /*<-- Unimplemented*/
+    return Z80_STAGE_RESET;
+}
+
+int RRC_IXp(){
+    assert(0); /*<-- Unimplemented*/
+    return Z80_STAGE_RESET;
+}
+
+int RL_IXp(){
+    assert(0); /*<-- Unimplemented*/
+    return Z80_STAGE_RESET;
+}
+
+int SLA_IXp(){
+    assert(0); /*<-- Unimplemented*/
+    return Z80_STAGE_RESET;
+}
+
+int RR_IXp(){
+    assert(0); /*<-- Unimplemented*/
+    return Z80_STAGE_RESET;
+}
+
+int SRA_IXp(){
+    assert(0); /*<-- Unimplemented*/
+    return Z80_STAGE_RESET;
+}
+
+int SRL_IXp(){
+    assert(0); /*<-- Unimplemented*/
+    return Z80_STAGE_RESET;
+}
+
+int SET_b_IXp(){
+    assert(0); /*<-- Unimplemented*/
+    return Z80_STAGE_RESET;
+}
+
+int RES_b_IXp(){
+    assert(0); /*<-- Unimplemented*/
+    return Z80_STAGE_RESET;
+}
+
+int BIT_b_IXp(){
+    assert(0); /*<-- Unimplemented*/
     return Z80_STAGE_RESET;
 }

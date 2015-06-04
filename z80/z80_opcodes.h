@@ -195,4 +195,48 @@ int OUT_np_A();
 int OUTD();
 int OUTI();
 
+/* --------------------------------------------- */
+/* --- (IX+n)/(IY+n)/IX/IY verion of opcodes --- */
+/* --------------------------------------------- */
+
+int ADD_IX_rp();
+int LD_IX_nn();
+int LD_nnp_IX();
+int INC_IX();
+int INC_IXp();
+int ADD_IX_rp();
+int LD_IX_nnp();
+int DEC_IX();
+int DEC_IXp();
+int LD_IXp_n();
+int LD_r_IXp();
+int LD_IXp_r();
+int ADD_IXp();
+int ADC_IXp();
+int SUB_IXp();
+int SBC_IXp();
+int AND_IXp();
+int XOR_IXp();
+int OR_IXp();
+int CP_IXp();
+int POP_IX();
+int EX_SPp_IX();
+int PUSH_IX();
+int JP_IXp();
+int LD_SP_IX();
+int SLL_IXp();
+int RRC_IXp();
+int RL_IXp();
+int SLA_IXp();
+int RR_IXp();
+int SRA_IXp();
+int SRL_IXp();
+int RR_IXp();
+int SRA_IXp();
+int SRL_IXp();
+
+int SET_b_IXp();
+int RES_b_IXp();
+int BIT_b_IXp();
+
 #endif
