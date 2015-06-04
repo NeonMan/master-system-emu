@@ -1408,3 +1408,174 @@ int XOR_r(){
     Z80_F |= Z80_SETFLAG_PARITY(Z80_A);
     return Z80_STAGE_RESET;
 }
+
+/* Stubs for IX/IY/(IX+d)/(IY+d)*/
+int ADD_IX_rp(){
+    assert(0); /*<-- Unimplemented*/
+    return Z80_STAGE_RESET;
+}
+
+int LD_IX_nn(){
+    assert(0); /*<-- Unimplemented*/
+    return Z80_STAGE_RESET;
+}
+
+int LD_nnp_IX(){
+    assert(0); /*<-- Unimplemented*/
+    return Z80_STAGE_RESET;
+}
+
+int INC_IX(){
+    assert(0); /*<-- Unimplemented*/
+    return Z80_STAGE_RESET;
+}
+
+int INC_IXp(){
+    assert(0); /*<-- Unimplemented*/
+    return Z80_STAGE_RESET;
+}
+
+int LD_IX_nnp(){
+    assert(0); /*<-- Unimplemented*/
+    return Z80_STAGE_RESET;
+}
+
+int DEC_IX(){
+    assert(0); /*<-- Unimplemented*/
+    return Z80_STAGE_RESET;
+}
+
+int DEC_IXp(){
+    assert(0); /*<-- Unimplemented*/
+    return Z80_STAGE_RESET;
+}
+
+int LD_IXp_n(){
+    assert(0); /*<-- Unimplemented*/
+    return Z80_STAGE_RESET;
+}
+
+int LD_r_IXp(){
+    assert(0); /*<-- Unimplemented*/
+    return Z80_STAGE_RESET;
+}
+
+int LD_IXp_r(){
+    assert(0); /*<-- Unimplemented*/
+    return Z80_STAGE_RESET;
+}
+
+int ADD_IXp(){
+    assert(0); /*<-- Unimplemented*/
+    return Z80_STAGE_RESET;
+}
+
+int ADC_IXp(){
+    assert(0); /*<-- Unimplemented*/
+    return Z80_STAGE_RESET;
+}
+
+int SUB_IXp(){
+    assert(0); /*<-- Unimplemented*/
+    return Z80_STAGE_RESET;
+}
+
+int SBC_IXp(){
+    assert(0); /*<-- Unimplemented*/
+    return Z80_STAGE_RESET;
+}
+
+int AND_IXp(){
+    assert(0); /*<-- Unimplemented*/
+    return Z80_STAGE_RESET;
+}
+
+int XOR_IXp(){
+    assert(0); /*<-- Unimplemented*/
+    return Z80_STAGE_RESET;
+}
+
+int OR_IXp(){
+    assert(0); /*<-- Unimplemented*/
+    return Z80_STAGE_RESET;
+}
+
+int CP_IXp(){
+    assert(0); /*<-- Unimplemented*/
+    return Z80_STAGE_RESET;
+}
+
+int POP_IX(){
+    assert(0); /*<-- Unimplemented*/
+    return Z80_STAGE_RESET;
+}
+
+int EX_SPp_IX(){
+    assert(0); /*<-- Unimplemented*/
+    return Z80_STAGE_RESET;
+}
+
+int PUSH_IX(){
+    assert(0); /*<-- Unimplemented*/
+    return Z80_STAGE_RESET;
+}
+
+int JP_IXp(){
+    assert(0); /*<-- Unimplemented*/
+    return Z80_STAGE_RESET;
+}
+
+int LD_SP_IX(){
+    assert(0); /*<-- Unimplemented*/
+    return Z80_STAGE_RESET;
+}
+
+int SLL_IXp(){
+    assert(0); /*<-- Unimplemented*/
+    return Z80_STAGE_RESET;
+}
+
+int RRC_IXp(){
+    assert(0); /*<-- Unimplemented*/
+    return Z80_STAGE_RESET;
+}
+
+int RL_IXp(){
+    assert(0); /*<-- Unimplemented*/
+    return Z80_STAGE_RESET;
+}
+
+int SLA_IXp(){
+    assert(0); /*<-- Unimplemented*/
+    return Z80_STAGE_RESET;
+}
+
+int RR_IXp(){
+    assert(0); /*<-- Unimplemented*/
+    return Z80_STAGE_RESET;
+}
+
+int SRA_IXp(){
+    assert(0); /*<-- Unimplemented*/
+    return Z80_STAGE_RESET;
+}
+
+int SRL_IXp(){
+    assert(0); /*<-- Unimplemented*/
+    return Z80_STAGE_RESET;
+}
+
+int SET_b_IXp(){
+    assert(0); /*<-- Unimplemented*/
+    return Z80_STAGE_RESET;
+}
+
+int RES_b_IXp(){
+    assert(0); /*<-- Unimplemented*/
+    return Z80_STAGE_RESET;
+}
+
+int BIT_b_IXp(){
+    assert(0); /*<-- Unimplemented*/
+    return Z80_STAGE_RESET;
+}
