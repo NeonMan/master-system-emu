@@ -27,14 +27,6 @@ extern "C" {
 //Data needed for macros
 ///Parity LUT.
 static const uint8_t z80_parity_lut[256] = {
-    1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1,
-    0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0,
-    0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0,
-    1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1,
-    0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0,
-    1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1,
-    1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1,
-    0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0,
     0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0,
     1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1,
     1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1,
@@ -42,7 +34,15 @@ static const uint8_t z80_parity_lut[256] = {
     1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1,
     0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0,
     0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0,
-    1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1
+    1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1,
+    1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1,
+    0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0,
+    0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0,
+    1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1,
+    0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0,
+    1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1,
+    1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1,
+    0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0
 };
 
 //Opcode subdivision macro
@@ -155,18 +155,6 @@ const uint8_t q[4] = { z80.opcode[0] & (1 << 3), z80.opcode[1] & (1 << 3), z80.o
 //IX/IY selection macro. IX if param == 0xDD use IX; IY otherwise.
 #define Z80_INDIRECT(PREFIX) (*(PREFIX == 0xDD ? &Z80_IX : &Z80_IY))
 
-
-// --- Flag update macros
-#define Z80_SETFLAG_SIGN(X) (((X)&(1<<7)) ? (1 << 7) : 0) /**<-- [S] Set sign flag (bit 7)*/
-#define Z80_SETFLAG_ZERO(X) (((X) == 0) ? (1 << 6) : 0) /**<-- [Z] Set Zero flag (bit 6)*/
-#define Z80_SETFLAG_HC(O,N) (((O & (1 << 3)) == 0) && ((N) & (1 << 3)) ? (1 << 4) : 0) /**<-- [H] Set Half-carry flag (bit 4)*/
-#define Z80_SETFLAG_PARITY(X) (z80_parity_lut[X]) /**<-- [P] Set parity flag (bit 2)*/
-#define Z80_SETFLAG_OVERFLOW(O,N) (((int16_t)O) > ((int16_t)N) ? 0 : (1 << 2)) /**<-- [V] Set overflow flag (bit 2)*/
-#define Z80_SETFLAG_SUBTRACT(A) (A ? (1<<1) : 0) /**<-- [N] Set Add/Subtract flag (bit 1)*/
-#define Z80_SETFLAG_CARRY(O,N) (O > N ? 1 : 0) /**<-- [C] Set Carry flag, adition (bit 0)*/
-#define Z80_SETFLAG_BORROW(O,N) (O < N ? 1 : 0) /**<-- [C] Set carry flag, subtraction, (bit 0)*/
-///@bug Decimal Adjust Accumulate is not implemented
-
 // --- Flag masks
 #define Z80_FLAG_SIGN     (1<<7)
 #define Z80_FLAG_ZERO     (1<<6)
@@ -176,6 +164,21 @@ const uint8_t q[4] = { z80.opcode[0] & (1 << 3), z80.opcode[1] & (1 << 3), z80.o
 #define Z80_FLAG_PARITY   (1<<2)
 #define Z80_FLAG_SUBTRACT (1<<1)
 #define Z80_FLAG_CARRY    (1)
+
+// --- Flag update macros
+#define Z80_SETFLAG_SIGN(X) (((X)&(1<<7)) ? Z80_FLAG_SIGN : 0) /**<-- [S] Set sign flag (bit 7)*/
+#define Z80_SETFLAG_ZERO(X) (((X) == 0) ? Z80_FLAG_ZERO : 0) /**<-- [Z] Set Zero flag (bit 6)*/
+#define Z80_SETFLAG_HC(O,N) (((O & (1 << 3)) == 0) && ((N) & (1 << 3)) ? Z80_FLAG_HC : 0) /**<-- [H] Set Half-carry flag (bit 4)*/
+
+#define Z80_SETFLAG_HALF_CARRY(OP1,OP2)  (((((OP1)&0x07) + ((OP2)&0x07)) > 0x07) ? Z80_FLAG_HC : 0)
+#define Z80_SETFLAG_HALF_BORROW(OP1,OP2) (((((OP1)&0x07) - ((OP2)&0x07)) > ((OP1)&0x07)) ? Z80_FLAG_HC : 0)
+
+#define Z80_SETFLAG_PARITY(X) (z80_parity_lut[(X)] ? Z80_FLAG_PARITY : 0) /**<-- [P] Set parity flag (bit 2)*/
+#define Z80_SETFLAG_OVERFLOW(O,N) (((int16_t)O) > ((int16_t)N) ? 0 : Z80_FLAG_PARITY) /**<-- [V] Set overflow flag (bit 2)*/
+#define Z80_SETFLAG_SUBTRACT(A) (A ? Z80_FLAG_SUBTRACT : 0) /**<-- [N] Set Add/Subtract flag (bit 1)*/
+#define Z80_SETFLAG_CARRY(O,N) (O > N ? Z80_FLAG_CARRY : 0) /**<-- [C] Set Carry flag, adition (bit 0)*/
+#define Z80_SETFLAG_BORROW(O,N) (O < N ? Z80_FLAG_CARRY : 0) /**<-- [C] Set carry flag, subtraction, (bit 0)*/
+///@bug Decimal Adjust Accumulate is not implemented
 
 // --- Inverted flag masks (for bit clearing)
 #define Z80_CLRFLAG_SIGN     (Z80_FLAG_SIGN     ^ 0xFF)
