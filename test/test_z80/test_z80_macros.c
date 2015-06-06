@@ -34,6 +34,16 @@ TEST_TEAR_DOWN(z80_macros){
 
 }
 
+/*Test endianness. emulator might not work on big endian platforms.*/
+TEST(z80_macros, endian){
+    const char unix[4] = { 'U', 'N', 'I', 'X' };
+    uint16_t * p1 = (void*)unix;
+    uint32_t * p2 = (void*)unix;
+
+    TEST_ASSERT_EQUAL_HEX16((uint16_t)'U', (*p1) & 0x00FF);
+    TEST_ASSERT_EQUAL_HEX32((uint32_t)'U', (*p2) & 0x000000FF);
+}
+
 /*Test sub-byte divisons*/
 TEST(z80_macros, subbyte){
     const unsigned char x = (3 << 6); /*0b11000000*/
@@ -59,6 +69,7 @@ TEST(z80_macros, subbyte){
     TEST_ASSERT_EQUAL(q, Z80_OPCODE_Q_MASK);
 }
 
+/*Register access macros*/
 TEST(z80_macros, register_access){
     Z80_I = 0x01;
     Z80_R = 0x02;
@@ -102,35 +113,55 @@ TEST(z80_macros, register_access){
     TEST_ASSERT_EQUAL_HEX16(0x191A, Z80_IY);
 }
 
+/*Bus access macros*/
 TEST(z80_macros, pins){
     z80_address = 0xAA55;
     TEST_ASSERT_EQUAL_HEX8(0xAA, Z80_ADDRH);
     TEST_ASSERT_EQUAL_HEX8(0x55, Z80_ADDRL);
 }
 
+/*Flag setting macros*/
 TEST(z80_macros, flags){
     /*Carry*/
-    /*Add/Subtract*/
+    TEST_ASSERT_EQUAL(1, Z80_SETFLAG_CARRY((int8_t)127, (int8_t)-128));
+    TEST_ASSERT_EQUAL(1, Z80_SETFLAG_CARRY(255, 0));
+    TEST_ASSERT_EQUAL(0, Z80_SETFLAG_CARRY(0x7F, 0x80));
+
+    /*Borrow*/
+    TEST_ASSERT_EQUAL(1, Z80_SETFLAG_BORROW((int8_t)-128, 0));
+    TEST_ASSERT_EQUAL(1, Z80_SETFLAG_BORROW((int8_t)-127, 0));
+    TEST_ASSERT_EQUAL(0, Z80_SETFLAG_BORROW((int8_t)-127, (int8_t)-128));
+
+    /*!Add/Subtract*/
+    TEST_ASSERT_EQUAL(Z80_FLAG_SUBTRACT, Z80_SETFLAG_SUBTRACT(1));
+    TEST_ASSERT_EQUAL(0, Z80_SETFLAG_SUBTRACT(0));
+
     /*Parity/Overflow*/
+    TEST_ASSERT_EQUAL(0, Z80_SETFLAG_PARITY(0));
+    TEST_ASSERT_EQUAL(Z80_FLAG_PARITY, Z80_SETFLAG_PARITY(1));
+    TEST_ASSERT_EQUAL(Z80_FLAG_PARITY, Z80_SETFLAG_PARITY(2));
+    TEST_ASSERT_EQUAL(0, Z80_SETFLAG_PARITY(3));
+
     /*Half-carry*/
+    TEST_ASSERT_EQUAL(Z80_FLAG_HC, Z80_SETFLAG_HALF_CARRY(7, 1));
+    TEST_ASSERT_EQUAL(Z80_FLAG_HC, Z80_SETFLAG_HALF_CARRY(6, 2));
+    TEST_ASSERT_EQUAL(0, Z80_SETFLAG_HALF_CARRY(7, 0));
+    TEST_ASSERT_EQUAL(0, Z80_SETFLAG_HALF_CARRY(6, 1));
+    TEST_ASSERT_EQUAL(0, Z80_SETFLAG_HALF_CARRY(5, 2));
+
+    /*Half-borrow*/
+    /**@bug is half-borrow distinct from half-carry? is it ever used?*/
 
     /*Zero*/
     TEST_ASSERT_EQUAL(0, Z80_SETFLAG_ZERO(0xFF));
     TEST_ASSERT_EQUAL(Z80_FLAG_ZERO, Z80_SETFLAG_ZERO(0x00));
     TEST_ASSERT_EQUAL(0, Z80_SETFLAG_ZERO(0x01));
+
     /*Sign*/
     TEST_ASSERT_EQUAL(Z80_FLAG_SIGN, Z80_SETFLAG_SIGN((uint8_t)((int8_t)-128)));
     TEST_ASSERT_EQUAL(Z80_FLAG_SIGN, Z80_SETFLAG_SIGN((uint8_t)((int8_t)-1)));
     TEST_ASSERT_EQUAL(0, Z80_SETFLAG_SIGN((uint8_t)((int8_t)127)));
     TEST_ASSERT_EQUAL(0, Z80_SETFLAG_SIGN((uint8_t)((int8_t)0)));
-    /*Add/Subtract*/
-    TEST_ASSERT_EQUAL(0, Z80_SETFLAG_SUBTRACT(0));
-    TEST_ASSERT_EQUAL(Z80_FLAG_SUBTRACT, Z80_SETFLAG_SUBTRACT(1));
-    /*Carry/Borrow*/
-    TEST_ASSERT_EQUAL(Z80_FLAG_CARRY, Z80_SETFLAG_CARRY(0xFF, 0x00));
-    TEST_ASSERT_EQUAL(0, Z80_SETFLAG_CARRY(0xF0, 0xFF));
-
-    TEST_FAIL_MESSAGE("Test is not complete.");
 }
 
 IGNORE_TEST(z80_macros, register_lut){
@@ -138,6 +169,7 @@ IGNORE_TEST(z80_macros, register_lut){
 }
 
 TEST_GROUP_RUNNER(z80_macros){
+    RUN_TEST_CASE(z80_macros, endian);
     RUN_TEST_CASE(z80_macros, subbyte);
     RUN_TEST_CASE(z80_macros, register_access);
     RUN_TEST_CASE(z80_macros, pins);
