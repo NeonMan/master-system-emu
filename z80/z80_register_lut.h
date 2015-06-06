@@ -29,10 +29,12 @@ extern struct z80_s z80; //<-- Provided by z80.c, must be forward-declared here.
 // The pointed variable is not.
 ///Register pairs lookup table
 static uint16_t* const z80_rp[4] = { &Z80_BC, &Z80_DE, &Z80_HL, &Z80_SP };
+#define Z80_RP_INDEX_HL 2
 ///Register pairs lookup table (AF option)
 static uint16_t* const z80_rp2[4] = { &Z80_BC, &Z80_DE, &Z80_HL, &Z80_AF };
 ///Register lookup table
 static uint8_t* const z80_r[8] = { &Z80_B, &Z80_C, &Z80_D, &Z80_E, &Z80_H, &Z80_L, 0, &Z80_A };
+#define Z80_R_INDEX_HL 6
 ///Condition Flag  mask lookup table (NZ,Z,NC,C,PO,PE,P,M)
 static uint8_t  const z80_cc[8] = { Z80_FLAG_ZERO, Z80_FLAG_ZERO, Z80_FLAG_CARRY, Z80_FLAG_CARRY, Z80_FLAG_PARITY, Z80_FLAG_PARITY, Z80_FLAG_SIGN, Z80_FLAG_SIGN };
 ///Expected flag value (after mask) for the condition to be true
