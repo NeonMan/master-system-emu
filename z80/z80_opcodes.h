@@ -17,6 +17,28 @@
 
 #include "z80.h"
 
+/* -------------------- */
+/* --- Handy macros --- */
+/* -------------------- */
+#define Z80_8BIT_READ(ADDRESS, IO) {\
+    if(z80.read_index == 0){\
+        z80.read_is_io = (IO);\
+        z80.read_address = (ADDRESS);\
+        return Z80_STAGE_M2;\
+    }\
+}
+
+#define Z80_16BIT_READ(ADDRESS, IO) {\
+    if(z80.read_index == 0){\
+        z80.read_is_io = (IO);\
+        z80.read_address = (ADDRESS);\
+        return Z80_STAGE_M2;\
+    }else if(z80.read_index == 1){\
+        z80.read_address = (ADDRESS) + 1;\
+        return Z80_STAGE_M2;\
+    }\
+} 
+
 /* ------------------ */
 /* --- 8-bit Load --- */
 /* ------------------ */

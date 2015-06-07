@@ -105,19 +105,11 @@ int AND_n(){
 int AND_r(){
     assert(z80.opcode_index == 1);
     Z80_OPCODE_SUBDIV;
-    //Request M2 read if required
-    if ((z80_r[z[0]] == 0) && (z80.read_index == 0)){
-        z80.read_address = Z80_HL;
-        return Z80_STAGE_M2;
-    }
+    assert(z[0] != Z80_R_INDEX_HL);
 
     const uint8_t orig_a = Z80_A;
-    if (z80_r[z[0]]){                            /*AND r[z]; Size: 1; Flags: All*/
-        Z80_A = Z80_A & *(z80_r[z[0]]);
-    }
-    else{                                        /*AND (HL); Size: 1; Flags: All*/
-        Z80_A = Z80_A & z80.read_buffer[0];
-    }
+    Z80_A = Z80_A & (*(z80_r[z[0]]));
+
     Z80_F = 0;
     Z80_F |= Z80_SETFLAG_SIGN(Z80_A);
     Z80_F |= Z80_SETFLAG_ZERO(Z80_A);
@@ -265,19 +257,11 @@ int CP_HLp(){
 int CP_r(){
     assert(z80.opcode_index == 1);
     Z80_OPCODE_SUBDIV;
-    //Request M2 read if required
-    if ((z80_r[z[0]] == 0) && (z80.read_index == 0)){
-        z80.read_address = Z80_HL;
-        return Z80_STAGE_M2;
-    }
+    assert(z[0] != Z80_R_INDEX_HL);
 
     uint8_t new_a;
-    if (z80_r[z[0]]){
-        new_a = Z80_A - *(z80_r[z[0]]);
-    }
-    else{                                         /*CP (HL); Size: 1; Flags: All*/
-        new_a = Z80_A - z80.read_buffer[0];
-    }
+    new_a = Z80_A - *(z80_r[z[0]]);
+
     Z80_F = Z80_SETFLAG_SIGN(Z80_A)
         | Z80_SETFLAG_ZERO(Z80_A)
         | Z80_SETFLAG_HC(Z80_A, new_a)
@@ -421,15 +405,10 @@ int IM(){
 ///IN A, (n); Size: 2; Flags: None
 int IN_A_np(){
     assert(z80.opcode_index == 2);
-    if (z80.read_index == 0){
-        z80.read_address = z80.opcode[1] | (((uint16_t)Z80_A) << 8);
-        z80.read_is_io = 1;
-        return Z80_STAGE_M2;
-    }
-    else{
-        Z80_A = z80.read_buffer[0];
-        return Z80_STAGE_RESET;
-    }
+
+    Z80_8BIT_READ((z80.opcode[1] | (((uint16_t)Z80_A) << 8)), 1);
+    Z80_A = z80.read_buffer[0];
+    return Z80_STAGE_RESET;
 }
 
 ///IN (C); Size: 2; Flags: ???
@@ -450,11 +429,9 @@ int IN_r_Cp(){
 int INC_HLp(){
     assert(z80.opcode_index == 1);
     //Memory read
-    if (z80.read_index == 0){
-        z80.read_address = Z80_HL;
-        return Z80_STAGE_M2;
-    }
-    else if (z80.write_index == 0){
+    Z80_8BIT_READ(Z80_HL, 0);
+    //Mem write
+    if (z80.write_index == 0){
         const uint8_t old_r = z80.read_buffer[0];
         z80.write_address = Z80_HL;
         z80.write_buffer[0] = old_r + 1;
@@ -590,14 +567,11 @@ int LD_A_BCp(){
 ///LD A,(DE); Size: 1; Flags: None
 int LD_A_DEp(){
     assert(z80.opcode_index == 1);
-    if (z80.read_index == 0){
-        z80.read_address = Z80_DE;
-        return Z80_STAGE_M2;
-    }
-    else{
-        Z80_A = z80.read_buffer[0];
-        return Z80_STAGE_RESET;
-    }
+    Z80_8BIT_READ(Z80_DE, 0);
+
+    Z80_A = z80.read_buffer[0];
+    return Z80_STAGE_RESET;
+
 }
 
 ///LD A, I; Size: 2; Flags: ???
@@ -610,14 +584,9 @@ int LD_A_I(){
 ///LD A, (nn); Size: 3; Flags: None
 int LD_A_nnp(){
     assert(z80.opcode_index == 3);
-    if (z80.read_index == 0){
-        z80.read_address = *((uint16_t*)(z80.opcode + 1)); ///<-- @bug endianness!
-        return Z80_STAGE_M2;
-    }
-    else{
-        Z80_A = z80.read_buffer[0];
-        return Z80_STAGE_RESET;
-    }
+    Z80_8BIT_READ(z80.opcode[1] | (((uint16_t)z80.opcode[2])<<8), 0);
+    Z80_A = z80.read_buffer[0];
+    return Z80_STAGE_RESET;
 }
 
 ///LD A, R; Size: 2; Flags: ???
@@ -645,19 +614,11 @@ int LD_BCp_A(){
 ///LD HL, (nn); Size: 3; Flags: None
 int LD_HL_nnp(){
     assert(z80.opcode_index == 3);
-    if (z80.read_index == 0){
-        z80.read_address = *((uint16_t*)(z80.opcode + 1)); ///<-- @bug endianness!
-        return Z80_STAGE_M2;
-    }
-    else if (z80.read_index == 1){
-        ++z80.read_address;
-        return Z80_STAGE_M2;
-    }
-    else{
-        Z80_H = z80.read_buffer[0];
-        Z80_L = z80.read_buffer[1];
-        return Z80_STAGE_RESET;
-    }
+    Z80_16BIT_READ(z80.opcode[1] | (((uint16_t)z80.opcode[2])<<8), 0);
+
+    Z80_H = z80.read_buffer[0];
+    Z80_L = z80.read_buffer[1];
+    return Z80_STAGE_RESET;
 }
 
 ///LD (HL), n; Size: 2; Flags: None
@@ -741,14 +702,9 @@ int LD_R_A(){
 int LD_r_HLp(){
     assert(z80.opcode_index == 1);
     Z80_OPCODE_SUBDIV;
-    if (z80.read_index == 0){
-        z80.read_address = Z80_HL;
-        return Z80_STAGE_M2;
-    }
-    else{
-        *(z80_r[y[0]]) = z80.read_buffer[0];
-        return Z80_STAGE_RESET;
-    }
+
+    Z80_8BIT_READ(Z80_HL, 0);
+    *(z80_r[y[0]]) = z80.read_buffer[0];
     return Z80_STAGE_RESET;
 }
 
@@ -850,12 +806,9 @@ int LDIR(){
     assert(z80.opcode_index == 2);
     //(DE) <-- (HL); ++DE; ++HL; --BC; BC? repeat : end;
     //Perform a read
-    if (z80.read_index == 0){
-        z80.read_address = Z80_HL;
-        return Z80_STAGE_M2;
-    }
+    Z80_8BIT_READ(Z80_HL, 0);
     //Perform a write
-    else if (z80.write_index == 0){
+    if (z80.write_index == 0){
         z80.write_address = Z80_DE;
         z80.write_buffer[0] = z80.read_buffer[0];
         return Z80_STAGE_M3;
@@ -893,19 +846,16 @@ int NOP(){
 int OR_HLp(){
     assert(z80.opcode_index == 1);
     Z80_OPCODE_SUBDIV;
-    if (z80.read_index == 0){
-        z80.read_address = Z80_HL;
-        return Z80_STAGE_M2;
-    }
-    else{
-        const uint8_t orig_a = Z80_A;
-        Z80_A = Z80_A | z80.read_buffer[0];
-        Z80_F = 0;
-        Z80_F |= Z80_SETFLAG_SIGN(Z80_A);
-        Z80_F |= Z80_SETFLAG_ZERO(Z80_A);
-        Z80_F |= Z80_SETFLAG_OVERFLOW(orig_a, Z80_A);
-        return Z80_STAGE_RESET;
-    }
+    Z80_8BIT_READ(Z80_HL, 0);
+    
+    const uint8_t orig_a = Z80_A;
+    Z80_A = Z80_A | z80.read_buffer[0];
+    Z80_F = 0;
+    Z80_F |= Z80_SETFLAG_SIGN(Z80_A);
+    Z80_F |= Z80_SETFLAG_ZERO(Z80_A);
+    Z80_F |= Z80_SETFLAG_OVERFLOW(orig_a, Z80_A);
+    return Z80_STAGE_RESET;
+    
 }
 
 ///OR n; Size: 2; Flags:ALL
@@ -946,12 +896,9 @@ int OTIR(){
     assert(z80.opcode_index == 2);
     //(C)<-(HL), B<-B  1, HL<-HL + 1; B? repeat : end
     //Perform read
-    if (z80.read_index == 0){
-        z80.read_address = Z80_HL;
-        return Z80_STAGE_M2;
-    }
+    Z80_8BIT_READ(Z80_HL, 0);
     //Perform write
-    else if (z80.write_index == 0){
+    if (z80.write_index == 0){
         z80.write_address = Z80_C | (((uint16_t)Z80_A) << 8);
         z80.write_is_io = 1;
         z80.write_buffer[0] = z80.read_buffer[0];
@@ -1021,20 +968,11 @@ int POP_rp2(){
     assert(z80.opcode_index == 1);
     Z80_OPCODE_SUBDIV;
     //Read stack
-    if (z80.read_index == 0){
-        z80.read_address = Z80_SP;
-        return Z80_STAGE_M2;
-    }
-    else if (z80.read_index == 1){
-        ++z80.read_address;
-        return Z80_STAGE_M2;
-    }
-    //Update state
-    else{
-        Z80_SP += 2;
-        *(z80_rp2[p[0]]) = *((uint16_t*)z80.read_buffer); ///<-- @bug Endianness!
-        return Z80_STAGE_RESET;
-    }
+    Z80_16BIT_READ(Z80_SP, 0);
+
+    Z80_SP += 2;
+    *(z80_rp2[p[0]]) = *((uint16_t*)z80.read_buffer); ///<-- @bug Endianness!
+    return Z80_STAGE_RESET;
 }
 
 ///PUSH rp2[p]; Size: 1; Flags: None
@@ -1076,19 +1014,11 @@ int RES_b_r(){
 int RET(){
     assert(z80.opcode_index == 1);
     //Read stack
-    if (z80.read_index == 0){
-        z80.read_address = Z80_SP;
-        return Z80_STAGE_M2;
-    }
-    else if (z80.read_index == 1){
-        ++z80.read_address;
-        return Z80_STAGE_M2;
-    }
-    else{
-        Z80_SP += 2;
-        Z80_PC = *((uint16_t*)z80.read_buffer); ///<-- @bug Endianness!
-        return Z80_STAGE_RESET;
-    }
+    Z80_16BIT_READ(Z80_SP, 0);
+
+    Z80_SP += 2;
+    Z80_PC = *((uint16_t*)z80.read_buffer); ///<-- @bug Endianness!
+    return Z80_STAGE_RESET;
 }
 
 ///RET cc[y]; Size: 1; Flags: None
@@ -1097,19 +1027,11 @@ int RET_cc(){
     Z80_OPCODE_SUBDIV;
     if ((Z80_F & z80_cc[y[0]]) == z80_cc_stat[y[0]]){
         //POP stack, update PC
-        if (z80.read_index == 0){
-            z80.read_address = Z80_SP;
-            return Z80_STAGE_M2;
-        }
-        else if (z80.read_index == 1){
-            ++(z80.read_address);
-            return Z80_STAGE_M2;
-        }
-        else{
-            Z80_PC = *((uint16_t*)(z80.read_buffer));
-            Z80_SP += 2;
-            return Z80_STAGE_RESET;
-        }
+        Z80_16BIT_READ(Z80_SP, 0);
+        
+        Z80_PC = *((uint16_t*)(z80.read_buffer));
+        Z80_SP += 2;
+        return Z80_STAGE_RESET;
     }
     else{
         return Z80_STAGE_RESET;
@@ -1402,20 +1324,12 @@ int XOR_n(){
 
 ///XOR r[z]; Size: 1; Flags: All
 int XOR_r(){
-    assert(z80.opcode_index == 1);
     Z80_OPCODE_SUBDIV;
-    //Request M2 read if required
-    if ((z80_r[z[0]] == 0) && (z80.read_index == 0)){
-        z80.read_address = Z80_HL;
-        return Z80_STAGE_M2;
-    }
-    if (z80_r[z[0]]){
-        Z80_A = Z80_A ^ *(z80_r[z[0]]);
-    }
-    else{                                         /*XOR (HL); Size: 1; Flags:ALL*/
-        //Data retrieved from (HL)
-        Z80_A = Z80_A ^ z80.read_buffer[0];
-    }
+    assert(z80.opcode_index == 1);
+    assert(z80_r[z[0]] != 0);
+
+    Z80_A = Z80_A ^ *(z80_r[z[0]]);
+
     Z80_F = 0;
     Z80_F |= Z80_SETFLAG_SIGN(Z80_A);
     Z80_F |= Z80_SETFLAG_ZERO(Z80_A);
@@ -1525,25 +1439,17 @@ int POP_IXY(){
     assert(z80.opcode_index == 2);
     assert(p[1] == Z80_RP_INDEX_HL);
 
-    if (z80.read_index == 0){
-        z80.read_address = Z80_SP;
-        return Z80_STAGE_M2;
-    }
-    else if (z80.read_index == 1){
-        return Z80_STAGE_M2;
+    Z80_16BIT_READ(Z80_SP, 0);
+    if (z80.opcode[0] == 0xDD){
+        Z80_IXL = z80.read_buffer[0];
+        Z80_IXH = z80.read_buffer[1];
     }
     else{
-        if (z80.opcode[0] == 0xDD){
-            Z80_IXL = z80.read_buffer[0];
-            Z80_IXH = z80.read_buffer[1];
-        }
-        else{
-            Z80_IYL = z80.read_buffer[0];
-            Z80_IYH = z80.read_buffer[1];
-        }
-        ++Z80_SP;
-        return Z80_STAGE_RESET;
+        Z80_IYL = z80.read_buffer[0];
+        Z80_IYH = z80.read_buffer[1];
     }
+    Z80_SP = Z80_SP + 2;
+    return Z80_STAGE_RESET;
 }
 
 int EX_SPp_IXY(){
