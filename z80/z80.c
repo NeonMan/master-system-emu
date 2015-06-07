@@ -35,6 +35,7 @@
 
 // #### For debug purposes only ####
 #include "ram/ram.h"
+#include "io/io_externs.h"
 uint16_t dbg_last_sp = 0xFFFF;
 // #################################
 
@@ -179,7 +180,7 @@ void z80_dump_stack(void* ram, uint16_t sp, uint16_t base_addr, uint16_t count, 
             fprintf(stderr, " +%02d   ", i);
         else
             fprintf(stderr, "       ");
-        fprintf(stderr, "0x%04X: 0x%02X%02X\n", sp - base_addr + i, ((uint8_t*)ram)[sp - base_addr + i + 1], ((uint8_t*)ram)[sp - base_addr + i]);
+        fprintf(stderr, "0x%04X: 0x%02X%02X\n", sp + i, ((uint8_t*)ram)[(sp - base_addr + i + 1)%RAM_SIZE], ((uint8_t*)ram)[(sp - base_addr + i)%RAM_SIZE]);
     }
 }
 
