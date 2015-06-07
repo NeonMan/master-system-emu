@@ -15,10 +15,10 @@
 /*
  Opcodes tested here.
  PUSH
- POP
- CALL
- RETN
- RST
+ POP  (ToDo)
+ CALL (ToDo)
+ RETN (ToDo)
+ RST  (ToDo)
 */
 
 #include <string.h>
@@ -69,6 +69,15 @@ static uint8_t get_ram(uint16_t address){
     }
 }
 
+static void set_ram(uint16_t address, uint8_t b){
+    if (address < RAM_BASE_ADDRESS){
+        TEST_FAIL_MESSAGE("RAM address out of range.");
+    }
+    else{
+        sms_ram[(address - RAM_BASE_ADDRESS) % RAM_SIZE] = b;
+    }
+}
+
 /* --- Test cases --- */
 TEST_SETUP(stack_push){
     //Setup state
@@ -90,8 +99,8 @@ TEST_SETUP(stack_push){
     Z80_E = 0x06;
     Z80_H = 0x07;
     Z80_L = 0x08;
-    Z80_IX = 0x10;
-    Z80_IY = 0x11;
+    Z80_IX = 0x1011;
+    Z80_IY = 0x1213;
     
     //Setup callbacks
     z80dbg_set_pc_breakpoint_cb(pc_breakpoint_cb);
@@ -103,6 +112,7 @@ TEST_TEAR_DOWN(stack_push){
 
 TEST(stack_push, PUSH_BC){
     const uint8_t op_push_bc = 0xC5;
+    const uint8_t op_pop_bc = 0xC1;
     //PUSH BC
     sms_ram[0] = op_push_bc; /*<-- Copy opcode to ram*/
     z80dbg_set_breakpoint(RAM_BASE_ADDRESS + sizeof(op_push_bc), Z80_BREAK_PC); /*<-- Set breakpoint*/
@@ -119,6 +129,7 @@ TEST(stack_push, PUSH_BC){
 
 TEST(stack_push, PUSH_DE){
     const uint8_t op_push_de = 0xD5;
+    const uint8_t op_pop_de = 0xD1;
     //PUSH DE
     sms_ram[0] = op_push_de; /*<-- Copy opcode to ram*/
     z80dbg_set_breakpoint(RAM_BASE_ADDRESS + sizeof(op_push_de), Z80_BREAK_PC); /*<-- Set breakpoint*/
@@ -135,6 +146,7 @@ TEST(stack_push, PUSH_DE){
 
 TEST(stack_push, PUSH_HL){
     const uint8_t op_push_hl = 0xE5;
+    const uint8_t op_pop_hl = 0xE1;
     //PUSH HL
     sms_ram[0] = op_push_hl; /*<-- Copy opcode to ram*/
     z80dbg_set_breakpoint(RAM_BASE_ADDRESS + sizeof(op_push_hl), Z80_BREAK_PC); /*<-- Set breakpoint*/
@@ -151,6 +163,7 @@ TEST(stack_push, PUSH_HL){
 
 TEST(stack_push, PUSH_AF){
     const uint8_t op_push_af = 0xF5;
+    const uint8_t op_pop_af = 0xF1;
     //PUSH AF
     sms_ram[0] = op_push_af; /*<-- Copy opcode to ram*/
     z80dbg_set_breakpoint(RAM_BASE_ADDRESS + sizeof(op_push_af), Z80_BREAK_PC); /*<-- Set breakpoint*/
@@ -165,11 +178,50 @@ TEST(stack_push, PUSH_AF){
     TEST_ASSERT_EQUAL_HEX8(0x01, sms_ram[(Z80_SP + 1 - RAM_BASE_ADDRESS) % RAM_SIZE]);
 }
 
+TEST(stack_push, PUSH_IX){
+    const uint8_t op_push_ix[2] = { 0xDD, 0xE5 };
+    //PUSH IX
+    sms_ram[0] = op_push_ix[0]; /**/
+    sms_ram[1] = op_push_ix[1]; /*<-- Copy opcode to ram*/
+    z80dbg_set_breakpoint(RAM_BASE_ADDRESS + sizeof(op_push_ix), Z80_BREAK_PC); /*<-- Set breakpoint*/
+    while (tick_limit && (!bp_triggered)){
+        sys_tick();
+        --tick_limit;
+    }
+    TEST_ASSERT_TRUE(tick_limit > 0);
+    TEST_ASSERT_TRUE(bp_triggered);
+    TEST_ASSERT_EQUAL_HEX16(0xFFF0 - 2, Z80_SP);
+    TEST_ASSERT_EQUAL_HEX8(0x11, get_ram(Z80_SP + 0));
+    TEST_ASSERT_EQUAL_HEX8(0x10, sms_ram[(Z80_SP + 1 - RAM_BASE_ADDRESS) % RAM_SIZE]);
+}
+
+TEST(stack_push, PUSH_IY){
+    const uint8_t op_push_iy[2] = { 0xFD, 0xE5 };
+    //PUSH IY
+    sms_ram[0] = op_push_iy[0]; /**/
+    sms_ram[1] = op_push_iy[1]; /*<-- Copy opcode to ram*/
+    z80dbg_set_breakpoint(RAM_BASE_ADDRESS + sizeof(op_push_iy), Z80_BREAK_PC); /*<-- Set breakpoint*/
+    while (tick_limit && (!bp_triggered)){
+        sys_tick();
+        --tick_limit;
+    }
+    TEST_ASSERT_TRUE(tick_limit > 0);
+    TEST_ASSERT_TRUE(bp_triggered);
+    TEST_ASSERT_EQUAL_HEX16(0xFFF0 - 2, Z80_SP);
+    TEST_ASSERT_EQUAL_HEX8(0x13, get_ram(Z80_SP + 0));
+    TEST_ASSERT_EQUAL_HEX8(0x12, sms_ram[(Z80_SP + 1 - RAM_BASE_ADDRESS) % RAM_SIZE]);
+}
+
+
+
+
 TEST_GROUP_RUNNER(stack_push){
     RUN_TEST_CASE(stack_push, PUSH_BC);
     RUN_TEST_CASE(stack_push, PUSH_DE);
     RUN_TEST_CASE(stack_push, PUSH_HL);
     RUN_TEST_CASE(stack_push, PUSH_AF);
+    RUN_TEST_CASE(stack_push, PUSH_IX);
+    RUN_TEST_CASE(stack_push, PUSH_IY);
 }
 
 // ----------------------

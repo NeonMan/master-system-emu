@@ -1344,7 +1344,14 @@ int EX_SPp_IXY(){
 }
 
 int PUSH_IXY(){
-    assert(0); /*<-- Unimplemented*/
+    assert(z80.opcode_index == 2);
+    if (z80.opcode[0] == 0xDD){
+        Z80_16BIT_WRITE(Z80_SP - 2, 0, Z80_IXL, Z80_IXH);
+    }
+    else{
+        Z80_16BIT_WRITE(Z80_SP - 2, 0, Z80_IYL, Z80_IYH);
+    }
+    Z80_SP = Z80_SP - 2;
     return Z80_STAGE_RESET;
 }
 
