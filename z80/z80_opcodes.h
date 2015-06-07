@@ -20,6 +20,7 @@
 /* -------------------- */
 /* --- Handy macros --- */
 /* -------------------- */
+
 #define Z80_8BIT_READ(ADDRESS, IO) {\
     if(z80.read_index == 0){\
         z80.read_is_io = (IO);\
@@ -34,10 +35,33 @@
         z80.read_address = (ADDRESS);\
         return Z80_STAGE_M2;\
     }else if(z80.read_index == 1){\
-        z80.read_address = (ADDRESS) + 1;\
+        ++z80.read_address;\
         return Z80_STAGE_M2;\
     }\
-} 
+}
+
+#define Z80_8BIT_WRITE(ADDRESS, IO, B0) {\
+    if(z80.write_index==0){\
+        z80.write_is_io = (IO);\
+        z80.write_address = (ADDRESS);\
+        z80.write_buffer[0] = (B0);\
+        return Z80_STAGE_M3;\
+        }\
+}
+
+#define Z80_16BIT_WRITE(ADDRESS, IO, B0, B1) {\
+    if(z80.write_index==0){\
+        z80.write_is_io = (IO);\
+        z80.write_address = (ADDRESS);\
+        z80.write_buffer[0] = (B0);\
+        z80.write_buffer[1] = (B1);\
+        return Z80_STAGE_M3;\
+    }\
+    else if(z80.write_index == 1){\
+        ++z80.write_address;\
+        return Z80_STAGE_M3;\
+    }\
+}
 
 /* ------------------ */
 /* --- 8-bit Load --- */
