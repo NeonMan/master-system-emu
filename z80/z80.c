@@ -34,7 +34,7 @@
 #include <stdio.h>
 
 // #### For debug purposes only ####
-// #### Remove for portabilty   ####
+#include "ram/ram.h"
 uint16_t dbg_last_sp = 0xFFFF;
 // #################################
 
@@ -209,7 +209,7 @@ void z80_reset_pipeline(){
     if (z80.opcode_index) //There must be something to feed the disasm
         disasm_size = z80d_decode(z80.opcode, 100, opcode_str);
     if (Z80_SP != dbg_last_sp){
-        //z80_dump_stack(ramdbg_get_mem(), Z80_SP, RAM_BASE_ADDRESS, 12, 4);
+        z80_dump_stack(ramdbg_get_mem(), Z80_SP, RAM_BASE_ADDRESS, 12, 4);
         dbg_last_sp = Z80_SP;
     }
     fprintf(stderr, "Last Opcode: (nx PC:0x%04X) %s; 0x", Z80_PC, opcode_str);
@@ -231,8 +231,10 @@ void z80_reset_pipeline(){
     z80.m3_tick_count = 0;
 
     //Check for an execution (PC) breakpoint
-    if (z80_breakpoints[Z80_PC] & Z80_BREAK_PC){
-        if (z80_break_pc) z80_break_pc(Z80_PC);
+    if (z80_break_pc) {
+        if (z80_breakpoints[Z80_PC] & Z80_BREAK_PC){
+            z80_break_pc(Z80_PC);
+        }
     }
 }
 
