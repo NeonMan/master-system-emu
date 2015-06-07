@@ -15,10 +15,11 @@
 /*
  Opcodes tested here.
  PUSH
- POP  (ToDo)
- CALL (ToDo)
- RETN (ToDo)
- RST  (ToDo)
+ POP        (ToDo)
+ CALL nn
+ CALL cc nn (ToDo)
+ RETN       (ToDo)
+ RST        (ToDo)
 */
 
 #include <string.h>
@@ -209,10 +210,28 @@ TEST(stack_push, PUSH_IY){
     TEST_ASSERT_TRUE(bp_triggered);
     TEST_ASSERT_EQUAL_HEX16(0xFFF0 - 2, Z80_SP);
     TEST_ASSERT_EQUAL_HEX8(0x13, get_ram(Z80_SP + 0));
-    TEST_ASSERT_EQUAL_HEX8(0x12, sms_ram[(Z80_SP + 1 - RAM_BASE_ADDRESS) % RAM_SIZE]);
+    TEST_ASSERT_EQUAL_HEX8(0x12, get_ram(Z80_SP + 1));
 }
 
-
+TEST(stack_push, CALL_nn){
+    const uint8_t op_call[3] = { 0xCD, 0xF0, 0xC0 };
+    //CALL nn
+    sms_ram[0] = op_call[0];
+    sms_ram[1] = op_call[1];
+    sms_ram[2] = op_call[2];
+    z80dbg_set_breakpoint(0xC0F0, Z80_BREAK_PC); /*<-- Set breakpoint*/
+    while (tick_limit && (!bp_triggered)){
+        sys_tick();
+        --tick_limit;
+    }
+    TEST_ASSERT_TRUE(tick_limit > 0);
+    TEST_ASSERT_TRUE(bp_triggered);
+    TEST_ASSERT_EQUAL_HEX16(0xC0F0, Z80_PC);
+    TEST_ASSERT_EQUAL_HEX16(0xFFF0 - 2, Z80_SP);
+    const uint16_t return_address = RAM_BASE_ADDRESS + sizeof(op_call);
+    TEST_ASSERT_EQUAL(return_address & 0x00FF, get_ram(Z80_SP));
+    TEST_ASSERT_EQUAL((return_address >> 8) & 0x00FF, get_ram(Z80_SP + 1));
+}
 
 
 TEST_GROUP_RUNNER(stack_push){
@@ -222,6 +241,7 @@ TEST_GROUP_RUNNER(stack_push){
     RUN_TEST_CASE(stack_push, PUSH_AF);
     RUN_TEST_CASE(stack_push, PUSH_IX);
     RUN_TEST_CASE(stack_push, PUSH_IY);
+    RUN_TEST_CASE(stack_push, CALL_nn);
 }
 
 // ----------------------
