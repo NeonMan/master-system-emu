@@ -233,6 +233,85 @@ TEST(stack_push, CALL_nn){
     TEST_ASSERT_EQUAL((return_address >> 8) & 0x00FF, get_ram(Z80_SP + 1));
 }
 
+TEST(stack_push, CALL_NZ_nn){
+    //CALL NZ, nn
+    const uint8_t op_call_nz_nn[3] = { 0xC4, 0xF0, 0xC0 };
+    //Write opcodes to memory.
+    //First jump, must be taken.
+    sms_ram[0] = op_call_nz_nn[0]; sms_ram[1] = op_call_nz_nn[1];
+    sms_ram[2] = op_call_nz_nn[2];
+    //First jump, must not be taken.
+    sms_ram[0xF0] = op_call_nz_nn[0]; sms_ram[0xF1] = op_call_nz_nn[1];
+    sms_ram[0xF2] = op_call_nz_nn[2];
+    //Write set breakpoints, one at (BASE + 15) and other to (BASE + 15 + 3)
+    z80dbg_set_breakpoint(RAM_BASE_ADDRESS + 0xF0 + 0, Z80_BREAK_PC);
+    z80dbg_set_breakpoint(RAM_BASE_ADDRESS + 0xF0 + 3, Z80_BREAK_PC);
+    //Set flag (to take the jump)
+    Z80_F = Z80_FLAG_ZERO ^ 0xFF;
+    //Execute opcode til breakpoint or tick limit
+    while (tick_limit && (!bp_triggered)){
+        sys_tick();
+        --tick_limit;
+    }
+    TEST_ASSERT_TRUE(tick_limit > 0);
+    TEST_ASSERT_TRUE(bp_triggered);
+    TEST_ASSERT_EQUAL_HEX16(0xC0F0, Z80_PC);
+    TEST_ASSERT_EQUAL_HEX16(0xFFF0 - 2, Z80_SP); /*<-- Address pushed to stack */
+    const uint16_t return_address = RAM_BASE_ADDRESS + sizeof(op_call_nz_nn);
+    TEST_ASSERT_EQUAL_HEX8((return_address >> 8) & 0xFF, get_ram(Z80_SP + 1));
+    TEST_ASSERT_EQUAL_HEX8(return_address        & 0xFF, get_ram(Z80_SP + 0));
+    //Clear breakpoint
+    bp_triggered = 0;
+    //Swap flags
+    Z80_F = Z80_F ^ 0xFF;
+    //Execute second opcode
+    while (tick_limit && (!bp_triggered)){
+        sys_tick();
+        --tick_limit;
+    }
+    TEST_ASSERT_TRUE(tick_limit > 0);
+    TEST_ASSERT_TRUE(bp_triggered);
+    TEST_ASSERT_EQUAL_HEX16(0xC0F0 + 3, Z80_PC);
+    TEST_ASSERT_EQUAL_HEX16(0xFFF0 - 2, Z80_SP); /*<-- SP is unchanged */
+    /*Neither is the stack top*/
+    TEST_ASSERT_EQUAL_HEX8((return_address >> 8) & 0xFF, get_ram(Z80_SP + 1));
+    TEST_ASSERT_EQUAL_HEX8(return_address & 0xFF, get_ram(Z80_SP + 0));
+}
+
+IGNORE_TEST(stack_push, CALL_Z_nn){
+    const uint8_t op_call_z_nn[3] = { 0xCC, 0xF0, 0xC0 };
+    TEST_FAIL_MESSAGE("Unimplemented");
+}
+
+IGNORE_TEST(stack_push, CALL_NC_nn){
+    const uint8_t op_call_nc_nn[3] = { 0xD4, 0xF0, 0xC0 };
+    TEST_FAIL_MESSAGE("unimplemented");
+}
+
+IGNORE_TEST(stack_push, CALL_C_nn){
+    const uint8_t op_call_c_nn[3] = { 0xDC, 0xF0, 0xC0 };
+    TEST_FAIL_MESSAGE("unimplemented");
+}
+
+IGNORE_TEST(stack_push, CALL_PO_nn){
+    const uint8_t op_call_po_nn[3] = { 0xE4, 0xF0, 0xC0 };
+    TEST_FAIL_MESSAGE("unimplemented");
+}
+
+IGNORE_TEST(stack_push, CALL_PE_nn){
+    const uint8_t op_call_pe_nn[3] = { 0xEC, 0xF0, 0xC0 };
+    TEST_FAIL_MESSAGE("unimplemented");
+}
+
+IGNORE_TEST(stack_push, CALL_P_nn){
+    const uint8_t op_call_p_nn[3] = { 0xF4, 0xF0, 0xC0 };
+    TEST_FAIL_MESSAGE("unimplemented");
+}
+
+IGNORE_TEST(stack_push, CALL_M_nn){
+    const uint8_t op_call_m_nn[3] = { 0xFC, 0xF0, 0xC0 };
+    TEST_FAIL_MESSAGE("unimplemented");
+}
 
 TEST_GROUP_RUNNER(stack_push){
     RUN_TEST_CASE(stack_push, PUSH_BC);
@@ -242,6 +321,14 @@ TEST_GROUP_RUNNER(stack_push){
     RUN_TEST_CASE(stack_push, PUSH_IX);
     RUN_TEST_CASE(stack_push, PUSH_IY);
     RUN_TEST_CASE(stack_push, CALL_nn);
+    RUN_TEST_CASE(stack_push, CALL_NZ_nn);
+    RUN_TEST_CASE(stack_push, CALL_Z_nn);
+    RUN_TEST_CASE(stack_push, CALL_NC_nn);
+    RUN_TEST_CASE(stack_push, CALL_C_nn);
+    RUN_TEST_CASE(stack_push, CALL_PO_nn);
+    RUN_TEST_CASE(stack_push, CALL_PE_nn);
+    RUN_TEST_CASE(stack_push, CALL_P_nn);
+    RUN_TEST_CASE(stack_push, CALL_M_nn);
 }
 
 // ----------------------
