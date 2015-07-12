@@ -19,7 +19,7 @@
  CALL nn
  CALL cc nn
  RETN       (ToDo)
- RST        (ToDo)
+ RST
 */
 
 #include <string.h>
@@ -93,7 +93,7 @@ TEST_SETUP(stack_push){
     z80.rSP = 0xFFF0;
     z80.rPC = RAM_BASE_ADDRESS;
     bp_triggered = 0;
-    tick_limit = 0x0FFF;
+    tick_limit = 100;
     memset(sms_ram, 0xFF, RAM_SIZE);
 
     //Setup register values
@@ -219,7 +219,7 @@ TEST(stack_push, CALL_nn){
 // -------------------------
 // --- Conditional calls ---
 // -------------------------
-void cc_test(const uint8_t* opcode, uint8_t flag){
+static void cc_test(const uint8_t* opcode, uint8_t flag){
     //Conditional CALL
     //Write opcodes to memory.
     //First jump, must be taken.
@@ -294,6 +294,57 @@ TEST(stack_push, CALL_M_nn){
     cc_test(op, Z80_FLAG_SIGN);
 }
 
+static void rst_test(uint8_t rst_index){
+    //Opcode
+    uint8_t op_rst = 0xC7;
+    //Add reset vector index
+    op_rst = op_rst | (rst_index << 3);
+    //Check limits
+    TEST_ASSERT_TRUE(rst_index < 8);
+    //Calculate reset vector
+    uint16_t reset_vector = rst_index * 0x08;
+
+    sms_ram[0] = op_rst;
+    z80dbg_set_breakpoint(reset_vector, Z80_BREAK_PC);
+    __RUN_TEST_OPCODES;
+    TEST_ASSERT_TRUE(tick_limit > 0);
+    TEST_ASSERT_TRUE(bp_triggered);
+    TEST_ASSERT_STACKTOP_EQUAL16(RAM_BASE_ADDRESS + 1);
+    TEST_ASSERT_PC_EQUAL(reset_vector);
+}
+
+TEST(stack_push, RST0){
+    rst_test(0);
+}
+
+TEST(stack_push, RST1){
+    rst_test(1);
+}
+
+TEST(stack_push, RST2){
+    rst_test(2);
+}
+
+TEST(stack_push, RST3){
+    rst_test(3);
+}
+
+TEST(stack_push, RST4){
+    rst_test(4);
+}
+
+TEST(stack_push, RST5){
+    rst_test(5);
+}
+
+TEST(stack_push, RST6){
+    rst_test(6);
+}
+
+TEST(stack_push, RST7){
+    rst_test(7);
+}
+
 TEST_GROUP_RUNNER(stack_push){
     RUN_TEST_CASE(stack_push, PUSH_BC);
     RUN_TEST_CASE(stack_push, PUSH_DE);
@@ -310,6 +361,14 @@ TEST_GROUP_RUNNER(stack_push){
     RUN_TEST_CASE(stack_push, CALL_PE_nn);
     RUN_TEST_CASE(stack_push, CALL_P_nn);
     RUN_TEST_CASE(stack_push, CALL_M_nn);
+    RUN_TEST_CASE(stack_push, RST0);
+    RUN_TEST_CASE(stack_push, RST1);
+    RUN_TEST_CASE(stack_push, RST2);
+    RUN_TEST_CASE(stack_push, RST3);
+    RUN_TEST_CASE(stack_push, RST4);
+    RUN_TEST_CASE(stack_push, RST5);
+    RUN_TEST_CASE(stack_push, RST6);
+    RUN_TEST_CASE(stack_push, RST7);
 }
 
 /* ----------------------------------- */
@@ -325,7 +384,7 @@ TEST_SETUP(stack_pop){
     z80.rSP = 0xFFF0;
     z80.rPC = RAM_BASE_ADDRESS;
     bp_triggered = 0;
-    tick_limit = 0x0FFF;
+    tick_limit = 100;
     memset(sms_ram, 0xFF, RAM_SIZE);
 
     //Set known values at the stacktop

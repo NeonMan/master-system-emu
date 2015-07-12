@@ -1042,8 +1042,11 @@ int RR_r(){
 
 ///RST y; Size: 1; Flags: None
 int RST_y(){
+    Z80_OPCODE_SUBDIV;
     assert(z80.opcode_index == 1);
-    assert(0); ///<-- Unimplemented
+    Z80_16BIT_WRITE(Z80_SP - 2, 0, Z80_PC & 0x00FF, (Z80_PC >> 8) & 0x00FF);
+    Z80_SP = Z80_SP - 2;
+    Z80_PC = 0x08 * y[0];
     return Z80_STAGE_RESET;
 }
 
