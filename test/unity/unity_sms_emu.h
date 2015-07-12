@@ -29,12 +29,14 @@ static uint8_t _get_ram(uint16_t address, int line){
 #define TEST_ASSERT_RAM_EQUAL16(expected, address)                 {uint8_t h,l; h=_get_ram((address), __LINE__); l=_get_ram((address) + 1, __LINE__); TEST_ASSERT_EQUAL_HEX16((expected), (((uint16_t)l)<<8)|h);}
 #define TEST_ASSERT_STACKTOP_EQUAL(expected)                       TEST_ASSERT_RAM_EQUAL((expected), Z80_SP)
 #define TEST_ASSERT_STACKTOP_EQUAL16(expected)                     TEST_ASSERT_RAM_EQUAL16((expected), Z80_SP)
+#define TEST_ASSERT_STACK_EQUAL16(expected, index)                 TEST_ASSERT_RAM_EQUAL16((expected), (Z80_SP + (2 * index)))
+#define TEST_ASSERT_STACK_EQUAL(expected, index)                   TEST_ASSERT_RAM_EQUAL((expected), (Z80_SP + (index)))
 
 /* --- Register macros --- */
 
 /*Flags register*/
-#define TEST_ASSERT_FLAG_SET(flag_mask)                             (TEST_ASSERT_TRUE(Z80_F & (flag_mask)))
-#define TEST_ASSERT_FLAG_CLEAR(flag_mask)                           (TEST_ASSERT_FALSE(Z80_F & (flag_mask)))
+#define TEST_ASSERT_FLAG_SET(flag_mask)                            (TEST_ASSERT_TRUE(Z80_F & (flag_mask)))
+#define TEST_ASSERT_FLAG_CLEAR(flag_mask)                          (TEST_ASSERT_FALSE(Z80_F & (flag_mask)))
 
 /*8-Bit*/
 #define TEST_ASSERT_A_EQUAL(expected)                              (TEST_ASSERT_EQUAL_HEX8((expected), Z80_A))
