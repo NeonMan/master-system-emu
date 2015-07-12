@@ -903,7 +903,7 @@ int RET(){
     Z80_16BIT_READ(Z80_SP, 0);
 
     Z80_SP += 2;
-    Z80_PC = *((uint16_t*)z80.read_buffer); ///<-- @bug Endianness!
+    Z80_PC = z80.read_buffer[0] | (((uint16_t)(z80.read_buffer[1])) << 8);
     return Z80_STAGE_RESET;
 }
 
@@ -925,9 +925,14 @@ int RET_cc(){
 }
 
 ///RETI; Size: 2; Flags: None
+///@note essentially identical to RET(?)
 int RETI(){
     assert(z80.opcode_index == 2);
-    assert(0); ///<-- Unimplemented
+    //Read stack
+    Z80_16BIT_READ(Z80_SP, 0);
+
+    Z80_SP += 2;
+    Z80_PC = z80.read_buffer[0] | (((uint16_t)(z80.read_buffer[1]))<<8);
     return Z80_STAGE_RESET;
 }
 

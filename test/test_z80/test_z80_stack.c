@@ -33,6 +33,7 @@
 #include "z80/z80.h"
 #include "z80/z80_externs.h"
 #include "z80/z80_macros.h"
+#include "z80/z80_register_lut.h"
 #include "ram/ram.h"
 
 #include "io/io_externs.h"
@@ -485,6 +486,104 @@ TEST(stack_pop, POP_IY){
     TEST_ASSERT_IY_EQUAL(0xBBAA);
 }
 
+TEST(stack_pop, RET){
+    const uint8_t op_ret = 0xC9;
+    //RET
+    sms_ram[0] = op_ret;
+    z80dbg_set_breakpoint(0xBBAA, Z80_BREAK_PC); /*<-- Set breakpoint*/
+    __RUN_TEST_OPCODES;
+    TEST_ASSERT_TRUE(tick_limit > 0);
+    TEST_ASSERT_TRUE(bp_triggered);
+    TEST_ASSERT_SP_EQUAL(0xFFF0 + 2);
+    TEST_ASSERT_PC_EQUAL(0xBBAA);
+}
+
+TEST(stack_pop, RETI){
+    const uint8_t op_reti[2] = { 0xED, 0x4D };
+    //RETI
+    sms_ram[0] = op_reti[0];
+    sms_ram[1] = op_reti[1];
+    z80dbg_set_breakpoint(0xBBAA, Z80_BREAK_PC); /*<-- Set breakpoint*/
+    __RUN_TEST_OPCODES;
+    TEST_ASSERT_TRUE(tick_limit > 0);
+    TEST_ASSERT_TRUE(bp_triggered);
+    TEST_ASSERT_SP_EQUAL(0xFFF0 + 2);
+    TEST_ASSERT_PC_EQUAL(0xBBAA);
+}
+
+static void retn_test(uint8_t condition){
+    uint8_t op_ret_cc = 0xC0;
+    TEST_ASSERT_TRUE(condition < 8);
+    op_ret_cc = op_ret_cc | (condition << 3);
+
+    //Copy two opcodes, back-to-back
+    sms_ram[0] = op_ret_cc;
+    sms_ram[1] = op_ret_cc;
+
+    //First RET must not be taken...
+    //If expected value is Zero, swap all bits
+    Z80_F = z80_cc_stat[condition] ? z80_cc[condition] ^ 0xFF : z80_cc[condition];
+    //...breakpoint just after first opcode
+    z80dbg_set_breakpoint(RAM_BASE_ADDRESS + 1, Z80_BREAK_PC);
+    //Run opcode
+    __RUN_TEST_OPCODES;
+    //Test jump has not been taken
+    TEST_ASSERT_TRUE(tick_limit > 0);
+    TEST_ASSERT_TRUE(bp_triggered);
+    TEST_ASSERT_SP_EQUAL(0xFFF0);
+    TEST_ASSERT_PC_EQUAL(RAM_BASE_ADDRESS + 1);
+
+    //Second RET must be taken
+    //Swap flags
+    Z80_F = Z80_F ^ 0xFF;
+    //...breakpoint at stack-stored address
+    z80dbg_set_breakpoint(0xBBAA, Z80_BREAK_PC);
+    bp_triggered = 0; //<-- Clear trigger flag
+    //Run opcodes
+    __RUN_TEST_OPCODES;
+    //Test jump has been taken
+    TEST_ASSERT_TRUE(tick_limit > 0);
+    TEST_ASSERT_TRUE(bp_triggered);
+    TEST_ASSERT_SP_EQUAL(0xFFF0 + 2);
+    TEST_ASSERT_PC_EQUAL(0xBBAA);
+}
+
+TEST(stack_pop, RET_NZ){
+    retn_test(0);
+}
+
+TEST(stack_pop, RET_Z){
+    retn_test(1);
+}
+
+TEST(stack_pop, RET_NC){
+    retn_test(2);
+}
+
+TEST(stack_pop, RET_C){
+    retn_test(3);
+}
+
+TEST(stack_pop, RET_PO){
+    retn_test(4);
+}
+
+TEST(stack_pop, RET_PE){
+    retn_test(5);
+}
+
+TEST(stack_pop, RET_P){
+    retn_test(6);
+}
+
+TEST(stack_pop, RET_M){
+    retn_test(7);
+}
+
+IGNORE_TEST(stack_pop, RETN){
+    TEST_FAIL_MESSAGE("Unimplemented opcode/test.");
+}
+
 TEST_GROUP_RUNNER(stack_pop){
     RUN_TEST_CASE(stack_pop, POP_BC);
     RUN_TEST_CASE(stack_pop, POP_DE);
@@ -492,6 +591,17 @@ TEST_GROUP_RUNNER(stack_pop){
     RUN_TEST_CASE(stack_pop, POP_AF);
     RUN_TEST_CASE(stack_pop, POP_IX);
     RUN_TEST_CASE(stack_pop, POP_IY);
+    RUN_TEST_CASE(stack_pop, RET);
+    RUN_TEST_CASE(stack_pop, RETN);
+    RUN_TEST_CASE(stack_pop, RETI);
+    RUN_TEST_CASE(stack_pop, RET_NZ);
+    RUN_TEST_CASE(stack_pop, RET_Z);
+    RUN_TEST_CASE(stack_pop, RET_NC);
+    RUN_TEST_CASE(stack_pop, RET_C);
+    RUN_TEST_CASE(stack_pop, RET_PO);
+    RUN_TEST_CASE(stack_pop, RET_PE);
+    RUN_TEST_CASE(stack_pop, RET_P);
+    RUN_TEST_CASE(stack_pop, RET_M);
 }
 
 // ----------------------
