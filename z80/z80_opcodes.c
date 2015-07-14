@@ -582,8 +582,8 @@ int LD_HL_nnp(){
     assert(z80.opcode_index == 3);
     Z80_16BIT_READ(z80.opcode[1] | (((uint16_t)z80.opcode[2])<<8), 0);
 
-    Z80_H = z80.read_buffer[0];
-    Z80_L = z80.read_buffer[1];
+    Z80_H = z80.read_buffer[1];
+    Z80_L = z80.read_buffer[0];
     return Z80_STAGE_RESET;
 }
 
@@ -1267,7 +1267,16 @@ int INC_IXYp(){
 }
 
 int LD_IXY_nnp(){
-    assert(0); /*<-- Unimplemented*/
+    assert(z80.opcode_index == 4);
+    Z80_16BIT_READ(z80.opcode[2] | (((uint16_t)z80.opcode[3]) << 8), 0);
+    assert(z80.read_index == 2);
+    if (z80.opcode[0] == 0xDD){
+        Z80_IX = z80.read_buffer[0] | (((uint16_t)z80.read_buffer[1])<<8);
+    }
+    else{
+        assert(z80.opcode[0] == 0xFD);
+        Z80_IY = z80.read_buffer[0] | (((uint16_t)z80.read_buffer[1]) << 8);
+    }
     return Z80_STAGE_RESET;
 }
 
