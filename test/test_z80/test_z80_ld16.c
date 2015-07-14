@@ -40,6 +40,10 @@ TEST_SETUP(grp_ld16){
     _set_ram(0xFFF1, 0xBB);
     _set_ram(0xFFF2, 0xCC);
     _set_ram(0xFFF3, 0xDD);
+    _set_ram(0xFFF4, 0xEE);
+    _set_ram(0xFFF5, 0xFF);
+    _set_ram(0xFFF6, 0x11);
+    _set_ram(0xFFF7, 0x22);
 }
 
 TEST_TEAR_DOWN(grp_ld16){
@@ -131,7 +135,43 @@ TEST(grp_ld16, LD_HL_nnp){
 }
 
 TEST(grp_ld16, LD_dd_nnp){
-    TEST_FAIL_MESSAGE("Unimplemented.");
+    const uint8_t op_ld_bc_nnp[4] = { 0xED, 0x4B, 0xF0, 0xFF }; /*Reads: 0xBBAA*/
+    const uint8_t op_ld_de_nnp[4] = { 0xED, 0x5B, 0xF2, 0xFF }; /*Reads: 0xDDCC*/
+    const uint8_t op_ld_hl_nnp[4] = { 0xED, 0x6B, 0xF4, 0xFF }; /*Reads: 0xFFEE*/
+    const uint8_t op_ld_sp_nnp[4] = { 0xED, 0x7B, 0xF6, 0xFF }; /*Reads: 0x2211*/
+    //copy opcodes
+    memcpy(sms_ram, op_ld_bc_nnp, 4);
+    memcpy(sms_ram  +4, op_ld_de_nnp, 4);
+    memcpy(sms_ram  +8, op_ld_hl_nnp, 4);
+    memcpy(sms_ram +12, op_ld_sp_nnp, 4);
+    //Set BPs
+    z80dbg_set_breakpoint(RAM_BASE_ADDRESS + 4, Z80_BREAK_PC);
+    z80dbg_set_breakpoint(RAM_BASE_ADDRESS + 8, Z80_BREAK_PC);
+    z80dbg_set_breakpoint(RAM_BASE_ADDRESS +12, Z80_BREAK_PC);
+    z80dbg_set_breakpoint(RAM_BASE_ADDRESS +16, Z80_BREAK_PC);
+    //LD BC (nn)
+    __RUN_TEST_OPCODES;
+    TEST_ASSERT_TRUE(bp_triggered);
+    TEST_ASSERT_TRUE(tick_limit > 0);
+    TEST_ASSERT_BC_EQUAL(0xBBAA);
+    //LD DE (nn)
+    bp_triggered = 0; tick_limit = 100;
+    __RUN_TEST_OPCODES;
+    TEST_ASSERT_TRUE(bp_triggered);
+    TEST_ASSERT_TRUE(tick_limit > 0);
+    TEST_ASSERT_DE_EQUAL(0xDDCC);
+    //LD HL (nn)
+    bp_triggered = 0; tick_limit = 100;
+    __RUN_TEST_OPCODES;
+    TEST_ASSERT_TRUE(bp_triggered);
+    TEST_ASSERT_TRUE(tick_limit > 0);
+    TEST_ASSERT_HL_EQUAL(0xFFEE);
+    //LD SP (nn)
+    bp_triggered = 0; tick_limit = 100;
+    __RUN_TEST_OPCODES;
+    TEST_ASSERT_TRUE(bp_triggered);
+    TEST_ASSERT_TRUE(tick_limit > 0);
+    TEST_ASSERT_SP_EQUAL(0x2211);
 }
 
 TEST(grp_ld16, LD_IXY_nnp){
@@ -194,6 +234,18 @@ TEST(grp_ld16, LD_SP_IXY){
     TEST_ASSERT_IY_EQUAL(0x0B0C);
 }
 
+TEST(grp_ld16, LD_nnp_HL){
+    TEST_FAIL_MESSAGE("Unimplemented test!");
+}
+
+TEST(grp_ld16, LD_nnp_dd){
+    TEST_FAIL_MESSAGE("Unimplemented test!");
+}
+
+TEST(grp_ld16, LD_nnp_IXY){
+    TEST_FAIL_MESSAGE("Unimplemented test!");
+}
+
 TEST_GROUP_RUNNER(grp_ld16){
     RUN_TEST_CASE(grp_ld16, LD_dd_nn);
     RUN_TEST_CASE(grp_ld16, LD_IXY_nn);
@@ -202,6 +254,9 @@ TEST_GROUP_RUNNER(grp_ld16){
     RUN_TEST_CASE(grp_ld16, LD_IXY_nnp);
     RUN_TEST_CASE(grp_ld16, LD_SP_HL);
     RUN_TEST_CASE(grp_ld16, LD_SP_IXY);
+    RUN_TEST_CASE(grp_ld16, LD_nnp_HL);
+    RUN_TEST_CASE(grp_ld16, LD_nnp_dd);
+    RUN_TEST_CASE(grp_ld16, LD_nnp_IXY);
 }
 
 // ----------------------
