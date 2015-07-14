@@ -203,7 +203,7 @@ void z80_init(void(*data_f) (uint8_t), void(*ctrl_f) (uint8_t)){
 */
 void z80_reset_pipeline(){
 #ifndef NDEBUG
-    /**/
+    /*
     char opcode_str[100];
     int disasm_size = 0;
     opcode_str[0] = 0;
