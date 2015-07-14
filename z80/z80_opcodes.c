@@ -672,8 +672,10 @@ int LD_rp_nn(){
 
 ///LD rp, (nn); Size: 4; Flags: None
 int LD_rp_nnp(){
+    Z80_OPCODE_SUBDIV;
     assert(z80.opcode_index == 4);
-    assert(0); ///<-- Unimplemented
+    Z80_16BIT_READ(z80.opcode[2] | (((uint16_t)z80.opcode[3]) << 8), 0);
+    *(z80_rp[p[1]]) = z80.read_buffer[0] | (((uint16_t)z80.read_buffer[1])<<8);
     return Z80_STAGE_RESET;
 }
 
