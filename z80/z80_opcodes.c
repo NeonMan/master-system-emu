@@ -680,7 +680,7 @@ int LD_rp_nnp(){
 ///LD SP, HL; Size: 1; Flags: None
 int LD_SP_HL(){
     assert(z80.opcode_index == 1);
-    assert(0); ///<-- Unimplemented
+    Z80_SP = Z80_HL;
     return Z80_STAGE_RESET;
 }
 
@@ -1369,7 +1369,14 @@ int JP_IXYp(){
 }
 
 int LD_SP_IXY(){
-    assert(0); /*<-- Unimplemented*/
+    assert(z80.opcode_index == 2);
+    if (z80.opcode[0] == 0xDD){
+        Z80_SP = Z80_IX;
+    }
+    else{
+        assert(z80.opcode[0] == 0xFD);
+        Z80_SP = Z80_IY;
+    }
     return Z80_STAGE_RESET;
 }
 
