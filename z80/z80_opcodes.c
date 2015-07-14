@@ -1238,7 +1238,16 @@ int ADD_IXY_rp(){
 }
 
 int LD_IXY_nn(){
-    assert(0); /*<-- Unimplemented*/
+    Z80_OPCODE_SUBDIV;
+    assert(z80.opcode_index == 4);
+    assert(p[1] == 2);
+    if (z80.opcode[0] == 0xDD){
+        Z80_IX = (((uint16_t)z80.opcode[3]) << 8) | z80.opcode[2];
+    }
+    else{
+        assert(z80.opcode[0] == 0xFD);
+        Z80_IY = (((uint16_t)z80.opcode[3]) << 8) | z80.opcode[2];
+    }
     return Z80_STAGE_RESET;
 }
 
