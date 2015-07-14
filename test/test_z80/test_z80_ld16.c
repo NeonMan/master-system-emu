@@ -41,12 +41,73 @@ TEST_TEAR_DOWN(grp_ld16){
     
 }
 
-IGNORE_TEST(grp_ld16, LD_dd_nn){
-    TEST_FAIL_MESSAGE("Unimplemented.");
+TEST(grp_ld16, LD_dd_nn){
+    const char op_ld_bc_nn[3] = { 0x01, 0x55, 0xAA };
+    const char op_ld_de_nn[3] = { 0x11, 0x44, 0xBB };
+    const char op_ld_hl_nn[3] = { 0x21, 0x33, 0xCC };
+    const char op_ld_sp_nn[3] = { 0x31, 0x22, 0xDD };
+    //Copy opcodes, back-to-back
+    sms_ram[0] = op_ld_bc_nn[0]; sms_ram[1]  = op_ld_bc_nn[1]; sms_ram[2]  = op_ld_bc_nn[2];
+    sms_ram[3] = op_ld_de_nn[0]; sms_ram[4]  = op_ld_de_nn[1]; sms_ram[5]  = op_ld_de_nn[2];
+    sms_ram[6] = op_ld_hl_nn[0]; sms_ram[7]  = op_ld_hl_nn[1]; sms_ram[8]  = op_ld_hl_nn[2];
+    sms_ram[9] = op_ld_sp_nn[0]; sms_ram[10] = op_ld_sp_nn[1]; sms_ram[11] = op_ld_sp_nn[2];
+    //Set breakpoints
+    z80dbg_set_breakpoint(RAM_BASE_ADDRESS +  3, Z80_BREAK_PC);
+    z80dbg_set_breakpoint(RAM_BASE_ADDRESS +  6, Z80_BREAK_PC);
+    z80dbg_set_breakpoint(RAM_BASE_ADDRESS +  9, Z80_BREAK_PC);
+    z80dbg_set_breakpoint(RAM_BASE_ADDRESS + 12, Z80_BREAK_PC);
+    //Test LD BC nn
+    __RUN_TEST_OPCODES;
+    TEST_ASSERT_TRUE(bp_triggered);
+    TEST_ASSERT_TRUE(tick_limit > 0);
+    TEST_ASSERT_BC_EQUAL(0xAA55);
+    //Test LD DE nn
+    bp_triggered = 0;
+    __RUN_TEST_OPCODES;
+    TEST_ASSERT_TRUE(bp_triggered);
+    TEST_ASSERT_TRUE(tick_limit > 0);
+    TEST_ASSERT_DE_EQUAL(0xBB44);
+    //Test LD HL nn
+    bp_triggered = 0;
+    __RUN_TEST_OPCODES;
+    TEST_ASSERT_TRUE(bp_triggered);
+    TEST_ASSERT_TRUE(tick_limit > 0);
+    TEST_ASSERT_HL_EQUAL(0xCC33);
+    //Test LD SP nn
+    bp_triggered = 0;
+    __RUN_TEST_OPCODES;
+    TEST_ASSERT_TRUE(bp_triggered);
+    TEST_ASSERT_TRUE(tick_limit > 0);
+    TEST_ASSERT_SP_EQUAL(0xDD22);
 }
 
-IGNORE_TEST(grp_ld16, LD_IXY_nn){
-    TEST_FAIL_MESSAGE("Unimplemented.");
+TEST(grp_ld16, LD_IXY_nn){
+    const char op_ld_ix_nn[4] = { 0xDD, 0x21, 0x22, 0xDD };
+    const char op_ld_iy_nn[4] = { 0xFD, 0x21, 0x11, 0xEE };
+    //Copy opcodes, back-to-back
+    sms_ram[0] = op_ld_ix_nn[0];
+    sms_ram[1] = op_ld_ix_nn[1];
+    sms_ram[2] = op_ld_ix_nn[2];
+    sms_ram[3] = op_ld_ix_nn[3];
+
+    sms_ram[4] = op_ld_iy_nn[0];
+    sms_ram[5] = op_ld_iy_nn[1];
+    sms_ram[6] = op_ld_iy_nn[2];
+    sms_ram[7] = op_ld_iy_nn[3];
+    //Set breakpoints
+    z80dbg_set_breakpoint(RAM_BASE_ADDRESS + 4, Z80_BREAK_PC);
+    z80dbg_set_breakpoint(RAM_BASE_ADDRESS + 8, Z80_BREAK_PC);
+    //LD IX nn
+    __RUN_TEST_OPCODES;
+    TEST_ASSERT_TRUE(bp_triggered);
+    TEST_ASSERT_TRUE(tick_limit > 0);
+    TEST_ASSERT_IX_EQUAL(0xDD22);
+    //LD IY nn
+    bp_triggered = 0;
+    __RUN_TEST_OPCODES;
+    TEST_ASSERT_TRUE(bp_triggered);
+    TEST_ASSERT_TRUE(tick_limit > 0);
+    TEST_ASSERT_IY_EQUAL(0xEE11);
 }
 
 IGNORE_TEST(grp_ld16, LD_HL_nnp){
