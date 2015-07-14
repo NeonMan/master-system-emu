@@ -35,6 +35,11 @@ TEST_SETUP(grp_ld16){
 
     Z80_SP = 0xFFF0;
     Z80_PC = RAM_BASE_ADDRESS;
+
+    _set_ram(0xFFF0, 0xAA);
+    _set_ram(0xFFF1, 0xBB);
+    _set_ram(0xFFF2, 0xCC);
+    _set_ram(0xFFF3, 0xDD);
 }
 
 TEST_TEAR_DOWN(grp_ld16){
@@ -110,16 +115,47 @@ TEST(grp_ld16, LD_IXY_nn){
     TEST_ASSERT_IY_EQUAL(0xEE11);
 }
 
-IGNORE_TEST(grp_ld16, LD_HL_nnp){
+TEST(grp_ld16, LD_HL_nnp){
+    const uint8_t op_ld_hl_nnp[3] = { 0x2A, 0xF0, 0xFF };
+    //Copy opcode
+    sms_ram[0] = op_ld_hl_nnp[0];
+    sms_ram[1] = op_ld_hl_nnp[1];
+    sms_ram[2] = op_ld_hl_nnp[2];
+    //Set BP
+    z80dbg_set_breakpoint(RAM_BASE_ADDRESS + 3, Z80_BREAK_PC);
+    //LD HL (nn)
+    __RUN_TEST_OPCODES;
+    TEST_ASSERT_TRUE(bp_triggered);
+    TEST_ASSERT_TRUE(tick_limit > 0);
+    TEST_ASSERT_HL_EQUAL(0xBBAA);
+}
+
+TEST(grp_ld16, LD_dd_nnp){
     TEST_FAIL_MESSAGE("Unimplemented.");
 }
 
-IGNORE_TEST(grp_ld16, LD_dd_nnp){
-    TEST_FAIL_MESSAGE("Unimplemented.");
-}
-
-IGNORE_TEST(grp_ld16, LD_IXY_nnp){
-    TEST_FAIL_MESSAGE("Unimplemented.");
+TEST(grp_ld16, LD_IXY_nnp){
+    const uint8_t op_ld_ix_nnp[4] = { 0xDD, 0x2A, 0xF0, 0xFF };
+    const uint8_t op_ld_iy_nnp[4] = { 0xFD, 0x2A, 0xF2, 0xFF };
+    //Copy opcode
+    sms_ram[0] = op_ld_ix_nnp[0]; sms_ram[4] = op_ld_iy_nnp[0];
+    sms_ram[1] = op_ld_ix_nnp[1]; sms_ram[5] = op_ld_iy_nnp[1];
+    sms_ram[2] = op_ld_ix_nnp[2]; sms_ram[6] = op_ld_iy_nnp[2];
+    sms_ram[3] = op_ld_ix_nnp[3]; sms_ram[7] = op_ld_iy_nnp[3];
+    //Set BPs
+    z80dbg_set_breakpoint(RAM_BASE_ADDRESS + 4, Z80_BREAK_PC);
+    z80dbg_set_breakpoint(RAM_BASE_ADDRESS + 8, Z80_BREAK_PC);
+    //LD IX (nn)
+    __RUN_TEST_OPCODES;
+    TEST_ASSERT_TRUE(bp_triggered);
+    TEST_ASSERT_TRUE(tick_limit > 0);
+    TEST_ASSERT_IX_EQUAL(0xBBAA);
+    //LD IY (nn)
+    bp_triggered = 0;
+    __RUN_TEST_OPCODES;
+    TEST_ASSERT_TRUE(bp_triggered);
+    TEST_ASSERT_TRUE(tick_limit > 0);
+    TEST_ASSERT_IY_EQUAL(0xDDCC);
 }
 
 TEST(grp_ld16, LD_SP_HL){
