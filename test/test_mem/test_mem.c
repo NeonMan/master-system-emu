@@ -13,6 +13,7 @@
 // limitations under the License.
 
 #include <stdint.h>
+#include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
@@ -63,10 +64,16 @@ int main(int argc, char**argv){
 
     //Upload the full_rom to the ROM.
     rom_set_image(full_rom, ROM_MAX_SIZE);
-
+	
     //Test the slots
     int bank = 0;
     int all_ok = 1;
+	
+	//compare internal ROM and full ROM
+	if(memcmp(full_rom, romdbg_get_rom(), ROM_MAX_SIZE) != 0){
+		all_ok = 0;
+	}
+	
     for (bank = 0; bank < ROM_MAX_SIZE / 1024 / 16; bank++){
         int slot0_1k_ok = 1;
         int slot0_ok = 1;
@@ -77,6 +84,11 @@ int main(int argc, char**argv){
         write_byte(0xFFFF, bank); //Slot2
         write_byte(0xFFFE, bank); //Slot1
         write_byte(0xFFFD, bank); //Slot0
+		
+		//Peep the slot via internal function
+		if(romdbg_get_slot(0) != bank) all_ok = 0;
+		if(romdbg_get_slot(1) != bank) all_ok = 0;
+		if(romdbg_get_slot(2) != bank) all_ok = 0;
 
         for (int i = 0; i < (1024 * 16); i++){
             //Slot0
@@ -131,7 +143,7 @@ int main(int argc, char**argv){
 
     free(full_rom);
 
-    if (all_ok){
+    if (all_ok && ram_ok){
         return 0;
     }
     else{

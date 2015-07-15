@@ -1,4 +1,4 @@
-#Unity testing framework
+#RAM/ROM testing
 project(test_mem)
 
 add_executable (zzz_test_mem test_mem.c)

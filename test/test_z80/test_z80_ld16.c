@@ -234,15 +234,15 @@ TEST(grp_ld16, LD_SP_IXY){
     TEST_ASSERT_IY_EQUAL(0x0B0C);
 }
 
-TEST(grp_ld16, LD_nnp_HL){
+IGNORE_TEST(grp_ld16, LD_nnp_HL){
     TEST_FAIL_MESSAGE("Unimplemented test!");
 }
 
-TEST(grp_ld16, LD_nnp_dd){
+IGNORE_TEST(grp_ld16, LD_nnp_dd){
     TEST_FAIL_MESSAGE("Unimplemented test!");
 }
 
-TEST(grp_ld16, LD_nnp_IXY){
+IGNORE_TEST(grp_ld16, LD_nnp_IXY){
     TEST_FAIL_MESSAGE("Unimplemented test!");
 }
 
