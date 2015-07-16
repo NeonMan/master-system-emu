@@ -85,22 +85,23 @@ add_subdirectory (io)
 add_subdirectory (vdp)
 add_subdirectory (sdsc)
 add_subdirectory (test)
-if(NOT MINGW)
-	add_subdirectory (sms-ui)
-endif()
+add_subdirectory (sms-ui)
 
 # --- The project executables ---
 
-if(NOT MINGW)
-	# --- psg-play
-	add_executable (psg-play psg-play.c)
-	target_link_libraries (psg-play psg SDL2 SDL2main)
-
-	# --- test-vdp (SDL2 is presumed to be available)
-	add_executable (test-vdp test-vdp.c)
-	target_link_libraries (test-vdp vdp SDL2 SDL2main)
-
-	# --- sms-emu
-	add_executable (emu sms-emu.c)
-	target_link_libraries (emu glue smsrom smsio smsram psg z80 peripherial vdp sdsc SDL2 SDL2main)
+SET(EXT_LIBS SDL2main SDL2)
+if (MINGW)
+	ADD_DEFINITIONS(-DWIN32)
+	SET(EXT_LIBS mingw32 ${EXT_LIBS})
 endif()
+# --- psg-play
+add_executable (psg-play psg-play.c)
+target_link_libraries (psg-play psg ${EXT_LIBS})
+
+# --- test-vdp (SDL2 is presumed to be available)
+add_executable (test-vdp test-vdp.c)
+target_link_libraries (test-vdp vdp mingw32 ${EXT_LIBS})
+
+# --- sms-emu
+add_executable (emu sms-emu.c)
+target_link_libraries (emu glue smsrom smsio smsram psg z80 peripherial vdp sdsc mingw32 ${EXT_LIBS})
