@@ -22,6 +22,7 @@
 #include <stdint.h>
 #include <z80/z80_macros.h>
 #include <string>
+#include <stdio.h>
 #endif
 #include <FL/Fl_Double_Window.H>
 #include <FL/Fl_Group.H>
