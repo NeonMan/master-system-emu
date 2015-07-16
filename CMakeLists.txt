@@ -100,8 +100,8 @@ target_link_libraries (psg-play psg ${EXT_LIBS})
 
 # --- test-vdp (SDL2 is presumed to be available)
 add_executable (test-vdp test-vdp.c)
-target_link_libraries (test-vdp vdp mingw32 ${EXT_LIBS})
+target_link_libraries (test-vdp vdp ${EXT_LIBS})
 
 # --- sms-emu
 add_executable (emu sms-emu.c)
-target_link_libraries (emu glue smsrom smsio smsram psg z80 peripherial vdp sdsc mingw32 ${EXT_LIBS})
+target_link_libraries (emu glue smsrom smsio smsram psg z80 peripherial vdp sdsc ${EXT_LIBS})

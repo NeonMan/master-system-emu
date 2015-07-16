@@ -16,7 +16,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 
-} {selected in_source in_header
+} {in_source in_header
 } 
 
 declblock {\#if 1} {open public after {\#endif}
@@ -26,6 +26,8 @@ declblock {\#if 1} {open public after {\#endif}
   decl {\#include <z80/z80_macros.h>} {public global
   }
   decl {\#include <string>} {public global
+  }
+  decl {\#include <stdio.h>} {public global
   }
 } 
 
@@ -38,7 +40,7 @@ class DialogBreakpoints {open
   } {
     Fl_Window windowDialog {
       label Breakpoints open
-      xywh {503 223 376 457} type Double visible
+      xywh {507 227 368 449} type Double visible
     } {
       Fl_Group {} {
         label {New breakpoint} open
@@ -71,7 +73,8 @@ class DialogBreakpoints {open
         Fl_Button buttonCreate {
           label Create
           callback {//Parse the address
-const unsigned long addr = std::stol(textAddress->value(), 0, 16);
+unsigned long addr;
+sscanf(textAddress->value(), "%X", &addr);
 
 //Is a PC breakpoint?
 if(checkPc->value()){
@@ -99,8 +102,9 @@ else{
         }
         Fl_Button buttonRemove {
           label Remove
-          callback {const unsigned long addr = std::stol(textAddress->value(), 0, 16);
-bp_table[addr] = 0;}
+          callback {unsigned long addr;
+sscanf(textAddress->value(), "%X", &addr);
+bp_table[addr] = 0;} selected
           private xywh {95 305 80 25}
         }
       }

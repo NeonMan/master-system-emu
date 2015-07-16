@@ -21,7 +21,8 @@
 
 void DialogBreakpoints::cb_buttonCreate_i(Fl_Button*, void*) {
   //Parse the address
-const unsigned long addr = std::stol(textAddress->value(), 0, 16);
+unsigned long addr;
+sscanf(textAddress->value(), "%X", &addr);
 
 //Is a PC breakpoint?
 if(checkPc->value()){
@@ -51,7 +52,8 @@ void DialogBreakpoints::cb_buttonCreate(Fl_Button* o, void* v) {
 }
 
 void DialogBreakpoints::cb_buttonRemove_i(Fl_Button*, void*) {
-  const unsigned long addr = std::stol(textAddress->value(), 0, 16);
+  unsigned long addr;
+sscanf(textAddress->value(), "%X", &addr);
 bp_table[addr] = 0;
 }
 void DialogBreakpoints::cb_buttonRemove(Fl_Button* o, void* v) {
@@ -90,7 +92,7 @@ void DialogBreakpoints::cb_checkVcounter(Fl_Check_Button* o, void* v) {
    Dialog constructor
 */
 DialogBreakpoints::DialogBreakpoints() {
-  { windowDialog = new Fl_Double_Window(376, 457, "Breakpoints");
+  { windowDialog = new Fl_Double_Window(368, 449, "Breakpoints");
     windowDialog->user_data((void*)(this));
     { Fl_Group* o = new Fl_Group(15, 235, 340, 95, "New breakpoint");
       { textAddress = new Fl_Input(70, 275, 80, 25, "Address");
