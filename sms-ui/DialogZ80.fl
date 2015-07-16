@@ -45,8 +45,8 @@ class DialogZ80 {
   Function {DialogZ80()} {open
   } {
     Fl_Window windowDialog {
-      label z80 open
-      xywh {360 174 676 307} type Double align 80 visible
+      label z80
+      xywh {364 178 668 299} type Double align 80 visible
     } {
       Fl_Group {} {
         label Registers
@@ -246,7 +246,7 @@ class DialogZ80 {
           private xywh {225 195 25 25} down_box DOWN_BOX align 4
         }
         Fl_Check_Button checkAdd {
-          label Add
+          label Subtract
           private xywh {225 220 25 25} down_box DOWN_BOX align 4
         }
         Fl_Check_Button checkParity {
@@ -299,8 +299,7 @@ this->textOpcode->value("NOP ?");
 this->textStage->value("M1 ?");
 //Buttons
 this->buttonRunning->value(1);
-// --- END Initial values ---} {selected
-    }
+// --- END Initial values ---} {}
   }
   Function {set_running_ptr(uint32_t* p)} {
     comment {Sets a pointer to the clock on/of var.} return_type void
@@ -326,7 +325,7 @@ this->buttonRunning->value(1);
     
     // --- Flags ---
     checkCarry->value(1  && (Z80_F & Z80_FLAG_CARRY));
-    checkAdd->value(1    && (Z80_F & Z80_FLAG_ADD));
+    checkAdd->value(1    && (Z80_F & Z80_FLAG_SUBTRACT));
     checkParity->value(1 && (Z80_F & Z80_FLAG_PARITY));
     checkUnk3->value(1   && (Z80_F & Z80_FLAG_UNK3));
 
@@ -430,6 +429,7 @@ this->buttonRunning->value(1);
     sprintf(tmp_str, "%s ;(Size: %d)", op.opcode_str, op.size);
     textDasm->value(tmp_str);
     \#undef z80
-  }} {}
+  }} {selected
+    }
   }
 } 
