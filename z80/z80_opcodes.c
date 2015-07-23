@@ -1254,7 +1254,14 @@ int LD_IXY_nn(){
 }
 
 int LD_nnp_IXY(){
-    assert(0); /*<-- Unimplemented*/
+    assert(z80.opcode_index == 4);
+    if (z80.opcode[0] == 0xDD){
+        Z80_16BIT_WRITE(z80.opcode[2] | (((uint16_t)z80.opcode[3]) << 8), 0, Z80_IXL, Z80_IXH);
+    }
+    else{
+        assert(z80.opcode[0] == 0xFD);
+        Z80_16BIT_WRITE(z80.opcode[2] | (((uint16_t)z80.opcode[3]) << 8), 0, Z80_IYL, Z80_IYH);
+    }
     return Z80_STAGE_RESET;
 }
 
