@@ -74,7 +74,7 @@ class DialogBreakpoints {open
           label Create
           callback {//Parse the address
 unsigned long addr;
-sscanf(textAddress->value(), "%X", &addr);
+sscanf(textAddress->value(), "%lX", &addr);
 
 //Is a PC breakpoint?
 if(checkPc->value()){
@@ -103,7 +103,7 @@ else{
         Fl_Button buttonRemove {
           label Remove
           callback {unsigned long addr;
-sscanf(textAddress->value(), "%X", &addr);
+sscanf(textAddress->value(), "%lX", &addr);
 bp_table[addr] = 0;} selected
           private xywh {95 305 80 25}
         }
