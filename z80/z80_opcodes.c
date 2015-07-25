@@ -656,6 +656,8 @@ int LD_r_n(){
 int LD_r_r(){
     assert(z80.opcode_index == 1);
     Z80_OPCODE_SUBDIV;
+    assert(y[0] != 0x06); //
+    assert(z[0] != 0x06); // (HL) is treated as a special case
     *(z80_r[y[0]]) = *(z80_r[z[0]]);
     return Z80_STAGE_RESET;
 }
