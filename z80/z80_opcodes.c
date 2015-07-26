@@ -227,7 +227,16 @@ int CP_n(){
 ///CP (HL); Size: 1; Flags: ???
 int CP_HLp(){
     assert(z80.opcode_index == 1);
-    assert(0); ///<-- Unimplemented
+    Z80_8BIT_READ(Z80_HL, 0);
+    const uint8_t result = Z80_A - z80.read_buffer[0];
+
+    Z80_F = 0;
+    Z80_F |= Z80_SETFLAG_SIGN(result);
+    Z80_F |= Z80_SETFLAG_ZERO(result);
+    Z80_F |= Z80_SETFLAG_HALF_BORROW(Z80_A, result);
+    Z80_F |= Z80_SETFLAG_OVERFLOW(Z80_A, result);
+    Z80_F |= Z80_FLAG_SUBTRACT;
+    Z80_F |= Z80_SETFLAG_BORROW(Z80_A, result);
     return Z80_STAGE_RESET;
 }
 
@@ -1205,10 +1214,16 @@ int SUB_r(){
     return Z80_STAGE_RESET;
 }
 
-///XOR (HL); Size: 1; Flags: ???
+///XOR (HL); Size: 1; Flags: All
 int XOR_HLp(){
     assert(z80.opcode_index == 1);
-    assert(0); ///<-- Unimplemented
+    Z80_8BIT_READ(Z80_HL, 0);
+    Z80_A = Z80_A ^ z80.read_buffer[0];
+
+    Z80_F = 0;
+    Z80_F |= Z80_SETFLAG_ZERO(Z80_A);
+    Z80_F |= Z80_SETFLAG_SIGN(Z80_A);
+    Z80_F |= Z80_SETFLAG_PARITY(Z80_A);
     return Z80_STAGE_RESET;
 }
 
@@ -1303,11 +1318,11 @@ int DEC_IXYp(){
 int LD_IXYp_n(){
     assert(z80.opcode_index == 4);
     if (z80.opcode[0] == 0xDD){
-        Z80_8BIT_WRITE(Z80_IX + ((int8_t)z80.opcode[3]), 0, z80.opcode[2]);
+        Z80_8BIT_WRITE(Z80_IX + ((int8_t)z80.opcode[2]), 0, z80.opcode[3]);
     }
     else{
         assert(z80.opcode[0] == 0xFD);
-        Z80_8BIT_WRITE(Z80_IY + ((int8_t)z80.opcode[3]), 0, z80.opcode[2]);
+        Z80_8BIT_WRITE(Z80_IY + ((int8_t)z80.opcode[2]), 0, z80.opcode[3]);
     }
     return Z80_STAGE_RESET;
 }

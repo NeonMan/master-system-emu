@@ -940,8 +940,8 @@ TEST(grp_ld8, ld_hlp_n){
 }
 
 TEST(grp_ld8, ld_ixyp_n_zero){
-    const uint8_t op_ld_ixp_n[4] = { 0xDD, 0x36, 0xAA, 0x00 };
-    const uint8_t op_ld_iyp_n[4] = { 0xFD, 0x36, 0xAA, 0x00 };
+    const uint8_t op_ld_ixp_n[4] = { 0xDD, 0x36, 0x00, 0xAA };
+    const uint8_t op_ld_iyp_n[4] = { 0xFD, 0x36, 0x00, 0xAA };
 
     //Copy opcode
     sms_ram[0] = op_ld_ixp_n[0];
@@ -966,8 +966,8 @@ TEST(grp_ld8, ld_ixyp_n_zero){
 }
 
 TEST(grp_ld8, ld_ixyp_n_min){
-    const uint8_t op_ld_ixp_n[4] = { 0xDD, 0x36, 0xAA, (int8_t)-128 };
-    const uint8_t op_ld_iyp_n[4] = { 0xFD, 0x36, 0xAA, (int8_t)-128 };
+    const uint8_t op_ld_ixp_n[4] = { 0xDD, 0x36, (int8_t)-128, 0xAA };
+    const uint8_t op_ld_iyp_n[4] = { 0xFD, 0x36, (int8_t)-128, 0xAA };
 
     //Copy opcode
     sms_ram[0] = op_ld_ixp_n[0];
@@ -992,8 +992,8 @@ TEST(grp_ld8, ld_ixyp_n_min){
 }
 
 TEST(grp_ld8, ld_ixyp_n_max){
-    const uint8_t op_ld_ixp_n[4] = { 0xDD, 0x36, 0xAA, (int8_t)127 };
-    const uint8_t op_ld_iyp_n[4] = { 0xFD, 0x36, 0xAA, (int8_t)127 };
+    const uint8_t op_ld_ixp_n[4] = { 0xDD, 0x36, (int8_t)127, 0xAA };
+    const uint8_t op_ld_iyp_n[4] = { 0xFD, 0x36, (int8_t)127, 0xAA };
 
     //Copy opcode
     sms_ram[0] = op_ld_ixp_n[0];
