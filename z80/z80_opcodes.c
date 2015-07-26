@@ -533,7 +533,8 @@ int JR_d(){
 ///LD A, (BC); Size: 1; Flags: None
 int LD_A_BCp(){
     assert(z80.opcode_index == 1);
-    assert(0); ///<-- Unimplemented
+    Z80_8BIT_READ(Z80_BC, 0);
+    Z80_A = z80.read_buffer[0];
     return Z80_STAGE_RESET;
 }
 
@@ -541,10 +542,8 @@ int LD_A_BCp(){
 int LD_A_DEp(){
     assert(z80.opcode_index == 1);
     Z80_8BIT_READ(Z80_DE, 0);
-
     Z80_A = z80.read_buffer[0];
     return Z80_STAGE_RESET;
-
 }
 
 ///LD A, I; Size: 2; Flags: ???
@@ -605,7 +604,7 @@ int LD_HLp_r(){
 ///LD I, A; Size: 2; Flags: None
 int LD_I_A(){
     assert(z80.opcode_index == 2);
-    assert(0); ///<-- Unimplemented
+    Z80_I = Z80_A;
     return Z80_STAGE_RESET;
 }
 
@@ -630,7 +629,7 @@ int LD_nnp_rp(){
 ///LD R, A; Size: 2; Flags: None
 int LD_R_A(){
     assert(z80.opcode_index == 2);
-    assert(0); ///<-- Unimplemented
+    Z80_R = Z80_A;
     return Z80_STAGE_RESET;
 }
 

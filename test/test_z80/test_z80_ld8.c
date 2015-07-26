@@ -1017,36 +1017,92 @@ TEST(grp_ld8, ld_ixyp_n_max){
     TEST_ASSERT_RAM_EQUAL(0xAA, Z80_IY + 127);
 }
 
-IGNORE_TEST(grp_ld8, ld_a_bcp){
-    TEST_FAIL_MESSAGE("Unimplemented");
+TEST(grp_ld8, ld_a_bcp){
+    const uint8_t op_ld_a_bcp = 0x0A;
+
+    sms_ram[0] = op_ld_a_bcp;
+    z80dbg_set_breakpoint(RAM_BASE_ADDRESS + 1, Z80_BREAK_PC);
+
+    Z80_BC = 0xFFF0;
+    __RUN_TEST_OPCODES;
+    TEST_ASSERT_TRUE(bp_triggered); TEST_ASSERT_TRUE(tick_limit > 0);
+    TEST_ASSERT_A_EQUAL(0xAA);
 }
 
-IGNORE_TEST(grp_ld8, ld_a_dep){
-    TEST_FAIL_MESSAGE("Unimplemented");
+TEST(grp_ld8, ld_a_dep){
+    const uint8_t op_ld_a_dep = 0x1A;
+
+    sms_ram[0] = op_ld_a_dep;
+    z80dbg_set_breakpoint(RAM_BASE_ADDRESS + 1, Z80_BREAK_PC);
+
+    Z80_DE = 0xFFF0;
+    __RUN_TEST_OPCODES;
+    TEST_ASSERT_TRUE(bp_triggered); TEST_ASSERT_TRUE(tick_limit > 0);
+    TEST_ASSERT_A_EQUAL(0xAA);
 }
 
-IGNORE_TEST(grp_ld8, ld_a_nnp){
-    TEST_FAIL_MESSAGE("Unimplemented");
+TEST(grp_ld8, ld_a_nnp){
+    const uint8_t op_ld_a_nnp[3] = { 0x3A, 0xF0, 0xFF };
+
+    sms_ram[0] = op_ld_a_nnp[0];
+    sms_ram[1] = op_ld_a_nnp[1];
+    sms_ram[2] = op_ld_a_nnp[2];
+    z80dbg_set_breakpoint(RAM_BASE_ADDRESS + 3, Z80_BREAK_PC);
+
+    __RUN_TEST_OPCODES;
+    TEST_ASSERT_TRUE(bp_triggered); TEST_ASSERT_TRUE(tick_limit > 0);
+    TEST_ASSERT_A_EQUAL(0xAA);
 }
 
-IGNORE_TEST(grp_ld8, ld_bcp_a){
-    TEST_FAIL_MESSAGE("Unimplemented");
+TEST(grp_ld8, ld_bcp_a){
+    const uint8_t op_ld_bcp_a = 0x02;
+    sms_ram[0] = op_ld_bcp_a;
+    z80dbg_set_breakpoint(RAM_BASE_ADDRESS + 1, Z80_BREAK_PC);
+    Z80_BC = 0xFFF0;
+    __RUN_TEST_OPCODES;
+    TEST_ASSERT_TRUE(bp_triggered); TEST_ASSERT_TRUE(tick_limit > 0);
+    TEST_ASSERT_RAM_EQUAL(Z80_A, 0xFFF0);
 }
 
-IGNORE_TEST(grp_ld8, ld_dep_a){
-    TEST_FAIL_MESSAGE("Unimplemented");
+TEST(grp_ld8, ld_dep_a){
+    const uint8_t op_ld_dep_a = 0x12;
+    sms_ram[0] = op_ld_dep_a;
+    z80dbg_set_breakpoint(RAM_BASE_ADDRESS + 1, Z80_BREAK_PC);
+    Z80_DE = 0xFFF0;
+    __RUN_TEST_OPCODES;
+    TEST_ASSERT_TRUE(bp_triggered); TEST_ASSERT_TRUE(tick_limit > 0);
+    TEST_ASSERT_RAM_EQUAL(Z80_A, 0xFFF0);
 }
 
-IGNORE_TEST(grp_ld8, ld_nnp_a){
-    TEST_FAIL_MESSAGE("Unimplemented");
+TEST(grp_ld8, ld_nnp_a){
+    const uint8_t op_ld_nnp_a[3] = { 0x32, 0xF0, 0xFF };
+    sms_ram[0] = op_ld_nnp_a[0];
+    sms_ram[1] = op_ld_nnp_a[1];
+    sms_ram[2] = op_ld_nnp_a[2];
+    z80dbg_set_breakpoint(RAM_BASE_ADDRESS + 3, Z80_BREAK_PC);
+    __RUN_TEST_OPCODES;
+    TEST_ASSERT_TRUE(bp_triggered); TEST_ASSERT_TRUE(tick_limit > 0);
+    TEST_ASSERT_RAM_EQUAL(Z80_A, 0xFFF0);
 }
 
-IGNORE_TEST(grp_ld8, ld_i_a){
-    TEST_FAIL_MESSAGE("Unimplemented");
+TEST(grp_ld8, ld_i_a){
+    const uint8_t op_ld_i_a[2] = { 0xED, 0x47 };
+    sms_ram[0] = op_ld_i_a[0];
+    sms_ram[1] = op_ld_i_a[1];
+    z80dbg_set_breakpoint(RAM_BASE_ADDRESS + 2, Z80_BREAK_PC);
+    __RUN_TEST_OPCODES;
+    TEST_ASSERT_TRUE(bp_triggered); TEST_ASSERT_TRUE(tick_limit > 0);
+    TEST_ASSERT_EQUAL(Z80_A, Z80_I);
 }
 
 IGNORE_TEST(grp_ld8, ld_r_a){
-    TEST_FAIL_MESSAGE("Unimplemented");
+    const uint8_t op_ld_r_a[2] = { 0xED, 0x4F };
+    sms_ram[0] = op_ld_r_a[0];
+    sms_ram[1] = op_ld_r_a[1];
+    z80dbg_set_breakpoint(RAM_BASE_ADDRESS + 2, Z80_BREAK_PC);
+    __RUN_TEST_OPCODES;
+    TEST_ASSERT_TRUE(bp_triggered); TEST_ASSERT_TRUE(tick_limit > 0);
+    TEST_ASSERT_EQUAL(Z80_A, Z80_R);
 }
 
 /*Beware of flags!*/
@@ -1067,20 +1123,15 @@ TEST_GROUP_RUNNER(grp_ld8){
     RUN_TEST_CASE(grp_ld8, ld_H_r);
     RUN_TEST_CASE(grp_ld8, ld_L_r);
     RUN_TEST_CASE(grp_ld8, ld_A_r);
-
     RUN_TEST_CASE(grp_ld8, ld_r_n);
     RUN_TEST_CASE(grp_ld8, ld_r_hlp);
-
     RUN_TEST_CASE(grp_ld8, ld_r_ixyp_zero);
     RUN_TEST_CASE(grp_ld8, ld_r_ixyp_max);
     RUN_TEST_CASE(grp_ld8, ld_r_ixyp_min);
-    
     RUN_TEST_CASE(grp_ld8, ld_hlp_r);
-    
     RUN_TEST_CASE(grp_ld8, ld_ixyp_r_zero);
     RUN_TEST_CASE(grp_ld8, ld_ixyp_r_max);
     RUN_TEST_CASE(grp_ld8, ld_ixyp_r_min);
-
     RUN_TEST_CASE(grp_ld8, ld_hlp_n);
     RUN_TEST_CASE(grp_ld8, ld_ixyp_n_zero);
     RUN_TEST_CASE(grp_ld8, ld_ixyp_n_min);
@@ -1091,10 +1142,10 @@ TEST_GROUP_RUNNER(grp_ld8){
     RUN_TEST_CASE(grp_ld8, ld_bcp_a);
     RUN_TEST_CASE(grp_ld8, ld_dep_a);
     RUN_TEST_CASE(grp_ld8, ld_nnp_a);
-    RUN_TEST_CASE(grp_ld8, ld_a_i); /*Beware of flags!*/
-    RUN_TEST_CASE(grp_ld8, ld_a_r); /*Beware of flags!*/
     RUN_TEST_CASE(grp_ld8, ld_i_a);
     RUN_TEST_CASE(grp_ld8, ld_r_a);
+    RUN_TEST_CASE(grp_ld8, ld_a_i); /*Beware of flags!*/
+    RUN_TEST_CASE(grp_ld8, ld_a_r); /*Beware of flags!*/
 }
 
 // ----------------------
