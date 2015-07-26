@@ -59,7 +59,10 @@ TEST_SETUP(stack_push){
 }
 
 TEST_TEAR_DOWN(stack_push){
-
+    //Clear breakpoints
+    for (int i = 0; i < (256 * 256); ++i){
+        z80dbg_set_breakpoint(i, 0);
+    }
 }
 
 // ------------
@@ -354,14 +357,16 @@ TEST_SETUP(stack_pop){
 }
 
 TEST_TEAR_DOWN(stack_pop){
-
+    for (int i = 0; i < (256 * 256); ++i){
+        z80dbg_set_breakpoint(i, 0);
+    }
 }
 
 TEST(stack_pop, POP_BC){
     const uint8_t op_pop_bc = 0xC1;
     //POP BC
     sms_ram[0] = op_pop_bc;
-    z80dbg_set_breakpoint(0x0001, Z80_BREAK_PC); /*<-- Set breakpoint*/
+    z80dbg_set_breakpoint(RAM_BASE_ADDRESS + 1, Z80_BREAK_PC); /*<-- Set breakpoint*/
     __RUN_TEST_OPCODES;
     TEST_ASSERT_TRUE(tick_limit > 0);
     TEST_ASSERT_TRUE(bp_triggered);
@@ -373,7 +378,7 @@ TEST(stack_pop, POP_DE){
     const uint8_t op_pop_de = 0xD1;
     //POP DE
     sms_ram[0] = op_pop_de;
-    z80dbg_set_breakpoint(0x0001, Z80_BREAK_PC); /*<-- Set breakpoint*/
+    z80dbg_set_breakpoint(RAM_BASE_ADDRESS + 1, Z80_BREAK_PC); /*<-- Set breakpoint*/
     __RUN_TEST_OPCODES;
     TEST_ASSERT_TRUE(tick_limit > 0);
     TEST_ASSERT_TRUE(bp_triggered);
@@ -385,7 +390,7 @@ TEST(stack_pop, POP_HL){
     const uint8_t op_pop_hl = 0xE1;
     //POP HL
     sms_ram[0] = op_pop_hl;
-    z80dbg_set_breakpoint(0x0001, Z80_BREAK_PC); /*<-- Set breakpoint*/
+    z80dbg_set_breakpoint(RAM_BASE_ADDRESS + 0x0001, Z80_BREAK_PC); /*<-- Set breakpoint*/
     __RUN_TEST_OPCODES;
     TEST_ASSERT_TRUE(tick_limit > 0);
     TEST_ASSERT_TRUE(bp_triggered);
@@ -397,7 +402,7 @@ TEST(stack_pop, POP_AF){
     const uint8_t op_pop_af = 0xF1;
     //POP AF
     sms_ram[0] = op_pop_af;
-    z80dbg_set_breakpoint(0x0001, Z80_BREAK_PC); /*<-- Set breakpoint*/
+    z80dbg_set_breakpoint(RAM_BASE_ADDRESS + 0x0001, Z80_BREAK_PC); /*<-- Set breakpoint*/
     __RUN_TEST_OPCODES;
     TEST_ASSERT_TRUE(tick_limit > 0);
     TEST_ASSERT_TRUE(bp_triggered);
@@ -410,7 +415,7 @@ TEST(stack_pop, POP_IX){
     //POP IX
     sms_ram[0] = op_pop_ix[0];
     sms_ram[1] = op_pop_ix[1];
-    z80dbg_set_breakpoint(0x0002, Z80_BREAK_PC); /*<-- Set breakpoint*/
+    z80dbg_set_breakpoint(RAM_BASE_ADDRESS + 0x0002, Z80_BREAK_PC); /*<-- Set breakpoint*/
     __RUN_TEST_OPCODES;
     TEST_ASSERT_TRUE(tick_limit > 0);
     TEST_ASSERT_TRUE(bp_triggered);
@@ -423,7 +428,7 @@ TEST(stack_pop, POP_IY){
     //POP IX
     sms_ram[0] = op_pop_iy[0];
     sms_ram[1] = op_pop_iy[1];
-    z80dbg_set_breakpoint(0x0002, Z80_BREAK_PC); /*<-- Set breakpoint*/
+    z80dbg_set_breakpoint(RAM_BASE_ADDRESS + 0x0002, Z80_BREAK_PC); /*<-- Set breakpoint*/
     __RUN_TEST_OPCODES;
     TEST_ASSERT_TRUE(tick_limit > 0);
     TEST_ASSERT_TRUE(bp_triggered);
