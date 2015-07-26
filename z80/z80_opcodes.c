@@ -1302,7 +1302,14 @@ int DEC_IXYp(){
 }
 
 int LD_IXYp_n(){
-    assert(0); /*<-- Unimplemented*/
+    assert(z80.opcode_index == 4);
+    if (z80.opcode[0] == 0xDD){
+        Z80_8BIT_WRITE(Z80_IX + ((int8_t)z80.opcode[3]), 0, z80.opcode[2]);
+    }
+    else{
+        assert(z80.opcode[0] == 0xFD);
+        Z80_8BIT_WRITE(Z80_IY + ((int8_t)z80.opcode[3]), 0, z80.opcode[2]);
+    }
     return Z80_STAGE_RESET;
 }
 
