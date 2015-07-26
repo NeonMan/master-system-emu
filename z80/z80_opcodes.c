@@ -1307,12 +1307,30 @@ int LD_IXYp_n(){
 }
 
 int LD_r_IXYp(){
-    assert(0); /*<-- Unimplemented*/
+    Z80_OPCODE_SUBDIV;
+    assert(z80.opcode_index == 3);
+    if (z80.opcode[0] == 0xDD){
+        Z80_8BIT_READ(Z80_IX + ((int8_t)z80.opcode[2]), 0);
+    }
+    else{
+        assert(z80.opcode[0] == 0xFD);
+        Z80_8BIT_READ(Z80_IY + ((int8_t)z80.opcode[2]), 0);
+    }
+    *(z80_r[y[1]]) = z80.read_buffer[0];
     return Z80_STAGE_RESET;
 }
 
 int LD_IXYp_r(){
-    assert(0); /*<-- Unimplemented*/
+    Z80_OPCODE_SUBDIV;
+    assert(z80.opcode_index == 3);
+    assert(z[1] != 6);
+    if (z80.opcode[0] == 0xDD){
+        Z80_8BIT_WRITE(Z80_IX + ((int8_t)z80.opcode[2]), 0, *(z80_r[z[1]]));
+    }
+    else{
+        assert(z80.opcode[0] == 0xFD);
+        Z80_8BIT_WRITE(Z80_IY + ((int8_t)z80.opcode[2]), 0, *(z80_r[z[1]]));
+    }
     return Z80_STAGE_RESET;
 }
 
