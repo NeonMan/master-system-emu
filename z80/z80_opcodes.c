@@ -1270,12 +1270,30 @@ int LD_IXY_nn(){
 }
 
 int LD_IXYH_n(){
-    assert(0); /*<-- Unimplemented*/
+    Z80_OPCODE_SUBDIV;
+    assert(z80.opcode_index == 3);
+    assert(y[1] == 4);
+    if (z80.opcode[0] == 0xDD){
+        Z80_IXH = z80.opcode[2];
+    }
+    else{
+        assert(z80.opcode[0] == 0xFD);
+        Z80_IYH = z80.opcode[2];
+    }
     return Z80_STAGE_RESET;
 }
 
 int LD_IXYL_n(){
-    assert(0); /*<-- Unimplemented*/
+    Z80_OPCODE_SUBDIV;
+    assert(z80.opcode_index == 3);
+    assert(y[1] == 5);
+    if (z80.opcode[0] == 0xDD){
+        Z80_IXL = z80.opcode[2];
+    }
+    else{
+        assert(z80.opcode[0] == 0xFD);
+        Z80_IYL = z80.opcode[2];
+    }
     return Z80_STAGE_RESET;
 }
 

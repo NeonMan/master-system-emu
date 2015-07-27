@@ -53,10 +53,54 @@ TEST_TEAR_DOWN(grp_ld8_undoc){
 
 }
 
-// --- Test cases ---
+TEST(grp_ld8_undoc, ld_ixyh_n){
+    const uint8_t op_ld_ixh_n[3] = { 0xDD, 0x26, 0xAA };
+    const uint8_t op_ld_iyh_n[3] = { 0xFD, 0x26, 0xBB };
+
+    sms_ram[0] = op_ld_ixh_n[0];
+    sms_ram[1] = op_ld_ixh_n[1];
+    sms_ram[2] = op_ld_ixh_n[2];
+
+    sms_ram[3] = op_ld_iyh_n[0];
+    sms_ram[4] = op_ld_iyh_n[1];
+    sms_ram[5] = op_ld_iyh_n[2];
+
+    z80dbg_set_breakpoint(RAM_BASE_ADDRESS + 6, Z80_BREAK_PC);
+
+    __RUN_TEST_OPCODES;
+    TEST_ASSERT_TRUE(bp_triggered); TEST_ASSERT_TRUE(tick_limit > 0);
+    TEST_ASSERT_IXH_EQUAL(0xAA);
+    TEST_ASSERT_IYH_EQUAL(0xBB);
+}
+
+IGNORE_TEST(grp_ld8_undoc, noni_ld_r_n){
+    TEST_FAIL_MESSAGE("Unimplemented");
+}
+
+TEST(grp_ld8_undoc, ld_ixyl_n){
+    const uint8_t op_ld_ixl_n[3] = { 0xDD, 0x2E, 0xAA };
+    const uint8_t op_ld_iyl_n[3] = { 0xFD, 0x2E, 0xBB };
+
+    sms_ram[0] = op_ld_ixl_n[0];
+    sms_ram[1] = op_ld_ixl_n[1];
+    sms_ram[2] = op_ld_ixl_n[2];
+
+    sms_ram[3] = op_ld_iyl_n[0];
+    sms_ram[4] = op_ld_iyl_n[1];
+    sms_ram[5] = op_ld_iyl_n[2];
+
+    z80dbg_set_breakpoint(RAM_BASE_ADDRESS + 6, Z80_BREAK_PC);
+
+    __RUN_TEST_OPCODES;
+    TEST_ASSERT_TRUE(bp_triggered); TEST_ASSERT_TRUE(tick_limit > 0);
+    TEST_ASSERT_IXH_EQUAL(0xAA);
+    TEST_ASSERT_IYH_EQUAL(0xBB);
+}
 
 TEST_GROUP_RUNNER(grp_ld8_undoc){
-    //RUN_TEST_CASE(<GRP>, <NAME>);
+    RUN_TEST_CASE(grp_ld8_undoc, ld_ixyh_n);
+    RUN_TEST_CASE(grp_ld8_undoc, ld_ixyh_n);
+    RUN_TEST_CASE(grp_ld8_undoc, noni_ld_r_n);
 }
 
 // ----------------------
