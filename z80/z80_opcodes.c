@@ -1269,6 +1269,16 @@ int LD_IXY_nn(){
     return Z80_STAGE_RESET;
 }
 
+int LD_IXYH_n(){
+    assert(0); /*<-- Unimplemented*/
+    return Z80_STAGE_RESET;
+}
+
+int LD_IXYL_n(){
+    assert(0); /*<-- Unimplemented*/
+    return Z80_STAGE_RESET;
+}
+
 int LD_nnp_IXY(){
     assert(z80.opcode_index == 4);
     if (z80.opcode[0] == 0xDD){
