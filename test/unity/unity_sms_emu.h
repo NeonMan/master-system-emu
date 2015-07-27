@@ -55,10 +55,10 @@ static uint8_t _get_ram(uint16_t address, int line){
 #define TEST_ASSERT_L_EQUAL(expected)                              (TEST_ASSERT_EQUAL_HEX8((expected), Z80_L))
 #define TEST_ASSERT_Hp_EQUAL(expected)                             (TEST_ASSERT_EQUAL_HEX8((expected), Z80_Hp))
 #define TEST_ASSERT_Lp_EQUAL(expected)                             (TEST_ASSERT_EQUAL_HEX8((expected), Z80_Lp))
-#define TEST_ASSERT_IXL_EQUAL(expected)                            (TEST_ASSERT_EQUAL_HEX8((expected), Z80_IXH))
-#define TEST_ASSERT_IXH_EQUAL(expected)                            (TEST_ASSERT_EQUAL_HEX8((expected), Z80_IXL))
-#define TEST_ASSERT_IYL_EQUAL(expected)                            (TEST_ASSERT_EQUAL_HEX8((expected), Z80_IYH))
-#define TEST_ASSERT_IYH_EQUAL(expected)                            (TEST_ASSERT_EQUAL_HEX8((expected), Z80_IYL))
+#define TEST_ASSERT_IXL_EQUAL(expected)                            (TEST_ASSERT_EQUAL_HEX8((expected), Z80_IXL))
+#define TEST_ASSERT_IXH_EQUAL(expected)                            (TEST_ASSERT_EQUAL_HEX8((expected), Z80_IXH))
+#define TEST_ASSERT_IYL_EQUAL(expected)                            (TEST_ASSERT_EQUAL_HEX8((expected), Z80_IYL))
+#define TEST_ASSERT_IYH_EQUAL(expected)                            (TEST_ASSERT_EQUAL_HEX8((expected), Z80_IYH))
 
 /*16bit*/
 #define TEST_ASSERT_AF_EQUAL(expected)                             (TEST_ASSERT_EQUAL_HEX16((expected), Z80_AF))
