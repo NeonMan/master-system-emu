@@ -168,6 +168,7 @@ void z80_dump_reg(){
  * @param count_below number of bytes to read below SP. Always even, last bit ignored.
  */
 void z80_dump_stack(void* ram, uint16_t sp, uint16_t base_addr, uint16_t count, uint16_t count_below){
+    /**/
     if(!ram)
         return;
     count = count & 0xFFFE;
@@ -182,6 +183,7 @@ void z80_dump_stack(void* ram, uint16_t sp, uint16_t base_addr, uint16_t count, 
             fprintf(stderr, "       ");
         fprintf(stderr, "0x%04X: 0x%02X%02X\n", sp + i, ((uint8_t*)ram)[(sp - base_addr + i + 1)%RAM_SIZE], ((uint8_t*)ram)[(sp - base_addr + i)%RAM_SIZE]);
     }
+    /**/
 }
 
 ///Initializes the z80 struct and SDSC function callbacks.
