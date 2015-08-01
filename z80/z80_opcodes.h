@@ -291,4 +291,8 @@ int SET_b_IXYp();
 int RES_b_IXYp();
 int BIT_b_IXYp();
 
+/* --- Dummy opcode for testing a debugging purposes --- */
+/* --- Calling this will make an assertion failure   --- */
+int UNDOC();
+
 #endif

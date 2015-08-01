@@ -75,7 +75,7 @@ int ADD_n(){
     Z80_F = 0;
     Z80_F |= Z80_SETFLAG_SIGN(Z80_A);
     Z80_F |= Z80_SETFLAG_ZERO(Z80_A);
-    Z80_F |= Z80_SETFLAG_HC(orig_a, Z80_A);
+    Z80_F |= Z80_SETFLAG_HALF_CARRY(orig_a, z80.opcode[1]);
     Z80_F |= Z80_SETFLAG_OVERFLOW(orig_a, Z80_A);
     Z80_F |= Z80_SETFLAG_CARRY(orig_a, Z80_A);
     return Z80_STAGE_RESET;
@@ -218,7 +218,7 @@ int CP_n(){
     Z80_F |= Z80_FLAG_SUBTRACT; //Flag is set, always
     Z80_F |= Z80_SETFLAG_SIGN(Z80_A - z80.opcode[1]);
     Z80_F |= Z80_SETFLAG_ZERO(Z80_A - z80.opcode[1]);
-    Z80_F |= Z80_SETFLAG_HC(Z80_A, Z80_A - z80.opcode[1]);
+    Z80_F |= Z80_SETFLAG_HALF_BORROW(Z80_A, z80.opcode[1]);
     Z80_F |= Z80_SETFLAG_OVERFLOW(Z80_A, Z80_A - z80.opcode[1]);
     Z80_F |= Z80_SETFLAG_BORROW(Z80_A, Z80_A - z80.opcode[1]);
     return Z80_STAGE_RESET;
@@ -251,7 +251,7 @@ int CP_r(){
 
     Z80_F = Z80_SETFLAG_SIGN(Z80_A)
         | Z80_SETFLAG_ZERO(Z80_A)
-        | Z80_SETFLAG_HC(Z80_A, new_a)
+        | Z80_SETFLAG_HALF_BORROW(Z80_A, *(z80_r[z[0]]))
         | Z80_SETFLAG_OVERFLOW(Z80_A, new_a)
         | Z80_FLAG_SUBTRACT
         | Z80_SETFLAG_BORROW(Z80_A, new_a);
@@ -285,7 +285,7 @@ int DEC_r(){
         )  //Clear S,Z,H,P,N (7,6,4,2,1) ***V0-
         | Z80_SETFLAG_SIGN(*z80_r[y[0]])
         | Z80_SETFLAG_ZERO(*z80_r[y[0]])
-        | Z80_SETFLAG_HC(old_r, *z80_r[y[0]])
+        | Z80_SETFLAG_HALF_BORROW(old_r, 1)
         | Z80_SETFLAG_OVERFLOW(*z80_r[y[0]], old_r);
     return Z80_STAGE_RESET;
 }
@@ -427,7 +427,7 @@ int INC_HLp(){
         )  //Clear S,Z,H,P,N (7,6,4,2,1) ***V0-
         | Z80_SETFLAG_SIGN(old_r + 1)
         | Z80_SETFLAG_ZERO(old_r + 1)
-        | Z80_SETFLAG_HC(old_r, old_r + 1)
+        | Z80_SETFLAG_HALF_CARRY(old_r, 1)
         | Z80_SETFLAG_OVERFLOW(old_r, old_r + 1);
     return Z80_STAGE_RESET;
 }
@@ -445,7 +445,7 @@ int INC_r(){
         )  //Clear S,Z,H,P,N (7,6,4,2,1) ***V0-
         | Z80_SETFLAG_SIGN(*z80_r[y[0]])
         | Z80_SETFLAG_ZERO(*z80_r[y[0]])
-        | Z80_SETFLAG_HC(old_r, *z80_r[y[0]])
+        | Z80_SETFLAG_HALF_CARRY(old_r, 1)
         | Z80_SETFLAG_OVERFLOW(old_r, *z80_r[y[0]]);
     return Z80_STAGE_RESET;
 }
@@ -1118,7 +1118,7 @@ int SBC_HL_rp(){
         | Z80_SETFLAG_BORROW(old_hl, Z80_HL)
         | Z80_SETFLAG_SIGN(Z80_HL)
         | Z80_SETFLAG_ZERO(Z80_HL)
-        | Z80_SETFLAG_HC((old_hl >> 8), (Z80_HL >> 8))
+        | Z80_SETFLAG_HALF_BORROW_16(old_hl, *(z80_rp[p[1]]))
         | Z80_SETFLAG_OVERFLOW(old_hl, Z80_HL);
     return Z80_STAGE_RESET;
 }
@@ -1564,5 +1564,10 @@ int RES_b_IXYp(){
 
 int BIT_b_IXYp(){
     assert(0); /*<-- Unimplemented*/
+    return Z80_STAGE_RESET;
+}
+
+int UNDOC(){
+    assert(0); /*<-- Stop execution*/
     return Z80_STAGE_RESET;
 }
