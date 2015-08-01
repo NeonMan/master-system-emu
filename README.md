@@ -22,6 +22,13 @@ emulated independently.
 | z80           | Working/WIP     | i8080 subset mostly implemented, missing interrupts |
 | GUI           | WIP             | Implements a basic z80 Debugger                     |
 
+## Known issues ##
+
+Issues listed here describe inaccurate behaviours in implemented code.
+
+* LDDR/LDIR ignore the extra refresh cycles, making them equivalent to LDD/LDI
+* LDDR/LDIR/LDD/LDI *do not* pass the ZEXDOC/ZEXALL test.
+
 ## Licensing ##
 
 This project is licensed under the 

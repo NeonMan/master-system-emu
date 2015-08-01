@@ -713,21 +713,62 @@ int LD_nnp_HL(){
 ///LDD; Size: 2; Flags: ???
 int LDD(){
     assert(z80.opcode_index == 2);
-    assert(0); ///<-- Unimplemented
+    //Copy a byte.
+    Z80_8BIT_READ(Z80_HL, 0);
+    Z80_8BIT_WRITE(Z80_DE, 0, z80.read_buffer[0]);
+    //Update registers
+    --(Z80_DE);
+    --(Z80_HL);
+    --(Z80_BC);
+    //Update flags
+    Z80_F &= Z80_CLRFLAG_HC & Z80_CLRFLAG_PARITY & Z80_CLRFLAG_SUBTRACT;
+    Z80_F |= ((Z80_BC == 0) ? 0 : Z80_FLAG_PARITY);
+    //Shall we continue copying?
+    if (Z80_BC){
+        //Execute this opcode again
+        Z80_PC -= 2;
+    }
     return Z80_STAGE_RESET;
 }
 
-///LDI; Size: 2; Flags: ???
+///LDI; Size: 2; Flags: H,V,N
 int LDI(){
     assert(z80.opcode_index == 2);
-    assert(0); ///<-- Unimplemented
+    //Copy a byte.
+    Z80_8BIT_READ(Z80_HL, 0);
+    Z80_8BIT_WRITE(Z80_DE, 0, z80.read_buffer[0]);
+    //Update registers
+    ++(Z80_DE);
+    ++(Z80_HL);
+    --(Z80_BC);
+    //Update flags
+    Z80_F &= Z80_CLRFLAG_HC & Z80_CLRFLAG_PARITY & Z80_CLRFLAG_SUBTRACT;
+    Z80_F |= ((Z80_BC == 0) ? 0: Z80_FLAG_PARITY);
+    //Shall we continue copying?
+    if (Z80_BC){
+        //Execute this opcode again
+        Z80_PC -= 2;
+    }
     return Z80_STAGE_RESET;
 }
 
 ///LDDR; Size: 2; Flags: ???
 int LDDR(){
     assert(z80.opcode_index == 2);
-    assert(0); ///<-- Unimplemented
+    //Copy a byte.
+    Z80_8BIT_READ(Z80_HL, 0);
+    Z80_8BIT_WRITE(Z80_DE, 0, z80.read_buffer[0]);
+    //Update registers
+    --(Z80_DE);
+    --(Z80_HL);
+    --(Z80_BC);
+    //Update flags
+    Z80_F &= Z80_CLRFLAG_HC & Z80_CLRFLAG_PARITY & Z80_CLRFLAG_SUBTRACT;
+    //Shall we continue copying?
+    if (Z80_BC){
+        //Execute this opcode again
+        Z80_PC -= 2;
+    }
     return Z80_STAGE_RESET;
 }
 

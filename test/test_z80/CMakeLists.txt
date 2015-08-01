@@ -29,3 +29,13 @@ add_test(test_z80_ld16 zzz_test_z80_ld16)
 add_executable(zzz_test_z80_ld8 test_z80_ld8.c)
 target_link_libraries(zzz_test_z80_ld8 z80 smsram unity)
 add_test(test_z80_ld8 zzz_test_z80_ld8)
+
+#Block copy
+add_executable(zzz_test_z80_block test_z80_block.c)
+target_link_libraries(zzz_test_z80_block z80 smsram unity)
+add_test(test_z80_block zzz_test_z80_block)
+
+#Exchange
+add_executable(zzz_test_z80_exchange test_z80_exchange.c)
+target_link_libraries(zzz_test_z80_exchange z80 smsram unity)
+add_test(test_z80_exchange zzz_test_z80_exchange)
