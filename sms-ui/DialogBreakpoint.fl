@@ -21,6 +21,8 @@ limitations under the License.
 
 declblock {\#if 1} {open public after {\#endif}
 } {
+  decl {\#define __STDC_LIMIT_MACROS} {public global
+  }
   decl {\#include <stdint.h>} {public global
   }
   decl {\#include <z80/z80_macros.h>} {public global
