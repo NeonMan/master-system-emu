@@ -118,7 +118,7 @@ int emu_init(){
     memset(read_buffer, 0, ROM_MAX_SIZE);
     {
       char read_bytes_s[12];
-      sprintf(read_bytes_s, "%d", fread(read_buffer, 1, ROM_MAX_SIZE, in_f));
+      sprintf(read_bytes_s, "%d", (int) fread(read_buffer, 1, ROM_MAX_SIZE, in_f));
       emu_log("Rom loaded:", EMU_LOG_INFO);
       emu_log(f_path ? f_path : f_default, EMU_LOG_INFO);
       emu_log("Read bytes:", EMU_LOG_INFO);
