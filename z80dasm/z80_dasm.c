@@ -274,18 +274,85 @@ int zd_IM(const uint8_t* opcode, char* result) {
     return 2;
 }
 
-int zd_IN_A_np(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
-int zd_IN_r_Cp(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
-int zd_INC_IXY(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
-int zd_INC_IXYp(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
-int zd_INC_r(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
-int zd_INC_rp(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
-int zd_JP_cc_nn(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
-int zd_JP_HLp(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
-int zd_JP_IXYp(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
-int zd_JP_nn(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
-int zd_JR_cc_d(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
-int zd_JR_d(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
+int zd_IN_A_np(const uint8_t* opcode, char* result) { 
+    const uint8_t n = opcode[1];
+    sprintf(result, "IN A, (0x%02X)", n);
+    return 2;
+}
+
+int zd_IN_r_Cp(const uint8_t* opcode, char* result) {
+    const uint8_t y = (opcode[1] >> 3) & 0x07;
+    sprintf(result, "IN %s, (C)", z80d_r[y]);
+    return 2;
+}
+
+int zd_INC_IXY(const uint8_t* opcode, char* result) { 
+    if (opcode[0] == 0xDD)
+        strcpy(result, "INC IX");
+    else
+        strcpy(result, "INC IY");
+    return 2;
+}
+
+int zd_INC_IXYp(const uint8_t* opcode, char* result) {
+    const int8_t d = (int8_t)opcode[2];
+    if (opcode[0] == 0xDD)
+        sprintf(result, "INC (IX%+d)", d);
+    else
+        sprintf(result, "INC (IY%+d)", d);
+    return 3;
+}
+
+int zd_INC_r(const uint8_t* opcode, char* result) {
+    const uint8_t y = (opcode[0] >> 3) & 0x07;
+    sprintf(result, "INC %s", z80d_r[y]);
+    return 1;
+}
+
+int zd_INC_rp(const uint8_t* opcode, char* result) {
+    const uint8_t p = (opcode[0] >> 4) & 0x03;
+    sprintf(result, "INC %s", z80d_rp[p]);
+    return 1;
+}
+
+int zd_JP_cc_nn(const uint8_t* opcode, char* result) {
+    const uint8_t y = (opcode[0] >> 3) & 0x07;
+    const uint16_t addr = opcode[1] + (((uint16_t)opcode[2]) << 8);
+    sprintf(result, "JP %s, 0x%04X", z80d_cc[y], addr);
+    return 3;
+}
+
+int zd_JP_HLp(const uint8_t* opcode, char* result) {
+    strcpy(result, "JP HL");
+    return 1;
+}
+
+int zd_JP_IXYp(const uint8_t* opcode, char* result) { 
+    if (opcode[0] == 0xDD)
+        strcpy(result, ";Check!\nJP IX");
+    else
+        strcpy(result, ";Check!\nJP IY");
+    return 2;
+}
+
+int zd_JP_nn(const uint8_t* opcode, char* result) {
+    const uint16_t addr = opcode[1] + (((uint16_t)opcode[2]) << 8);
+    sprintf(result, "JP 0x%04X", addr);
+    return 3;
+}
+
+int zd_JR_cc_d(const uint8_t* opcode, char* result) {
+    const int8_t d = (int8_t) opcode[1];
+    const uint8_t y = (opcode[0] >> 3) & 0x07;
+    sprintf(result, "JR %s, %+d", z80d_cc[y - 4], d);
+    return 2;
+}
+
+int zd_JR_d(const uint8_t* opcode, char* result) {
+    const int8_t d = (int8_t)opcode[1];
+    sprintf(result, "JR %+d", d);
+    return 2;
+}
 
 int zd_LD_A_BCp(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
 int zd_LD_A_DEp(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
@@ -328,14 +395,59 @@ int zd_NOP(const uint8_t* opcode, char* result) {
     return 1;
 }
 
-int zd_OUT_Cp_r(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
-int zd_OUT_np_A(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
-int zd_POP_IXY(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
-int zd_POP_rp2(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
-int zd_PUSH_IXY(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
-int zd_PUSH_rp2(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
-int zd_RES_b_IXYp(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
-int zd_RES_b_r(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
+int zd_OUT_Cp_r(const uint8_t* opcode, char* result) {
+    const uint8_t y = (opcode[1] >> 3) & 0x07;
+    sprintf(result, "OUT (C), %s", z80d_r[y]);
+    return 2;
+}
+
+int zd_OUT_np_A(const uint8_t* opcode, char* result) {
+    const uint8_t n = opcode[1];
+    sprintf(result, "OUT (0x%02X), A", n);
+    return 2;
+}
+
+int zd_POP_IXY(const uint8_t* opcode, char* result) { 
+    if (opcode[0] == 0xDD)
+        strcpy(result, "POP IX");
+    else
+        strcpy(result, "POP IY");
+    return 2;
+}
+
+int zd_POP_rp2(const uint8_t* opcode, char* result) {
+    const uint8_t p = (opcode[0] >> 4) & 0x03;
+    sprintf(result, "POP %s", z80d_rp2[p]);
+    return 1;
+}
+
+int zd_PUSH_IXY(const uint8_t* opcode, char* result) {
+    if (opcode[0] == 0xDD)
+        strcpy(result, "PUSH IX");
+    else
+        strcpy(result, "PUSH IY");
+    return 2;
+}
+
+int zd_PUSH_rp2(const uint8_t* opcode, char* result) {
+    const uint8_t p = (opcode[0] >> 4) & 0x03;
+    sprintf(result, "PUSH %s", z80d_rp2[p]);
+    return 1;
+}
+
+int zd_RES_b_IXYp(const uint8_t* opcode, char* result) {
+    const int8_t d = (int8_t)opcode[2];
+    const uint8_t y = (opcode[3] >> 3) & 0x07;
+    sprintf(result, "RES %d, (IX%+d)", y, d);
+    return 4;
+}
+
+int zd_RES_b_r(const uint8_t* opcode, char* result) {
+    const uint8_t y = (opcode[1] >> 3) & 0x07;
+    const uint8_t z = (opcode[1]) & 0x07;
+    sprintf(result, "RES %d, %s", y, z80d_r[z]);
+    return 2;
+}
 
 int zd_RET(const uint8_t* opcode, char* result) {
     strcpy(result, "RET");
@@ -408,7 +520,27 @@ int zd_RST_y(const uint8_t* opcode, char* result) {
     return 1;
 }
 
-int zd_SBC_HL_rp(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
-int zd_SCF(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
-int zd_SET_b_IXYp(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
-int zd_SET_b_r(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
+int zd_SBC_HL_rp(const uint8_t* opcode, char* result) {
+    const uint8_t p = (opcode[1] >> 4) & 0x03;
+    sprintf(result, "SBC HL, %s", z80d_rp[p]);
+    return 2;
+}
+
+int zd_SCF(const uint8_t* opcode, char* result) {
+    strcpy(result, "SCF");
+    return 1;
+}
+
+int zd_SET_b_IXYp(const uint8_t* opcode, char* result) {
+    const int8_t d = (int8_t)opcode[2];
+    const uint8_t y = (opcode[3] >> 3) & 0x07;
+    sprintf(result, "SET %d, (IX%+d)", y, d);
+    return 4;
+}
+
+int zd_SET_b_r(const uint8_t* opcode, char* result) {
+    const uint8_t y = (opcode[1] >> 3) & 0x07;
+    const uint8_t z = (opcode[1]) & 0x07;
+    sprintf(result, "SET %d, %s", y, z80d_r[z]);
+    return 2;
+}
