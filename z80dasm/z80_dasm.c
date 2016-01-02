@@ -14,7 +14,6 @@
 
 #include "z80_dasm_tables.h"
 #include "z80_dasm.h"
-#include "z80_macros.h"
 #include <string.h>
 #include <stdio.h>
 
