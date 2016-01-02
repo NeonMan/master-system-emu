@@ -769,7 +769,7 @@ int LDDR(){
         //Execute this opcode again
         Z80_PC -= 2;
     }
-    return Z80_STAGE_RESET;
+    return Z80_STAGE_REFRESH;
 }
 
 ///LDIR; Size: 2; Flags: H,P,N (cleared)
@@ -787,11 +787,8 @@ int LDIR(){
     Z80_F = Z80_F & (Z80_CLRFLAG_HC & Z80_CLRFLAG_PARITY & Z80_CLRFLAG_SUBTRACT);
     if (Z80_BC){
         Z80_PC -= 2; //Repeat this intruction
-        return Z80_STAGE_RESET;
     }
-    else{
-        return Z80_STAGE_RESET;
-    }
+    return Z80_STAGE_REFRESH;
 }
 
 ///NEG; Size: 2; Flags: ???
