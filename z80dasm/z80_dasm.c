@@ -16,6 +16,7 @@
 #include "z80_dasm.h"
 #include <string.h>
 #include <stdio.h>
+#include <assert.h>
 
 const char* z80d_r[8] = { "B", "C", "D", "E", "H", "L", "(HL)", "A" };
 const char* z80d_rp[4] = { "BC", "DE", "HL", "SP" };
@@ -40,20 +41,37 @@ char z80d_byte_to_char(uint8_t b){
 
 int z80d_decode(const uint8_t* opcode, unsigned int size, char* result){
     if (opcode[0] == 0xDD) {
-        strcpy(result, "DD!");
-        return size;
+        if (opcode[1] == 0xCB) {
+            assert(op_ddcb[opcode[3]].f);
+            return op_ddcb[opcode[3]].f(opcode, result);
+        }
+        else {
+            assert(op_dd[opcode[1]].f);
+            op_dd[opcode[1]].f(opcode, result);
+        }
+        return 1;
     }
     else if (opcode[0] == 0xFD) {
-        strcpy(result, "FD!");
-        return size;
+        if (opcode[1] == 0xCB) {
+            assert(op_fdcb[opcode[3]].f);
+            return op_fdcb[opcode[3]].f(opcode, result);
+        }
+        else {
+            assert(op_fd[opcode[1]].f);
+            op_fd[opcode[1]].f(opcode, result);
+        }
+        return 1;
     }
     else if (opcode[0] == 0xCB) {
-        return op_cb[opcode[0]].f(opcode, result);
+        assert(op_cb[opcode[1]].f);
+        return op_cb[opcode[1]].f(opcode, result);
     }
     else if (opcode[0] == 0xED) {
-        return op_ed[opcode[0]].f(opcode, result);
+        assert(op_ed[opcode[1]].f);
+        return op_ed[opcode[1]].f(opcode, result);
     }
     else {
+        assert(op_unpref[opcode[0]].f);
         return op_unpref[opcode[0]].f(opcode, result);
     }
 }
@@ -119,11 +137,43 @@ int zd_alu_r(const uint8_t* opcode, char* result) {
     return 1;
 }
 
-int zd_BIT_b_IXYp(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
-int zd_BIT_b_r(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
-int zd_bli(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
-int zd_CALL_cc_nn(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
-int zd_CALL_nn(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
+int zd_BIT_b_IXYp(const uint8_t* opcode, char* result) {
+    const uint8_t y = (opcode[3] >> 3) & 0x07;
+    const uint8_t z = (opcode[3]) & 0x07;
+    const int8_t d = (int8_t) opcode[2];
+    if(opcode[0] == 0xDD)
+        sprintf(result, "BIT %d, (IX%+d)", y, d);
+    else
+        sprintf(result, "BIT %d, (IY%+d)", y, d);
+    return 4;
+}
+
+int zd_BIT_b_r(const uint8_t* opcode, char* result) { 
+    const uint8_t y = (opcode[1] >> 3) & 0x07;
+    const uint8_t z = (opcode[1]) & 0x07;
+    sprintf(result, "BIT %d, %s", y, z80d_r[z]);
+    return 2;
+}
+
+int zd_bli(const uint8_t* opcode, char* result) { 
+    const uint8_t y = (opcode[1] >> 3) & 0x07;
+    const uint8_t z = (opcode[1]) & 0x07;
+    sprintf(result, "%s", z80d_bli[(4*z) + y]);
+    return 2;
+}
+
+int zd_CALL_cc_nn(const uint8_t* opcode, char* result) {
+    const uint8_t y = (opcode[0] >> 3) & 0x07;
+    const uint16_t addr = opcode[1] + (((uint16_t)opcode[2]) << 8);
+    sprintf(result, "CALL %s 0x%04X", z80d_cc[y], addr);
+    return 3;
+}
+
+int zd_CALL_nn(const uint8_t* opcode, char* result) {
+    const uint16_t addr = opcode[1] + (((uint16_t)opcode[2]) << 8);
+    sprintf(result, "CALL 0x%04X", addr);
+    return 3;
+}
 
 int zd_CCF(const uint8_t* opcode, char* result) {
     strcpy(result, "CCF");
@@ -148,16 +198,38 @@ int zd_DEC_IXY(const uint8_t* opcode, char* result) {
     return 2;
 }
 
-int zd_DEC_IXYp(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
-int zd_DEC_r(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
-int zd_DEC_rp(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
+int zd_DEC_IXYp(const uint8_t* opcode, char* result) { 
+    const int8_t d = (int8_t)opcode[2];
+    if(opcode[0] == 0xDD)
+        sprintf(result, "DEC (IX%+d)", d);
+    else
+        sprintf(result, "DEC (IY%+d)", d);
+    return 3;
+}
+
+int zd_DEC_r(const uint8_t* opcode, char* result) { 
+    const uint8_t y = (opcode[0] >> 3) & 0x07;
+    sprintf(result, "DEC %s", z80d_r[y]);
+    return 1;
+}
+
+int zd_DEC_rp(const uint8_t* opcode, char* result) {
+    const uint8_t p = (opcode[0] >> 4) & 0x03;
+    sprintf(result, "DEC %s", z80d_rp[p]);
+    return 1;
+}
 
 int zd_DI(const uint8_t* opcode, char* result) {
     strcpy(result, "DI");
     return 1;
 }
 
-int zd_DJNZ_d(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
+int zd_DJNZ_d(const uint8_t* opcode, char* result) {
+    int8_t d = (int8_t)opcode[1];
+    sprintf(result, "DJNZ %+d", d);
+    return 2;
+}
+
 int zd_EI(const uint8_t* opcode, char* result) {
     strcpy(result, "EI");
     return 1;
@@ -214,6 +286,7 @@ int zd_JP_IXYp(const uint8_t* opcode, char* result) { return zd_unimplemented(op
 int zd_JP_nn(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
 int zd_JR_cc_d(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
 int zd_JR_d(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
+
 int zd_LD_A_BCp(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
 int zd_LD_A_DEp(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
 int zd_LD_A_I(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
@@ -244,6 +317,7 @@ int zd_LD_rp_nnp(const uint8_t* opcode, char* result) { return zd_unimplemented(
 int zd_LD_SET(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
 int zd_LD_SP_HL(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
 int zd_LD_SP_IXY(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
+
 int zd_NEG(const uint8_t* opcode, char* result) {
     strcpy(result, "NEG");
     return 2;
