@@ -251,3 +251,25 @@ BIT b,r	UNDOC	0b1111110111001011????????01??????	#Longer version of BIT b,r
 NONI/NOP	NOP	0b1111110100000000	#Longer version of NOP	
 NONI/NOP	NOP	0b1101110100000000	#Longer version of NOP	
 NONI/NOP	NOP	0b11101101????????	#Longer version of NOP (Unsafe)	
+# Code prefix and postfix				
+!PREFIX	#ifndef __Z80_DECODER_TABLES			
+!PREFIX	#define __Z80_DECODER_TABLES			
+!PREFIX				
+!PREFIX	// --------------------------------------------------			
+!PREFIX	// ---          DO NOT ALTER THIS FILE!!          ---			
+!PREFIX	// --------------------------------------------------			
+!PREFIX	// --- Decoder tables are automatically generated ---			
+!PREFIX	// --- by 'z80_make_decoder_tables.py'            ---			
+!PREFIX	// --------------------------------------------------			
+!PREFIX				
+!PREFIX	#include "z80_opcodes.h"			
+!PREFIX				
+!PREFIX	struct opcode_dec_s{			
+!PREFIX	  int (*f)();			
+!PREFIX	  signed char size;			
+!PREFIX	};			
+!PREFIX	typedef struct opcode_dec_s opcode_dec_t;			
+!PREFIX				
+!POSTFIX				
+!POSTFIX	#endif			
+!TYPE	opcode_dec_t			
