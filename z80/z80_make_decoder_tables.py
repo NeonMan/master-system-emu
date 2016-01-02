@@ -19,7 +19,7 @@ import csv
 
 IN_NAME       = 'z80_decoder_tables.csv'
 OUT_NAME      = 'z80_decoder_tables.h'
-OUT_DASM_NAME = 'z80_dasm_decoder_tables.h'
+OUT_DASM_NAME = None
 
 LICENSE = '''
 // Copyright 2015 Juan Luis Álvarez Martínez
@@ -266,14 +266,17 @@ if __name__ == '__main__':
   f_out = open(OUT_NAME, 'wb')
   make_tables(f_out)
   
-  #Rename function names
-  for i in range(len(ops)):
-    op = ops[i]
-    if(op.function[0] != '0'):
-      op.function = 'zd_' + op.function
-    ops[i] = op
-  #Make disasm header
-  f_out = open(OUT_DASM_NAME, 'wb')
-  make_tables(f_out)
+  if(OUT_DASM_NAME != None):
+    #Rename function names
+    for i in range(len(ops)):
+      op = ops[i]
+      if(op.function[0] != '0'):
+        op.function = 'zd_' + op.function
+      ops[i] = op
+    #Make disasm header
+    f_out = open(OUT_DASM_NAME, 'wb')
+    make_tables(f_out)
+  else:
+    pass
   sys.exit(rv)
 
