@@ -29,7 +29,7 @@ declblock {\#if 1} {open public after {\#endif}
   }
   decl {\#include <z80/z80_externs.h>} {public global
   }
-  decl {\#include <z80/z80_dasm.h>} {public global
+  decl {\#include <z80dasm/z80_dasm.h>} {public global
   }
 } 
 

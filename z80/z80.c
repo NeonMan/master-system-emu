@@ -24,7 +24,7 @@
 
 #include "z80.h"
 #include "z80_macros.h"
-#include "z80_dasm.h"
+#include <z80dasm/z80_dasm.h>
 #include "z80_register_lut.h"
 #include "z80_decoder.h"
 #include <stdint.h>
@@ -168,7 +168,7 @@ void z80_dump_reg(){
  * @param count_below number of bytes to read below SP. Always even, last bit ignored.
  */
 void z80_dump_stack(void* ram, uint16_t sp, uint16_t base_addr, uint16_t count, uint16_t count_below){
-    /**/
+    /*
     if(!ram)
         return;
     count = count & 0xFFFE;
