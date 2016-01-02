@@ -17,8 +17,9 @@
 import sys
 import csv
 
-IN_NAME  = 'z80_decoder_tables.csv'
-OUT_NAME = 'z80_decoder_tables.h'
+IN_NAME       = 'z80_decoder_tables.csv'
+OUT_NAME      = 'z80_decoder_tables.h'
+OUT_DASM_NAME = 'z80_dasm_decoder_tables.h'
 
 LICENSE = '''
 // Copyright 2015 Juan Luis Álvarez Martínez
@@ -180,17 +181,54 @@ def gen_opcode_xxcb(ops, pref):
             pass
   return lut
 
+def make_tables(f_out):
+  try:
+    f_out.write(bytes(LICENSE[1:], 'utf-8'))
+    f_out.write(bytes(PREFIX, 'utf-8'))
+    #--- Unprefixed opcodes ---
+    #Unprefixed
+    v = "static const opcode_dec_t op_unpref[256] = %s;\n" % array_to_c(gen_opcode_1(ops))
+    f_out.write(bytes(v, 'utf-8'))
+    #CB prefix
+    v = "static const opcode_dec_t op_cb[256] = %s;\n" % array_to_c(gen_opcode_xx(ops, 0xCB))
+    f_out.write(bytes(v, 'utf-8'))
+    #ED prefix
+    v = "static const opcode_dec_t op_ed[256] = %s;\n" % array_to_c(gen_opcode_xx(ops, 0xed))
+    f_out.write(bytes(v, 'utf-8'))
+    #DD prefix
+    v = "static const opcode_dec_t op_dd[256] = %s;\n" % array_to_c(gen_opcode_xx(ops, 0xdd))
+    f_out.write(bytes(v, 'utf-8'))
+    #FD prefix
+    v = "static const opcode_dec_t op_fd[256] = %s;\n" % array_to_c(gen_opcode_xx(ops, 0xfd))
+    f_out.write(bytes(v, 'utf-8'))
+
+    #DDCB prefix
+    v = "static const opcode_dec_t op_ddcb[256] = %s;\n" % array_to_c(gen_opcode_xxcb(ops, 0xdd))
+    f_out.write(bytes(v, 'utf-8'))
+    #FDCB prefix
+    v = "static const opcode_dec_t op_fdcb[256] = %s;\n" % array_to_c(gen_opcode_xxcb(ops, 0xfd))
+    f_out.write(bytes(v, 'utf-8'))
+    f_out.write(bytes(POSTFIX, 'utf-8'))
+    
+  except Exception as e:
+    print("Error!\n%s" % str(e))
+    rv = -1
+  finally:
+    f_out.close()
+  
 # ------------
 # --- Main ---
 # ------------
 #
-#Usage: make_tables.py [INPUT_CSV_FILE [OUT_HEADER_FILE]]
+#Usage: make_tables.py [INPUT_CSV [OUT_HEADER [OUT_DISASM_HEADER]]]
 if __name__ == '__main__':
   rv = 0
   if len(sys.argv) >= 2:
     IN_NAME = sys.argv[1]
   if len(sys.argv) >= 3:
     OUT_NAME = sys.argv[2]
+  if len(sys.argv) >= 4:
+    OUT_DASM_NAME = sys.argv[3]
   f_in  = open(IN_NAME, 'r')
   ops = []
   #Parse CSV file
@@ -226,38 +264,16 @@ if __name__ == '__main__':
 
   #Make header
   f_out = open(OUT_NAME, 'wb')
-  try:
-    f_out.write(bytes(LICENSE[1:], 'utf-8'))
-    f_out.write(bytes(PREFIX, 'utf-8'))
-    #--- Unprefixed opcodes ---
-    #Unprefixed
-    v = "static const opcode_dec_t op_unpref[256] = %s;\n" % array_to_c(gen_opcode_1(ops))
-    f_out.write(bytes(v, 'utf-8'))
-    #CB prefix
-    v = "static const opcode_dec_t op_cb[256] = %s;\n" % array_to_c(gen_opcode_xx(ops, 0xCB))
-    f_out.write(bytes(v, 'utf-8'))
-    #ED prefix
-    v = "static const opcode_dec_t op_ed[256] = %s;\n" % array_to_c(gen_opcode_xx(ops, 0xed))
-    f_out.write(bytes(v, 'utf-8'))
-    #DD prefix
-    v = "static const opcode_dec_t op_dd[256] = %s;\n" % array_to_c(gen_opcode_xx(ops, 0xdd))
-    f_out.write(bytes(v, 'utf-8'))
-    #FD prefix
-    v = "static const opcode_dec_t op_fd[256] = %s;\n" % array_to_c(gen_opcode_xx(ops, 0xfd))
-    f_out.write(bytes(v, 'utf-8'))
-
-    #DDCB prefix
-    v = "static const opcode_dec_t op_ddcb[256] = %s;\n" % array_to_c(gen_opcode_xxcb(ops, 0xdd))
-    f_out.write(bytes(v, 'utf-8'))
-    #FDCB prefix
-    v = "static const opcode_dec_t op_fdcb[256] = %s;\n" % array_to_c(gen_opcode_xxcb(ops, 0xfd))
-    f_out.write(bytes(v, 'utf-8'))
-    f_out.write(bytes(POSTFIX, 'utf-8'))
-    
-  except Exception as e:
-    print("Error!\n%s" % str(e))
-    rv = -1
-  finally:
-    f_out.close()
+  make_tables(f_out)
+  
+  #Rename function names
+  for i in range(len(ops)):
+    op = ops[i]
+    if(op.function[0] != '0'):
+      op.function = 'zd_' + op.function
+    ops[i] = op
+  #Make disasm header
+  f_out = open(OUT_DASM_NAME, 'wb')
+  make_tables(f_out)
   sys.exit(rv)
 

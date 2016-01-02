@@ -560,6 +560,54 @@ int z80_stage_m1(){
     return Z80_STAGE_RESET;
 }
 
+int z80_stage_refresh() {
+    switch (z80.m1_tick_count) {
+    case 0:
+        //On T3 up
+        //    -DATA bus is sampled
+        z80.data_latch = z80_data;
+        //    -MREQ pulled up
+        z80_n_mreq = 1;
+        //    -RD pulled up
+        z80_n_rd = 1;
+        //    -M1 pulled up
+        z80_n_m1 = 1;
+        //    -RFSH pulled down
+        z80_n_rfsh = 0;
+        //    -ADDRESS bus is set to REFRESH address
+        z80_address = Z80_R;
+
+        //Prepare for next tick
+        ++(z80.m1_tick_count);
+        return Z80_STAGE_REFRESH; //<-- Stage hasn't finished
+    case 1:
+        //On T3 dn
+        //    -MREQ pulled down (Refresh cycle)
+        z80_n_mreq = 0;
+        //    -Load I to the high address bus @check
+        Z80_ADDRH = Z80_I;
+
+        //Prepare for next tick
+        ++(z80.m1_tick_count);
+        return Z80_STAGE_REFRESH; //<-- Stage hasn't finished
+    case 2:
+        //On T4 up
+        //    <nothing>
+
+        //Prepare for next tick
+        ++(z80.m1_tick_count);
+        return Z80_STAGE_REFRESH; //<-- Stage hasn't finished
+    case 3:
+        //On T4 dn
+        //    -MREQ pulled up
+        z80_n_mreq = 1;
+        return Z80_STAGE_RESET;
+    default:
+        assert(0);
+        return Z80_STAGE_RESET;
+    }
+}
+
 /** Executes a z80 half-clock.
  * 
  */
@@ -577,6 +625,9 @@ void z80_tick(){
         break;
     case Z80_STAGE_M3:
         z80.stage = z80_stage_m3(0);
+        break;
+    case Z80_STAGE_REFRESH:
+        z80.stage = z80_stage_refresh();
         break;
     default:
         assert(0); //<-- Should never get here

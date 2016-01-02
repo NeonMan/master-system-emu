@@ -59,6 +59,10 @@ const uint8_t q[4] = { z80.opcode[0] & (1 << 3), z80.opcode[1] & (1 << 3), z80.o
 #define Z80_STAGE_M2 2
 #define Z80_STAGE_M3 3
 
+//Especial purpose stage codes
+//After LDDR LDIR an additional refresh cycle is needed
+#define Z80_STAGE_REFRESH 4
+
 //ALU operations
 #define Z80_ALUOP_ADD 0
 #define Z80_ALUOP_ADC 1

@@ -41,6 +41,7 @@ syntax: glob
 #Individual files
 CMakeCache.txt
 z80/z80_decoder_tables.h
+z80/z80_dasm_decoder_tables.h
 
 #Executables
 psg-play
