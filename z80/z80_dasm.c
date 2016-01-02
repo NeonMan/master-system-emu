@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include "z80_dasm_tables.h"
 #include "z80_dasm.h"
 #include "z80_macros.h"
 #include <string.h>
@@ -38,409 +39,24 @@ char z80d_byte_to_char(uint8_t b){
         return '.';
 }
 
-int z80d_decode_ED(const uint8_t* opcode, unsigned int size, char* result){
-    const uint8_t x[4] = { opcode[0] >> 6, opcode[1] >> 6, opcode[2] >> 6, opcode[3] >> 6 };
-    const uint8_t y[4] = { (opcode[0] >> 3) & 0x7, (opcode[1] >> 3) & 0x7, (opcode[2] >> 3) & 0x7, (opcode[3] >> 3) & 0x7 };
-    const uint8_t z[4] = { opcode[0] & 0x7, opcode[1] & 0x7, opcode[2] & 0x7, opcode[3] & 0x7 };
-    const uint8_t p[4] = { (opcode[0] >> 4) & 0x3, (opcode[1] >> 4) & 0x3, (opcode[2] >> 4) & 0x3, (opcode[3] >> 4) & 0x3 };
-    const uint8_t q[4] = { opcode[0] & (1 << 3), opcode[1] & (1 << 3), opcode[2] & (1 << 3), opcode[3] & (1 << 3) };
-    const uint16_t nn = *((uint16_t*)(opcode + 1));
-    const uint16_t nn2 = *((uint16_t*)(opcode + 2));
-
-    int rv = 0;
-    char tmp_str[100];
-    char* tmp_ptr = tmp_str;
-    memset(tmp_str, '\0', 100);
-
-    switch (opcode[1] & (Z80_OPCODE_Z_MASK | Z80_OPCODE_X_MASK)){
-    case Z80_OPCODE_XZ(0, 0):
-    case Z80_OPCODE_XZ(0, 1):
-    case Z80_OPCODE_XZ(0, 2):
-    case Z80_OPCODE_XZ(0, 3):
-    case Z80_OPCODE_XZ(0, 4):
-    case Z80_OPCODE_XZ(0, 5):
-    case Z80_OPCODE_XZ(0, 6):
-    case Z80_OPCODE_XZ(0, 7):
-
-    case Z80_OPCODE_XZ(3, 0):
-    case Z80_OPCODE_XZ(3, 1):
-    case Z80_OPCODE_XZ(3, 2):
-    case Z80_OPCODE_XZ(3, 3):
-    case Z80_OPCODE_XZ(3, 4):
-    case Z80_OPCODE_XZ(3, 5):
-    case Z80_OPCODE_XZ(3, 6):
-    case Z80_OPCODE_XZ(3, 7):
-        sprintf(tmp_str, "NONI/NOP");
-        rv = 2;
-        break;
-
-    case Z80_OPCODE_XZ(1, 0):
-        if (y[1] != 6){
-            sprintf(tmp_str, "IN %s, (C)", z80d_r[y[1]]);
-        }
-        else{
-            sprintf(tmp_str, "IN (C)");
-        }
-        rv = 2;
-        break;
-
-    case Z80_OPCODE_XZ(1, 1):
-        if (y[1] != 6){
-            sprintf(tmp_str, "OUT %s, (C)", z80d_r[y[1]]);
-        }
-        else{
-            sprintf(tmp_str, "OUT (C)");
-        }
-        rv = 2;
-        break;
-
-    case Z80_OPCODE_XZ(1, 2):
-        if (!q[1]){
-            sprintf(tmp_str, "SBC HL, %s", z80d_rp[p[1]]);
-        }
-        else{
-            sprintf(tmp_str, "ADC HL, %s", z80d_rp[p[1]]);
-        }
-        rv = 2;
-        break;
-
-    case Z80_OPCODE_XZ(1, 3):
-        if (!q[1]){
-            sprintf(tmp_str, "LD (0x%04X), %s", nn2, z80d_rp[p[1]]);
-        }
-        else{
-            sprintf(tmp_str, "LD %s, (0x%04X)", z80d_rp[p[1]], nn2);
-        }
-        rv = 4;
-        break;
-
-    case Z80_OPCODE_XZ(1, 4):
-        sprintf(tmp_str, "NEG");
-        rv = 2;
-        break;
-
-    case Z80_OPCODE_XZ(1, 5):
-        if (y[1] != 1){
-            sprintf(tmp_str, "RETN");
-        }
-        else{
-            sprintf(tmp_str, "RETI");
-        }
-        rv = 2;
-        break;
-
-    case Z80_OPCODE_XZ(1, 6):
-        sprintf(tmp_str, "IM %s", z80d_im[y[1]]);
-        rv = 2;
-        break;
-
-    case Z80_OPCODE_XZ(1, 7):
-        switch (y[1]){
-        case 0:
-            sprintf(tmp_str, "LD I, A");
-            rv = 2;
-            break;
-        case 1:
-            sprintf(tmp_str, "LD R, A");
-            rv = 2;
-            break;
-        case 2:
-            sprintf(tmp_str, "LD A, I");
-            rv = 2;
-            break;
-        case 3:
-            sprintf(tmp_str, "LD A, R");
-            rv = 2;
-            break;
-        case 4:
-            sprintf(tmp_str, "RRD");
-            rv = 2;
-            break;
-        case 5:
-            sprintf(tmp_str, "RLD");
-            rv = 2;
-            break;
-        case 6:
-        case 7:
-            sprintf(tmp_str, "NOP");
-            rv = 2;
-            break;
-        }
-        break;
-
-    case Z80_OPCODE_XZ(2, 0):
-    case Z80_OPCODE_XZ(2, 1):
-    case Z80_OPCODE_XZ(2, 2):
-    case Z80_OPCODE_XZ(2, 3):
-    case Z80_OPCODE_XZ(2, 4):
-    case Z80_OPCODE_XZ(2, 5):
-    case Z80_OPCODE_XZ(2, 6):
-    case Z80_OPCODE_XZ(2, 7):
-        sprintf(tmp_str, "%s", *(z80d_bli + z[1] + ((y[1] - 4) * 4)));
-        rv = 2;
-        break;
-    }
-    strncpy(result, tmp_str, size - 1);
-    return rv;
-}
-
 int z80d_decode(const uint8_t* opcode, unsigned int size, char* result){
-    const uint8_t x[4] = { opcode[0] >> 6, opcode[1] >> 6, opcode[2] >> 6, opcode[3] >> 6 };
-    const uint8_t y[4] = { (opcode[0] >> 3) & 0x7, (opcode[1] >> 3) & 0x7, (opcode[2] >> 3) & 0x7, (opcode[3] >> 3) & 0x7 };
-    const uint8_t z[4] = { opcode[0] & 0x7, opcode[1] & 0x7, opcode[2] & 0x7, opcode[3] & 0x7 };
-    const uint8_t p[4] = { (opcode[0] >> 4) & 0x3, (opcode[1] >> 4) & 0x3, (opcode[2] >> 4) & 0x3, (opcode[3] >> 4) & 0x3 };
-    const uint8_t q[4] = { opcode[0] & (1 << 3), opcode[1] & (1 << 3), opcode[2] & (1 << 3), opcode[3] & (1 << 3) };
-    const uint16_t nn = *((uint16_t*)(opcode + 1));
-    const uint16_t nn2 = *((uint16_t*)(opcode + 2));
-
-    int rv = 0;
-    char tmp_str[100];
-    char* tmp_ptr = tmp_str;
-    memset(tmp_str, '\0', 100);
-    result[0] = '\0';
-
-    switch (opcode[0] & (Z80_OPCODE_Z_MASK | Z80_OPCODE_X_MASK)){
-    case Z80_OPCODE_XZ(0, 0):
-        switch (y[0]){
-        case 0:
-            sprintf(tmp_str, "NOP");
-            rv = 1;
-            break;
-        case 1:
-            sprintf(tmp_str, "EX AF, AF'");
-            rv = 1;
-            break;
-        case 2:
-            sprintf(tmp_str, "DJNZ 0x%02X; (%d)", opcode[1], opcode[1]);
-            rv = 2;
-            break;
-        case 3:
-            sprintf(tmp_str, "JR 0x%02X; (%d)", opcode[1], opcode[1]);
-            rv = 2;
-            break;
-        default:
-            sprintf(tmp_str, "JR %s, 0x%02X; (%d)", z80d_cc[y[0] - 4], opcode[1], opcode[1]);
-            rv = 2;
-            break;
-        }
-        break;
-
-    case Z80_OPCODE_XZ(0, 1):
-        if (!q[0]){
-            sprintf(tmp_str, "LD %s, 0x%04X", z80d_rp[p[0]], nn); //LD rp, nn
-            rv = 3;
-            break;
-        }
-        else{
-            sprintf(tmp_str, "ADD HL, %s", z80d_rp[p[0]]); //LD HL, rp
-            rv = 1;
-            break;
-        }
-        break;
-
-    case Z80_OPCODE_XZ(0, 2):
-        if (!q[0]){
-            if (p[0] == 0) { sprintf(tmp_str, "LD (BC), A"); rv = 1; }
-            else if (p[0] == 1) { sprintf(tmp_str, "LD (DE), A"); rv = 1; }
-            else if (p[0] == 2) { sprintf(tmp_str, "LD (0x%04X), HL", nn); rv = 3; }
-            else if (p[0] == 3) { sprintf(tmp_str, "LD (0x%04X), A", nn); rv = 3; }
-        }
-        else{
-            if (p[0] == 0) { sprintf(tmp_str, "LD A, (BC)"); rv = 1; }
-            else if (p[0] == 1) { sprintf(tmp_str, "LD A, (DE)"); rv = 1; }
-            else if (p[0] == 2) { sprintf(tmp_str, "LD HL, (0x%04X)", nn); rv = 3; }
-            else if (p[0] == 3) { sprintf(tmp_str, "LD A, (0x%04X)", nn); rv = 3; }
-        }
-        break;
-
-    case Z80_OPCODE_XZ(0, 3):
-        if (!q[0]){
-            sprintf(tmp_str, "INC %s", z80d_rp[p[0]]);
-            rv = 1;
-        }
-        else{
-            sprintf(tmp_str, "DEC %s", z80d_rp[p[0]]);
-            rv = 1;
-        }
-        break;
-
-    case Z80_OPCODE_XZ(0, 4):
-        sprintf(tmp_str, "INC %s", z80d_r[y[0]]);
-        rv = 1;
-        break;
-
-    case Z80_OPCODE_XZ(0, 5):
-        sprintf(tmp_str, "DEC %s", z80d_r[y[0]]);
-        rv = 1;
-        break;
-
-    case Z80_OPCODE_XZ(0, 6):
-        sprintf(tmp_str, "LD %s, 0x%02X; (%d '%c')", z80d_r[y[0]], opcode[1], opcode[1], z80d_byte_to_char(opcode[1]));
-        rv = 2;
-        break;
-
-    case Z80_OPCODE_XZ(0, 7):
-        switch (y[0]){
-        case 0:
-            sprintf(tmp_str, "RLCA");
-            rv = 1;
-            break;
-        case 1:
-            sprintf(tmp_str, "RRCA");
-            rv = 1;
-            break;
-        case 2:
-            sprintf(tmp_str, "RLA");
-            rv = 1;
-            break;
-        case 3:
-            sprintf(tmp_str, "RRA");
-            rv = 1;
-            break;
-        case 4:
-            sprintf(tmp_str, "DAA");
-            rv = 1;
-            break;
-        case 5:
-            sprintf(tmp_str, "CPL");
-            rv = 1;
-            break;
-        case 6:
-            sprintf(tmp_str, "SCF");
-            rv = 1;
-            break;
-        case 7:
-            sprintf(tmp_str, "CCF");
-            rv = 1;
-            break;
-        }
-        break;
-
-    case Z80_OPCODE_XZ(1, 0):
-    case Z80_OPCODE_XZ(1, 1):
-    case Z80_OPCODE_XZ(1, 2):
-    case Z80_OPCODE_XZ(1, 3):
-    case Z80_OPCODE_XZ(1, 4):
-    case Z80_OPCODE_XZ(1, 5):
-    case Z80_OPCODE_XZ(1, 7):
-        sprintf(tmp_str, "LD %s, %s", z80d_r[y[0]], z80d_r[z[0]]);
-        rv = 1;
-        break;
-
-    case Z80_OPCODE_XZ(1, 6):
-        if (y[0] == 6)
-            sprintf(tmp_str, "HALT");
-        else
-            sprintf(tmp_str, "LD %s, %s", z80d_r[y[0]], z80d_r[z[0]]);
-        rv = 1;
-        break;
-
-    case Z80_OPCODE_XZ(2, 0):
-    case Z80_OPCODE_XZ(2, 1):
-    case Z80_OPCODE_XZ(2, 2):
-    case Z80_OPCODE_XZ(2, 3):
-    case Z80_OPCODE_XZ(2, 4):
-    case Z80_OPCODE_XZ(2, 5):
-    case Z80_OPCODE_XZ(2, 6):
-    case Z80_OPCODE_XZ(2, 7):
-        sprintf(tmp_str, "%s %s", z80d_alu[y[0]], z80d_r[z[0]]); //ALU
-        rv = 1;
-        break;
-
-    case Z80_OPCODE_XZ(3, 0):
-        sprintf(tmp_str, "RET %s", z80d_cc[y[0]]);
-        rv = 1;
-        break;
-
-    case Z80_OPCODE_XZ(3, 1):
-        if (!q[0]){
-            sprintf(tmp_str, "POP %s", z80d_rp2[p[0]]);
-            rv = 1;
-        }
-        else{
-            if      (p[0] == 0) sprintf(tmp_str, "RET");
-            else if (p[0] == 1) sprintf(tmp_str, "EXX");
-            else if (p[0] == 2) sprintf(tmp_str, "JP HL");
-            else if (p[0] == 3) sprintf(tmp_str, "LD SP, HL");
-            rv = 1;
-        }
-        break;
-
-    case Z80_OPCODE_XZ(3, 2):
-        sprintf(tmp_str, "JP %s, 0x%04X", z80d_cc[y[0]], nn);
-        rv = 3;
-        break;
-
-    case Z80_OPCODE_XZ(3, 3):
-        switch (y[0]){
-        case 0:
-            sprintf(tmp_str, "JP 0x%04X", nn);
-            rv = 3;
-            break;
-        case 1:
-            sprintf(tmp_str, "!!CB!!");
-            break;
-        case 2:
-            sprintf(tmp_str, "OUT (0x%02X), A", opcode[1]);
-            rv = 2;
-            break;
-        case 3:
-            sprintf(tmp_str, "IN A, (0x%02X)", opcode[1]);
-            rv = 2;
-            break;
-        case 4:
-            sprintf(tmp_str, "EX (SP), HL");
-            rv = 1;
-            break;
-        case 5:
-            sprintf(tmp_str, "EX DE, HL");
-            rv = 1;
-            break;
-        case 6:
-            sprintf(tmp_str, "DI");
-            rv = 1;
-            break;
-        case 7:
-            sprintf(tmp_str, "EI");
-            rv = 1;
-            break;
-        }
-        break;
-
-    case Z80_OPCODE_XZ(3, 4):
-        sprintf(tmp_str, "CALL %s, 0x%04X", z80d_cc[y[0]], nn);
-        rv = 3;
-        break;
-
-    case Z80_OPCODE_XZ(3, 5):
-        if (!q[0]){
-            sprintf(tmp_str, "PUSH %s", z80d_rp2[p[0]]);
-            rv = 1;
-        }
-        else{
-            if (p[0] == 0) { sprintf(tmp_str, "CALL 0x%04X", nn); rv = 3;  }
-            else if (p[0] == 1) { sprintf(tmp_str, "!!DD!!"); rv = 2; }
-            else if (p[0] == 2) { rv = z80d_decode_ED(opcode, 100, tmp_str); } /*0xED prefix*/
-            else if (p[0] == 3) { sprintf(tmp_str, "!!FD!!"); rv = 2; }
-        }
-        break;
-
-    case Z80_OPCODE_XZ(3, 6):
-        sprintf(tmp_str, "%s 0x%02X; (%d '%c')", z80d_alu[y[0]], opcode[1], opcode[1], z80d_byte_to_char(opcode[1]));
-        rv = 2;
-        break;
-
-    case Z80_OPCODE_XZ(3, 7):
-        sprintf(tmp_str, "RST 0x%02X", y[0]);
-        rv = 1;
-        break;
-
-    default:
-        sprintf(tmp_str, "!!!");
-        rv = 1;
+    if (opcode[0] == 0xDD) {
+        strcpy(result, "DD!");
+        return size;
     }
-    strncpy(result, tmp_str, size - 1);
-    return rv;
+    else if (opcode[0] == 0xFD) {
+        strcpy(result, "FD!");
+        return size;
+    }
+    else if (opcode[0] == 0xCB) {
+        return op_cb[opcode[0]].f(opcode, result);
+    }
+    else if (opcode[0] == 0xED) {
+        return op_ed[opcode[0]].f(opcode, result);
+    }
+    else {
+        return op_unpref[opcode[0]].f(opcode, result);
+    }
 }
 
 z80d_opcode z80d_decode_op(const uint8_t* opcode, uint16_t pc_addr){
@@ -451,3 +67,203 @@ z80d_opcode z80d_decode_op(const uint8_t* opcode, uint16_t pc_addr){
     rv.size = z80d_decode(opcode, sizeof(rv.opcode_str), rv.opcode_str);
     return rv;
 }
+
+
+/* --- Implementation of opcode decoders --- */
+
+int zd_unimplemented(const uint8_t* opcode, char* result) {
+    sprintf(result, "!!UNIMP");
+    return 1;
+}
+
+int zd_ADC_HL_rp(const uint8_t* opcode, char* result) {
+    const uint8_t q = ((opcode[1]) >> 4) & 0x03;
+    sprintf(result, "ADC HL, %s", z80d_rp[q]);
+    return 2;
+}
+
+int zd_ADD_HL_rp(const uint8_t* opcode, char* result) {
+    const uint8_t q = ((opcode[0]) >> 4) & 0x03;
+    sprintf(result, "ADD HL, %s", z80d_rp[q]);
+    return 1;
+}
+
+int zd_ADD_IXY_rp(const uint8_t* opcode, char* result) {
+    const uint8_t q = ((opcode[1]) >> 4) & 0x03;
+    if(opcode[0] == 0xDD)
+        sprintf(result, "ADC IX, %s", z80d_rp[q]);
+    else
+        sprintf(result, "ADC IY, %s", z80d_rp[q]);
+    return 2;
+}
+
+int zd_alu_IXYp(const uint8_t* opcode, char* result) {
+    const uint8_t y = (opcode[1] >> 3) & 0x07;
+    const int8_t  d = (int8_t)opcode[2];
+    if(opcode[0] == 0xDD)
+        sprintf(result, "%s A, (IX%+d)", z80d_alu[y], d);
+    else
+        sprintf(result, "%s A, (IY%+d)", z80d_alu[y], d);
+    return 3;
+}
+
+int zd_alu_n(const uint8_t* opcode, char* result) {
+    const uint8_t y = (opcode[0] >> 3) & 0x07;
+    sprintf(result, "%s A, 0x%X", z80d_alu[y], opcode[1]);
+    return 2;
+}
+
+int zd_alu_r(const uint8_t* opcode, char* result) {
+    const uint8_t y = (opcode[0] >> 3) & 0x07;
+    const uint8_t z = (opcode[0]) & 0x07;
+    sprintf(result, "%s A, %s", z80d_alu[y], z80d_r[z]);
+    return 1;
+}
+
+int zd_BIT_b_IXYp(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
+int zd_BIT_b_r(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
+int zd_bli(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
+int zd_CALL_cc_nn(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
+int zd_CALL_nn(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
+
+int zd_CCF(const uint8_t* opcode, char* result) {
+    strcpy(result, "CCF");
+    return 1;
+}
+
+int zd_CPL(const uint8_t* opcode, char* result) {
+    strcpy(result, "CPL");
+    return 1;
+}
+
+int zd_DAA(const uint8_t* opcode, char* result) {
+    strcpy(result, "DAA");
+    return 1;
+}
+
+int zd_DEC_IXY(const uint8_t* opcode, char* result) {
+    if (opcode[0] == 0xDD)
+        strcpy(result, "DEC IX");
+    else
+        strcpy(result, "DEC IY");
+    return 2;
+}
+
+int zd_DEC_IXYp(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
+int zd_DEC_r(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
+int zd_DEC_rp(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
+
+int zd_DI(const uint8_t* opcode, char* result) {
+    strcpy(result, "DI");
+    return 1;
+}
+
+int zd_DJNZ_d(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
+int zd_EI(const uint8_t* opcode, char* result) {
+    strcpy(result, "EI");
+    return 1;
+}
+
+int zd_EX(const uint8_t* opcode, char* result) {
+    strcpy(result, "EX AF, AF'");
+    return 1;
+}
+
+int zd_EX_DE_HL(const uint8_t* opcode, char* result) {
+    strcpy(result, "EX DE, HL");
+    return 1;
+}
+
+int zd_EX_SPp_HL(const uint8_t* opcode, char* result) {
+    strcpy(result, "EX (SP), HL");
+    return 1;
+}
+
+int zd_EX_SPp_IXY(const uint8_t* opcode, char* result) {
+    if (opcode[0] == 0xDD)
+        strcpy(result, "EX (SP), IX");
+    else
+        strcpy(result, "EX (SP), IY");
+    return 2;
+}
+
+int zd_EXX(const uint8_t* opcode, char* result) {
+    strcpy(result, "EXX");
+    return 1;
+}
+
+int zd_HALT(const uint8_t* opcode, char* result) {
+    strcpy(result, "HALT");
+    return 1;
+}
+
+int zd_IM(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
+int zd_IN_A_np(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
+int zd_IN_r_Cp(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
+int zd_INC_IXY(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
+int zd_INC_IXYp(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
+int zd_INC_r(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
+int zd_INC_rp(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
+int zd_JP_cc_nn(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
+int zd_JP_HLp(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
+int zd_JP_IXYp(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
+int zd_JP_nn(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
+int zd_JR_cc_d(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
+int zd_JR_d(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
+int zd_LD_A_BCp(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
+int zd_LD_A_DEp(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
+int zd_LD_A_I(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
+int zd_LD_A_nnp(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
+int zd_LD_A_R(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
+int zd_LD_BCp_A(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
+int zd_LD_DEp_A(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
+int zd_LD_HL_nnp(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
+int zd_LD_I_A(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
+int zd_LD_IXY_nn(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
+int zd_LD_IXY_nnp(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
+int zd_LD_IXYH_n(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
+int zd_LD_IXYL_n(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
+int zd_LD_IXYp_n(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
+int zd_LD_IXYp_r(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
+int zd_LD_nnp_A(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
+int zd_LD_nnp_HL(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
+int zd_LD_nnp_IXY(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
+int zd_LD_nnp_rp(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
+int zd_LD_R_A(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
+int zd_LD_r_IXYp(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
+int zd_LD_r_n(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
+int zd_LD_r_r(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
+int zd_LD_RES(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
+int zd_LD_ROT(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
+int zd_LD_rp_nn(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
+int zd_LD_rp_nnp(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
+int zd_LD_SET(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
+int zd_LD_SP_HL(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
+int zd_LD_SP_IXY(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
+int zd_NEG(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
+int zd_NOP(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
+int zd_OUT_Cp_r(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
+int zd_OUT_np_A(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
+int zd_POP_IXY(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
+int zd_POP_rp2(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
+int zd_PUSH_IXY(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
+int zd_PUSH_rp2(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
+int zd_RES_b_IXYp(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
+int zd_RES_b_r(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
+int zd_RET(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
+int zd_RET_cc(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
+int zd_RETI(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
+int zd_RETN(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
+int zd_RLA(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
+int zd_RLCA(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
+int zd_RLD(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
+int zd_rot(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
+int zd_rot_IXYp(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
+int zd_RRA(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
+int zd_RRCA(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
+int zd_RRD(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
+int zd_RST_y(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
+int zd_SBC_HL_rp(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
+int zd_SCF(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
+int zd_SET_b_IXYp(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }
+int zd_SET_b_r(const uint8_t* opcode, char* result) { return zd_unimplemented(opcode, result); }

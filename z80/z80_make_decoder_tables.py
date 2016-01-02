@@ -36,30 +36,11 @@ LICENSE = '''
 // See the License for the specific language governing permissions and
 // limitations under the License.
 '''
-PREFIX = '''
-#ifndef __Z80_DECODER_TABLES
-#define __Z80_DECODER_TABLES
+PREFIX = ''
 
-// --------------------------------------------------
-// ---          DO NOT ALTER THIS FILE!!          ---
-// --------------------------------------------------
-// --- Decoder tables are automatically generated ---
-// --- by 'z80_make_decoder_tables.py'            ---
-// --------------------------------------------------
+POSTFIX = ''
 
-#include "z80_opcodes.h"
-
-struct opcode_dec_s{
-  int (*f)();
-  signed char size;
-};
-typedef struct opcode_dec_s opcode_dec_t;
-
-'''
-
-POSTFIX = '''
-#endif
-'''
+ARRAY_TYPE = 'void'
 
 EMPTY_OPCODE = "{0,0}"
 
@@ -187,26 +168,26 @@ def make_tables(f_out):
     f_out.write(bytes(PREFIX, 'utf-8'))
     #--- Unprefixed opcodes ---
     #Unprefixed
-    v = "static const opcode_dec_t op_unpref[256] = %s;\n" % array_to_c(gen_opcode_1(ops))
+    v = "static const %s op_unpref[256] = %s;\n" % (ARRAY_TYPE, array_to_c(gen_opcode_1(ops)))
     f_out.write(bytes(v, 'utf-8'))
     #CB prefix
-    v = "static const opcode_dec_t op_cb[256] = %s;\n" % array_to_c(gen_opcode_xx(ops, 0xCB))
+    v = "static const %s op_cb[256] = %s;\n" % (ARRAY_TYPE, array_to_c(gen_opcode_xx(ops, 0xCB)))
     f_out.write(bytes(v, 'utf-8'))
     #ED prefix
-    v = "static const opcode_dec_t op_ed[256] = %s;\n" % array_to_c(gen_opcode_xx(ops, 0xed))
+    v = "static const %s op_ed[256] = %s;\n" % (ARRAY_TYPE, array_to_c(gen_opcode_xx(ops, 0xed)))
     f_out.write(bytes(v, 'utf-8'))
     #DD prefix
-    v = "static const opcode_dec_t op_dd[256] = %s;\n" % array_to_c(gen_opcode_xx(ops, 0xdd))
+    v = "static const %s op_dd[256] = %s;\n" % (ARRAY_TYPE, array_to_c(gen_opcode_xx(ops, 0xdd)))
     f_out.write(bytes(v, 'utf-8'))
     #FD prefix
-    v = "static const opcode_dec_t op_fd[256] = %s;\n" % array_to_c(gen_opcode_xx(ops, 0xfd))
+    v = "static const %s op_fd[256] = %s;\n" % (ARRAY_TYPE, array_to_c(gen_opcode_xx(ops, 0xfd)))
     f_out.write(bytes(v, 'utf-8'))
 
     #DDCB prefix
-    v = "static const opcode_dec_t op_ddcb[256] = %s;\n" % array_to_c(gen_opcode_xxcb(ops, 0xdd))
+    v = "static const %s op_ddcb[256] = %s;\n" % (ARRAY_TYPE, array_to_c(gen_opcode_xxcb(ops, 0xdd)))
     f_out.write(bytes(v, 'utf-8'))
     #FDCB prefix
-    v = "static const opcode_dec_t op_fdcb[256] = %s;\n" % array_to_c(gen_opcode_xxcb(ops, 0xfd))
+    v = "static const %s op_fdcb[256] = %s;\n" % (ARRAY_TYPE, array_to_c(gen_opcode_xxcb(ops, 0xfd)))
     f_out.write(bytes(v, 'utf-8'))
     f_out.write(bytes(POSTFIX, 'utf-8'))
     
@@ -238,6 +219,17 @@ if __name__ == '__main__':
       #discard lines starting with '#'
       if row[0][0] == '#':
         continue
+      #Various lines starting with ! are formatting commands
+      elif row[0] == "!PREFIX":
+        PREFIX = PREFIX + row[1] + "\n"
+        continue
+      elif row[0] == "!POSTFIX":
+        POSTFIX = POSTFIX + row[1] + "\n"
+        continue
+      elif row[0] == "!TYPE":
+        ARRAY_TYPE = row[1]
+        continue
+      
       name = row[0]
       function = row[1]
       size = len(row[2]) - 2

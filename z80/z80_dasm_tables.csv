@@ -153,3 +153,26 @@ BIT b,r	zd_BIT_b_r	0b1111110111001011????????01??????	#Longer version of BIT b,r
 NONI/NOP	zd_NOP	0b1111110100000000	#Longer version of NOP	
 NONI/NOP	zd_NOP	0b1101110100000000	#Longer version of NOP	
 NONI/NOP	zd_NOP	0b11101101????????	#Longer version of NOP (Unsafe)	
+# Code prefix and postfix				
+!PREFIX	#ifndef __Z80_DASM_TABLES			
+!PREFIX	#define __Z80_DASM_TABLES			
+!PREFIX				
+!PREFIX	// --------------------------------------------------			
+!PREFIX	// ---          DO NOT ALTER THIS FILE!!          ---			
+!PREFIX	// --------------------------------------------------			
+!PREFIX	// --- Disasm tables are automatically generated  ---			
+!PREFIX	// --- by 'z80_make_decoder_tables.py'            ---			
+!PREFIX	// --------------------------------------------------			
+!PREFIX				
+!PREFIX	#include "z80_dasm.h"			
+!PREFIX	#include <stdint.h>			
+!PREFIX				
+!PREFIX	struct opcode_dasm_s{			
+!PREFIX	  int (*f)(const uint8_t *, char*);			
+!PREFIX	  signed char size;			
+!PREFIX	};			
+!PREFIX	typedef struct opcode_dasm_s opcode_dasm_t;			
+!PREFIX				
+!POSTFIX				
+!POSTFIX	#endif			
+!TYPE	opcode_dasm_t			
