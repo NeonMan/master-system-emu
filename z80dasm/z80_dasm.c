@@ -73,6 +73,7 @@ int z80d_decode(const uint8_t* opcode, unsigned int size, char* result){
         assert(op_unpref[opcode[0]].f);
         return op_unpref[opcode[0]].f(opcode, result);
     }
+    return 1;
 }
 
 z80d_opcode z80d_decode_op(const uint8_t* opcode, uint16_t pc_addr){
@@ -605,7 +606,7 @@ int zd_RET(const uint8_t* opcode, char* result) {
 
 int zd_RET_cc(const uint8_t* opcode, char* result) {
     const uint8_t y = (opcode[0] >> 3) & 0x07;
-    sprintf("RET %s", z80d_cc[y]);
+    sprintf(result, "RET %s", z80d_cc[y]);
     return 1;
 }
 

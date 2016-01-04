@@ -209,8 +209,9 @@ void z80_reset_pipeline(){
     char opcode_str[100];
     int disasm_size = 0;
     opcode_str[0] = 0;
-    if (z80.opcode_index) //There must be something to feed the disasm
+    if (z80.opcode_index) { //There must be something to feed the disasm
         disasm_size = z80d_decode(z80.opcode, 100, opcode_str);
+    }
     if (Z80_SP != dbg_last_sp){
         z80_dump_stack(ramdbg_get_mem(), Z80_SP, RAM_BASE_ADDRESS, 12, 4);
         dbg_last_sp = Z80_SP;
