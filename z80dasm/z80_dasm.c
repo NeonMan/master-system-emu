@@ -40,6 +40,7 @@ char z80d_byte_to_char(uint8_t b){
 }
 
 int z80d_decode(const uint8_t* opcode, unsigned int size, char* result){
+    result[0] = '\0';
     if (opcode[0] == 0xDD) {
         if (opcode[1] == 0xCB) {
             assert(op_ddcb[opcode[3]].f);
@@ -47,9 +48,8 @@ int z80d_decode(const uint8_t* opcode, unsigned int size, char* result){
         }
         else {
             assert(op_dd[opcode[1]].f);
-            op_dd[opcode[1]].f(opcode, result);
+            return op_dd[opcode[1]].f(opcode, result);
         }
-        return 1;
     }
     else if (opcode[0] == 0xFD) {
         if (opcode[1] == 0xCB) {
@@ -58,9 +58,8 @@ int z80d_decode(const uint8_t* opcode, unsigned int size, char* result){
         }
         else {
             assert(op_fd[opcode[1]].f);
-            op_fd[opcode[1]].f(opcode, result);
+            return op_fd[opcode[1]].f(opcode, result);
         }
-        return 1;
     }
     else if (opcode[0] == 0xCB) {
         assert(op_cb[opcode[1]].f);
@@ -656,7 +655,7 @@ int zd_RRA(const uint8_t* opcode, char* result) {
 
 int zd_RRCA(const uint8_t* opcode, char* result) {
     strcpy(result, "RRCA");
-    return 2;
+    return 1;
 }
 
 int zd_RRD(const uint8_t* opcode, char* result) {
