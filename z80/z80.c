@@ -215,9 +215,12 @@ void z80_reset_pipeline(){
         z80_dump_stack(ramdbg_get_mem(), Z80_SP, RAM_BASE_ADDRESS, 12, 4);
         dbg_last_sp = Z80_SP;
     }
-    fprintf(stderr, "Last Opcode: (nx PC:0x%04X) %s; 0x", Z80_PC, opcode_str);
-    for (int i = 0; i < z80.opcode_index; i++)
-        fprintf(stderr, "%02X", z80.opcode[i]);
+    fprintf(stderr, "(0x%04X) %- 20s; 0x", Z80_PC - z80.opcode_index, opcode_str);
+    for (int i = 0; i < 4; i++)
+        if(i < z80.opcode_index)
+            fprintf(stderr, "%02X", z80.opcode[i]);
+        else
+            fprintf(stderr, "..");
     fprintf(stderr, "\n");
     if (disasm_size != z80.opcode_index)
         fprintf(stderr, "Warning: Disasm opcode size mismatch! Dasm: %d; z80: %d\n", disasm_size, z80.opcode_index);
