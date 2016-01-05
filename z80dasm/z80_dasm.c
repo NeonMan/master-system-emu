@@ -695,6 +695,33 @@ int zd_SET_b_r(const uint8_t* opcode, char* result) {
     return 2;
 }
 
-int zd_LD_RES(const uint8_t* opcode, char* result) { zd_unimplemented(opcode, result); return 4; }
-int zd_LD_ROT(const uint8_t* opcode, char* result) { zd_unimplemented(opcode, result); return 4; }
-int zd_LD_SET(const uint8_t* opcode, char* result) { zd_unimplemented(opcode, result); return 4; }
+int zd_LD_RES(const uint8_t* opcode, char* result) { 
+    const int8_t d = (int8_t)opcode[2];
+    const uint8_t y = (opcode[3] >> 3) & 0x07;
+    const uint8_t z = (opcode[3]) & 0x07;
+    if(opcode[0] == 0xDD)
+        sprintf(result, "LD %s, RES %d, (IX%+d)", z80d_r[z], y, d);
+    else
+        sprintf(result, "LD %s, RES %d, (IY%+d)", z80d_r[z], y, d);
+    return 4;
+}
+int zd_LD_ROT(const uint8_t* opcode, char* result) {
+    const int8_t d = (int8_t)opcode[2];
+    const uint8_t y = (opcode[3] >> 3) & 0x07;
+    const uint8_t z = (opcode[3]) & 0x07;
+    if (opcode[0] == 0xDD)
+        sprintf(result, "LD %s, %s (IX%+d)", z80d_r[z], z80d_rot[y], d);
+    else
+        sprintf(result, "LD %s, %s (IY%+d)", z80d_r[z], z80d_rot[y], d);
+    return 4;
+}
+int zd_LD_SET(const uint8_t* opcode, char* result) {
+    const int8_t d = (int8_t)opcode[2];
+    const uint8_t y = (opcode[3] >> 3) & 0x07;
+    const uint8_t z = (opcode[3]) & 0x07;
+    if (opcode[0] == 0xDD)
+        sprintf(result, "LD %s, SET %d, (IX%+d)", z80d_r[z], y, d);
+    else
+        sprintf(result, "LD %s, SET %d, (IY%+d)", z80d_r[z], y, d);
+    return 4;
+}
