@@ -85,13 +85,9 @@ z80d_opcode z80d_decode_op(const uint8_t* opcode, uint16_t pc_addr){
     return rv;
 }
 
-
+/* ----------------------------------------- */
 /* --- Implementation of opcode decoders --- */
-
-int zd_unimplemented(const uint8_t* opcode, char* result) {
-    sprintf(result, "!!UNIMP");
-    return 1;
-}
+/* ----------------------------------------- */
 
 int zd_ADC_HL_rp(const uint8_t* opcode, char* result) {
     const uint8_t q = ((opcode[1]) >> 4) & 0x03;

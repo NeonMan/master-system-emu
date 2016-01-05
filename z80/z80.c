@@ -209,23 +209,33 @@ void z80_reset_pipeline(){
     char opcode_str[100];
     int disasm_size = 0;
     opcode_str[0] = 0;
-    if (z80.opcode_index) { //There must be something to feed the disasm
+    if (z80.opcode_index) {
+        //There must be something to feed the disasm
         disasm_size = z80d_decode(z80.opcode, 100, opcode_str);
+        //Dump stack if changed
+        if (Z80_SP != dbg_last_sp) {
+            z80_dump_stack(ramdbg_get_mem(), Z80_SP, RAM_BASE_ADDRESS, 12, 4);
+            dbg_last_sp = Z80_SP;
+        }
+        //Print disassembly
+        fprintf(stderr, "(0x%04X) %- 20s; 0x", (uint16_t)(Z80_PC - z80.opcode_index), opcode_str);
+        for (int i = 0; i < 4; i++)
+            if (i < z80.opcode_index)
+                fprintf(stderr, "%02X", z80.opcode[i]);
+            else
+                fprintf(stderr, "..");
+        fprintf(stderr, "\n");
+        if (disasm_size != z80.opcode_index) {
+            fprintf(stderr, "Warning: Disasm opcode size mismatch! Dasm: %d; z80: %d\n", disasm_size, z80.opcode_index);
+            fflush(stderr);
+            assert(disasm_size == z80.opcode_index);
+        }
+        fflush(stderr);
     }
-    if (Z80_SP != dbg_last_sp){
-        z80_dump_stack(ramdbg_get_mem(), Z80_SP, RAM_BASE_ADDRESS, 12, 4);
-        dbg_last_sp = Z80_SP;
+    else {
+        //Reset with an empty pipeline. Do not disassemble
+        ;
     }
-    fprintf(stderr, "(0x%04X) %- 20s; 0x", Z80_PC - z80.opcode_index, opcode_str);
-    for (int i = 0; i < 4; i++)
-        if(i < z80.opcode_index)
-            fprintf(stderr, "%02X", z80.opcode[i]);
-        else
-            fprintf(stderr, "..");
-    fprintf(stderr, "\n");
-    if (disasm_size != z80.opcode_index)
-        fprintf(stderr, "Warning: Disasm opcode size mismatch! Dasm: %d; z80: %d\n", disasm_size, z80.opcode_index);
-    fflush(stderr);
     /**/
 #endif
     z80.opcode_index = 0;
