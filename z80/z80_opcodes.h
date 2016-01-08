@@ -179,7 +179,8 @@ int SBC_HL_rp();
 int RL_HLp();
 int RL_r();
 int RLA();
-int RLC_r();     /**<-- @bug NOT in decoder table.*/
+int RLC_HLp();
+int RLC_r();
 int RLCA();
 int RLD();
 int RR_HLp();
@@ -286,6 +287,7 @@ int SRL_IXYp();
 int RR_IXYp();
 int SRA_IXYp();
 int SRL_IXYp();
+int RLC_IXYp();
 
 int SET_b_IXYp();
 int RES_b_IXYp();
