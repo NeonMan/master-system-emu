@@ -1019,6 +1019,20 @@ int RLC_r(){
     return Z80_STAGE_RESET;
 }
 
+///RLC (HL); Size: 2; Flags: ???
+int RLC_HLp() {
+    assert(z80.opcode_index == 2);
+    assert(0); ///<-- Unimplemented
+    return Z80_STAGE_RESET;
+}
+
+///RLC (IX+d); Size: 4; Flags: ???
+int RLC_IXYp() {
+    assert(z80.opcode_index == 4);
+    assert(0); ///<-- Unimplemented
+    return Z80_STAGE_RESET;
+}
+
 ///RLD; Size: 2; Flags: ???
 int RLD(){
     assert(z80.opcode_index == 2);
@@ -1617,7 +1631,22 @@ int RR_IXYp(){
 }
 
 int SRA_IXYp(){
-    assert(0); /*<-- Unimplemented*/
+    /*Select index register address*/
+    const uint16_t address = (z80.opcode[0] == 0xDD) ? Z80_IX : Z80_IY;
+    /*Read*/
+    const int8_t d = (int8_t)z80.opcode[2];
+    Z80_8BIT_READ(address + d, 0);
+    /*Execute opcode and update flags*/
+    const uint8_t next_c = z80.read_buffer[0] & 0x01;
+    const uint8_t next_b = (z80.read_buffer[0] >> 1) | (z80.read_buffer[0] & 0x80);
+    /*Write back*/
+    Z80_8BIT_WRITE(address + d, 0, next_b);
+    /*Update flags*/
+    Z80_F = 0;
+    Z80_F |= Z80_SETFLAG_ZERO(next_b);
+    Z80_F |= next_c ? Z80_FLAG_CARRY : 0;
+    Z80_F |= Z80_SETFLAG_SIGN(next_b);
+    Z80_F |= Z80_SETFLAG_PARITY(next_b);
     return Z80_STAGE_RESET;
 }
 

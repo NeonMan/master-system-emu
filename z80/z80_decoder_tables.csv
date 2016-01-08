@@ -159,10 +159,10 @@ RLCA	RLCA	0b00000111
 RLA	RLA	0b00010111		
 RRCA	RRCA	0b00001111		
 RRA	RRA	0b00011111		
-SLL r	SLL_r	0b1100101100000???	Duplicated?	
-SLL (HL)	SLL_HLp	0b1100101100000110	Duplicated?	
-SLL (IX+d)	SLL_IXYp	0b1101110111001011????????00000110	Duplicated?	#DD prefix
-SLL (IY+d)	SLL_IXYp	0b1111110111001011????????00000110	Duplicated?	#FD prefix
+RLC r	RLC_r	0b1100101100000???	Duplicated?	
+RLC (HL)	RLC_HLp	0b1100101100000110	Duplicated?	
+RLC (IX+d)	RLC_IXYp	0b1101110111001011????????00000110	Duplicated?	#DD prefix
+RLC (IY+d)	RLC_IXYp	0b1111110111001011????????00000110	Duplicated?	#FD prefix
 RL r	RL_r	0b1100101100010???		
 RL (HL)	RL_HLp	0b1100101100010110		
 RL (IX+d)	RL_IXYp	0b1101110111001011????????00010110	#DD prefix	
@@ -238,8 +238,8 @@ OTDR	OTDR	0b1110110110111011
 #Undocumented opcodes				
 SLL r	SLL_r	0b1100101100110???	#Undocumented(?) Duplicated?	
 SLL (HL)	SLL_HLp	0b1100101100110110	#Undocumented(?) Duplicated?	
-SLL (IX+d)	UNDOC	0b1101110111001011????????00110110	#Undocumented(?) Duplicated?	
-SLL (IY+d)	UNDOC	0b1111110111001011????????00110110	#Undocumented(?) Duplicated?	
+SLL (IX+d)	SLL_IXYp	0b1101110111001011????????00110110	#Undocumented(?) Duplicated?	
+SLL (IY+d)	SLL_IXYp	0b1111110111001011????????00110110	#Undocumented(?) Duplicated?	
 LD r; rot (IX+d)	UNDOC	0b1101110111001011????????00??????		
 LD r; rot (IY+d)	UNDOC	0b1111110111001011????????00??????		
 LD r; RES y,(IX+d)	UNDOC	0b1101110111001011????????10??????		
