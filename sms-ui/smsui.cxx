@@ -30,7 +30,7 @@
 
 //Emulator includes
 #include <io/io.h>
-#include <peripherial/peripherial.h>
+#include <peripherial/peripheral.h>
 #include <psg/psg.h>
 #include <ram/ram.h>
 #include <rom/rom.h>

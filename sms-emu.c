@@ -14,7 +14,7 @@
 
 //Emulator includes
 #include "io/io.h"
-#include "peripherial/peripherial.h"
+#include "peripheral/peripheral.h"
 #include "psg/psg.h"
 #include "ram/ram.h"
 #include "rom/rom.h"

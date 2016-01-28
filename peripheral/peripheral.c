@@ -18,7 +18,7 @@
  *
  * Implements the master system peripherial ports, usually used by gamepads.
  */
-#include "peripherial.h"
+#include "peripheral.h"
 
 /**
  * Peripherial ports, the two 9-pin D-sub things at the front

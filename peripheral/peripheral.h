@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 // 
-// http://www.apache.org/licenses/LICENSE-2.0
+// http ://www.apache.org/licenses/LICENSE-2.0
 // 
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -12,20 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "test_z80.h"
+/**
+ * @file peripheral.h
+ * @brief Peripheral ports module.
+ */
+#ifndef __PERIPHERIAL_H
+#define __PERIPHERIAL_H
 
-// --- ADD TESTS HERE ---
+#include <stdint.h>
+#include "../z80/z80_externs.h"
+#include "../io/io_externs.h"
 
-// ----------------------
-// --- Helpers & Main ---
-// ----------------------
-//Helper 'run all' function
-static void RunAllTests(void){
-    //RUN_TEST_GROUP(<<GROUP NAME>>);
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+///Updates the peripheral ports.
+void per_tick();
+
+#ifdef __cplusplus
 }
-
-//Main
-int main(int argc, const char** argv){
-    int rv = UnityMain(argc, argv, RunAllTests);
-    return rv;
-}
+#endif
+#endif
