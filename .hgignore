@@ -3,6 +3,8 @@ syntax: regexp
 #Directories
 ^Build
 ^build
+^lib
+^include
 Debug\/
 Release\/
 CMakeFiles\/
