@@ -75,6 +75,9 @@ find_package(PythonInterp 3 REQUIRED)
 
 # --- Dependencies ---
 include_directories(${PROJECT_SOURCE_DIR})
+link_directories(${PROJECT_SOURCE_DIR}/lib)        # These two ease building on
+include_directories(${PROJECT_SOURCE_DIR}/include) # a locked-down PC.
+
 add_subdirectory (glue)
 add_subdirectory (psg)
 add_subdirectory (ram)
@@ -105,4 +108,4 @@ target_link_libraries (test-vdp vdp ${EXT_LIBS})
 
 # --- sms-emu
 add_executable (emu sms-emu.c)
-target_link_libraries (emu glue smsrom smsio smsram psg z80 peripherial vdp sdsc ${EXT_LIBS})
+target_link_libraries (emu glue smsrom smsio smsram psg z80 peripheral vdp sdsc ${EXT_LIBS})
