@@ -225,3 +225,17 @@ uint8_t make_data(uint8_t data){
         clock_current_ratio -= 128;
         psg_tick();
     }
+
+    void psgdbg_get_volume(uint8_t* vols){
+        vols[0] = vol[0];
+        vols[1] = vol[1];
+        vols[2] = vol[2];
+        vols[3] = vol[3];
+    }
+
+    void psgdbg_get_tone(uint16_t* tones){
+        tones[0] = tone[0];
+        tones[1] = tone[1];
+        tones[2] = tone[2];
+        tones[3] = tone[3];
+    }

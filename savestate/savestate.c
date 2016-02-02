@@ -23,10 +23,13 @@
  *  #: [Comment]
  *  RAM:[16bit chip address, in hex]:[Byte count]: [whitespace-separated bytes]
  *  ROM:NAME: [ROM filename]
- *  ROM:MAPPER:[0-4]: [Register value]
+ *  ROM:MAPPER:SEGA:SLOT[0-3]: [Register value]
+ *  ROM:MAPPER:SEGA:RAM: [Register value]
  *  ROM:DATA:[24bit chip address, in hex]:[Byte count]: [whitespace-separated bytes]
  *  IO: [IO register byte]
  *  PERIPHERAL:[CONTROL AB BM]: [register byte]
+ *  PSG:TONE:[0-3]: [16bit value]
+ *  PSG:VOLUME:[0-3]: [byte]
  */
 
 
@@ -35,9 +38,10 @@
 #include <rom/rom.h>
 #include <io/io_externs.h>
 #include <peripheral/peripheral.h>
+#include <psg/psg.h>
 
 #define RAM_BYTES_PER_ROW 16
-#define ROM_BYTES_PER_ROW 64
+#define ROM_BYTES_PER_ROW 48
 
 static int dump_ram(FILE* f){
     uint8_t* ram_bytes = (uint8_t*) ramdbg_get_mem();
@@ -96,6 +100,27 @@ static int dump_peripheral(FILE* f){
     return 0;
 }
 
+static int dump_psg(FILE* f){
+    uint16_t tones[4];
+    uint8_t volumes[4];
+
+    psgdbg_get_volume(volumes);
+    psgdbg_get_tone(tones);
+
+    fprintf(f, "#: PSG state\n");
+    
+    fprintf(f, "PSG:TONE:0: %04X\n", tones[0]);
+    fprintf(f, "PSG:TONE:1: %04X\n", tones[1]);
+    fprintf(f, "PSG:TONE:2: %04X\n", tones[2]);
+    fprintf(f, "PSG:TONE:3: %04X\n", tones[3]);
+
+    fprintf(f, "PSG:VOLUME:0: %02X\n", volumes[0]);
+    fprintf(f, "PSG:VOLUME:1: %02X\n", volumes[1]);
+    fprintf(f, "PSG:VOLUME:2: %02X\n", volumes[2]);
+    fprintf(f, "PSG:VOLUME:3: %02X\n", volumes[3]);
+    return 0;
+}
+
 int ss_save(FILE* f){
     dump_ram(f);
 
@@ -107,6 +132,7 @@ int ss_save(FILE* f){
     
     dump_peripheral(f);
 
+    dump_psg(f);
     return 0;
 }
 

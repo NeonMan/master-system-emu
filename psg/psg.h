@@ -75,6 +75,18 @@ extern "C" {
     */
     uint8_t make_data(uint8_t data);
 
+    /**
+    * @brief Get the vlume register array.
+    * @param vols a writeable array of four volume values.
+    */
+    void psgdbg_get_volume(uint8_t* vols);
+
+    /**
+    * @brief Get the tone register array.
+    * @param vols a writeable array of four tone values.
+    */
+    void psgdbg_get_tone(uint16_t* tones);
+
 #ifdef __cplusplus
 }
 #endif
