@@ -24,10 +24,11 @@ emulated independently.
 
 ## Known issues ##
 
-Issues listed here describe inaccurate behaviours in implemented code.
+Issues listed here describe inaccurate behaviours and inefficiencies in implemented code.
 
 * LDDR/LDIR ignore the extra refresh cycles, making them equivalent to LDD/LDI
 * LDDR/LDIR/LDD/LDI *do not* pass the ZEXDOC/ZEXALL test.
+* Read-modify-writeback instructions like RLC (IX + d) redo all the work multiple times.
 
 ## Licensing ##
 

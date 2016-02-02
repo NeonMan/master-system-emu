@@ -1029,7 +1029,31 @@ int RLC_HLp() {
 ///RLC (IX+d); Size: 4; Flags: ???
 int RLC_IXYp() {
     assert(z80.opcode_index == 4);
-    assert(0); ///<-- Unimplemented
+    const int8_t d = (int8_t)z80.opcode[2];
+    /*Perform memory read*/
+    if (z80.opcode[0] == 0xDD){
+        Z80_8BIT_READ(Z80_IX + d, 0);
+    }
+    else{
+        Z80_8BIT_READ(Z80_IY + d, 0);
+    }
+    /*Perform rotation*/
+    const uint8_t carry_out = ((z80.read_buffer[0] >> 7) & 0x01);
+    const uint8_t result = ((z80.read_buffer[0] << 1) & 0xFE) | carry_out;
+    /*Flags*/
+    Z80_F =
+        Z80_SETFLAG_SIGN(result)
+        | Z80_SETFLAG_ZERO(result)
+        | Z80_SETFLAG_PARITY(result)
+        | (carry_out ? Z80_FLAG_CARRY : 0)
+        ;
+    /*Perform write back*/
+    if (z80.opcode[0] == 0xDD){
+        Z80_8BIT_WRITE(Z80_IX + d, 0, result);
+    }
+    else{
+        Z80_8BIT_WRITE(Z80_IY + d, 0, result);
+    }
     return Z80_STAGE_RESET;
 }
 
