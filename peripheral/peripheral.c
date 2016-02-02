@@ -33,6 +33,18 @@ uint8_t per_control = 0xFF; ///<-- Port configuration. All input by default
 uint8_t per_port_ab = 0xFF; ///<-- Port AB register
 uint8_t per_port_bm = 0xFF; ///<-- Port B+Misc register
 
+uint8_t perdbg_reg_control(){
+    return per_control;
+}
+
+uint8_t perdbg_reg_ab(){
+    return per_port_ab;
+}
+
+uint8_t perdbg_reg_bm(){
+    return per_port_bm;
+}
+
 void per_tick(){
     const uint8_t addrl = z80_address & 0x00FF;
 

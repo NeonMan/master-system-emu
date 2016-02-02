@@ -13,29 +13,16 @@
 // limitations under the License.
 
 /**
- * @file peripheral.h
- * @brief Peripheral ports module.
+ *  @file save-state.h
+ *  @brief Save state function declarations
  */
-#ifndef __PERIPHERIAL_H
-#define __PERIPHERIAL_H
+#ifndef __SAVE_STATE_H
+#define __SAVE_STATE_H
 
 #include <stdint.h>
-#include "../z80/z80_externs.h"
-#include "../io/io_externs.h"
+#include <stdio.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+int ss_save(FILE* f);
+int ss_restore(FILE* f);
 
-///Updates the peripheral ports.
-void per_tick();
-
-//Debug
-uint8_t perdbg_reg_control();
-uint8_t perdbg_reg_ab();
-uint8_t perdbg_reg_bm();
-
-#ifdef __cplusplus
-}
-#endif
 #endif

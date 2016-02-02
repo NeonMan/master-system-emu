@@ -90,6 +90,7 @@ add_subdirectory (vdp)
 add_subdirectory (sdsc)
 add_subdirectory (test)
 add_subdirectory (sms-ui)
+add_subdirectory (savestate)
 
 # --- The project executables ---
 
