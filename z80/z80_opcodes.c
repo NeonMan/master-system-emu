@@ -1385,8 +1385,15 @@ int LD_nnp_IXY(){
     return Z80_STAGE_RESET;
 }
 
+///INC IX; Size: 2; Flags: None
 int INC_IXY(){
-    assert(0); /*<-- Unimplemented*/
+	assert(z80.opcode_index == 2);
+	if (z80.opcode[0] == 0xDD){
+		++Z80_IX;
+	}
+	else{
+		++Z80_IY;
+	}
     return Z80_STAGE_RESET;
 }
 
@@ -1409,9 +1416,16 @@ int LD_IXY_nnp(){
     return Z80_STAGE_RESET;
 }
 
+///DEC IX; Size: 2; Flags: None
 int DEC_IXY(){
-    assert(0); /*<-- Unimplemented*/
-    return Z80_STAGE_RESET;
+	assert(z80.opcode_index == 2);
+	if (z80.opcode[0] == 0xDD){
+		--Z80_IX;
+	}
+	else{
+		--Z80_IY;
+	}
+	return Z80_STAGE_RESET;
 }
 
 int DEC_IXYp(){

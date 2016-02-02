@@ -145,10 +145,10 @@ const uint8_t q[4] = { z80.opcode[0] & (1 << 3), z80.opcode[1] & (1 << 3), z80.o
 #define Z80_WZp (*((uint16_t*) (z80.rWZ + 2)))
 
 //IX/IY/SP/PC (endianness insensitive)
-#define Z80_IX z80.rIX
-#define Z80_IY z80.rIY
-#define Z80_SP z80.rSP
-#define Z80_PC z80.rPC
+#define Z80_IX (z80.rIX)
+#define Z80_IY (z80.rIY)
+#define Z80_SP (z80.rSP)
+#define Z80_PC (z80.rPC)
 
 //Index bytes
 #define Z80_IXL (*((uint8_t*)&Z80_IX))
