@@ -86,9 +86,9 @@ int main(int argc, char**argv){
         write_byte(0xFFFD, bank); //Slot0
 		
 		//Peep the slot via internal function
-		if(romdbg_get_slot(0) != bank) all_ok = 0;
-		if(romdbg_get_slot(1) != bank) all_ok = 0;
-		if(romdbg_get_slot(2) != bank) all_ok = 0;
+		if(*romdbg_get_slot(0) != bank) all_ok = 0;
+		if(*romdbg_get_slot(1) != bank) all_ok = 0;
+		if(*romdbg_get_slot(2) != bank) all_ok = 0;
 
         for (int i = 0; i < (1024 * 16); i++){
             //Slot0

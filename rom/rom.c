@@ -29,11 +29,11 @@ uint8_t mapper_slots[3] = {0,1,2}; ///<-- ROM slot selector
 uint8_t mapper_ram = 0; ///<-- @todo RAM slot config
 uint8_t rom_image[ROM_MAX_SIZE]; ///<-- ROM contents.
 
-uint8_t romdbg_get_slot(uint8_t slot){
+uint8_t* romdbg_get_slot(uint8_t slot){
     if (slot > 2)
-        return mapper_ram;
+        return &mapper_ram;
     else
-        return mapper_slots[slot];
+        return mapper_slots + slot;
 }
 
 void* romdbg_get_rom(){

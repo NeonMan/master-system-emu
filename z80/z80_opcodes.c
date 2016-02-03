@@ -721,8 +721,11 @@ int LDD(){
     --(Z80_HL);
     --(Z80_BC);
     //Update flags
-    Z80_F &= Z80_CLRFLAG_HC & Z80_CLRFLAG_PARITY & Z80_CLRFLAG_SUBTRACT;
-    Z80_F |= ((Z80_BC == 0) ? 0 : Z80_FLAG_PARITY);
+    Z80_F = Z80_F & Z80_CLRFLAG_HC & Z80_CLRFLAG_PARITY & Z80_CLRFLAG_SUBTRACT & Z80_CLRFLAG_UNK3 & Z80_CLRFLAG_UNK5;
+    Z80_F = Z80_F | ((Z80_BC == 0) ? 0 : Z80_FLAG_PARITY);
+    //Undoc flags
+    Z80_F = Z80_F | (((z80.read_buffer[0] + Z80_A) & (1 << 3)) ? Z80_FLAG_UNK3 : 0);
+    Z80_F = Z80_F | (((z80.read_buffer[0] + Z80_A) & (1 << 1)) ? Z80_FLAG_UNK5 : 0);
     //Shall we continue copying?
     if (Z80_BC){
         //Execute this opcode again
@@ -744,6 +747,9 @@ int LDI(){
     //Update flags
     Z80_F &= Z80_CLRFLAG_HC & Z80_CLRFLAG_PARITY & Z80_CLRFLAG_SUBTRACT;
     Z80_F |= ((Z80_BC == 0) ? 0: Z80_FLAG_PARITY);
+    //Undoc flags
+    Z80_F = Z80_F | (((z80.read_buffer[0] + Z80_A) & (1 << 3)) ? Z80_FLAG_UNK3 : 0);
+    Z80_F = Z80_F | (((z80.read_buffer[0] + Z80_A) & (1 << 1)) ? Z80_FLAG_UNK5 : 0);
     //Shall we continue copying?
     if (Z80_BC){
         //Execute this opcode again
@@ -755,40 +761,25 @@ int LDI(){
 ///LDDR; Size: 2; Flags: ???
 int LDDR(){
     assert(z80.opcode_index == 2);
-    //Copy a byte.
-    Z80_8BIT_READ(Z80_HL, 0);
-    Z80_8BIT_WRITE(Z80_DE, 0, z80.read_buffer[0]);
-    //Update registers
-    --(Z80_DE);
-    --(Z80_HL);
-    --(Z80_BC);
-    //Update flags
-    Z80_F &= Z80_CLRFLAG_HC & Z80_CLRFLAG_PARITY & Z80_CLRFLAG_SUBTRACT;
-    //Shall we continue copying?
-    if (Z80_BC){
-        //Execute this opcode again
-        Z80_PC -= 2;
+    int rv = LDD();
+    if (rv == Z80_STAGE_RESET){
+        return Z80_STAGE_REFRESH;
     }
-    return Z80_STAGE_REFRESH;
+    else{
+        return rv;
+    }
 }
 
 ///LDIR; Size: 2; Flags: H,P,N (cleared)
 int LDIR(){
     assert(z80.opcode_index == 2);
-    //(DE) <-- (HL); ++DE; ++HL; --BC; BC? repeat : end;
-    //Perform a read
-    Z80_8BIT_READ(Z80_HL, 0);
-    //Perform a write
-    Z80_8BIT_WRITE(Z80_DE, 0, z80.read_buffer[0]);
-    //Update registers and end
-    ++Z80_HL;
-    ++Z80_DE;
-    --Z80_BC;
-    Z80_F = Z80_F & (Z80_CLRFLAG_HC & Z80_CLRFLAG_PARITY & Z80_CLRFLAG_SUBTRACT);
-    if (Z80_BC){
-        Z80_PC -= 2; //Repeat this intruction
+    int rv = LDI();
+    if (rv == Z80_STAGE_RESET){
+        return Z80_STAGE_REFRESH;
     }
-    return Z80_STAGE_REFRESH;
+    else{
+        return rv;
+    }
 }
 
 ///NEG; Size: 2; Flags: ???

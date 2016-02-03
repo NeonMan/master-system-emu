@@ -31,9 +31,9 @@ extern "C" {
 void per_tick();
 
 //Debug
-uint8_t perdbg_reg_control();
-uint8_t perdbg_reg_ab();
-uint8_t perdbg_reg_bm();
+uint8_t* perdbg_reg_control();
+uint8_t* perdbg_reg_ab();
+uint8_t* perdbg_reg_bm();
 
 #ifdef __cplusplus
 }

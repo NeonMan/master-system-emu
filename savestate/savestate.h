@@ -22,7 +22,7 @@
 #include <stdint.h>
 #include <stdio.h>
 
-int ss_save(FILE* f);
+int ss_save(FILE* f, const char* rom_name);
 int ss_restore(FILE* f);
 
 #endif
