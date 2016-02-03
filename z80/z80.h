@@ -75,6 +75,7 @@ struct z80_s {
     uint8_t  write_index;     ///<-- How many bytes we have written
     uint8_t  write_is_io;     ///<-- True if write is IO instead of mem
 };
+typedef struct z80_s z80_t;
 
 ///Executes a z80 half-cycle.
 void z80_tick();
