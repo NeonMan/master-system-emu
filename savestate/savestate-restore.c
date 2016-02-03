@@ -13,8 +13,12 @@
 // limitations under the License.
 
 /**
- *  @file savestate.c
- *  @brief Utilities to dump/restore emulator state.
- *
+ *  @file savestate-restore.c
+ *  @brief Utilities to dump emulator state.
  */
 
+#include "savestate.h"
+
+int ss_restore(FILE* f){
+    return 0;
+}

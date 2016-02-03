@@ -22,6 +22,8 @@
 #include <stdint.h>
 #include <stdio.h>
 
+#define SAVESTATE_VERSION "DEVEL"
+
 int ss_save(FILE* f, const char* rom_name);
 int ss_restore(FILE* f);
 
