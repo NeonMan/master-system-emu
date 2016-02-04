@@ -160,12 +160,12 @@ static int dump_z80(FILE* f){
     fprintf(f, "Z80:EP: %02X\n", Z80_Ep);
     fprintf(f, "Z80:HP: %02X\n", Z80_Hp);
     fprintf(f, "Z80:LP: %02X\n", Z80_Lp);
-    fprintf(f, "Z80:IX: %02X\n", Z80_IX);
-    fprintf(f, "Z80:IY: %02X\n", Z80_IY);
+    fprintf(f, "Z80:IX: %04X\n", Z80_IX);
+    fprintf(f, "Z80:IY: %04X\n", Z80_IY);
     fprintf(f, "Z80:I: %02X\n", Z80_I);
     fprintf(f, "Z80:R: %02X\n", Z80_R);
-    fprintf(f, "Z80:SP: %02X\n", Z80_PC);
-    fprintf(f, "Z80:PC: %02X\n", Z80_SP);
+    fprintf(f, "Z80:SP: %04X\n", Z80_PC);
+    fprintf(f, "Z80:PC: %04X\n", Z80_SP);
     //Data latch
     fprintf(f, "Z80:DATA_LATCH: %02X\n", z80.data_latch);
     //IFF
