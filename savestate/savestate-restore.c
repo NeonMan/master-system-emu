@@ -25,6 +25,7 @@
 #include <peripheral/peripheral.h>
 #include <psg/psg.h>
 #include <rom/rom.h>
+#include <z80/z80.h>
 
 #define TOKEN_RAM        "RAM:"
 #define TOKEN_ROM        "ROM:"
@@ -50,6 +51,61 @@
 #define TOKEN_NAME "NAME:"
 #define TOKEN_MAPPER_SEGA "MAPPER:SEGA:"
 #define TOKEN_SLOT "SLOT:"
+
+//Z80 tokens
+#define TOKEN_A "A:"
+#define TOKEN_F "F:"
+#define TOKEN_B "B:"
+#define TOKEN_C "C:"
+#define TOKEN_D "D:"
+#define TOKEN_E "E:"
+#define TOKEN_H "H:"
+#define TOKEN_L "L:"
+#define TOKEN_AP "AP:"
+#define TOKEN_FP "FP:"
+#define TOKEN_BP "BP:"
+#define TOKEN_CP "CP:"
+#define TOKEN_DP "DP:"
+#define TOKEN_EP "EP:"
+#define TOKEN_HP "HP:"
+#define TOKEN_LP "LP:"
+#define TOKEN_IX "IX:"
+#define TOKEN_IY "IY:"
+#define TOKEN_PC "PC:"
+#define TOKEN_SP "SP:"
+#define TOKEN_I "I:"
+#define TOKEN_R "R:"
+
+#define TOKEN_PIN "PIN:"
+#define TOKEN_ADDRESS "ADDRESS:"
+#define TOKEN_RD "RD:"
+#define TOKEN_WR "WR:"
+#define TOKEN_MREQ "MREQ:"
+#define TOKEN_IOREQ "IOREQ:"
+#define TOKEN_M1 "M1:"
+#define TOKEN_RFSH "RFSH:"
+
+#define TOKEN_INT "INT:"
+#define TOKEN_NMI "NMI:"
+#define TOKEN_RESET "RESET:"
+#define TOKEN_WAIT "WAIT:"
+
+#define TOKEN_BUSREQ "BUSREQ:"
+#define TOKEN_BUSACK "BUSACK:"
+
+#define TOKEN_BUS "BUS:"
+
+#define TOKEN_DATA_LATCH "DATA_LATCH:"
+#define TOKEN_IFF "IFF:"
+#define TOKEN_OPCODE "OPCODE:"
+#define TOKEN_OPCODE_INDEX "OPCODE_INDEX:"
+#define TOKEN_STAGE "STAGE:"
+#define TOKEN_TICKS "TICKS:"
+#define TOKEN_READ "READ:"
+#define TOKEN_WRITE "WRITE:"
+#define TOKEN_ADDRESS "ADDRESS:"
+#define TOKEN_BUFFER "BUFFER:"
+#define TOKEN_IS_IO "IS_IO:"
 
 
 static const char* starts_with(const char* prefix, const char* str){
@@ -308,10 +364,120 @@ static const char* parse_rom_tail(const char* line){
         return parse_rom_data(substr);
     }
     else if (substr = starts_with(TOKEN_NAME, line)){
-        return parse_rom_name(substr);
+        return substr;
+        //return parse_rom_name(substr);
     }
     else if (substr = starts_with(TOKEN_MAPPER_SEGA, line)){
         return parse_rom_mapper_sega(substr);
+    }
+    else{
+        return 0;
+    }
+}
+
+// <z80_tail> = BUS:DATA: <hex>
+//            | BUS:ADDRESS: <hex>
+//            | PIN:RD: <hex>
+//            | PIN:RD: <hex>
+//            | PIN:WR: <hex>
+//            | PIN:IOREQ: <hex>
+//            | PIN:MREQ: <hex>
+//            | PIN:RFSH: <hex>
+//            | PIN:M1: <hex>
+//            | PIN:INT: <hex>
+//            | PIN:NMI: <hex>
+//            | PIN:RESET: <hex>
+//            | PIN:WAIT: <hex>
+//            | PIN:BUSREQ: <hex>
+//            | PIN:BUSACK: <hex>
+//            ;
+static const char* parse_z80_tail(const char* line){
+    const char* substr;
+    uint32_t value;
+
+    if (substr = starts_with(TOKEN_BUS TOKEN_ADDRESS, line)){
+        if (*substr == ' ') ++substr; else return 0;
+        substr = parse_hex(substr, &value);
+        z80_address = (uint16_t)value;
+        return substr;
+    }
+    else if (substr = starts_with(TOKEN_BUS TOKEN_DATA, line)){
+        if (*substr == ' ') ++substr; else return 0;
+        substr = parse_hex(substr, &value);
+        z80_data = (uint8_t)value;
+        return substr;
+    }
+    else if (substr = starts_with(TOKEN_PIN TOKEN_RD, line)){
+        if (*substr == ' ') ++substr; else return 0;
+        substr = parse_hex(substr, &value);
+        z80_n_rd = (uint8_t)value;
+        return substr;
+    }
+    else if (substr = starts_with(TOKEN_PIN TOKEN_WR, line)){
+        if (*substr == ' ') ++substr; else return 0;
+        substr = parse_hex(substr, &value);
+        z80_n_wr = (uint8_t)value;
+        return substr;
+    }
+    else if (substr = starts_with(TOKEN_PIN TOKEN_IOREQ, line)){
+        if (*substr == ' ') ++substr; else return 0;
+        substr = parse_hex(substr, &value);
+        z80_n_ioreq = (uint8_t)value;
+        return substr;
+    }
+    else if (substr = starts_with(TOKEN_PIN TOKEN_MREQ, line)){
+        if (*substr == ' ') ++substr; else return 0;
+        substr = parse_hex(substr, &value);
+        z80_n_mreq = (uint8_t)value;
+        return substr;
+    }
+    else if (substr = starts_with(TOKEN_PIN TOKEN_RFSH, line)){
+        if (*substr == ' ') ++substr; else return 0;
+        substr = parse_hex(substr, &value);
+        z80_n_rfsh = (uint8_t)value;
+        return substr;
+    }
+    else if (substr = starts_with(TOKEN_PIN TOKEN_M1, line)){
+        if (*substr == ' ') ++substr; else return 0;
+        substr = parse_hex(substr, &value);
+        z80_n_m1 = (uint8_t)value;
+        return substr;
+    }
+    else if (substr = starts_with(TOKEN_PIN TOKEN_INT, line)){
+        if (*substr == ' ') ++substr; else return 0;
+        substr = parse_hex(substr, &value);
+        z80_n_int = (uint8_t)value;
+        return substr;
+    }
+    else if (substr = starts_with(TOKEN_PIN TOKEN_NMI, line)){
+        if (*substr == ' ') ++substr; else return 0;
+        substr = parse_hex(substr, &value);
+        z80_n_nmi = (uint8_t)value;
+        return substr;
+    }
+    else if (substr = starts_with(TOKEN_PIN TOKEN_RESET, line)){
+        if (*substr == ' ') ++substr; else return 0;
+        substr = parse_hex(substr, &value);
+        z80_n_reset = (uint8_t)value;
+        return substr;
+    }
+    else if (substr = starts_with(TOKEN_PIN TOKEN_WAIT, line)){
+        if (*substr == ' ') ++substr; else return 0;
+        substr = parse_hex(substr, &value);
+        z80_n_wait = (uint8_t)value;
+        return substr;
+    }
+    else if (substr = starts_with(TOKEN_PIN TOKEN_BUSREQ, line)){
+        if (*substr == ' ') ++substr; else return 0;
+        substr = parse_hex(substr, &value);
+        z80_n_busreq = (uint8_t)value;
+        return substr;
+    }
+    else if (substr = starts_with(TOKEN_PIN TOKEN_BUSACK, line)){
+        if (*substr == ' ') ++substr; else return 0;
+        substr = parse_hex(substr, &value);
+        z80_n_busack = (uint8_t)value;
+        return substr;
     }
     else{
         return 0;
@@ -346,7 +512,7 @@ static const char* parse_line(const char* line){
         return parse_psg_tail(substr);
     }
     else if (substr = starts_with(TOKEN_Z80, line)){
-        printf("Unimplemented token: Z80\n");
+        return parse_z80_tail(substr);
     }
     else if (substr = starts_with(TOKEN_SAVESTATE, line)){
         ; ///@ToDo Check savestate version

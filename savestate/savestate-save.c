@@ -152,14 +152,14 @@ static int dump_z80(FILE* f){
     fprintf(f, "Z80:E: %02X\n", Z80_E);
     fprintf(f, "Z80:H: %02X\n", Z80_H);
     fprintf(f, "Z80:L: %02X\n", Z80_L);
-    fprintf(f, "Z80:Ap: %02X\n", Z80_Ap);
-    fprintf(f, "Z80:Fp: %02X\n", Z80_Fp);
-    fprintf(f, "Z80:Bp: %02X\n", Z80_Bp);
-    fprintf(f, "Z80:Cp: %02X\n", Z80_Cp);
-    fprintf(f, "Z80:Dp: %02X\n", Z80_Dp);
-    fprintf(f, "Z80:Ep: %02X\n", Z80_Ep);
-    fprintf(f, "Z80:Hp: %02X\n", Z80_Hp);
-    fprintf(f, "Z80:Lp: %02X\n", Z80_Lp);
+    fprintf(f, "Z80:AP: %02X\n", Z80_Ap);
+    fprintf(f, "Z80:FP: %02X\n", Z80_Fp);
+    fprintf(f, "Z80:BP: %02X\n", Z80_Bp);
+    fprintf(f, "Z80:CP: %02X\n", Z80_Cp);
+    fprintf(f, "Z80:DP: %02X\n", Z80_Dp);
+    fprintf(f, "Z80:EP: %02X\n", Z80_Ep);
+    fprintf(f, "Z80:HP: %02X\n", Z80_Hp);
+    fprintf(f, "Z80:LP: %02X\n", Z80_Lp);
     fprintf(f, "Z80:IX: %02X\n", Z80_IX);
     fprintf(f, "Z80:IY: %02X\n", Z80_IY);
     fprintf(f, "Z80:I: %02X\n", Z80_I);
@@ -176,9 +176,9 @@ static int dump_z80(FILE* f){
     fprintf(f, "Z80:OPCODE: %02X %02X %02X %02X\n", z80.opcode[0], z80.opcode[1], z80.opcode[2], z80.opcode[3]);
     //Stages
     fprintf(f, "Z80:STAGE: %02X\n", z80.stage);
-    fprintf(f, "Z80:STAGE:M1_TICKS: %02X\n", z80.m1_tick_count);
-    fprintf(f, "Z80:STAGE:M2_TICKS: %02X\n", z80.m2_tick_count);
-    fprintf(f, "Z80:STAGE:M3_TICKS: %02X\n", z80.m3_tick_count);
+    fprintf(f, "Z80:STAGE:TICKS:1: %02X\n", z80.m1_tick_count);
+    fprintf(f, "Z80:STAGE:TICKS:2: %02X\n", z80.m2_tick_count);
+    fprintf(f, "Z80:STAGE:TICKS:3: %02X\n", z80.m3_tick_count);
     //Read buffer
     fprintf(f, "Z80:READ:ADDRESS: %04X\n", z80.read_address);
     fprintf(f, "Z80:READ:BUFFER: %02X %02X\n", z80.read_buffer[0], z80.read_buffer[1]);
