@@ -30,6 +30,7 @@
  *  PERIPHERAL:[CONTROL AB BM]: [register byte]
  *  PSG:TONE:[0-3]: [16bit value]
  *  PSG:VOLUME:[0-3]: [byte]
+ *  Z80:
  */
 
 #include "savestate.h"
@@ -207,5 +208,7 @@ int ss_save(FILE* f, const char* rom_name){
     dump_psg(f);
 
     dump_z80(f);
+
+    fprintf(f, "END: \n");
     return 0;
 }
