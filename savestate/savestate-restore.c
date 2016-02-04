@@ -21,15 +21,23 @@
 #include <string.h>
 
 #include <ram/ram.h>
+#include <io/io.h>
+#include <peripheral/peripheral.h>
 
 #define TOKEN_RAM        "RAM:"
 #define TOKEN_ROM        "ROM:"
-#define TOKEN_IO         "IO:"
+#define TOKEN_IO         "IO: "
 #define TOKEN_PERIPHERAL "PERIPHERAL:"
 #define TOKEN_PSG        "PSG:"
 #define TOKEN_Z80        "Z80:"
 #define TOKEN_SAVESTATE  "SAVESTATE:"
+#define TOKEN_END        "END:"
 #define TOKEN_COMMENT    "#"
+
+//Peripheral tokens
+#define TOKEN_CONTROL "CONTROL: "
+#define TOKEN_AB "AB: "
+#define TOKEN_BM "BM: "
 
 static const char* starts_with(const char* prefix, const char* str){
     size_t prefix_len = strlen(prefix);
@@ -49,6 +57,7 @@ static const char* starts_with(const char* prefix, const char* str){
 }
 
 // <hex> = [0-9A-F]*
+//       ;
 static const char* parse_hex(const char* line, uint32_t* result){
     unsigned char c = (unsigned char) *line;
     uint32_t tmp_result = 0;
@@ -88,6 +97,7 @@ static const char* parse_byte_array(const char* line, uint8_t* result){
 }
 
 // <ram_tail> = <hex> ':' <hex> ': ' <byte_array>
+//            ;
 static const char* parse_ram_tail(const char* line){
     uint32_t address;
     uint32_t count;
@@ -133,6 +143,42 @@ static const char* parse_ram_tail(const char* line){
     return substr;
 }
 
+// <io_tail> = <hex>
+//           ;
+static const char* parse_io_tail(const char* line){
+    uint32_t b;
+    //Get IO register value
+    const char* substr = parse_hex(line, &b);
+    //Poke IO register
+    io_stat = (uint8_t)(b & 0xFF);
+    return substr;
+}
+
+// <peripheral_tail> = 'CONTROL: ' <hex>
+//                   | 'AB: ' <hex>
+//                   | 'BM: ' <hex>
+//                   ;
+static const char* parse_peripheral_tail(const char* line){
+    const char* substr;
+    uint32_t b;
+    if (substr = starts_with(TOKEN_CONTROL, line)){
+        substr = parse_hex(substr, &b);
+        *perdbg_reg_control() = (uint8_t)b;
+    }
+    else if (substr = starts_with(TOKEN_AB, line)){
+        substr = parse_hex(substr, &b);
+        *perdbg_reg_ab() = (uint8_t)b;
+    }
+    else if (substr = starts_with(TOKEN_BM, line)){
+        substr = parse_hex(substr, &b);
+        *perdbg_reg_bm() = (uint8_t)b;
+    }
+    else{
+        return 0;
+    }
+    return substr;
+}
+
 // <line> = 'RAM:' <ram_tail>
 //        | 'ROM:' <rom_tail>
 //        | 'IO:'  <io_tail>
@@ -148,22 +194,25 @@ static const char* parse_line(const char* line){
         return parse_ram_tail(substr);
     }
     else if (substr = starts_with(TOKEN_ROM, line)){
-        printf("ROM:\n");
+        printf("Unimplemented token: ROM\n");
     }
     else if (substr = starts_with(TOKEN_IO, line)){
-        printf("IO:\n");
+        return parse_io_tail(substr);
     }
     else if (substr = starts_with(TOKEN_PERIPHERAL, line)){
-        printf("PERIPHERAL:\n");
+        return parse_peripheral_tail(substr);
     }
     else if (substr = starts_with(TOKEN_PSG, line)){
-        printf("PSG:\n");
+        printf("Unimplemented token: PSG\n");
     }
     else if (substr = starts_with(TOKEN_Z80, line)){
-        printf("Z80:\n");
+        printf("Unimplemented token: Z80\n");
     }
     else if (substr = starts_with(TOKEN_SAVESTATE, line)){
         ; ///@ToDo Check savestate version
+    }
+    else if (substr = starts_with(TOKEN_END, line)){
+        ; //Do nothing
     }
     else if (substr = starts_with(TOKEN_COMMENT, line)){
         ; //Do nothing
