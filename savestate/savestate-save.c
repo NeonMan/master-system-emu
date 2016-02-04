@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 // 
-// http ://www.apache.org/licenses/LICENSE-2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 // 
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -81,9 +81,9 @@ static int dump_rom_name(FILE* f, const char* rom_name){
 
 static int dump_rom_mapper(FILE* f){
     fprintf(f, "#: ROM mapper status\n");
-    fprintf(f, "ROM:MAPPER:SEGA:SLOT0: %02X\n", *romdbg_get_slot(0));
-    fprintf(f, "ROM:MAPPER:SEGA:SLOT1: %02X\n", *romdbg_get_slot(1));
-    fprintf(f, "ROM:MAPPER:SEGA:SLOT2: %02X\n", *romdbg_get_slot(2));
+    fprintf(f, "ROM:MAPPER:SEGA:SLOT:0: %02X\n", *romdbg_get_slot(0));
+    fprintf(f, "ROM:MAPPER:SEGA:SLOT:1: %02X\n", *romdbg_get_slot(1));
+    fprintf(f, "ROM:MAPPER:SEGA:SLOT:2: %02X\n", *romdbg_get_slot(2));
     fprintf(f, "ROM:MAPPER:SEGA:RAM: %02X\n", *romdbg_get_slot(3));
     return 0;
 }

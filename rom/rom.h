@@ -46,10 +46,18 @@ void rom_tick();
 /**
  * @brief Writes the rom image to be used.
  *
- * @param data Pointer to the rom bytes
- * @param count Size of the rom
+ * @param data Pointer to the rom bytes.
+ * @param count Size of the rom.
  */
 void rom_set_image(uint8_t* data, size_t count);
+
+/**
+ * @brief Loads a ROM image from file.
+ *
+ * @param Path to ROM file.
+ * @returns Zero on success.
+ */
+int rom_load_file(const char* path);
 
 //Debug functions
 ///Return a pointer to the whole ROM image.
