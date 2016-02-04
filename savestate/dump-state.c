@@ -3,6 +3,15 @@
 #include <stdio.h>
 
 int main(){
-    ss_save(stdout, "SAMPLE.SMS");
+    FILE* f;
+    
+    f = fopen("Sample.sav", "wb");
+    ss_save(f, "SAMPLE.SMS");
+    fclose(f);
+
+    f = fopen("Sample.sav", "rb");
+    ss_restore(f);
+    fclose(f);
+
     return 0;
 }
