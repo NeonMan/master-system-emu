@@ -38,9 +38,9 @@
 #define TOKEN_COMMENT    "#"
 
 //Peripheral tokens
-#define TOKEN_CONTROL "CONTROL: "
-#define TOKEN_AB      "AB: "
-#define TOKEN_BM      "BM: "
+#define TOKEN_CONTROL "CONTROL:"
+#define TOKEN_AB      "AB:"
+#define TOKEN_BM      "BM:"
 
 //PSG tokens
 #define TOKEN_TONE   "TONE:"
@@ -232,14 +232,17 @@ static const char* parse_peripheral_tail(const char* line){
     const char* substr;
     uint32_t b;
     if (substr = starts_with(TOKEN_CONTROL, line)){
+        if (*substr == ' ') ++substr; else return 0;
         substr = parse_hex(substr, &b);
         *perdbg_reg_control() = (uint8_t)b;
     }
     else if (substr = starts_with(TOKEN_AB, line)){
+        if (*substr == ' ') ++substr; else return 0;
         substr = parse_hex(substr, &b);
         *perdbg_reg_ab() = (uint8_t)b;
     }
     else if (substr = starts_with(TOKEN_BM, line)){
+        if (*substr == ' ') ++substr; else return 0;
         substr = parse_hex(substr, &b);
         *perdbg_reg_bm() = (uint8_t)b;
     }
