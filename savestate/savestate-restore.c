@@ -390,6 +390,41 @@ static const char* parse_rom_tail(const char* line){
 //            | PIN:WAIT: <hex>
 //            | PIN:BUSREQ: <hex>
 //            | PIN:BUSACK: <hex>
+//  --- Unimplemented reductions below ---
+//            | A: <hex>
+//            | F: <hex>
+//            | B: <hex>
+//            | C: <hex>
+//            | D: <hex>
+//            | E: <hex>
+//            | H: <hex>
+//            | L: <hex>
+//            | AP: <hex>
+//            | FP: <hex>
+//            | BP: <hex>
+//            | CP: <hex>
+//            | DP: <hex>
+//            | EP: <hex>
+//            | HP: <hex>
+//            | LP: <hex>
+//            | I: <hex>
+//            | R: <hex>
+//            | SP: <hex>
+//            | PC: <hex>
+//            | DATA_LATCH: <hex>
+//            | IFF:<hex>: <hex>
+//            | OPCODE: <hex>
+//            | OPCODE_INDEX: <hex>
+//            | STAGE:TICKS:<hex>: <hex>
+//            | STAGE: <hex>
+//            | READ:ADDRESS: <hex>
+//            | READ:BUFFER: <byte_array>
+//            | READ:INDEX: <hex>
+//            | READ:IS_IO: <hex>
+//            | WRITE:ADDRESS: <hex>
+//            | WRITE:BUFFER: <byte_array>
+//            | WRITE:INDEX: <hex>
+//            | WRITE:IS_IO: <hex>
 //            ;
 static const char* parse_z80_tail(const char* line){
     const char* substr;
