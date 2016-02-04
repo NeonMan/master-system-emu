@@ -23,10 +23,12 @@
 #include <ram/ram.h>
 #include <io/io.h>
 #include <peripheral/peripheral.h>
+#include <psg/psg.h>
+#include <rom/rom.h>
 
 #define TOKEN_RAM        "RAM:"
 #define TOKEN_ROM        "ROM:"
-#define TOKEN_IO         "IO: "
+#define TOKEN_IO         "IO:"
 #define TOKEN_PERIPHERAL "PERIPHERAL:"
 #define TOKEN_PSG        "PSG:"
 #define TOKEN_Z80        "Z80:"
@@ -36,8 +38,19 @@
 
 //Peripheral tokens
 #define TOKEN_CONTROL "CONTROL: "
-#define TOKEN_AB "AB: "
-#define TOKEN_BM "BM: "
+#define TOKEN_AB      "AB: "
+#define TOKEN_BM      "BM: "
+
+//PSG tokens
+#define TOKEN_TONE   "TONE:"
+#define TOKEN_VOLUME "VOLUME:"
+
+//ROM tokens
+#define TOKEN_DATA "DATA:"
+#define TOKEN_NAME "NAME:"
+#define TOKEN_MAPPER_SEGA "MAPPER:SEGA:"
+#define TOKEN_SLOT "SLOT:"
+
 
 static const char* starts_with(const char* prefix, const char* str){
     size_t prefix_len = strlen(prefix);
@@ -143,10 +156,11 @@ static const char* parse_ram_tail(const char* line){
     return substr;
 }
 
-// <io_tail> = <hex>
+// <io_tail> = ' ' <hex>
 //           ;
 static const char* parse_io_tail(const char* line){
     uint32_t b;
+    if (*line == ' ') ++line; else return 0;
     //Get IO register value
     const char* substr = parse_hex(line, &b);
     //Poke IO register
@@ -179,6 +193,131 @@ static const char* parse_peripheral_tail(const char* line){
     return substr;
 }
 
+// <psg_tail> = 'TONE:' <hex> ': ' <hex>
+//            | 'VOLUME:' <hex> ': ' <hex>
+//            ;
+static const char* parse_psg_tail(const char* line){
+    const char* substr;
+    uint32_t register_index;
+    uint32_t register_value;
+
+    if (substr = starts_with(TOKEN_TONE, line)){
+        substr = parse_hex(substr, &register_index);
+        if (*substr == ':') ++substr; else return 0;
+        if (*substr == ' ') ++substr; else return 0;
+        substr = parse_hex(substr, &register_value);
+        //Poke register
+        if (register_index < 4){
+            psgdbg_get_tone()[register_index] = (uint16_t)register_value;
+        }
+        return substr;
+    }
+    else if (substr = starts_with(TOKEN_VOLUME, line)){
+        substr = parse_hex(substr, &register_index);
+        if (*substr == ':') ++substr; else return 0;
+        if (*substr == ' ') ++substr; else return 0;
+        substr = parse_hex(substr, &register_value);
+        //Poke register
+        if (register_index < 4){
+            psgdbg_get_volume()[register_index] = (uint8_t)register_value;
+        }
+        return substr;
+    }
+    else{
+        return 0;
+    }
+}
+
+// <rom_data> = <hex> ':' <hex> ': ' <hex_array>
+//            ;
+static const char* parse_rom_data(const char* line){
+    uint32_t address;
+    uint32_t count;
+    uint8_t bytes[256];
+    const char* substr;
+
+    substr = parse_hex(line, &address);
+    if (*substr == ':') ++substr; else return 0;
+    substr = parse_hex(substr, &count);
+    if (*substr == ':') ++substr; else return 0;
+    if (*substr == ' ') ++substr; else return 0;
+    substr = parse_byte_array(substr, bytes);
+
+    //Poke ROM bytes
+    uint8_t* rom_bytes = romdbg_get_rom();
+    for (uint32_t i = 0; i < count; ++i){
+        if ((address + i) < ROM_MAX_SIZE){
+            rom_bytes[address + i] = bytes[i];
+        }
+    }
+    return substr;
+}
+
+// <rom_mapper_sega> = 'SLOT:' <hex> ': ' <hex>
+//                   | 'RAM:' ' ' <hex>
+//                   ;
+static const char* parse_rom_mapper_sega(const char* line){
+    uint32_t slot_index;
+    uint32_t reg_value;
+    const char* substr;
+    if (substr = starts_with(TOKEN_SLOT, line)){
+        substr = parse_hex(substr, &slot_index);
+        if (*substr == ':') ++substr; else return 0;
+        if (*substr == ' ') ++substr; else return 0;
+        substr = parse_hex(substr, &reg_value);
+        //Poke register
+        if (slot_index < 3){
+            *romdbg_get_slot(slot_index) = (uint8_t) reg_value;
+        }
+        return substr;
+    }
+    else if (substr = starts_with(TOKEN_RAM, line)){
+        if (*substr == ' ') ++substr; else return 0;
+        substr = parse_hex(substr, &reg_value);
+        *romdbg_get_slot(3) = (uint8_t) reg_value;
+        return substr;
+    }
+    return 0;
+}
+
+// <rom_name> = ' ' <string>
+//            ;
+static const char* parse_rom_name(const char* line){
+    char result[256];
+    if (*line == ' ') ++line; else return 0;
+    size_t path_len = strlen(line);
+    path_len = (path_len > 0) ? path_len - 1 : 0;
+    strncpy(result, line, path_len);
+    result[path_len] = '\0';
+
+    if (rom_load_file(result) == 0){
+        return line + path_len;
+    }
+    else{
+        return 0;
+    }
+}
+
+// <rom_tail> = <rom_data>
+//            | <rom_name>
+//            | <rom_mapper_sega>
+//            ;
+static const char* parse_rom_tail(const char* line){
+    const char* substr;
+    if (substr = starts_with(TOKEN_DATA, line)){
+        return parse_rom_data(substr);
+    }
+    else if (substr = starts_with(TOKEN_NAME, line)){
+        return parse_rom_name(substr);
+    }
+    else if (substr = starts_with(TOKEN_MAPPER_SEGA, line)){
+        return parse_rom_mapper_sega(substr);
+    }
+    else{
+        return 0;
+    }
+}
+
 // <line> = 'RAM:' <ram_tail>
 //        | 'ROM:' <rom_tail>
 //        | 'IO:'  <io_tail>
@@ -186,6 +325,7 @@ static const char* parse_peripheral_tail(const char* line){
 //        | 'PSG:' <psg_tail>
 //        | 'Z80:' <z80_tail>
 //        | 'SAVESTATE:' <savestate_tail>
+//        | 'END:' .*
 //        | '#' .*
 //        ;
 static const char* parse_line(const char* line){
@@ -194,7 +334,7 @@ static const char* parse_line(const char* line){
         return parse_ram_tail(substr);
     }
     else if (substr = starts_with(TOKEN_ROM, line)){
-        printf("Unimplemented token: ROM\n");
+        return parse_rom_tail(substr);
     }
     else if (substr = starts_with(TOKEN_IO, line)){
         return parse_io_tail(substr);
@@ -203,7 +343,7 @@ static const char* parse_line(const char* line){
         return parse_peripheral_tail(substr);
     }
     else if (substr = starts_with(TOKEN_PSG, line)){
-        printf("Unimplemented token: PSG\n");
+        return parse_psg_tail(substr);
     }
     else if (substr = starts_with(TOKEN_Z80, line)){
         printf("Unimplemented token: Z80\n");

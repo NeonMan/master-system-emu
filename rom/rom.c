@@ -22,6 +22,7 @@
 #include "../io/io_externs.h"
 #include <string.h>
 #include <assert.h>
+#include <stdio.h>
 
 #include "rom.h"
 
@@ -77,4 +78,18 @@ void rom_tick(){
         if   (z80_address == 0xFFFC) mapper_ram = z80_data;
         else mapper_slots[z80_address - 0xFFFD] = z80_data;
     }
+}
+
+int rom_load_file(const char* path){
+    FILE* f;
+    f = fopen(path, "rb");
+
+    if (f == 0){
+        return -1;
+    }
+
+    fread(rom_image, 1, ROM_MAX_SIZE, f);
+    fclose(f);
+
+    return 0;
 }
