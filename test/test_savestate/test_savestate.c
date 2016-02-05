@@ -24,9 +24,27 @@
 #include <rom/rom.h>
 #include <savestate/savestate.h>
 
+// --- Constants ---
 #define SAVE_FILE_NAME "SAMPLE.SAV"
 
-TEST_GROUP(grp_savestate);
+#define VALUE_ADDRESS 0x0102
+#define VALUE_DATA    0x03
+
+#define VALUE_RD      0x04
+#define VALUE_WR      0x05
+#define VALUE_IOREQ   0x06
+#define VALUE_MREQ    0x07
+#define VALUE_RFSH    0x08
+#define VALUE_M1      0x09
+
+#define VALUE_INT     0x0A
+#define VALUE_NMI     0x0B
+#define VALUE_RESET   0x0C
+#define VALUE_WAIT    0x0D
+
+#define VALUE_BUSREQ  0x0E
+#define VALUE_BUSACK  0x0F
+
 
 // --- Variables ---
 static struct z80_s z80_pattern;
@@ -34,6 +52,7 @@ static struct z80_s z80_zero;
 
 static uint8_t ram_pattern[RAM_SIZE];
 
+TEST_GROUP(grp_savestate);
 
 // --- Tests ---
 TEST_SETUP(grp_savestate) {
@@ -50,6 +69,20 @@ TEST_SETUP(grp_savestate) {
     //Initialize modules with pattern
     *z80dbg_get_z80() = z80_pattern;
     memcpy(ramdbg_get_mem(), ram_pattern, RAM_SIZE);
+    z80_address = VALUE_ADDRESS;
+    z80_data = VALUE_DATA;
+    z80_n_rd = VALUE_RD;
+    z80_n_wr = VALUE_WR;
+    z80_n_ioreq = VALUE_IOREQ;
+    z80_n_mreq = VALUE_MREQ;
+    z80_n_rfsh = VALUE_RFSH;
+    z80_n_m1 = VALUE_M1;
+    z80_n_int = VALUE_INT;
+    z80_n_nmi = VALUE_NMI;
+    z80_n_reset = VALUE_RESET;
+    z80_n_wait = VALUE_WAIT;
+    z80_n_busreq = VALUE_BUSREQ;
+    z80_n_busack = VALUE_BUSACK;
 
     //Dump file
     FILE* f;
@@ -61,6 +94,20 @@ TEST_SETUP(grp_savestate) {
     //Clear modules
     *z80dbg_get_z80() = z80_zero;
     memset(ramdbg_get_mem(), 0, RAM_SIZE);
+    z80_address = 0;
+    z80_data = 0;
+    z80_n_rd = 0;
+    z80_n_wr = 0;
+    z80_n_ioreq = 0;
+    z80_n_mreq = 0;
+    z80_n_rfsh = 0;
+    z80_n_m1 = 0;
+    z80_n_int = 0;
+    z80_n_nmi = 0;
+    z80_n_reset = 0;
+    z80_n_wait = 0;
+    z80_n_busreq = 0;
+    z80_n_busack = 0;
 
     //Restore
     f = fopen(SAVE_FILE_NAME, "rb");
@@ -77,8 +124,21 @@ TEST(grp_savestate, ram) {
     TEST_ASSERT_EQUAL_HEX8_ARRAY(ram_pattern, ramdbg_get_mem(), RAM_SIZE);
 }
 
-IGNORE_TEST(grp_savestate, z80_pins) {
-
+TEST(grp_savestate, z80_pins) {
+    TEST_ASSERT_EQUAL(VALUE_ADDRESS, z80_address);
+    TEST_ASSERT_EQUAL(VALUE_DATA, z80_data);
+    TEST_ASSERT_EQUAL(VALUE_RD, z80_n_rd);
+    TEST_ASSERT_EQUAL(VALUE_WR, z80_n_wr);
+    TEST_ASSERT_EQUAL(VALUE_IOREQ, z80_n_ioreq);
+    TEST_ASSERT_EQUAL(VALUE_MREQ, z80_n_mreq);
+    TEST_ASSERT_EQUAL(VALUE_RFSH, z80_n_rfsh);
+    TEST_ASSERT_EQUAL(VALUE_M1, z80_n_m1);
+    TEST_ASSERT_EQUAL(VALUE_INT, z80_n_int);
+    TEST_ASSERT_EQUAL(VALUE_NMI, z80_n_nmi);
+    TEST_ASSERT_EQUAL(VALUE_RESET, z80_n_reset);
+    TEST_ASSERT_EQUAL(VALUE_WAIT, z80_n_wait);
+    TEST_ASSERT_EQUAL(VALUE_BUSREQ, z80_n_busreq);
+    TEST_ASSERT_EQUAL(VALUE_BUSACK, z80_n_busack);
 }
 
 TEST(grp_savestate, z80) {
