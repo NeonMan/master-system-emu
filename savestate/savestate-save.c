@@ -104,7 +104,7 @@ static int dump_peripheral(FILE* f){
 
 static int dump_psg(FILE* f){
     uint16_t* tones = psgdbg_get_tone();
-    uint8_t* volumes = psgdbg_get_volume();
+    uint8_t* volumes = (uint8_t*) psgdbg_get_volume();
     
     fprintf(f, "#: PSG state\n");
     
