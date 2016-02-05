@@ -164,8 +164,8 @@ static int dump_z80(FILE* f){
     fprintf(f, "Z80:IY: %04X\n", Z80_IY);
     fprintf(f, "Z80:I: %02X\n", Z80_I);
     fprintf(f, "Z80:R: %02X\n", Z80_R);
-    fprintf(f, "Z80:SP: %04X\n", Z80_PC);
-    fprintf(f, "Z80:PC: %04X\n", Z80_SP);
+    fprintf(f, "Z80:PC: %04X\n", Z80_PC);
+    fprintf(f, "Z80:SP: %04X\n", Z80_SP);
     //Data latch
     fprintf(f, "Z80:DATA_LATCH: %02X\n", z80.data_latch);
     //IFF
@@ -176,9 +176,9 @@ static int dump_z80(FILE* f){
     fprintf(f, "Z80:OPCODE: %02X %02X %02X %02X\n", z80.opcode[0], z80.opcode[1], z80.opcode[2], z80.opcode[3]);
     //Stages
     fprintf(f, "Z80:STAGE: %02X\n", z80.stage);
-    fprintf(f, "Z80:STAGE:TICKS:1: %02X\n", z80.m1_tick_count);
-    fprintf(f, "Z80:STAGE:TICKS:2: %02X\n", z80.m2_tick_count);
-    fprintf(f, "Z80:STAGE:TICKS:3: %02X\n", z80.m3_tick_count);
+    fprintf(f, "Z80:STAGE:TICKS:1: %08X\n", z80.m1_tick_count);
+    fprintf(f, "Z80:STAGE:TICKS:2: %08X\n", z80.m2_tick_count);
+    fprintf(f, "Z80:STAGE:TICKS:3: %08X\n", z80.m3_tick_count);
     //Read buffer
     fprintf(f, "Z80:READ:ADDRESS: %04X\n", z80.read_address);
     fprintf(f, "Z80:READ:BUFFER: %02X %02X\n", z80.read_buffer[0], z80.read_buffer[1]);

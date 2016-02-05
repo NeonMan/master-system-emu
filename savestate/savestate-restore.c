@@ -652,13 +652,13 @@ static const char* parse_z80_tail(const char* line){
         substr = parse_hex(substr, &value);
         switch (stage){
         case Z80_STAGE_M1:
-            z80.m1_tick_count = (uint8_t)value; *z80_ref = z80;
+            z80.m1_tick_count = (uint16_t)value; *z80_ref = z80;
             return substr;
         case Z80_STAGE_M2:
-            z80.m2_tick_count = (uint8_t)value; *z80_ref = z80;
+            z80.m2_tick_count = (uint16_t)value; *z80_ref = z80;
             return substr;
         case Z80_STAGE_M3:
-            z80.m3_tick_count = (uint8_t)value; *z80_ref = z80;
+            z80.m3_tick_count = (uint16_t)value; *z80_ref = z80;
             return substr;
         default:
             return 0;
@@ -788,6 +788,7 @@ int ss_restore(FILE* f){
         if (feof(f) == 0){
             if (parse_line(line) == 0){
                 //Error!
+                return -1;
                 break;
             }
         }

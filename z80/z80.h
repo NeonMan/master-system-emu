@@ -59,9 +59,9 @@ struct z80_s {
     uint8_t stage; ///<-- Current Z80 stage. Either M1, M2, M3 or RESET (first M1).
 
     //Each stages' state
-    unsigned int m1_tick_count; ///<-- Counts the number of half cycles on the M1 stage.
-    unsigned int m2_tick_count; ///<-- Counts the number of half-cycles on the M2 stage.
-    unsigned int m3_tick_count; ///<-- Counts the number of half-cycles on the M3 stage.
+    uint16_t m1_tick_count; ///<-- Counts the number of half cycles on the M1 stage.
+    uint16_t m2_tick_count; ///<-- Counts the number of half-cycles on the M2 stage.
+    uint16_t m3_tick_count; ///<-- Counts the number of half-cycles on the M3 stage.
 
     //Temporal memory read storage
     uint16_t read_address;   ///<-- Which address to read from
