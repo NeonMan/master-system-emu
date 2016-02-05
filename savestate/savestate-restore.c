@@ -107,6 +107,7 @@
 #define TOKEN_ADDRESS "ADDRESS:"
 #define TOKEN_BUFFER "BUFFER:"
 #define TOKEN_IS_IO "IS_IO:"
+#define TOKEN_INDEX "INDEX:"
 
 
 static const char* starts_with(const char* prefix, const char* str){
@@ -163,7 +164,7 @@ static const char* parse_byte_array(const char* line, uint8_t* result){
             ++substr;
         }
     }
-    return line;
+    return substr;
 }
 
 // <ram_tail> = <hex> ':' <hex> ': ' <byte_array>
@@ -414,27 +415,27 @@ static const char* parse_rom_tail(const char* line){
 //            | R: <hex>
 //            | SP: <hex>
 //            | PC: <hex>
-//  --- Unimplemented reductions below ---
 //            | DATA_LATCH: <hex>
 //            | IFF:<hex>: <hex>
-//            | OPCODE: <hex>
 //            | OPCODE_INDEX: <hex>
+//            | OPCODE: <byte_array>
 //            | STAGE:TICKS:<hex>: <hex>
 //            | STAGE: <hex>
 //            | READ:ADDRESS: <hex>
-//            | READ:BUFFER: <byte_array>
 //            | READ:INDEX: <hex>
 //            | READ:IS_IO: <hex>
 //            | WRITE:ADDRESS: <hex>
-//            | WRITE:BUFFER: <byte_array>
 //            | WRITE:INDEX: <hex>
 //            | WRITE:IS_IO: <hex>
+//            | READ:BUFFER: <byte_array>
+//            | WRITE:BUFFER: <byte_array>
 //            ;
 static const char* parse_z80_tail(const char* line){
     const char* substr;
     uint32_t value;
     struct z80_s* z80_ref = z80dbg_get_z80();
     struct z80_s  z80 = *z80_ref;
+    uint8_t bytes[256];
 
     if (substr = starts_with(TOKEN_BUS TOKEN_ADDRESS " ", line)){
         substr = parse_hex(substr, &value);
@@ -604,6 +605,121 @@ static const char* parse_z80_tail(const char* line){
     else if (substr = starts_with(TOKEN_PC " ", line)){
         substr = parse_hex(substr, &value);
         Z80_PC = (uint16_t)value; *z80_ref = z80;
+        return substr;
+    }
+    else if (substr = starts_with(TOKEN_IX " ", line)){
+        substr = parse_hex(substr, &value);
+        Z80_IX = (uint16_t)value; *z80_ref = z80;
+        return substr;
+    }
+    else if (substr = starts_with(TOKEN_IY " ", line)){
+        substr = parse_hex(substr, &value);
+        Z80_IY = (uint16_t)value; *z80_ref = z80;
+        return substr;
+    }
+    else if (substr = starts_with(TOKEN_DATA_LATCH " ", line)){
+        substr = parse_hex(substr, &value);
+        z80.data_latch = (uint8_t)value; *z80_ref = z80;
+        return substr;
+    }
+    else if (substr = starts_with(TOKEN_IFF, line)){
+        uint32_t iff_index;
+        substr = parse_hex(substr, &iff_index);
+        if (*substr == ':') ++substr; else return 0;
+        if (*substr == ' ') ++substr; else return 0;
+        substr = parse_hex(substr, &value);
+        if (iff_index < 2){
+            z80.iff[iff_index] = (uint8_t)value;
+        }
+        *z80_ref = z80;
+        return substr;
+    }
+    else if (substr = starts_with(TOKEN_OPCODE_INDEX " ", line)){
+        substr = parse_hex(substr, &value);
+        z80.opcode_index = (uint8_t)value; *z80_ref = z80;
+        return substr;
+    }
+    else if (substr = starts_with(TOKEN_STAGE " ", line)){
+        substr = parse_hex(substr, &value);
+        z80.stage = (uint8_t)value; *z80_ref = z80;
+        return substr;
+    }
+    else if (substr = starts_with(TOKEN_STAGE TOKEN_TICKS, line)){
+        uint32_t stage;
+        substr = parse_hex(substr, &stage);
+        if (*substr == ':') ++substr; else return 0;
+        if (*substr == ' ') ++substr; else return 0;
+        substr = parse_hex(substr, &value);
+        switch (stage){
+        case Z80_STAGE_M1:
+            z80.m1_tick_count = (uint8_t)value; *z80_ref = z80;
+            return substr;
+        case Z80_STAGE_M2:
+            z80.m2_tick_count = (uint8_t)value; *z80_ref = z80;
+            return substr;
+        case Z80_STAGE_M3:
+            z80.m3_tick_count = (uint8_t)value; *z80_ref = z80;
+            return substr;
+        default:
+            return 0;
+        }
+    }
+    else if (substr = starts_with(TOKEN_OPCODE " ", line)){
+        substr = parse_byte_array(substr, bytes);
+        for (int i = 0; i < 4; ++i){
+            z80.opcode[i] = bytes[i];
+        }
+        *z80_ref = z80;
+        return substr;
+    }
+    else if (substr = starts_with(TOKEN_READ TOKEN_ADDRESS " ", line)){
+        substr = parse_hex(substr, &value);
+        z80.read_address = (uint16_t)value;
+        *z80_ref = z80;
+        return substr;
+    }
+    else if (substr = starts_with(TOKEN_READ TOKEN_BUFFER " ", line)){
+        substr = parse_byte_array(substr, bytes);
+        z80.read_buffer[0] = bytes[0];
+        z80.read_buffer[1] = bytes[1];
+        *z80_ref = z80;
+        return substr;
+    }
+    else if (substr = starts_with(TOKEN_READ TOKEN_INDEX " ", line)){
+        substr = parse_hex(substr, &value);
+        z80.read_index = (uint8_t)value;
+        *z80_ref = z80;
+        return substr;
+    }
+    else if (substr = starts_with(TOKEN_READ TOKEN_IS_IO " ", line)){
+        substr = parse_hex(substr, &value);
+        z80.read_is_io = (uint8_t)value;
+        *z80_ref = z80;
+        return substr;
+    }
+    else if (substr = starts_with(TOKEN_WRITE TOKEN_ADDRESS " ", line)){
+        substr = parse_hex(substr, &value);
+        z80.write_address = (uint16_t)value;
+        *z80_ref = z80;
+        return substr;
+    }
+    else if (substr = starts_with(TOKEN_WRITE TOKEN_BUFFER " ", line)){
+        substr = parse_byte_array(substr, bytes);
+        z80.write_buffer[0] = bytes[0];
+        z80.write_buffer[1] = bytes[1];
+        *z80_ref = z80;
+        return substr;
+    }
+    else if (substr = starts_with(TOKEN_WRITE TOKEN_INDEX " ", line)){
+        substr = parse_hex(substr, &value);
+        z80.write_index = (uint8_t)value;
+        *z80_ref = z80;
+        return substr;
+    }
+    else if (substr = starts_with(TOKEN_WRITE TOKEN_IS_IO " ", line)){
+        substr = parse_hex(substr, &value);
+        z80.write_is_io = (uint8_t)value;
+        *z80_ref = z80;
         return substr;
     }
 
