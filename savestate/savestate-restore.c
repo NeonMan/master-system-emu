@@ -740,31 +740,31 @@ static const char* parse_z80_tail(const char* line){
 //        ;
 static const char* parse_line(const char* line){
     const char* substr;
-    if (substr = starts_with(TOKEN_RAM, line)){
+    if ( (substr = starts_with(TOKEN_RAM, line)) ){
         return parse_ram_tail(substr);
     }
-    else if (substr = starts_with(TOKEN_ROM, line)){
+    else if ( (substr = starts_with(TOKEN_ROM, line)) ){
         return parse_rom_tail(substr);
     }
-    else if (substr = starts_with(TOKEN_IO, line)){
+    else if ( (substr = starts_with(TOKEN_IO, line)) ){
         return parse_io_tail(substr);
     }
-    else if (substr = starts_with(TOKEN_PERIPHERAL, line)){
+    else if ( (substr = starts_with(TOKEN_PERIPHERAL, line)) ){
         return parse_peripheral_tail(substr);
     }
-    else if (substr = starts_with(TOKEN_PSG, line)){
+    else if ( (substr = starts_with(TOKEN_PSG, line)) ){
         return parse_psg_tail(substr);
     }
-    else if (substr = starts_with(TOKEN_Z80, line)){
+    else if ( (substr = starts_with(TOKEN_Z80, line)) ){
         return parse_z80_tail(substr);
     }
-    else if (substr = starts_with(TOKEN_SAVESTATE, line)){
+    else if ( (substr = starts_with(TOKEN_SAVESTATE, line)) ){
         ; ///@ToDo Check savestate version
     }
-    else if (substr = starts_with(TOKEN_END, line)){
+    else if ( (substr = starts_with(TOKEN_END, line)) ){
         ; //Do nothing
     }
-    else if (substr = starts_with(TOKEN_COMMENT, line)){
+    else if ( (substr = starts_with(TOKEN_COMMENT, line)) ){
         ; //Do nothing
     }
     else{
