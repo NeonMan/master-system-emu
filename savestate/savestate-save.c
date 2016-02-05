@@ -59,7 +59,7 @@ static int dump_ram(FILE* f){
     return 0;
 }
 
-static dump_rom(FILE* f, int rom_size){
+static int dump_rom(FILE* f, int rom_size){
     uint8_t* rom_bytes = (uint8_t*) romdbg_get_rom();
     /*Dump in blocks all the ROM bytes*/
     fprintf(f, "#: Cartridge ROM\n");

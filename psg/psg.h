@@ -79,7 +79,7 @@ extern "C" {
     * @brief Get the vlume register array.
     * @param vols a writeable array of four volume values.
     */
-    uint8_t* psgdbg_get_volume();
+    int8_t* psgdbg_get_volume();
 
     /**
     * @brief Get the tone register array.

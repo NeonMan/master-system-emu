@@ -226,7 +226,7 @@ uint8_t make_data(uint8_t data){
         psg_tick();
     }
 
-    uint8_t* psgdbg_get_volume(){
+    int8_t* psgdbg_get_volume(){
         return vol;
     }
 
