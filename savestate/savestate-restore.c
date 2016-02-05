@@ -280,7 +280,7 @@ static const char* parse_psg_tail(const char* line){
         substr = parse_hex(substr, &register_value);
         //Poke register
         if (register_index < 4){
-            psgdbg_get_volume()[register_index] = (uint8_t)register_value;
+            psgdbg_get_volume()[register_index] = (int8_t)((uint8_t)register_value);
         }
         return substr;
     }
