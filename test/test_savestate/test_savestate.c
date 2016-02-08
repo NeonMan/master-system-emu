@@ -17,34 +17,40 @@
 #include "unity/unity_fixture.h"
 #include <stdio.h>
 
+#include <savestate/savestate.h>
+#include <ram/ram.h>
 #include <z80/z80.h>
 #include <z80/z80_macros.h>
 #include <psg/psg.h>
-#include <ram/ram.h>
-#include <rom/rom.h>
-#include <savestate/savestate.h>
+#include <io/io.h>
+#include <peripheral/peripheral.h>
 
 // --- Constants ---
 #define SAVE_FILE_NAME "SAMPLE.SAV"
 
 #define VALUE_ADDRESS 0x0102
 #define VALUE_DATA    0x03
-
 #define VALUE_RD      0x04
 #define VALUE_WR      0x05
 #define VALUE_IOREQ   0x06
 #define VALUE_MREQ    0x07
 #define VALUE_RFSH    0x08
 #define VALUE_M1      0x09
-
 #define VALUE_INT     0x0A
 #define VALUE_NMI     0x0B
 #define VALUE_RESET   0x0C
 #define VALUE_WAIT    0x0D
-
 #define VALUE_BUSREQ  0x0E
 #define VALUE_BUSACK  0x0F
 
+static const uint16_t psg_tone_pattern[4] = {0x0102, 0x0304, 0x0506, 0x0708};
+static const uint8_t  psg_volume_pattern[4] = {0x09, 0x0A, 0x0B, 0x0C};
+
+#define VALUE_IO_STAT 0x10
+
+#define VALUE_PERIPHERAL_CONTROL 0x11
+#define VALUE_PERIPHERAL_AB 0x12
+#define VALUE_PERIPHERAL_BM 0x13
 
 // --- Variables ---
 static struct z80_s z80_pattern;
@@ -84,6 +90,17 @@ TEST_SETUP(grp_savestate) {
     z80_n_busreq = VALUE_BUSREQ;
     z80_n_busack = VALUE_BUSACK;
 
+    for (int i = 0; i < 4; ++i){
+        psgdbg_get_tone()[i] = psg_tone_pattern[i];
+        psgdbg_get_volume()[i] = psg_volume_pattern[i];
+    }
+
+    io_stat = VALUE_IO_STAT;
+
+    *perdbg_reg_ab() = VALUE_PERIPHERAL_AB;
+    *perdbg_reg_bm() = VALUE_PERIPHERAL_BM;
+    *perdbg_reg_control() = VALUE_PERIPHERAL_CONTROL;
+
     //Dump file
     FILE* f;
     f = fopen(SAVE_FILE_NAME, "wb");
@@ -109,6 +126,17 @@ TEST_SETUP(grp_savestate) {
     z80_n_busreq = 0;
     z80_n_busack = 0;
 
+    for (int i = 0; i < 4; ++i){
+        psgdbg_get_tone()[i] = 0;
+        psgdbg_get_volume()[i] = 0;
+    }
+
+    io_stat = 0;
+
+    *perdbg_reg_ab() = 0;
+    *perdbg_reg_bm() = 0;
+    *perdbg_reg_control() = 0;
+
     //Restore
     f = fopen(SAVE_FILE_NAME, "rb");
     TEST_ASSERT_NOT_NULL(f);
@@ -118,6 +146,21 @@ TEST_SETUP(grp_savestate) {
 
 TEST_TEAR_DOWN(grp_savestate) {
     ///@ToDo delete sample rom and savestate
+}
+
+TEST(grp_savestate, peripheral){
+    TEST_ASSERT_EQUAL(VALUE_PERIPHERAL_AB, *perdbg_reg_ab());
+    TEST_ASSERT_EQUAL(VALUE_PERIPHERAL_BM, *perdbg_reg_bm());
+    TEST_ASSERT_EQUAL(VALUE_PERIPHERAL_CONTROL, *perdbg_reg_control());
+}
+
+TEST(grp_savestate, ioc){
+    TEST_ASSERT_EQUAL(VALUE_IO_STAT, io_stat);
+}
+
+TEST(grp_savestate, psg){
+    TEST_ASSERT_EQUAL_INT16_ARRAY(psg_tone_pattern, psgdbg_get_tone(), 4);
+    TEST_ASSERT_EQUAL_INT8_ARRAY(psg_volume_pattern, psgdbg_get_volume(), 4);
 }
 
 TEST(grp_savestate, ram) {
@@ -176,6 +219,9 @@ TEST_GROUP_RUNNER(grp_savestate) {
     RUN_TEST_CASE(grp_savestate, ram);
     RUN_TEST_CASE(grp_savestate, z80);
     RUN_TEST_CASE(grp_savestate, z80_pins);
+    RUN_TEST_CASE(grp_savestate, psg);
+    RUN_TEST_CASE(grp_savestate, ioc);
+    RUN_TEST_CASE(grp_savestate, peripheral);
 }
 
 // ----------------------
