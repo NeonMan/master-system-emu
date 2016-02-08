@@ -49,7 +49,7 @@
 
 //ROM tokens
 #define TOKEN_DATA "DATA:"
-#define TOKEN_NAME "NAME:"
+#define TOKEN_LOAD "LOAD:"
 #define TOKEN_MAPPER_SEGA "MAPPER:SEGA:"
 #define TOKEN_SLOT "SLOT:"
 
@@ -341,9 +341,9 @@ static const char* parse_rom_mapper_sega(const char* line){
     return 0;
 }
 
-// <rom_name> = ' ' <string>
+// <rom_load> = ' ' <string>
 //            ;
-static const char* parse_rom_name(const char* line){
+static const char* parse_rom_load(const char* line){
     char result[256];
     if (*line == ' ') ++line; else return 0;
     size_t path_len = strlen(line);
@@ -359,18 +359,17 @@ static const char* parse_rom_name(const char* line){
     }
 }
 
-// <rom_tail> = <rom_data>
-//            | <rom_name>
-//            | <rom_mapper_sega>
+// <rom_tail> = 'DATA:' <rom_data>
+//            | 'LOAD:' <rom_load>
+//            | 'MAPPER:SEGA:' <rom_mapper_sega>
 //            ;
 static const char* parse_rom_tail(const char* line){
     const char* substr;
     if ( (substr = starts_with(TOKEN_DATA, line)) ){
         return parse_rom_data(substr);
     }
-    else if ( (substr = starts_with(TOKEN_NAME, line)) ){
-        return substr;
-        //return parse_rom_name(substr);
+    else if ( (substr = starts_with(TOKEN_LOAD, line)) ){
+        return parse_rom_load(substr);
     }
     else if ( (substr = starts_with(TOKEN_MAPPER_SEGA, line)) ){
         return parse_rom_mapper_sega(substr);

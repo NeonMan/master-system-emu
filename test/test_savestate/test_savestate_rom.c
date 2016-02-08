@@ -17,16 +17,104 @@
 #include "unity/unity_fixture.h"
 #include <stdio.h>
 
+#include <rom/rom.h>
+#include <savestate/savestate.h>
+
+// --- Constants --
+#define ROM_FILE_NAME "SAMPLE.ROM"
+#define SAVE_FILE_NAME "SAMPLE.SAV"
+
+// --- Variables --
+static uint8_t rom_pattern[ROM_MAX_SIZE];
+
 TEST_GROUP(grp_savestate_rom);
 
+// ---------------------------
+// -- Full ROM save-restore --
+// ---------------------------
 TEST_SETUP(grp_savestate_rom){
+    //Initialize
+    for (int i = 0; i < ROM_MAX_SIZE; ++i){
+        rom_pattern[i] = (uint8_t)((i + 3) & 0xFF);
+    }
+    memcpy(romdbg_get_rom(), rom_pattern, ROM_MAX_SIZE);
+
+    //Save
+    FILE* sav_file = fopen(SAVE_FILE_NAME, "wb");
+    TEST_ASSERT_NOT_NULL(sav_file);
+    ss_save(sav_file, 0);
+    fclose(sav_file);
+
+    //Clear module
+    memset(romdbg_get_rom(), 0, ROM_MAX_SIZE);
+
+    //Restore
+    sav_file = fopen(SAVE_FILE_NAME, "rb");
+    TEST_ASSERT_NOT_NULL(sav_file);
+    ss_restore(sav_file);
+    fclose(sav_file);
 }
 
 TEST_TEAR_DOWN(grp_savestate_rom){
+    _unlink(SAVE_FILE_NAME);
+}
+
+TEST(grp_savestate_rom, rom){
+    TEST_ASSERT_EQUAL_INT8_ARRAY(rom_pattern, romdbg_get_rom(), ROM_MAX_SIZE);
 }
 
 TEST_GROUP_RUNNER(grp_savestate_rom){
+    RUN_TEST_CASE(grp_savestate_rom, rom);
+}
 
+// ------------------------
+// --- File ROM restore ---
+// ------------------------
+
+TEST_GROUP(grp_savestate_file);
+
+TEST_SETUP(grp_savestate_file){
+    //Initialize
+    for (int i = 0; i < ROM_MAX_SIZE; ++i){
+        rom_pattern[i] = (uint8_t)((i + 3) & 0xFF);
+    }
+    memcpy(romdbg_get_rom(), rom_pattern, ROM_MAX_SIZE);
+
+    //Make a ROM file
+    FILE* rom_file = fopen(ROM_FILE_NAME, "wb");
+    TEST_ASSERT_NOT_NULL(rom_file);
+    size_t written_blocks = fwrite(rom_pattern, ROM_MAX_SIZE, 1, rom_file);
+    TEST_ASSERT_EQUAL(1, written_blocks);
+    fclose(rom_file);
+
+
+    //Save
+    FILE* sav_file = fopen(SAVE_FILE_NAME, "wb");
+    TEST_ASSERT_NOT_NULL(sav_file);
+    ss_save(sav_file, ROM_FILE_NAME);
+    fclose(sav_file);
+
+    //Clear module
+    memset(romdbg_get_rom(), 0, ROM_MAX_SIZE);
+
+    //Restore
+    sav_file = fopen(SAVE_FILE_NAME, "rb");
+    TEST_ASSERT_NOT_NULL(sav_file);
+    ss_restore(sav_file);
+    fclose(sav_file);
+}
+
+TEST_TEAR_DOWN(grp_savestate_file){
+    _unlink(ROM_FILE_NAME);
+    _unlink(SAVE_FILE_NAME);
+}
+
+TEST(grp_savestate_file, rom){
+    TEST_ASSERT_EQUAL_INT8_ARRAY(rom_pattern, romdbg_get_rom(), ROM_MAX_SIZE);
+}
+
+TEST_GROUP_RUNNER(grp_savestate_file){
+    RUN_TEST_CASE(grp_savestate_file, rom);
 }
 
 // ----------------------
@@ -34,6 +122,7 @@ TEST_GROUP_RUNNER(grp_savestate_rom){
 // ----------------------
 //Helper 'run all' function
 static void RunAllTests(void) {
+    RUN_TEST_GROUP(grp_savestate_file);
     RUN_TEST_GROUP(grp_savestate_rom);
 }
 

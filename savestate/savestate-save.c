@@ -19,18 +19,6 @@
  *  Savestate file format.
  *  [FIELD:]+\ <value>
  *
- *  Known formats.
- *  #: [Comment]
- *  RAM:[16bit chip address, in hex]:[Byte count]: [whitespace-separated bytes]
- *  ROM:NAME: [ROM filename]
- *  ROM:MAPPER:SEGA:SLOT[0-3]: [Register value]
- *  ROM:MAPPER:SEGA:RAM: [Register value]
- *  ROM:DATA:[24bit chip address, in hex]:[Byte count]: [whitespace-separated bytes]
- *  IO: [IO register byte]
- *  PERIPHERAL:[CONTROL AB BM]: [register byte]
- *  PSG:TONE:[0-3]: [16bit value]
- *  PSG:VOLUME:[0-3]: [byte]
- *  Z80:
  */
 
 #include "savestate.h"
@@ -75,7 +63,7 @@ static int dump_rom(FILE* f, int rom_size){
 
 static int dump_rom_name(FILE* f, const char* rom_name){
     fprintf(f, "#: ROM name (and path)\n");
-    fprintf(f, "ROM:NAME: %s\n", rom_name);
+    fprintf(f, "ROM:LOAD: %s\n", rom_name);
     return 0;
 }
 

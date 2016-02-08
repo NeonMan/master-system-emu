@@ -24,6 +24,7 @@
 #include <psg/psg.h>
 #include <io/io.h>
 #include <peripheral/peripheral.h>
+#include <rom/rom.h>
 
 // --- Constants ---
 #define SAVE_FILE_NAME "SAMPLE.SAV"
@@ -51,6 +52,12 @@ static const uint8_t  psg_volume_pattern[4] = {0x18, 0x19, 0x1A, 0x1B};
 #define VALUE_PERIPHERAL_CONTROL 0x1D
 #define VALUE_PERIPHERAL_AB 0x1E
 #define VALUE_PERIPHERAL_BM 0x1F
+
+#define ROM_FILE_NAME "SAMPLE.ROM"
+#define VALUE_SLOT0 0x20
+#define VALUE_SLOT1 0x21
+#define VALUE_SLOT2 0x22
+#define VALUE_RAM 0x23
 
 // --- Variables ---
 static struct z80_s z80_pattern;
@@ -101,6 +108,12 @@ TEST_SETUP(grp_savestate) {
     *perdbg_reg_bm() = VALUE_PERIPHERAL_BM;
     *perdbg_reg_control() = VALUE_PERIPHERAL_CONTROL;
 
+    *romdbg_get_slot(0) = VALUE_SLOT0;
+    *romdbg_get_slot(1) = VALUE_SLOT1;
+    *romdbg_get_slot(2) = VALUE_SLOT2;
+    *romdbg_get_slot(3) = VALUE_RAM;
+
+
     //Dump file
     FILE* f;
     f = fopen(SAVE_FILE_NAME, "wb");
@@ -136,6 +149,11 @@ TEST_SETUP(grp_savestate) {
     *perdbg_reg_ab() = 0;
     *perdbg_reg_bm() = 0;
     *perdbg_reg_control() = 0;
+
+    *romdbg_get_slot(0) = 0;
+    *romdbg_get_slot(1) = 0;
+    *romdbg_get_slot(2) = 0;
+    *romdbg_get_slot(3) = 0;
 
     //Restore
     f = fopen(SAVE_FILE_NAME, "rb");
@@ -215,6 +233,10 @@ TEST(grp_savestate, z80) {
     TEST_ASSERT_EQUAL_UINT8_ARRAY(z80_pattern.write_buffer, z80_.write_buffer, 2);
 }
 
+TEST(grp_savestate, mapper){
+
+}
+
 TEST_GROUP_RUNNER(grp_savestate) {
     RUN_TEST_CASE(grp_savestate, ram);
     RUN_TEST_CASE(grp_savestate, z80);
@@ -222,6 +244,7 @@ TEST_GROUP_RUNNER(grp_savestate) {
     RUN_TEST_CASE(grp_savestate, psg);
     RUN_TEST_CASE(grp_savestate, ioc);
     RUN_TEST_CASE(grp_savestate, peripheral);
+    RUN_TEST_CASE(grp_savestate, mapper);
 }
 
 // ----------------------
