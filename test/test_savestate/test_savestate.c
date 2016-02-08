@@ -163,7 +163,7 @@ TEST_SETUP(grp_savestate) {
 }
 
 TEST_TEAR_DOWN(grp_savestate) {
-    _unlink(SAVE_FILE_NAME);
+    remove(SAVE_FILE_NAME);
 }
 
 TEST(grp_savestate, peripheral){
