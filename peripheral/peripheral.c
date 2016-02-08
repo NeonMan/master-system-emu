@@ -51,6 +51,9 @@ void per_tick(){
     //If chip is not selected, return
     if (io_stat & IO_PERIPHERIAL) return;
 
+    //If not ioreq, return
+    if (z80_n_ioreq) return;
+
     //Peripherial control register.
     //is a write to 0x3F (and all mirrors)
     //All odd addresses from 0x01 to 0x3F
