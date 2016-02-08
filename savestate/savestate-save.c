@@ -197,9 +197,13 @@ int ss_save(FILE* f, const char* rom_name){
     fprintf(f, "SAVESTATE:VERSION: %s\n", SAVESTATE_VERSION);
     dump_ram(f);
 
-    dump_rom_name(f, rom_name);
+    if(rom_name){
+        dump_rom_name(f, rom_name);
+    }
+    else{
+        dump_rom(f, ROM_MAX_SIZE);
+    }
     dump_rom_mapper(f);
-    //dump_rom(f, ROM_MAX_SIZE);
     
     dump_io(f);
     

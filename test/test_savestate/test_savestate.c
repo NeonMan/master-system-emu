@@ -43,14 +43,14 @@
 #define VALUE_BUSREQ  0x0E
 #define VALUE_BUSACK  0x0F
 
-static const uint16_t psg_tone_pattern[4] = {0x0102, 0x0304, 0x0506, 0x0708};
-static const uint8_t  psg_volume_pattern[4] = {0x09, 0x0A, 0x0B, 0x0C};
+static const uint16_t psg_tone_pattern[4] = {0x1011, 0x1213, 0x1415, 0x1617};
+static const uint8_t  psg_volume_pattern[4] = {0x18, 0x19, 0x1A, 0x1B};
 
-#define VALUE_IO_STAT 0x10
+#define VALUE_IO_STAT 0x1C
 
-#define VALUE_PERIPHERAL_CONTROL 0x11
-#define VALUE_PERIPHERAL_AB 0x12
-#define VALUE_PERIPHERAL_BM 0x13
+#define VALUE_PERIPHERAL_CONTROL 0x1D
+#define VALUE_PERIPHERAL_AB 0x1E
+#define VALUE_PERIPHERAL_BM 0x1F
 
 // --- Variables ---
 static struct z80_s z80_pattern;
@@ -145,7 +145,7 @@ TEST_SETUP(grp_savestate) {
 }
 
 TEST_TEAR_DOWN(grp_savestate) {
-    ///@ToDo delete sample rom and savestate
+    _unlink(SAVE_FILE_NAME);
 }
 
 TEST(grp_savestate, peripheral){
