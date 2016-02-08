@@ -118,7 +118,7 @@ TEST(grp_peripheral_read, get_bm_mreq){
 // --- AB port. Port 0xDC (Mirrors on all even address from 0xC0 to 0xFD  --
 // -------------------------------------------------------------------------
 TEST(grp_peripheral_read, get_ab_valid){
-    for (int i = 0xC0; i <= 0xFD; i = i + 2){
+    for (int i = 0xC0; i <= 0xFF; i = i + 2){
         sprintf(message, "Testing port 0x%02X", (uint8_t)i);
         z80_address = (uint16_t)i;
         z80_data = 0;
@@ -128,7 +128,7 @@ TEST(grp_peripheral_read, get_ab_valid){
 }
 
 TEST(grp_peripheral_read, get_ab_invalid){
-    for (int i = 0xC1; i <= 0xFE; i = i + 2){
+    for (int i = 0xC1; i <= 0xFF; i = i + 2){
         sprintf(message, "Testing port 0x%02X", (uint8_t)i);
         z80_address = (uint16_t)i;
         per_tick();

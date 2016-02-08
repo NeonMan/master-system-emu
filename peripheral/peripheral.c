@@ -71,7 +71,7 @@ void per_tick(){
     //Port B+Misc.
     //is a read from 0xDD port (and all its mirrors)
     //All odd address from 0xC1 to 0xFF
-    else if ((z80_n_rd == 0) && (addrl >= 0xC1) && (addrl & 0x01) && (addrl <= 0xFF)){
+    else if ((z80_n_rd == 0) && (addrl >= 0xC1) && (addrl & 0x01)){ /*&& (addrl <= 0xFF)  <-- always true ;)*/
         z80_data = per_port_bm;
     }
 }
