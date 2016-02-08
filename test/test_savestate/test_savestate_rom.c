@@ -56,7 +56,7 @@ TEST_SETUP(grp_savestate_rom){
 }
 
 TEST_TEAR_DOWN(grp_savestate_rom){
-    _unlink(SAVE_FILE_NAME);
+    remove(SAVE_FILE_NAME);
 }
 
 TEST(grp_savestate_rom, rom){
@@ -105,8 +105,8 @@ TEST_SETUP(grp_savestate_file){
 }
 
 TEST_TEAR_DOWN(grp_savestate_file){
-    _unlink(ROM_FILE_NAME);
-    _unlink(SAVE_FILE_NAME);
+    remove(ROM_FILE_NAME);
+    remove(SAVE_FILE_NAME);
 }
 
 TEST(grp_savestate_file, rom){
