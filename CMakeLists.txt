@@ -27,12 +27,12 @@ if (CMAKE_COMPILER_IS_GNUCC)
 			COMMENT "Clearing coverage logs"
 		)
 		add_custom_target(cov_report
-			COMMAND lcov -q --directory . --capture --output-file "coverage.info"
+			COMMAND lcov -q --directory . --capture --output-file "coverage.info" --rc lcov_branch_coverage=1
 			COMMAND genhtml -q --output-directory "coverage" 
 				--demangle-cpp --num-spaces 2 --sort 
 				--title "${PROJECT_NAME} Test Coverage" 
 				--function-coverage --branch-coverage --legend 
-				"coverage.info"
+				"coverage.info" --rc lcov_branch_coverage=1
 			COMMENT "Making coverage report"
 		)
 		add_custom_target(cov
