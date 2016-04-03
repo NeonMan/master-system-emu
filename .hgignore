@@ -18,7 +18,6 @@ doxygen\/
 \.vgm$
 \.o$
 \.vcxproj$
-\.cmake$
 \.filters$
 \.stamp$
 \.sln$
