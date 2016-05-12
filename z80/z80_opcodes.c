@@ -149,34 +149,6 @@ int CCF(){
     return Z80_STAGE_RESET;
 }
 
-///CPD; Size: 2; Flags: ???
-int CPD(){
-    assert(z80.opcode_index == 2);
-    assert(0); ///<-- Unimplemented
-    return Z80_STAGE_RESET;
-}
-
-///CPI; Size: 2; Flags: ???
-int CPI(){
-    assert(z80.opcode_index == 2);
-    assert(0); ///<-- Unimplemented
-    return Z80_STAGE_RESET;
-}
-
-///CPDR; Size: 2; Flags: ???
-int CPDR(){
-    assert(z80.opcode_index == 2);
-    assert(0); ///<-- Unimplemented
-    return Z80_STAGE_RESET;
-}
-
-///CPIR; Size: 2; Flags: ???
-int CPIR(){
-    assert(z80.opcode_index == 2);
-    assert(0); ///<-- Unimplemented
-    return Z80_STAGE_RESET;
-}
-
 ///CP n; Size: 2; Flags: All
 int CP_n(){
     assert(z80.opcode_index == 2);
@@ -412,34 +384,6 @@ int INC_rp(){
     return Z80_STAGE_RESET;
 }
 
-///IND; Size: 2; Flags: ???
-int IND(){
-    assert(z80.opcode_index == 2);
-    assert(0); ///<-- Unimplemented
-    return Z80_STAGE_RESET;
-}
-
-///INDR; Size: 2; Flags: ???
-int INDR(){
-    assert(z80.opcode_index == 2);
-    assert(0); ///<-- Unimplemented
-    return Z80_STAGE_RESET;
-}
-
-///INI; Size: 2; Flags: ???
-int INI(){
-    assert(z80.opcode_index == 2);
-    assert(0); ///<-- Unimplemented
-    return Z80_STAGE_RESET;
-}
-
-///INIR; Size: 2; Flags: ???
-int INIR(){
-    assert(z80.opcode_index == 2);
-    assert(0); ///<-- Unimplemented
-    return Z80_STAGE_RESET;
-}
-
 ///NEG; Size: 2; Flags: ???
 int NEG(){
     assert(z80.opcode_index == 2);
@@ -492,70 +436,6 @@ int OR_r(){
     Z80_F |= Z80_SETFLAG_SIGN(Z80_A);
     Z80_F |= Z80_SETFLAG_ZERO(Z80_A);
     Z80_F |= Z80_SETFLAG_OVERFLOW(orig_a, Z80_A);
-    return Z80_STAGE_RESET;
-}
-
-///OTDR; Size: 2; Flags: ???
-int OTDR(){
-    assert(z80.opcode_index == 2);
-    assert(0); ///<-- Unimplemented
-    return Z80_STAGE_RESET;
-}
-
-///OTIR; Size: 2; Flags: Z,N
-int OTIR(){
-    assert(z80.opcode_index == 2);
-    //(C)<-(HL), B<-B  1, HL<-HL + 1; B? repeat : end
-    //Perform read
-    Z80_8BIT_READ(Z80_HL, 0);
-    //Perform write
-    Z80_8BIT_WRITE(Z80_C | (((uint16_t)Z80_A) << 8), 1, z80.read_buffer[0]);
-    //Update state and flags
-    ++Z80_HL;
-    --Z80_B;
-    Z80_F = Z80_F & (Z80_CLRFLAG_ZERO & Z80_CLRFLAG_SUBTRACT); //Z,N
-    if (Z80_B){ //Repeat instruction
-        Z80_PC = Z80_PC - 2;
-        return Z80_STAGE_RESET;
-    }
-    else{
-        return Z80_STAGE_RESET;
-    }
-}
-
-///OUT (n), A; Size: 2; Flags: None
-int OUT_np_A(){
-    assert(z80.opcode_index == 2);
-    const uint16_t port_addr = z80.opcode[1] + (((uint16_t)Z80_A) << 8);
-    Z80_8BIT_WRITE(port_addr, 1, Z80_A);
-    return Z80_STAGE_RESET;
-}
-
-///OUT (C), 0; Size: 2; Flags: None
-int OUT_Cp_0(){
-    assert(z80.opcode_index == 2);
-    assert(0); ///<-- Unimplemented
-    return Z80_STAGE_RESET;
-}
-
-///OUT (C), r; Size: 2; Flags: None
-int OUT_Cp_r(){
-    assert(z80.opcode_index == 2);
-    assert(0); ///<-- Unimplemented
-    return Z80_STAGE_RESET;
-}
-
-///OUTD; Size: 2; Flags: ???
-int OUTD(){
-    assert(z80.opcode_index == 2);
-    assert(0); ///<-- Unimplemented
-    return Z80_STAGE_RESET;
-}
-
-///OUTI; Size: 2; Flags: ???
-int OUTI(){
-    assert(z80.opcode_index == 2);
-    assert(0); ///<-- Unimplemented
     return Z80_STAGE_RESET;
 }
 
