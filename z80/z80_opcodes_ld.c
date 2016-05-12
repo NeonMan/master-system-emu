@@ -1,4 +1,4 @@
-// Copyright 2015 Juan Luis ¡lvarez MartÌnez
+// Copyright 2015 Juan Luis √Ålvarez Mart√≠nez
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,6 +18,62 @@
 #include <assert.h>
 
 extern struct z80_s z80; //<-- Access to z80 internals
+
+///CPD; Size: 2; Flags: ???
+int CPD() {
+	assert(z80.opcode_index == 2);
+	assert(0); ///<-- Unimplemented
+	return Z80_STAGE_RESET;
+}
+
+///CPI; Size: 2; Flags: ???
+int CPI() {
+	assert(z80.opcode_index == 2);
+	assert(0); ///<-- Unimplemented
+	return Z80_STAGE_RESET;
+}
+
+///CPDR; Size: 2; Flags: ???
+int CPDR() {
+	assert(z80.opcode_index == 2);
+	assert(0); ///<-- Unimplemented
+	return Z80_STAGE_RESET;
+}
+
+///CPIR; Size: 2; Flags: ???
+int CPIR() {
+	assert(z80.opcode_index == 2);
+	assert(0); ///<-- Unimplemented
+	return Z80_STAGE_RESET;
+}
+
+///IND; Size: 2; Flags: ???
+int IND() {
+	assert(z80.opcode_index == 2);
+	assert(0); ///<-- Unimplemented
+	return Z80_STAGE_RESET;
+}
+
+///INDR; Size: 2; Flags: ???
+int INDR() {
+	assert(z80.opcode_index == 2);
+	assert(0); ///<-- Unimplemented
+	return Z80_STAGE_RESET;
+}
+
+///INI; Size: 2; Flags: ???
+int INI() {
+	assert(z80.opcode_index == 2);
+	assert(0); ///<-- Unimplemented
+	return Z80_STAGE_RESET;
+}
+
+///INIR; Size: 2; Flags: ???
+int INIR() {
+	assert(z80.opcode_index == 2);
+	assert(0); ///<-- Unimplemented
+	return Z80_STAGE_RESET;
+}
 
 ///LD A, (BC); Size: 1; Flags: None
 int LD_A_BCp() {
@@ -262,7 +318,73 @@ int LDIR() {
 	}
 }
 
-/* IX/IY/(IX+d)/(IY+d) version of opcodes */
+///OTDR; Size: 2; Flags: ???
+int OTDR() {
+	assert(z80.opcode_index == 2);
+	assert(0); ///<-- Unimplemented
+	return Z80_STAGE_RESET;
+}
+
+///OTIR; Size: 2; Flags: Z,N
+int OTIR() {
+	assert(z80.opcode_index == 2);
+	//(C)<-(HL), B<-B ¬ñ 1, HL<-HL + 1; B? repeat : end
+	//Perform read
+	Z80_8BIT_READ(Z80_HL, 0);
+	//Perform write
+	Z80_8BIT_WRITE(Z80_C | (((uint16_t)Z80_A) << 8), 1, z80.read_buffer[0]);
+	//Update state and flags
+	++Z80_HL;
+	--Z80_B;
+	Z80_F = Z80_F & (Z80_CLRFLAG_ZERO & Z80_CLRFLAG_SUBTRACT); //Z,N
+	if (Z80_B) { //Repeat instruction
+		Z80_PC = Z80_PC - 2;
+		return Z80_STAGE_RESET;
+	}
+	else {
+		return Z80_STAGE_RESET;
+	}
+}
+
+///OUT (n), A; Size: 2; Flags: None
+int OUT_np_A() {
+	assert(z80.opcode_index == 2);
+	const uint16_t port_addr = z80.opcode[1] + (((uint16_t)Z80_A) << 8);
+	Z80_8BIT_WRITE(port_addr, 1, Z80_A);
+	return Z80_STAGE_RESET;
+}
+
+///OUT (C), 0; Size: 2; Flags: None
+int OUT_Cp_0() {
+	assert(z80.opcode_index == 2);
+	assert(0); ///<-- Unimplemented
+	return Z80_STAGE_RESET;
+}
+
+///OUT (C), r; Size: 2; Flags: None
+int OUT_Cp_r() {
+	assert(z80.opcode_index == 2);
+	assert(0); ///<-- Unimplemented
+	return Z80_STAGE_RESET;
+}
+
+///OUTD; Size: 2; Flags: ???
+int OUTD() {
+	assert(z80.opcode_index == 2);
+	assert(0); ///<-- Unimplemented
+	return Z80_STAGE_RESET;
+}
+
+///OUTI; Size: 2; Flags: ???
+int OUTI() {
+	assert(z80.opcode_index == 2);
+	assert(0); ///<-- Unimplemented
+	return Z80_STAGE_RESET;
+}
+
+/* ---------------------------------------------- */
+/* --- IX/IY/(IX+d)/(IY+d) version of opcodes --- */
+/* ---------------------------------------------- */
 
 int LD_IXY_nn() {
 	Z80_OPCODE_SUBDIV;
