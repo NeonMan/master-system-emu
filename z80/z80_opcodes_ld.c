@@ -382,6 +382,28 @@ int OUTI() {
 	return Z80_STAGE_RESET;
 }
 
+///POP rp2[p]; Size: 1; Flags: None
+int POP_rp2() {
+	assert(z80.opcode_index == 1);
+	Z80_OPCODE_SUBDIV;
+	//Read stack
+	Z80_16BIT_READ(Z80_SP, 0);
+
+	Z80_SP += 2;
+	*(z80_rp2[p[0]]) = *((uint16_t*)z80.read_buffer); ///<-- @bug Endianness!
+	return Z80_STAGE_RESET;
+}
+
+///PUSH rp2[p]; Size: 1; Flags: None
+int PUSH_rp2() {
+	assert(z80.opcode_index == 1);
+	Z80_OPCODE_SUBDIV;
+	Z80_16BIT_WRITE(Z80_SP - 2, 0, (*(z80_rp2[p[0]])) & 0xFF, ((*(z80_rp2[p[0]])) >> 8) & 0xFF);
+	Z80_SP -= 2;
+	return Z80_STAGE_RESET;
+}
+
+
 /* ---------------------------------------------- */
 /* --- IX/IY/(IX+d)/(IY+d) version of opcodes --- */
 /* ---------------------------------------------- */
