@@ -194,6 +194,27 @@ int INC_r() {
     return Z80_STAGE_RESET;
 }
 
+///INC (HL); Size: 1; Flags: All 
+int INC_HLp() {
+    assert(z80.opcode_index == 1);
+    //Memory read
+    Z80_8BIT_READ(Z80_HL, 0);
+    //Mem write
+    Z80_8BIT_WRITE(Z80_HL, 0, z80.read_buffer[0] + 1);
+
+    const uint8_t old_r = z80.read_buffer[0];
+    Z80_F = (Z80_F & (
+        Z80_CLRFLAG_SIGN & Z80_CLRFLAG_ZERO & Z80_CLRFLAG_HC
+        & Z80_CLRFLAG_PARITY & Z80_CLRFLAG_SUBTRACT)
+        )  //Clear S,Z,H,P,N (7,6,4,2,1) ***V0-
+        | Z80_SETFLAG_SIGN(old_r + 1)
+        | Z80_SETFLAG_ZERO(old_r + 1)
+        | Z80_SETFLAG_HALF_CARRY(old_r, 1)
+        | Z80_SETFLAG_OVERFLOW(old_r, old_r + 1);
+    return Z80_STAGE_RESET;
+}
+
+
 ///NEG; Size: 2; Flags: ???
 int NEG() {
     assert(z80.opcode_index == 2);
