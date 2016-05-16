@@ -19,26 +19,6 @@
 
 extern struct z80_s z80; //<-- Access to z80 internals
 
-///ADC HL, rp; Size: 2; Flags: ???
-int ADC_HL_rp(){
-    assert(z80.opcode_index == 2); 
-    assert(0); ///<-- Unimplemented
-    return Z80_STAGE_RESET;
-}
-
-///ADD HL, rp[p] ; Size: 1; Flags N,C
-int ADD_HL_rp(){
-    assert(z80.opcode_index == 1); 
-    Z80_OPCODE_SUBDIV;
-    const uint16_t old_hl = Z80_HL;
-    Z80_HL = Z80_HL + *z80_rp[p[0]];
-    //Clear N/Carry flag (bits 1,0)
-    Z80_F = (Z80_F & (Z80_CLRFLAG_CARRY & Z80_CLRFLAG_SUBTRACT))
-        //Set carry flag (bit 0)
-        | Z80_SETFLAG_CARRY(old_hl, Z80_HL);
-    return Z80_STAGE_RESET;
-}
-
 ///BIT y, (HL); Size: 2; Flags: ???
 int BIT_b_HLp(){
     assert(z80.opcode_index == 2);
@@ -75,14 +55,6 @@ int CPL(){
 int DAA(){
     assert(z80.opcode_index == 1);
     assert(0); ///<-- Unimplemented
-    return Z80_STAGE_RESET;
-}
-
-///DEC(rp[p]); Size: 1; Flags: None
-int DEC_rp(){
-    assert(z80.opcode_index == 1);
-    Z80_OPCODE_SUBDIV;
-    --(*(z80_rp[p[0]]));
     return Z80_STAGE_RESET;
 }
 
@@ -155,34 +127,6 @@ int IM(){
     Z80_OPCODE_SUBDIV;
     z80.iff[0] = z80_im[y[1]][0];
     z80.iff[1] = z80_im[y[1]][1];
-    return Z80_STAGE_RESET;
-}
-
-///INC (HL); Size: 1; Flags: All 
-int INC_HLp(){
-    assert(z80.opcode_index == 1);
-    //Memory read
-    Z80_8BIT_READ(Z80_HL, 0);
-    //Mem write
-    Z80_8BIT_WRITE(Z80_HL, 0, z80.read_buffer[0] + 1);
-    
-    const uint8_t old_r = z80.read_buffer[0];
-    Z80_F = (Z80_F & (
-        Z80_CLRFLAG_SIGN & Z80_CLRFLAG_ZERO & Z80_CLRFLAG_HC
-        & Z80_CLRFLAG_PARITY & Z80_CLRFLAG_SUBTRACT)
-        )  //Clear S,Z,H,P,N (7,6,4,2,1) ***V0-
-        | Z80_SETFLAG_SIGN(old_r + 1)
-        | Z80_SETFLAG_ZERO(old_r + 1)
-        | Z80_SETFLAG_HALF_CARRY(old_r, 1)
-        | Z80_SETFLAG_OVERFLOW(old_r, old_r + 1);
-    return Z80_STAGE_RESET;
-}
-
-///INC(rp[p]); Size: 1; Flags: None
-int INC_rp(){
-    assert(z80.opcode_index == 1);
-    Z80_OPCODE_SUBDIV;
-    ++(*(z80_rp[p[0]]));
     return Z80_STAGE_RESET;
 }
 
@@ -347,21 +291,6 @@ int RR_r(){
     return Z80_STAGE_RESET;
 }
 
-///SBC HL,rp[p]; Size: 2; Flags: ?
-int SBC_HL_rp(){
-    assert(z80.opcode_index == 2);
-    Z80_OPCODE_SUBDIV;
-    const uint16_t old_hl = Z80_HL;
-    Z80_HL = (Z80_F & Z80_FLAG_CARRY) ? Z80_HL - *(z80_rp[p[1]]) : Z80_HL - *(z80_rp[p[1]]) - 1;
-    Z80_F = Z80_FLAG_SUBTRACT
-        | Z80_SETFLAG_BORROW(old_hl, Z80_HL)
-        | Z80_SETFLAG_SIGN(Z80_HL)
-        | Z80_SETFLAG_ZERO(Z80_HL)
-        | Z80_SETFLAG_HALF_BORROW_16(old_hl, *(z80_rp[p[1]]))
-        | Z80_SETFLAG_OVERFLOW(old_hl, Z80_HL);
-    return Z80_STAGE_RESET;
-}
-
 ///SET y, (HL); Size: 2; Flags: None
 int SET_b_HLp(){
     assert(z80.opcode_index == 2);
@@ -453,34 +382,6 @@ int SRL_r(){
 }
 
 /* Stubs for IX/IY/(IX+d)/(IY+d)*/
-int ADD_IXY_rp(){
-    assert(0); /*<-- Unimplemented*/
-    return Z80_STAGE_RESET;
-}
-
-///INC IX; Size: 2; Flags: None
-int INC_IXY(){
-	assert(z80.opcode_index == 2);
-	if (z80.opcode[0] == 0xDD){
-		++Z80_IX;
-	}
-	else{
-		++Z80_IY;
-	}
-    return Z80_STAGE_RESET;
-}
-
-///DEC IX; Size: 2; Flags: None
-int DEC_IXY(){
-	assert(z80.opcode_index == 2);
-	if (z80.opcode[0] == 0xDD){
-		--Z80_IX;
-	}
-	else{
-		--Z80_IY;
-	}
-	return Z80_STAGE_RESET;
-}
 
 int SLL_IXYp(){
     /*Select index register address*/
