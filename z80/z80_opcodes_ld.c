@@ -47,6 +47,29 @@ int CPIR() {
 	return Z80_STAGE_RESET;
 }
 
+///IN A, (n); Size: 2; Flags: None
+int IN_A_np() {
+    assert(z80.opcode_index == 2);
+
+    Z80_8BIT_READ((z80.opcode[1] | (((uint16_t)Z80_A) << 8)), 1);
+    Z80_A = z80.read_buffer[0];
+    return Z80_STAGE_RESET;
+}
+
+///IN (C); Size: 2; Flags: ???
+int IN_Cp() {
+    assert(z80.opcode_index == 2);
+    assert(0);
+    return Z80_STAGE_RESET;
+}
+
+///IN r, (C); Size: 2; Flags: ???
+int IN_r_Cp() {
+    assert(z80.opcode_index == 2);
+    assert(0); ///<-- Unimplemented
+    return Z80_STAGE_RESET;
+}
+
 ///IND; Size: 2; Flags: ???
 int IND() {
 	assert(z80.opcode_index == 2);

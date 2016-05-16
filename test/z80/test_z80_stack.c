@@ -294,6 +294,13 @@ TEST(stack_push, RST7){
     rst_test(7);
 }
 
+TEST(stack_push, DJNZ) {
+    //DJNZ n opcode
+    uint8_t op_djnz[] = { 0x08, 0x00 };
+
+    TEST_FAIL_MESSAGE("Unimplemented test");
+}
+
 TEST_GROUP_RUNNER(stack_push){
     RUN_TEST_CASE(stack_push, PUSH_BC);
     RUN_TEST_CASE(stack_push, PUSH_DE);
@@ -318,6 +325,7 @@ TEST_GROUP_RUNNER(stack_push){
     RUN_TEST_CASE(stack_push, RST5);
     RUN_TEST_CASE(stack_push, RST6);
     RUN_TEST_CASE(stack_push, RST7);
+    RUN_TEST_CASE(stack_push, DJNZ);
 }
 
 /* ----------------------------------- */
