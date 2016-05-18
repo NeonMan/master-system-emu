@@ -129,7 +129,7 @@ int main(int argc, char**argv){
         write_byte(i, full_rom[i]);
     }
 
-    //Test RAM
+    //Test RAM (Read)
     int ram_ok = 1;
     for (int i = 0xC000; i < 0xE000; i++){
         ram_ok = ram_ok & (read_byte(i) == full_rom[i]);
@@ -137,10 +137,27 @@ int main(int argc, char**argv){
     }
 
     if (ram_ok)
-        printf("--- RAM OK ---\n");
+        printf("--- RAM READ OK ---\n");
     else
-        printf("--- RAM Error ---\n");
+        printf("--- RAM READ Error ---\n");
 
+	//Test RAM (Write)
+	for (int i = 0xC000; i < 0xE000; i++) {
+		write_byte(i, full_rom[i] ^ 0xFF);
+		ram_ok = ram_ok & (read_byte(i) == (full_rom[i] ^0xFF));
+		ram_ok = ram_ok & (read_byte(i + 0xE000 - 0xC000) == (full_rom[i] ^ 0xFF));
+
+		write_byte(i + 0xE000 - 0xC000, full_rom[i]);
+		ram_ok = ram_ok & (read_byte(i) == (full_rom[i]));
+		ram_ok = ram_ok & (read_byte(i + 0xE000 - 0xC000) == (full_rom[i]));
+	}
+
+	if (ram_ok)
+		printf("--- RAM WRITE OK ---\n");
+	else
+		printf("--- RAM WRITE Error ---\n");
+
+	//Cleanup and exit
     free(full_rom);
 
     if (all_ok && ram_ok){
