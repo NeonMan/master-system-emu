@@ -19,9 +19,8 @@ TEST_GROUP(grp_ld8);
 TEST_SETUP(grp_ld8){
     sms_ram = ramdbg_get_mem();
     z80dbg_set_pc_breakpoint_cb(pc_breakpoint_cb);
-    for (int i = 0; i < (256 * 256); ++i){
-        z80dbg_set_breakpoint(i, 0);
-    }
+	//Clear breakpoints
+	z80dbg_clear_breakpoints();
 
     memset(sms_ram, 0x00, RAM_SIZE);
     memset(&z80, 0x00, sizeof(z80));

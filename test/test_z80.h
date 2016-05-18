@@ -74,5 +74,12 @@ static void _set_ram(uint16_t address, uint8_t b){
     }
 }
 
+/* Set a wide breakpoint. Breakpoint at set address and two adjacent bytes*/
+static void _set_wide_breakpoint(uint16_t address, uint8_t mode) {
+	z80dbg_set_breakpoint(address, mode);
+	z80dbg_set_breakpoint(address - 1, mode);
+	z80dbg_set_breakpoint(address + 1, mode);
+}
+
 
 #endif

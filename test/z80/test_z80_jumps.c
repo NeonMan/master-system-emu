@@ -54,6 +54,9 @@ TEST_SETUP(jumps) {
 
 	//Setup callbacks
 	z80dbg_set_pc_breakpoint_cb(pc_breakpoint_cb);
+
+	//Clear breakpoints
+	z80dbg_clear_breakpoints();
 }
 
 TEST_TEAR_DOWN(jumps) {
@@ -73,8 +76,8 @@ TEST(jumps, DJNZ) {
 	sms_ram[1] = op[1]; //Relative jump +127
 	Z80_B = 1;
 
-	z80dbg_set_breakpoint(RAM_BASE_ADDRESS + skip_pc, Z80_BREAK_PC);
-	z80dbg_set_breakpoint(RAM_BASE_ADDRESS + jump_pc, Z80_BREAK_PC);
+	_set_wide_breakpoint(RAM_BASE_ADDRESS + skip_pc, Z80_BREAK_PC);
+	_set_wide_breakpoint(RAM_BASE_ADDRESS + jump_pc, Z80_BREAK_PC);
 
 	//Run, jump must be taken
 	__RUN_TEST_OPCODES;
@@ -87,8 +90,8 @@ TEST(jumps, DJNZ) {
 	sms_ram[(jump_pc)+1] = op[1];
 
 	bp_triggered = 0;
-	z80dbg_set_breakpoint(RAM_BASE_ADDRESS + jump_pc + skip_pc, Z80_BREAK_PC);
-	z80dbg_set_breakpoint(RAM_BASE_ADDRESS + jump_pc + jump_pc, Z80_BREAK_PC);
+	_set_wide_breakpoint(RAM_BASE_ADDRESS + jump_pc + skip_pc, Z80_BREAK_PC);
+	_set_wide_breakpoint(RAM_BASE_ADDRESS + jump_pc + jump_pc, Z80_BREAK_PC);
 
 	//Run, jump must not be taken
 	__RUN_TEST_OPCODES;
@@ -97,8 +100,42 @@ TEST(jumps, DJNZ) {
 	TEST_ASSERT_PC_EQUAL(RAM_BASE_ADDRESS + jump_pc + skip_pc);
 }
 
+TEST(jumps, DJNZ_negative) {
+	const uint8_t op[2] = { 0x10, 0x80 }; //DJNZ -128
+	const uint16_t skip_pc = 2;
+	const uint16_t jump_pc = -128 + 2;
+
+
+	sms_ram[0] = op[0];       //Relative jump -128
+	sms_ram[1] = op[1];
+	sms_ram[128 - 2] = op[0];
+	sms_ram[128 - 1] = op[1];
+	Z80_B = 1;
+	Z80_PC = RAM_BASE_ADDRESS + 128 - 2;
+
+	_set_wide_breakpoint(RAM_BASE_ADDRESS + 128, Z80_BREAK_PC);
+	_set_wide_breakpoint(RAM_BASE_ADDRESS, Z80_BREAK_PC);
+
+	//Run, jump must be taken
+	__RUN_TEST_OPCODES;
+	TEST_ASSERT_TRUE(tick_limit > 0);
+	TEST_ASSERT_TRUE(bp_triggered);
+	TEST_ASSERT_PC_EQUAL(RAM_BASE_ADDRESS);
+
+	bp_triggered = 0;
+	_set_wide_breakpoint(RAM_BASE_ADDRESS + jump_pc, Z80_BREAK_PC);
+	_set_wide_breakpoint(RAM_BASE_ADDRESS + 2, Z80_BREAK_PC);
+
+	//Run, jump must not be taken
+	__RUN_TEST_OPCODES;
+	TEST_ASSERT_TRUE(tick_limit > 0);
+	TEST_ASSERT_TRUE(bp_triggered);
+	TEST_ASSERT_PC_EQUAL(RAM_BASE_ADDRESS + 2);
+}
+
 TEST_GROUP_RUNNER(jumps) {
 	RUN_TEST_CASE(jumps, DJNZ);
+	RUN_TEST_CASE(jumps, DJNZ_negative);
 }
 
 // ----------------------

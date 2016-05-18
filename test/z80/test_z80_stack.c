@@ -56,6 +56,9 @@ TEST_SETUP(stack_push){
 
     //Setup callbacks
     z80dbg_set_pc_breakpoint_cb(pc_breakpoint_cb);
+
+	//Clear breakpoints
+	z80dbg_clear_breakpoints();
 }
 
 TEST_TEAR_DOWN(stack_push){
@@ -155,7 +158,7 @@ TEST(stack_push, CALL_nn){
     sms_ram[0] = op_call[0];
     sms_ram[1] = op_call[1];
     sms_ram[2] = op_call[2];
-    z80dbg_set_breakpoint(0xC0F0, Z80_BREAK_PC); /*<-- Set breakpoint*/
+	_set_wide_breakpoint(0xC0F0, Z80_BREAK_PC); /*<-- Set breakpoint*/
     __RUN_TEST_OPCODES;
     TEST_ASSERT_TRUE(tick_limit > 0);
     TEST_ASSERT_TRUE(bp_triggered);
@@ -178,8 +181,8 @@ static void cc_test(const uint8_t* opcode, uint8_t flag){
     sms_ram[0xF0] = opcode[0]; sms_ram[0xF1] = opcode[1];
     sms_ram[0xF2] = opcode[2] + 1;
     //Write set breakpoints, one at (BASE + 15) and other to (BASE + 15 + 3)
-    z80dbg_set_breakpoint(RAM_BASE_ADDRESS + 0xF0 + 0, Z80_BREAK_PC);
-    z80dbg_set_breakpoint(RAM_BASE_ADDRESS + 0xF0 + 3, Z80_BREAK_PC);
+	_set_wide_breakpoint(RAM_BASE_ADDRESS + 0xF0 + 0, Z80_BREAK_PC);
+	_set_wide_breakpoint(RAM_BASE_ADDRESS + 0xF0 + 3, Z80_BREAK_PC);
     //Set flag (to take the jump)
     Z80_F = flag;
     //Execute opcode til breakpoint or tick limit
@@ -254,7 +257,7 @@ static void rst_test(uint8_t rst_index){
     uint16_t reset_vector = rst_index * 0x08;
 
     sms_ram[0] = op_rst;
-    z80dbg_set_breakpoint(reset_vector, Z80_BREAK_PC);
+	_set_wide_breakpoint(reset_vector, Z80_BREAK_PC);
     __RUN_TEST_OPCODES;
     TEST_ASSERT_TRUE(tick_limit > 0);
     TEST_ASSERT_TRUE(bp_triggered);
@@ -487,7 +490,7 @@ static void retn_test(uint8_t condition){
     //Swap flags
     Z80_F = Z80_F ^ 0xFF;
     //...breakpoint at stack-stored address
-    z80dbg_set_breakpoint(0xBBAA, Z80_BREAK_PC);
+	_set_wide_breakpoint(0xBBAA, Z80_BREAK_PC);
     bp_triggered = 0; //<-- Clear trigger flag
     //Run opcodes
     __RUN_TEST_OPCODES;

@@ -96,6 +96,8 @@ void z80dbg_set_io_breakpoint_cb(void(*cb) (uint16_t /*Addr*/, uint8_t /*Read*/)
 void z80dbg_set_mem_breakpoint_cb(void(*cb) (uint16_t /*Addr*/, uint8_t /*Read*/));
 ///Set PC breakpoint callback
 void z80dbg_set_pc_breakpoint_cb(void(*cb) (uint16_t /*Addr*/));
+///Clear all breakpoints
+void z80dbg_clear_breakpoints();
 
 #ifdef __cplusplus
 }
