@@ -58,10 +58,10 @@ int DJNZ_d() {
 	assert(z80.opcode_index == 2);
 	--Z80_B;
 	if (Z80_B) {
-		Z80_PC += ((int8_t)z80.opcode[1]);
 		return Z80_STAGE_RESET;
 	}
 	else {
+		Z80_PC += ((int8_t)z80.opcode[1]);
 		return Z80_STAGE_RESET;
 	}
 }

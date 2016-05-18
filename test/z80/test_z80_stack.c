@@ -1,4 +1,4 @@
-// Copyright 2015 Juan Luis ¡lvarez MartÌnez
+// Copyright 2015 Juan Luis √Ålvarez Mart√≠nez
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -553,6 +553,8 @@ TEST_GROUP_RUNNER(stack_pop){
     RUN_TEST_CASE(stack_pop, RET_P);
     RUN_TEST_CASE(stack_pop, RET_M);
 }
+
+
 
 // ----------------------
 // --- Helpers & Main ---

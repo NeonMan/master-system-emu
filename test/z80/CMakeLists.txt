@@ -39,3 +39,8 @@ add_test(test_z80_block zzz_test_z80_block)
 #add_executable(zzz_test_z80_exchange test_z80_exchange.c)
 #target_link_libraries(zzz_test_z80_exchange z80 smsram unity)
 #add_test(test_z80_exchange zzz_test_z80_exchange)
+
+#Jumps
+add_executable(zzz_test_z80_jumps test_z80_jumps.c)
+target_link_libraries(zzz_test_z80_jumps z80 smsram unity)
+add_test(test_z80_jumps zzz_test_z80_jumps)
