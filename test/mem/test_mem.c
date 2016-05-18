@@ -124,24 +124,20 @@ int main(int argc, char**argv){
 
     //Ram is 8K, mirrored twice on the last 16K slot
 
-    //Initialize RAM
-    for (int i = 0xC000; i < 0xE000; i++){
-        write_byte(i, full_rom[i]);
-    }
-
-    //Test RAM (Read)
+    //Test RAM (Read/Write)
     int ram_ok = 1;
     for (int i = 0xC000; i < 0xE000; i++){
+		write_byte(i, full_rom[i]);
         ram_ok = ram_ok & (read_byte(i) == full_rom[i]);
         ram_ok = ram_ok & (read_byte(i + 0xE000 - 0xC000) == full_rom[i]);
     }
 
     if (ram_ok)
-        printf("--- RAM READ OK ---\n");
+        printf("--- RAM R/W OK ---\n");
     else
-        printf("--- RAM READ Error ---\n");
+        printf("--- RAM R/W Error ---\n");
 
-	//Test RAM (Write)
+	//Test RAM (Read/write, mirrored write)
 	for (int i = 0xC000; i < 0xE000; i++) {
 		write_byte(i, full_rom[i] ^ 0xFF);
 		ram_ok = ram_ok & (read_byte(i) == (full_rom[i] ^0xFF));
@@ -153,9 +149,9 @@ int main(int argc, char**argv){
 	}
 
 	if (ram_ok)
-		printf("--- RAM WRITE OK ---\n");
+		printf("--- RAM R/W OK (Mirrored write) ---\n");
 	else
-		printf("--- RAM WRITE Error ---\n");
+		printf("--- RAM R/W Error (Mirrored write) ---\n");
 
 	//Cleanup and exit
     free(full_rom);

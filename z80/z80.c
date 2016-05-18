@@ -95,6 +95,11 @@ void z80dbg_set_pc_breakpoint_cb(void(*cb) (uint16_t /*Addr*/)){
     z80_break_pc = cb;
 }
 
+///Delete all breakpoints
+void z80dbg_clear_breakpoints() {
+	memset(z80_breakpoints, 0, Z80_ADDRESS_SIZE);
+}
+
 ///Returns the pointer to the breakpoint table
 uint8_t* z80dbg_get_breakpoints(){
     return z80_breakpoints;
