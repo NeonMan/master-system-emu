@@ -439,19 +439,18 @@ int SUB_r() {
 int XOR_HLp() {
     assert(z80.opcode_index == 1);
     Z80_8BIT_READ(Z80_HL, 0);
-    Z80_A = Z80_A ^ z80.read_buffer[0];
-
-    Z80_F = 0;
-    Z80_F |= Z80_SETFLAG_ZERO(Z80_A);
-    Z80_F |= Z80_SETFLAG_SIGN(Z80_A);
-    Z80_F |= Z80_SETFLAG_PARITY(Z80_A);
+    alu_result_t r = alu_op(Z80_ALU_XOR, Z80_A, z80.read_buffer[0], Z80_F);
+    Z80_A = r.result;
+    Z80_F = r.flags;
     return Z80_STAGE_RESET;
 }
 
 ///XOR n; Size: 2; Flags: ???
 int XOR_n() {
     assert(z80.opcode_index == 2);
-    assert(0); ///<-- unimplemented
+    alu_result_t r = alu_op(Z80_ALU_XOR, Z80_A, z80.opcode[1], Z80_F);
+    Z80_A = r.result;
+    Z80_F = r.flags;
     return Z80_STAGE_RESET;
 }
 
@@ -460,13 +459,9 @@ int XOR_r() {
     Z80_OPCODE_SUBDIV;
     assert(z80.opcode_index == 1);
     assert(z80_r[z[0]] != 0);
-
-    Z80_A = Z80_A ^ *(z80_r[z[0]]);
-
-    Z80_F = 0;
-    Z80_F |= Z80_SETFLAG_SIGN(Z80_A);
-    Z80_F |= Z80_SETFLAG_ZERO(Z80_A);
-    Z80_F |= Z80_SETFLAG_PARITY(Z80_A);
+    alu_result_t r = alu_op(Z80_ALU_XOR, Z80_A, *(z80_r[z[0]]), Z80_F);
+    Z80_A = r.result;
+    Z80_F = r.flags;
     return Z80_STAGE_RESET;
 }
 
