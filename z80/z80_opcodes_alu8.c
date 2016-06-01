@@ -179,14 +179,9 @@ int ADD_HLp() {
 ///ADD n; Size 2; Flags:ALL
 int ADD_n() {
     assert(z80.opcode_index == 2);
-    const uint8_t orig_a = Z80_A;
-    Z80_A = Z80_A + z80.opcode[1];
-    Z80_F = 0;
-    Z80_F |= Z80_SETFLAG_SIGN(Z80_A);
-    Z80_F |= Z80_SETFLAG_ZERO(Z80_A);
-    Z80_F |= Z80_SETFLAG_HALF_CARRY(orig_a, z80.opcode[1]);
-    Z80_F |= Z80_SETFLAG_OVERFLOW(orig_a, Z80_A);
-    Z80_F |= Z80_SETFLAG_CARRY(orig_a, Z80_A);
+    alu_result_t r = alu_op(Z80_ALU_ADD, Z80_A, z80.opcode[1], Z80_F);
+    Z80_A = r.result;
+    Z80_F = r.flags;
     return Z80_STAGE_RESET;
 }
 
@@ -200,13 +195,9 @@ int ADD_r() {
 ///AND n; Size 2; Flags:ALL
 int AND_n() {
     assert(z80.opcode_index == 2);
-    const uint8_t orig_a = Z80_A;
-    Z80_A = Z80_A & z80.opcode[1];
-    Z80_F = 0;
-    Z80_F |= Z80_SETFLAG_SIGN(Z80_A);
-    Z80_F |= Z80_SETFLAG_ZERO(Z80_A);
-    Z80_F |= Z80_SETFLAG_OVERFLOW(orig_a, Z80_A);
-    Z80_F |= Z80_FLAG_HC;
+    alu_result_t r = alu_op(Z80_ALU_AND, Z80_A, z80.opcode[1], Z80_F);
+    Z80_A = r.result;
+    Z80_F = r.flags;
     return Z80_STAGE_RESET;
 }
 
@@ -215,15 +206,9 @@ int AND_r() {
     assert(z80.opcode_index == 1);
     Z80_OPCODE_SUBDIV;
     assert(z[0] != Z80_R_INDEX_HL);
-
-    const uint8_t orig_a = Z80_A;
-    Z80_A = Z80_A & (*(z80_r[z[0]]));
-
-    Z80_F = 0;
-    Z80_F |= Z80_SETFLAG_SIGN(Z80_A);
-    Z80_F |= Z80_SETFLAG_ZERO(Z80_A);
-    Z80_F |= Z80_FLAG_HC;
-    Z80_F |= Z80_SETFLAG_OVERFLOW(orig_a, Z80_A);
+    alu_result_t r = alu_op(Z80_ALU_AND, Z80_A, (*(z80_r[z[0]])), Z80_F);
+    Z80_A = r.result;
+    Z80_F = r.flags;
     return Z80_STAGE_RESET;
 }
 
@@ -237,13 +222,8 @@ int AND_HLp() {
 ///CP n; Size: 2; Flags: All
 int CP_n() {
     assert(z80.opcode_index == 2);
-    Z80_F = 0;
-    Z80_F |= Z80_FLAG_SUBTRACT; //Flag is set, always
-    Z80_F |= Z80_SETFLAG_SIGN(Z80_A - z80.opcode[1]);
-    Z80_F |= Z80_SETFLAG_ZERO(Z80_A - z80.opcode[1]);
-    Z80_F |= Z80_SETFLAG_HALF_BORROW(Z80_A, z80.opcode[1]);
-    Z80_F |= Z80_SETFLAG_OVERFLOW(Z80_A, Z80_A - z80.opcode[1]);
-    Z80_F |= Z80_SETFLAG_BORROW(Z80_A, Z80_A - z80.opcode[1]);
+    alu_result_t r = alu_op(Z80_ALU_CP, Z80_A, z80.opcode[1], Z80_F);
+    Z80_F = r.flags;
     return Z80_STAGE_RESET;
 }
 
@@ -251,15 +231,8 @@ int CP_n() {
 int CP_HLp() {
     assert(z80.opcode_index == 1);
     Z80_8BIT_READ(Z80_HL, 0);
-    const uint8_t result = Z80_A - z80.read_buffer[0];
-
-    Z80_F = 0;
-    Z80_F |= Z80_SETFLAG_SIGN(result);
-    Z80_F |= Z80_SETFLAG_ZERO(result);
-    Z80_F |= Z80_SETFLAG_HALF_BORROW(Z80_A, result);
-    Z80_F |= Z80_SETFLAG_OVERFLOW(Z80_A, result);
-    Z80_F |= Z80_FLAG_SUBTRACT;
-    Z80_F |= Z80_SETFLAG_BORROW(Z80_A, result);
+    alu_result_t r = alu_op(Z80_ALU_CP, Z80_A, z80.read_buffer[0], Z80_F);
+    Z80_F = r.flags;
     return Z80_STAGE_RESET;
 }
 
@@ -268,16 +241,8 @@ int CP_r() {
     assert(z80.opcode_index == 1);
     Z80_OPCODE_SUBDIV;
     assert(z[0] != Z80_R_INDEX_HL);
-
-    uint8_t new_a;
-    new_a = Z80_A - *(z80_r[z[0]]);
-
-    Z80_F = Z80_SETFLAG_SIGN(Z80_A)
-        | Z80_SETFLAG_ZERO(Z80_A)
-        | Z80_SETFLAG_HALF_BORROW(Z80_A, *(z80_r[z[0]]))
-        | Z80_SETFLAG_OVERFLOW(Z80_A, new_a)
-        | Z80_FLAG_SUBTRACT
-        | Z80_SETFLAG_BORROW(Z80_A, new_a);
+    alu_result_t r = alu_op(Z80_ALU_CP, Z80_A, *(z80_r[z[0]]), Z80_F);
+    Z80_F = r.flags;
     return Z80_STAGE_RESET;
 }
 
