@@ -187,6 +187,9 @@ const uint8_t q[4] = { z80.opcode[0] & (1 << 3), z80.opcode[1] & (1 << 3), z80.o
 #define Z80_SETFLAG_BORROW(O,N) (O < N ? Z80_FLAG_CARRY : 0) /**<-- [C] Set carry flag, subtraction, (bit 0)*/
 ///@bug Decimal Adjust Accumulate is not implemented
 
+#define Z80_SETFLAG_UNK3(RESULT) ((RESULT) & (1<<3))
+#define Z80_SETFLAG_UNK5(RESULT) ((RESULT) & (1<<5))
+
 // --- Inverted flag masks (for bit clearing)
 #define Z80_CLRFLAG_SIGN     (Z80_FLAG_SIGN     ^ 0xFF)
 #define Z80_CLRFLAG_ZERO     (Z80_FLAG_ZERO     ^ 0xFF)

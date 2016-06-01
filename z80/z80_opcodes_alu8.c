@@ -19,6 +19,135 @@
 
 extern struct z80_s z80; //<-- Access to z80 internals
 
+#define Z80_ALU_ADD 0
+#define Z80_ALU_ADC 1
+#define Z80_ALU_SUB 2
+#define Z80_ALU_SBC 3
+#define Z80_ALU_AND 4
+#define Z80_ALU_XOR 5
+#define Z80_ALU_OR  6
+#define Z80_ALU_CP  7
+
+struct alu_result_s {
+    int8_t  result;
+    uint8_t flags;
+};
+typedef struct alu_result_s alu_result_t;
+
+static alu_result_t alu_op(uint8_t operation, int8_t op1, int8_t op2, uint8_t flags) {
+    assert(operation <= Z80_ALU_CP);
+    alu_result_t rv = { 0, 0 };
+
+    switch (operation) {
+    /* --- ADD --- */
+    case Z80_ALU_ADD:
+        rv.result = op1 + op2;
+        /*Flags*/
+        rv.flags |= Z80_SETFLAG_CARRY(op1, rv.result);    /* Carry                     */
+        /*rv.flags |= 0*/                                 /* Negative (cleared)        */
+        rv.flags |= Z80_SETFLAG_OVERFLOW(op1, rv.result); /* Overflow                  */
+        rv.flags |= Z80_SETFLAG_UNK3(rv.result);          /* Undoc 3 (bit 3 of result) */
+        rv.flags |= Z80_SETFLAG_HALF_CARRY(op1, op2);     /* Half carry                */
+        rv.flags |= Z80_SETFLAG_UNK5(rv.result);          /* Undoc 5 (bit 5 of result) */
+        rv.flags |= Z80_SETFLAG_ZERO(rv.result);          /* Zero                      */
+        rv.flags |= Z80_SETFLAG_SIGN(rv.result);          /* Sign                      */
+        break;
+    /* --- ADC --- */
+    case Z80_ALU_ADC:
+        rv.result = (flags & Z80_FLAG_CARRY) ? (op1 + op2 + 1) : (op1 + op2);
+        /*Flags*/
+        rv.flags |= Z80_SETFLAG_CARRY(op1, rv.result);    /* Carry                     */
+        /*rv.flags |= 0*/                                 /* Negative (cleared)        */
+        rv.flags |= Z80_SETFLAG_OVERFLOW(op1, rv.result); /* Overflow                  */
+        rv.flags |= Z80_SETFLAG_UNK3(rv.result);          /* Undoc 3 (bit 3 of result) */
+        rv.flags |= Z80_SETFLAG_HALF_CARRY(op1, op2);     /* Half carry                */
+        rv.flags |= Z80_SETFLAG_UNK5(rv.result);          /* Undoc 5 (bit 5 of result) */
+        rv.flags |= Z80_SETFLAG_ZERO(rv.result);          /* Zero                      */
+        rv.flags |= Z80_SETFLAG_SIGN(rv.result);          /* Sign                      */
+        break;
+    /* --- SUB --- */
+    case Z80_ALU_SUB:
+        rv.result = op1 - op2;
+        /*Flags*/
+        rv.flags |= Z80_SETFLAG_BORROW(op1, rv.result);   /* Carry                     */
+        rv.flags |= Z80_FLAG_SUBTRACT;                    /* Negative (set)            */
+        rv.flags |= Z80_SETFLAG_OVERFLOW(op1, rv.result); /* Overflow                  */
+        rv.flags |= Z80_SETFLAG_UNK3(rv.result);          /* Undoc 3 (bit 3 of result) */
+        rv.flags |= Z80_SETFLAG_HALF_BORROW(op1, op2);    /* Half carry                */
+        rv.flags |= Z80_SETFLAG_UNK5(rv.result);          /* Undoc 5 (bit 5 of result) */
+        rv.flags |= Z80_SETFLAG_ZERO(rv.result);          /* Zero                      */
+        rv.flags |= Z80_SETFLAG_SIGN(rv.result);          /* Sign                      */
+        break;
+    /* --- SBC --- */
+    case Z80_ALU_SBC:
+        rv.result = (flags & Z80_FLAG_CARRY) ? (op1 - op2 + 1) : (op1 - op2);
+        /*Flags*/
+        rv.flags |= Z80_SETFLAG_BORROW(op1, rv.result);   /* Carry                     */
+        rv.flags |= Z80_FLAG_SUBTRACT;                    /* Negative (set)            */
+        rv.flags |= Z80_SETFLAG_OVERFLOW(op1, rv.result); /* Overflow                  */
+        rv.flags |= Z80_SETFLAG_UNK3(rv.result);          /* Undoc 3 (bit 3 of result) */
+        rv.flags |= Z80_SETFLAG_HALF_BORROW(op1, op2);    /* Half carry                */
+        rv.flags |= Z80_SETFLAG_UNK5(rv.result);          /* Undoc 5 (bit 5 of result) */
+        rv.flags |= Z80_SETFLAG_ZERO(rv.result);          /* Zero                      */
+        rv.flags |= Z80_SETFLAG_SIGN(rv.result);          /* Sign                      */
+        break;
+    /* --- AND --- */
+    case Z80_ALU_AND:
+        rv.result = op1 & op2;
+        /*Flags*/
+        /*rv.flags |= 0;*/                                /* Carry (cleared)           */
+        /*rv.flags |= 0;*/                                /* Negative (cleared)        */
+        rv.flags |= Z80_SETFLAG_PARITY(rv.result);        /* Parity                    */
+        rv.flags |= Z80_SETFLAG_UNK3(rv.result);          /* Undoc 3 (bit 3 of result) */
+        rv.flags |= Z80_FLAG_HC;                          /* Half carry (set)          */
+        rv.flags |= Z80_SETFLAG_UNK5(rv.result);          /* Undoc 5 (bit 5 of result) */
+        rv.flags |= Z80_SETFLAG_ZERO(rv.result);          /* Zero                      */
+        rv.flags |= Z80_SETFLAG_SIGN(rv.result);          /* Sign                      */
+        break;
+    /* --- XOR --- */
+    case Z80_ALU_XOR:
+        rv.result = op1 ^ op2;
+        /*Flags*/
+        /*rv.flags |= 0;*/                                /* Carry (cleared)           */
+        /*rv.flags |= 0;*/                                /* Negative (cleared)        */
+        rv.flags |= Z80_SETFLAG_PARITY(rv.result);        /* Parity                    */
+        rv.flags |= Z80_SETFLAG_UNK3(rv.result);          /* Undoc 3 (bit 3 of result) */
+        /*rv.flags |= 0;*/                                /* Half carry (cleared)      */
+        rv.flags |= Z80_SETFLAG_UNK5(rv.result);          /* Undoc 5 (bit 5 of result) */
+        rv.flags |= Z80_SETFLAG_ZERO(rv.result);          /* Zero                      */
+        rv.flags |= Z80_SETFLAG_SIGN(rv.result);          /* Sign                      */
+        break;
+    /* --- OR --- */
+    case Z80_ALU_OR:
+        rv.result = op1 | op2;
+        /*Flags*/
+        /*rv.flags |= 0;*/                                /* Carry (cleared)           */
+        /*rv.flags |= 0;*/                                /* Negative (cleared)        */
+        rv.flags |= Z80_SETFLAG_PARITY(rv.result);        /* Parity                    */
+        rv.flags |= Z80_SETFLAG_UNK3(rv.result);          /* Undoc 3 (bit 3 of result) */
+        /*rv.flags |= 0;*/                                /* Half carry (cleared)      */
+        rv.flags |= Z80_SETFLAG_UNK5(rv.result);          /* Undoc 5 (bit 5 of result) */
+        rv.flags |= Z80_SETFLAG_ZERO(rv.result);          /* Zero                      */
+        rv.flags |= Z80_SETFLAG_SIGN(rv.result);          /* Sign                      */
+        break;
+    /* --- CP --- */
+    case Z80_ALU_CP:
+        rv.result = op1 - op2;
+        /*Flags*/
+        rv.flags |= Z80_SETFLAG_BORROW(op1, rv.result);   /* Carry                     */
+        rv.flags |= Z80_FLAG_SUBTRACT;                    /* Negative (set)            */
+        rv.flags |= Z80_SETFLAG_OVERFLOW(op1, rv.result); /* Overflow                  */
+        rv.flags |= Z80_SETFLAG_UNK3(op2);                /* Undoc 3 (bit 3 of result) */
+        rv.flags |= Z80_SETFLAG_HALF_BORROW(op1, op2);    /* Half carry                */
+        rv.flags |= Z80_SETFLAG_UNK5(op2);                /* Undoc 5 (bit 5 of result) */
+        rv.flags |= Z80_SETFLAG_ZERO(rv.result);          /* Zero                      */
+        rv.flags |= Z80_SETFLAG_SIGN(rv.result);          /* Sign                      */
+        break;
+    }
+
+    return rv;
+}
+
 ///ADC n; Size: 2; Flags: ???
 int ADC_n() {
     assert(z80.opcode_index == 2);
