@@ -19,23 +19,6 @@
 
 extern struct z80_s z80; //<-- Access to z80 internals
 
-///BIT y, (HL); Size: 2; Flags: ???
-int BIT_b_HLp(){
-    assert(z80.opcode_index == 2);
-    assert(0);
-    return Z80_STAGE_RESET;
-}
-
-///BIT y,r[z]; Size: 2; Flags: _S,Z,H,_P,N
-int BIT_b_r(){
-    assert(z80.opcode_index == 2);
-    Z80_OPCODE_SUBDIV;
-    Z80_F = (Z80_F & (Z80_CLRFLAG_ZERO & Z80_CLRFLAG_SUBTRACT)); //Clear Z,N
-    Z80_F = Z80_F | (((1 << y[1]) & (*z80_r[z[1]])) ? 0 : Z80_CLRFLAG_ZERO);
-    Z80_F = Z80_F | Z80_FLAG_HC;
-    return Z80_STAGE_RESET;
-}
-
 ///CCF; Size: 1; Flags: C
 int CCF(){
     assert(z80.opcode_index == 1);
@@ -133,21 +116,6 @@ int IM(){
 ///NOP; Size: 1; Flags: None
 int NOP(){
     assert(z80.opcode_index == 1);
-    return Z80_STAGE_RESET;
-}
-
-///RES y, (HL); Size: 2; Flags: None
-int RES_b_HLp(){
-    assert(z80.opcode_index == 2);
-    assert(0);
-    return Z80_STAGE_RESET;
-}
-
-///RES y,r[z]; Size: 2; Flags: None
-int RES_b_r(){
-    assert(z80.opcode_index == 2);
-    Z80_OPCODE_SUBDIV;
-    *(z80_r[z[1]]) = *(z80_r[z[1]]) & (~(1 << y[1]));
     return Z80_STAGE_RESET;
 }
 
@@ -286,20 +254,6 @@ int RR_HLp(){
 
 ///RR r; Size: 2; Flags: ???
 int RR_r(){
-    assert(z80.opcode_index == 2);
-    assert(0); ///<-- Unimplemented
-    return Z80_STAGE_RESET;
-}
-
-///SET y, (HL); Size: 2; Flags: None
-int SET_b_HLp(){
-    assert(z80.opcode_index == 2);
-    assert(0);
-    return Z80_STAGE_RESET;
-}
-
-///SET y, r; Size: 2; Flags: None
-int SET_b_r(){
     assert(z80.opcode_index == 2);
     assert(0); ///<-- Unimplemented
     return Z80_STAGE_RESET;
@@ -532,21 +486,6 @@ int SRL_IXYp(){
 	else{
 		Z80_8BIT_WRITE(Z80_IY + d, 0, result);
 	}
-    return Z80_STAGE_RESET;
-}
-
-int SET_b_IXYp(){
-    assert(0); /*<-- Unimplemented*/
-    return Z80_STAGE_RESET;
-}
-
-int RES_b_IXYp(){
-    assert(0); /*<-- Unimplemented*/
-    return Z80_STAGE_RESET;
-}
-
-int BIT_b_IXYp(){
-    assert(0); /*<-- Unimplemented*/
     return Z80_STAGE_RESET;
 }
 

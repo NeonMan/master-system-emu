@@ -63,6 +63,15 @@
     }\
 }
 
+/* ------------- */
+/* --- Types --- */
+/* ------------- */
+struct alu_result_s {
+    int8_t  result;
+    uint8_t flags;
+};
+typedef struct alu_result_s alu_result_t;
+
 /* ------------------ */
 /* --- 8-bit Load --- */
 /* ------------------ */
