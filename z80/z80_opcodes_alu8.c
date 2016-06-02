@@ -123,133 +123,59 @@ static alu_result_t alu_op(uint8_t operation, int8_t op1, int8_t op2, uint8_t fl
         break;
     /* --- CP --- */
     case Z80_ALUOP_CP:
-        rv.result = op1 - op2;
         /*Flags*/
-        rv.flags |= Z80_SETFLAG_BORROW(op1, rv.result);   /* Carry                     */
+        rv.flags |= Z80_SETFLAG_BORROW(op1, op1 - op2);   /* Carry                     */
         rv.flags |= Z80_FLAG_SUBTRACT;                    /* Negative (set)            */
-        rv.flags |= Z80_SETFLAG_OVERFLOW(op1, rv.result); /* Overflow                  */
+        rv.flags |= Z80_SETFLAG_OVERFLOW(op1, op1 - op2); /* Overflow                  */
         rv.flags |= Z80_SETFLAG_UNK3(op2);                /* Undoc 3 (bit 3 of result) */
         rv.flags |= Z80_SETFLAG_HALF_BORROW(op1, op2);    /* Half carry                */
         rv.flags |= Z80_SETFLAG_UNK5(op2);                /* Undoc 5 (bit 5 of result) */
-        rv.flags |= Z80_SETFLAG_ZERO(rv.result);          /* Zero                      */
-        rv.flags |= Z80_SETFLAG_SIGN(rv.result);          /* Sign                      */
+        rv.flags |= Z80_SETFLAG_ZERO(op1 - op2);          /* Zero                      */
+        rv.flags |= Z80_SETFLAG_SIGN(op1 - op2);          /* Sign                      */
+        rv.result = op1;
         break;
     }
 
     return rv;
 }
 
-///ADC n; Size: 2; Flags: ???
-int ADC_n() {
-    assert(z80.opcode_index == 2);
-    alu_result_t r = alu_op(Z80_ALUOP_ADC, Z80_A, z80.opcode[1], Z80_F);
-    Z80_A = r.result;
-    Z80_F = r.flags;
-    return Z80_STAGE_RESET;
-}
-
-///ADC (HL); Size: 1; Flags: ???
-int ADC_HLp() {
+///alu(HL); Size: 1; Flags: All
+int alu8_HLp() {
     assert(z80.opcode_index == 1);
+    Z80_OPCODE_SUBDIV;
+    const uint8_t alu_operation = y[0];
     Z80_8BIT_READ(Z80_HL, 0);
-    alu_result_t r = alu_op(Z80_ALUOP_ADC, Z80_A, z80.read_buffer[0], Z80_F);
+    alu_result_t r = alu_op(alu_operation, Z80_A, z80.read_buffer[0], Z80_F);
     Z80_A = r.result;
     Z80_F = r.flags;
     return Z80_STAGE_RESET;
 }
 
-///ADC r; Size: 1; Flags: ???
-int ADC_r() {
-    assert(z80.opcode_index == 1);
-    Z80_OPCODE_SUBDIV;
-    assert(z[0] != Z80_R_INDEX_HL);
-    alu_result_t r = alu_op(Z80_ALUOP_ADC, Z80_A, *(z80_r[z[0]]), Z80_F);
-    Z80_A = r.result;
-    Z80_F = r.flags;
-    return Z80_STAGE_RESET;
-}
-
-///ADD (HL); Size: 1; Flags: ???
-int ADD_HLp() {
-    assert(z80.opcode_index == 1);
-    Z80_8BIT_READ(Z80_HL, 0);
-    alu_result_t r = alu_op(Z80_ALUOP_ADD, Z80_A, z80.read_buffer[0], Z80_F);
-    Z80_A = r.result;
-    Z80_F = r.flags;
-    return Z80_STAGE_RESET;
-}
-
-///ADD n; Size 2; Flags:ALL
-int ADD_n() {
+///alu n; Size: 2; Flags: All
+int alu8_n() {
     assert(z80.opcode_index == 2);
-    alu_result_t r = alu_op(Z80_ALUOP_ADD, Z80_A, z80.opcode[1], Z80_F);
+    Z80_OPCODE_SUBDIV;
+    const uint8_t alu_operation = y[0];
+    alu_result_t r = alu_op(alu_operation, Z80_A, z80.opcode[1], Z80_F);
     Z80_A = r.result;
     Z80_F = r.flags;
     return Z80_STAGE_RESET;
 }
 
-///ADD r; Size: 1; Flags:ALL
-int ADD_r() {
+///alu r; Size: 1; Flags: All
+int alu8_r() {
     assert(z80.opcode_index == 1);
     Z80_OPCODE_SUBDIV;
     assert(z[0] != Z80_R_INDEX_HL);
-    alu_result_t r = alu_op(Z80_ALUOP_ADD, Z80_A, *(z80_r[z[0]]), Z80_F);
+    const uint8_t alu_operation = y[0];
+    alu_result_t r = alu_op(alu_operation, Z80_A, *(z80_r[z[0]]), Z80_F);
     Z80_A = r.result;
     Z80_F = r.flags;
     return Z80_STAGE_RESET;
 }
 
-///AND n; Size 2; Flags:ALL
-int AND_n() {
-    assert(z80.opcode_index == 2);
-    alu_result_t r = alu_op(Z80_ALUOP_AND, Z80_A, z80.opcode[1], Z80_F);
-    Z80_A = r.result;
-    Z80_F = r.flags;
-    return Z80_STAGE_RESET;
-}
-
-///AND r[z]; Size: 1; Flags: All
-int AND_r() {
-    assert(z80.opcode_index == 1);
-    Z80_OPCODE_SUBDIV;
-    assert(z[0] != Z80_R_INDEX_HL);
-    alu_result_t r = alu_op(Z80_ALUOP_AND, Z80_A, (*(z80_r[z[0]])), Z80_F);
-    Z80_A = r.result;
-    Z80_F = r.flags;
-    return Z80_STAGE_RESET;
-}
-
-///AND (HL); Size: 1; Flags: ???
-int AND_HLp() {
-    assert(z80.opcode_index == 1);
-    assert(0); ///<-- Unimplemented
-    return Z80_STAGE_RESET;
-}
-
-///CP n; Size: 2; Flags: All
-int CP_n() {
-    assert(z80.opcode_index == 2);
-    alu_result_t r = alu_op(Z80_ALUOP_CP, Z80_A, z80.opcode[1], Z80_F);
-    Z80_F = r.flags;
-    return Z80_STAGE_RESET;
-}
-
-///CP (HL); Size: 1; Flags: ???
-int CP_HLp() {
-    assert(z80.opcode_index == 1);
-    Z80_8BIT_READ(Z80_HL, 0);
-    alu_result_t r = alu_op(Z80_ALUOP_CP, Z80_A, z80.read_buffer[0], Z80_F);
-    Z80_F = r.flags;
-    return Z80_STAGE_RESET;
-}
-
-///CP r[z]; Size: 1; Flags: All
-int CP_r() {
-    assert(z80.opcode_index == 1);
-    Z80_OPCODE_SUBDIV;
-    assert(z[0] != Z80_R_INDEX_HL);
-    alu_result_t r = alu_op(Z80_ALUOP_CP, Z80_A, *(z80_r[z[0]]), Z80_F);
-    Z80_F = r.flags;
+int alu8_IXYp() {
+    assert(0);
     return Z80_STAGE_RESET;
 }
 
@@ -323,120 +249,6 @@ int NEG() {
     return Z80_STAGE_RESET;
 }
 
-///OR (HL); Size: 1; Flags: ???
-int OR_HLp() {
-    assert(z80.opcode_index == 1);
-    Z80_OPCODE_SUBDIV;
-    Z80_8BIT_READ(Z80_HL, 0);
-
-    const uint8_t orig_a = Z80_A;
-    Z80_A = Z80_A | z80.read_buffer[0];
-    Z80_F = 0;
-    Z80_F |= Z80_SETFLAG_SIGN(Z80_A);
-    Z80_F |= Z80_SETFLAG_ZERO(Z80_A);
-    Z80_F |= Z80_SETFLAG_OVERFLOW(orig_a, Z80_A);
-    return Z80_STAGE_RESET;
-
-}
-
-///OR n; Size: 2; Flags:ALL
-int OR_n() {
-    assert(z80.opcode_index == 2);
-    const uint8_t orig_a = Z80_A;
-    Z80_A = Z80_A | z80.opcode[1];
-    Z80_F = 0;
-    Z80_F |= Z80_SETFLAG_SIGN(Z80_A);
-    Z80_F |= Z80_SETFLAG_ZERO(Z80_A);
-    Z80_F |= Z80_SETFLAG_OVERFLOW(orig_a, Z80_A);
-    return Z80_STAGE_RESET;
-}
-
-///OR r[z]; Size: 1; Flags: All
-int OR_r() {
-    assert(z80.opcode_index == 1);
-    Z80_OPCODE_SUBDIV;
-    const uint8_t orig_a = Z80_A;
-
-    Z80_A = Z80_A | *(z80_r[z[0]]);
-    Z80_F = 0;
-    Z80_F |= Z80_SETFLAG_SIGN(Z80_A);
-    Z80_F |= Z80_SETFLAG_ZERO(Z80_A);
-    Z80_F |= Z80_SETFLAG_OVERFLOW(orig_a, Z80_A);
-    return Z80_STAGE_RESET;
-}
-
-///SBC (HL); Size: 1; Flags: ???
-int SBC_HLp() {
-    assert(z80.opcode_index == 1);
-    assert(0); ///<-- Unimplemented
-    return Z80_STAGE_RESET;
-}
-
-///SBC n; Size: 2; Flags: ???
-int SBC_n() {
-    assert(z80.opcode_index == 2);
-    assert(0); ///<-- Unimplemented
-    return Z80_STAGE_RESET;
-}
-
-///SBC r; Size: 1; Flags: ???
-int SBC_r() {
-    assert(z80.opcode_index == 1);
-    assert(0);
-    return Z80_STAGE_RESET;
-}
-
-///SUB (HL); Size: 1; Flags: ???
-int SUB_HLp() {
-    assert(z80.opcode_index == 1);
-    assert(0); ///<-- Unimplemented
-    return Z80_STAGE_RESET;
-}
-
-///SUB n; Size: 2; Flags: ???
-int SUB_n() {
-    assert(z80.opcode_index == 2);
-    assert(0); ///<-- Unimplemented
-    return Z80_STAGE_RESET;
-}
-
-///SUB r; Size: 1; Flags: ???
-int SUB_r() {
-    assert(z80.opcode_index == 1);
-    assert(0);
-    return Z80_STAGE_RESET;
-}
-
-///XOR (HL); Size: 1; Flags: All
-int XOR_HLp() {
-    assert(z80.opcode_index == 1);
-    Z80_8BIT_READ(Z80_HL, 0);
-    alu_result_t r = alu_op(Z80_ALUOP_XOR, Z80_A, z80.read_buffer[0], Z80_F);
-    Z80_A = r.result;
-    Z80_F = r.flags;
-    return Z80_STAGE_RESET;
-}
-
-///XOR n; Size: 2; Flags: ???
-int XOR_n() {
-    assert(z80.opcode_index == 2);
-    alu_result_t r = alu_op(Z80_ALUOP_XOR, Z80_A, z80.opcode[1], Z80_F);
-    Z80_A = r.result;
-    Z80_F = r.flags;
-    return Z80_STAGE_RESET;
-}
-
-///XOR r[z]; Size: 1; Flags: All
-int XOR_r() {
-    Z80_OPCODE_SUBDIV;
-    assert(z80.opcode_index == 1);
-    assert(z80_r[z[0]] != 0);
-    alu_result_t r = alu_op(Z80_ALUOP_XOR, Z80_A, *(z80_r[z[0]]), Z80_F);
-    Z80_A = r.result;
-    Z80_F = r.flags;
-    return Z80_STAGE_RESET;
-}
-
 /* Stubs for IX/IY/(IX+d)/(IY+d)*/
 
 int INC_IXYp() {
@@ -445,46 +257,6 @@ int INC_IXYp() {
 }
 
 int DEC_IXYp() {
-    assert(0); /*<-- Unimplemented*/
-    return Z80_STAGE_RESET;
-}
-
-int ADD_IXYp() {
-    assert(0); /*<-- Unimplemented*/
-    return Z80_STAGE_RESET;
-}
-
-int ADC_IXYp() {
-    assert(0); /*<-- Unimplemented*/
-    return Z80_STAGE_RESET;
-}
-
-int SUB_IXYp() {
-    assert(0); /*<-- Unimplemented*/
-    return Z80_STAGE_RESET;
-}
-
-int SBC_IXYp() {
-    assert(0); /*<-- Unimplemented*/
-    return Z80_STAGE_RESET;
-}
-
-int AND_IXYp() {
-    assert(0); /*<-- Unimplemented*/
-    return Z80_STAGE_RESET;
-}
-
-int XOR_IXYp() {
-    assert(0); /*<-- Unimplemented*/
-    return Z80_STAGE_RESET;
-}
-
-int OR_IXYp() {
-    assert(0); /*<-- Unimplemented*/
-    return Z80_STAGE_RESET;
-}
-
-int CP_IXYp() {
     assert(0); /*<-- Unimplemented*/
     return Z80_STAGE_RESET;
 }

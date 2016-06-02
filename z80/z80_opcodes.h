@@ -119,34 +119,14 @@ int LDIR();
 /* ------------------------ */
 /* --- 8-bit arithmetic --- */
 /* ------------------------ */
-int ADC_HLp();
-int ADC_n();
-int ADC_r();
-int ADD_HLp();
-int ADD_n();
-int ADD_r();
-int AND_HLp();
-int AND_n();
-int AND_r();
-int CP_HLp();
-int CP_n();
-int CP_r();
+int alu8_HLp();
+int alu8_n();
+int alu8_r();
+
 int DEC_HLp();
 int DEC_r();
 int INC_HLp();
 int INC_r();
-int OR_HLp();
-int OR_n();
-int OR_r();
-int SBC_HLp();
-int SBC_n();
-int SBC_r();
-int SUB_HLp();
-int SUB_n();
-int SUB_r();
-int XOR_HLp();
-int XOR_n();
-int XOR_r();
 
 /* ---------------------------------------------- */
 /* --- General purpose arithmetic and control --- */
@@ -251,27 +231,19 @@ int OUTI();
 /* --------------------------------------------- */
 /* --- (IX+n)/(IY+n)/IX/IY verion of opcodes --- */
 /* --------------------------------------------- */
+int alu8_IXYp();
 
 int ADD_IXY_rp();
 int LD_IXY_nn();
 int LD_nnp_IXY();
 int INC_IXY();
 int INC_IXYp();
-int ADD_IXY_rp();
 int LD_IXY_nnp();
 int DEC_IXY();
 int DEC_IXYp();
 int LD_IXYp_n();
 int LD_r_IXYp();
 int LD_IXYp_r();
-int ADD_IXYp();
-int ADC_IXYp();
-int SUB_IXYp();
-int SBC_IXYp();
-int AND_IXYp();
-int XOR_IXYp();
-int OR_IXYp();
-int CP_IXYp();
 int POP_IXY();
 int EX_SPp_IXY();
 int PUSH_IXY();
