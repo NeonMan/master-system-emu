@@ -19,12 +19,6 @@
 
 extern struct z80_s z80; //<-- Access to z80 internals
 
-struct alu_result_s {
-    int8_t  result;
-    uint8_t flags;
-};
-typedef struct alu_result_s alu_result_t;
-
 static alu_result_t alu_op(uint8_t operation, int8_t op1, int8_t op2, uint8_t flags) {
     assert(operation <= Z80_ALUOP_CP);
     alu_result_t rv = { 0, 0 };
