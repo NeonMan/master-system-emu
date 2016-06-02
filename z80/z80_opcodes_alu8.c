@@ -175,7 +175,22 @@ int alu8_r() {
 }
 
 int alu8_IXYp() {
-    assert(0);
+    assert(z80.opcode_index == 3);
+    uint16_t address;
+    const int8_t displacement = (int8_t)z80.opcode[2];
+    if (z80.opcode[0] == 0xDD) {
+        address = Z80_IX + displacement;
+    }
+    else {
+        address = Z80_IY + displacement;
+    }
+    Z80_8BIT_READ(address, 0);
+    Z80_OPCODE_SUBDIV;
+    const uint8_t alu_operation = y[1];
+    alu_result_t r = alu_op(alu_operation, Z80_A, z80.read_buffer[0], Z80_F);
+    Z80_A = r.result;
+    Z80_F = r.flags;
+
     return Z80_STAGE_RESET;
 }
 
