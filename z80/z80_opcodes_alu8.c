@@ -19,15 +19,6 @@
 
 extern struct z80_s z80; //<-- Access to z80 internals
 
-#define Z80_ALU_ADD 0
-#define Z80_ALU_ADC 1
-#define Z80_ALU_SUB 2
-#define Z80_ALU_SBC 3
-#define Z80_ALU_AND 4
-#define Z80_ALU_XOR 5
-#define Z80_ALU_OR  6
-#define Z80_ALU_CP  7
-
 struct alu_result_s {
     int8_t  result;
     uint8_t flags;
@@ -35,12 +26,12 @@ struct alu_result_s {
 typedef struct alu_result_s alu_result_t;
 
 static alu_result_t alu_op(uint8_t operation, int8_t op1, int8_t op2, uint8_t flags) {
-    assert(operation <= Z80_ALU_CP);
+    assert(operation <= Z80_ALUOP_CP);
     alu_result_t rv = { 0, 0 };
 
     switch (operation) {
     /* --- ADD --- */
-    case Z80_ALU_ADD:
+    case Z80_ALUOP_ADD:
         rv.result = op1 + op2;
         /*Flags*/
         rv.flags |= Z80_SETFLAG_CARRY(op1, rv.result);    /* Carry                     */
@@ -53,7 +44,7 @@ static alu_result_t alu_op(uint8_t operation, int8_t op1, int8_t op2, uint8_t fl
         rv.flags |= Z80_SETFLAG_SIGN(rv.result);          /* Sign                      */
         break;
     /* --- ADC --- */
-    case Z80_ALU_ADC:
+    case Z80_ALUOP_ADC:
         rv.result = (flags & Z80_FLAG_CARRY) ? (op1 + op2 + 1) : (op1 + op2);
         /*Flags*/
         rv.flags |= Z80_SETFLAG_CARRY(op1, rv.result);    /* Carry                     */
@@ -66,7 +57,7 @@ static alu_result_t alu_op(uint8_t operation, int8_t op1, int8_t op2, uint8_t fl
         rv.flags |= Z80_SETFLAG_SIGN(rv.result);          /* Sign                      */
         break;
     /* --- SUB --- */
-    case Z80_ALU_SUB:
+    case Z80_ALUOP_SUB:
         rv.result = op1 - op2;
         /*Flags*/
         rv.flags |= Z80_SETFLAG_BORROW(op1, rv.result);   /* Carry                     */
@@ -79,7 +70,7 @@ static alu_result_t alu_op(uint8_t operation, int8_t op1, int8_t op2, uint8_t fl
         rv.flags |= Z80_SETFLAG_SIGN(rv.result);          /* Sign                      */
         break;
     /* --- SBC --- */
-    case Z80_ALU_SBC:
+    case Z80_ALUOP_SBC:
         rv.result = (flags & Z80_FLAG_CARRY) ? (op1 - op2 + 1) : (op1 - op2);
         /*Flags*/
         rv.flags |= Z80_SETFLAG_BORROW(op1, rv.result);   /* Carry                     */
@@ -92,7 +83,7 @@ static alu_result_t alu_op(uint8_t operation, int8_t op1, int8_t op2, uint8_t fl
         rv.flags |= Z80_SETFLAG_SIGN(rv.result);          /* Sign                      */
         break;
     /* --- AND --- */
-    case Z80_ALU_AND:
+    case Z80_ALUOP_AND:
         rv.result = op1 & op2;
         /*Flags*/
         /*rv.flags |= 0;*/                                /* Carry (cleared)           */
@@ -105,7 +96,7 @@ static alu_result_t alu_op(uint8_t operation, int8_t op1, int8_t op2, uint8_t fl
         rv.flags |= Z80_SETFLAG_SIGN(rv.result);          /* Sign                      */
         break;
     /* --- XOR --- */
-    case Z80_ALU_XOR:
+    case Z80_ALUOP_XOR:
         rv.result = op1 ^ op2;
         /*Flags*/
         /*rv.flags |= 0;*/                                /* Carry (cleared)           */
@@ -118,7 +109,7 @@ static alu_result_t alu_op(uint8_t operation, int8_t op1, int8_t op2, uint8_t fl
         rv.flags |= Z80_SETFLAG_SIGN(rv.result);          /* Sign                      */
         break;
     /* --- OR --- */
-    case Z80_ALU_OR:
+    case Z80_ALUOP_OR:
         rv.result = op1 | op2;
         /*Flags*/
         /*rv.flags |= 0;*/                                /* Carry (cleared)           */
@@ -131,7 +122,7 @@ static alu_result_t alu_op(uint8_t operation, int8_t op1, int8_t op2, uint8_t fl
         rv.flags |= Z80_SETFLAG_SIGN(rv.result);          /* Sign                      */
         break;
     /* --- CP --- */
-    case Z80_ALU_CP:
+    case Z80_ALUOP_CP:
         rv.result = op1 - op2;
         /*Flags*/
         rv.flags |= Z80_SETFLAG_BORROW(op1, rv.result);   /* Carry                     */
@@ -151,21 +142,30 @@ static alu_result_t alu_op(uint8_t operation, int8_t op1, int8_t op2, uint8_t fl
 ///ADC n; Size: 2; Flags: ???
 int ADC_n() {
     assert(z80.opcode_index == 2);
-    assert(0); ///<-- Unimplemented
+    alu_result_t r = alu_op(Z80_ALUOP_ADC, Z80_A, z80.opcode[1], Z80_F);
+    Z80_A = r.result;
+    Z80_F = r.flags;
     return Z80_STAGE_RESET;
 }
 
 ///ADC (HL); Size: 1; Flags: ???
 int ADC_HLp() {
     assert(z80.opcode_index == 1);
-    assert(0); ///<-- Unimplemented
+    Z80_8BIT_READ(Z80_HL, 0);
+    alu_result_t r = alu_op(Z80_ALUOP_ADC, Z80_A, z80.read_buffer[0], Z80_F);
+    Z80_A = r.result;
+    Z80_F = r.flags;
     return Z80_STAGE_RESET;
 }
 
 ///ADC r; Size: 1; Flags: ???
 int ADC_r() {
     assert(z80.opcode_index == 1);
-    assert(0); ///<-- Unimplemented
+    Z80_OPCODE_SUBDIV;
+    assert(z[0] != Z80_R_INDEX_HL);
+    alu_result_t r = alu_op(Z80_ALUOP_ADC, Z80_A, *(z80_r[z[0]]), Z80_F);
+    Z80_A = r.result;
+    Z80_F = r.flags;
     return Z80_STAGE_RESET;
 }
 
@@ -179,7 +179,7 @@ int ADD_HLp() {
 ///ADD n; Size 2; Flags:ALL
 int ADD_n() {
     assert(z80.opcode_index == 2);
-    alu_result_t r = alu_op(Z80_ALU_ADD, Z80_A, z80.opcode[1], Z80_F);
+    alu_result_t r = alu_op(Z80_ALUOP_ADD, Z80_A, z80.opcode[1], Z80_F);
     Z80_A = r.result;
     Z80_F = r.flags;
     return Z80_STAGE_RESET;
@@ -195,7 +195,7 @@ int ADD_r() {
 ///AND n; Size 2; Flags:ALL
 int AND_n() {
     assert(z80.opcode_index == 2);
-    alu_result_t r = alu_op(Z80_ALU_AND, Z80_A, z80.opcode[1], Z80_F);
+    alu_result_t r = alu_op(Z80_ALUOP_AND, Z80_A, z80.opcode[1], Z80_F);
     Z80_A = r.result;
     Z80_F = r.flags;
     return Z80_STAGE_RESET;
@@ -206,7 +206,7 @@ int AND_r() {
     assert(z80.opcode_index == 1);
     Z80_OPCODE_SUBDIV;
     assert(z[0] != Z80_R_INDEX_HL);
-    alu_result_t r = alu_op(Z80_ALU_AND, Z80_A, (*(z80_r[z[0]])), Z80_F);
+    alu_result_t r = alu_op(Z80_ALUOP_AND, Z80_A, (*(z80_r[z[0]])), Z80_F);
     Z80_A = r.result;
     Z80_F = r.flags;
     return Z80_STAGE_RESET;
@@ -222,7 +222,7 @@ int AND_HLp() {
 ///CP n; Size: 2; Flags: All
 int CP_n() {
     assert(z80.opcode_index == 2);
-    alu_result_t r = alu_op(Z80_ALU_CP, Z80_A, z80.opcode[1], Z80_F);
+    alu_result_t r = alu_op(Z80_ALUOP_CP, Z80_A, z80.opcode[1], Z80_F);
     Z80_F = r.flags;
     return Z80_STAGE_RESET;
 }
@@ -231,7 +231,7 @@ int CP_n() {
 int CP_HLp() {
     assert(z80.opcode_index == 1);
     Z80_8BIT_READ(Z80_HL, 0);
-    alu_result_t r = alu_op(Z80_ALU_CP, Z80_A, z80.read_buffer[0], Z80_F);
+    alu_result_t r = alu_op(Z80_ALUOP_CP, Z80_A, z80.read_buffer[0], Z80_F);
     Z80_F = r.flags;
     return Z80_STAGE_RESET;
 }
@@ -241,7 +241,7 @@ int CP_r() {
     assert(z80.opcode_index == 1);
     Z80_OPCODE_SUBDIV;
     assert(z[0] != Z80_R_INDEX_HL);
-    alu_result_t r = alu_op(Z80_ALU_CP, Z80_A, *(z80_r[z[0]]), Z80_F);
+    alu_result_t r = alu_op(Z80_ALUOP_CP, Z80_A, *(z80_r[z[0]]), Z80_F);
     Z80_F = r.flags;
     return Z80_STAGE_RESET;
 }
@@ -404,7 +404,7 @@ int SUB_r() {
 int XOR_HLp() {
     assert(z80.opcode_index == 1);
     Z80_8BIT_READ(Z80_HL, 0);
-    alu_result_t r = alu_op(Z80_ALU_XOR, Z80_A, z80.read_buffer[0], Z80_F);
+    alu_result_t r = alu_op(Z80_ALUOP_XOR, Z80_A, z80.read_buffer[0], Z80_F);
     Z80_A = r.result;
     Z80_F = r.flags;
     return Z80_STAGE_RESET;
@@ -413,7 +413,7 @@ int XOR_HLp() {
 ///XOR n; Size: 2; Flags: ???
 int XOR_n() {
     assert(z80.opcode_index == 2);
-    alu_result_t r = alu_op(Z80_ALU_XOR, Z80_A, z80.opcode[1], Z80_F);
+    alu_result_t r = alu_op(Z80_ALUOP_XOR, Z80_A, z80.opcode[1], Z80_F);
     Z80_A = r.result;
     Z80_F = r.flags;
     return Z80_STAGE_RESET;
@@ -424,7 +424,7 @@ int XOR_r() {
     Z80_OPCODE_SUBDIV;
     assert(z80.opcode_index == 1);
     assert(z80_r[z[0]] != 0);
-    alu_result_t r = alu_op(Z80_ALU_XOR, Z80_A, *(z80_r[z[0]]), Z80_F);
+    alu_result_t r = alu_op(Z80_ALUOP_XOR, Z80_A, *(z80_r[z[0]]), Z80_F);
     Z80_A = r.result;
     Z80_F = r.flags;
     return Z80_STAGE_RESET;
