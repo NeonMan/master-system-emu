@@ -172,7 +172,10 @@ int ADC_r() {
 ///ADD (HL); Size: 1; Flags: ???
 int ADD_HLp() {
     assert(z80.opcode_index == 1);
-    assert(0); ///<-- Unimplemented
+    Z80_8BIT_READ(Z80_HL, 0);
+    alu_result_t r = alu_op(Z80_ALUOP_ADD, Z80_A, z80.read_buffer[0], Z80_F);
+    Z80_A = r.result;
+    Z80_F = r.flags;
     return Z80_STAGE_RESET;
 }
 
@@ -188,7 +191,11 @@ int ADD_n() {
 ///ADD r; Size: 1; Flags:ALL
 int ADD_r() {
     assert(z80.opcode_index == 1);
-    assert(0);
+    Z80_OPCODE_SUBDIV;
+    assert(z[0] != Z80_R_INDEX_HL);
+    alu_result_t r = alu_op(Z80_ALUOP_ADD, Z80_A, *(z80_r[z[0]]), Z80_F);
+    Z80_A = r.result;
+    Z80_F = r.flags;
     return Z80_STAGE_RESET;
 }
 
