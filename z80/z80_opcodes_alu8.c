@@ -133,6 +133,34 @@ static alu_result_t alu_op(uint8_t operation, int8_t op1, int8_t op2, uint8_t fl
     return rv;
 }
 
+static alu_result_t op_inc(uint8_t op, uint8_t flags) {
+    alu_result_t rv = { 0,0 };
+    rv.result = op++;
+    rv.flags |= Z80_SETFLAG_SIGN(rv.result);
+    rv.flags |= Z80_SETFLAG_ZERO(rv.result);
+    rv.flags |= Z80_SETFLAG_UNK3(rv.result);
+    rv.flags |= Z80_SETFLAG_HALF_CARRY(op, rv.result); ///<-- @bug This is probably wrong AF.
+    rv.flags |= Z80_SETFLAG_UNK5(rv.result);
+    rv.flags |= (op == 0x7f) ? Z80_FLAG_PARITY : 0;
+    //N is reset
+    rv.flags |= flags & Z80_FLAG_CARRY;
+    return rv;
+}
+
+static alu_result_t op_dec(uint8_t op, uint8_t flags) {
+    alu_result_t rv = { 0,0 };
+    rv.result = op++;
+    rv.flags |= Z80_SETFLAG_SIGN(rv.result);
+    rv.flags |= Z80_SETFLAG_ZERO(rv.result);
+    rv.flags |= Z80_SETFLAG_UNK3(rv.result);
+    rv.flags |= Z80_SETFLAG_HALF_BORROW(op, rv.result); ///<-- @bug This is probably wrong AF.
+    rv.flags |= Z80_SETFLAG_UNK5(rv.result);
+    rv.flags |= (op == 0x80) ? Z80_FLAG_PARITY : 0;
+    rv.flags |= Z80_FLAG_SUBTRACT;
+    rv.flags |= flags & Z80_FLAG_CARRY;
+    return rv;
+}
+
 ///alu(HL); Size: 1; Flags: All
 int alu8_HLp() {
     assert(z80.opcode_index == 1);
@@ -205,10 +233,31 @@ int DEC_r() {
     return Z80_STAGE_RESET;
 }
 
+int DEC_rIXY() {
+    assert(z80.opcode_index == 2);
+    Z80_OPCODE_SUBDIV;
+    alu_result_t r;
+    if (z80.opcode[0] == 0xDD) {
+        assert(z80_r_ix[y[1]]);
+        r = op_dec(*(z80_r_ix[y[1]]), Z80_F);
+        *(z80_r_ix[y[1]]) = r.result;
+    }
+    else {
+        assert(z80_r_iy[y[1]]);
+        r = op_dec(*(z80_r_iy[y[1]]), Z80_F);
+        *(z80_r_iy[y[1]]) = r.result;
+    }
+    Z80_F = r.flags;
+    return Z80_STAGE_RESET;
+}
+
 ///DEC (HL); Size: 1; Flags: ???
 int DEC_HLp() {
     assert(z80.opcode_index == 1);
-    assert(0); ///<-- Unimplemented
+    Z80_8BIT_READ(Z80_HL, 0);
+    alu_result_t r = op_dec(z80.read_buffer[0], Z80_F);
+    Z80_8BIT_WRITE(Z80_HL, 0, r.result);
+    Z80_F = r.flags;
     return Z80_STAGE_RESET;
 }
 
@@ -227,6 +276,24 @@ int INC_r() {
         | Z80_SETFLAG_ZERO(*z80_r[y[0]])
         | Z80_SETFLAG_HALF_CARRY(old_r, 1)
         | Z80_SETFLAG_OVERFLOW(old_r, *z80_r[y[0]]);
+    return Z80_STAGE_RESET;
+}
+
+int INC_rIXY() {
+    assert(z80.opcode_index == 2);
+    Z80_OPCODE_SUBDIV;
+    alu_result_t r;
+    if (z80.opcode[0] == 0xDD) {
+        assert(z80_r_ix[y[1]]);
+        r = op_inc(*(z80_r_ix[y[1]]), Z80_F);
+        *(z80_r_ix[y[1]]) = r.result;
+    }
+    else {
+        assert(z80_r_iy[y[1]]);
+        r = op_inc(*(z80_r_iy[y[1]]), Z80_F);
+        *(z80_r_iy[y[1]]) = r.result;
+    }
+    Z80_F = r.flags;
     return Z80_STAGE_RESET;
 }
 
