@@ -16,7 +16,7 @@
 #include <SDL2/SDL_version.h>
 #include <stdio.h>
 #include <stdint.h>
-#include <assert.h>
+#include "debug/sms_debug.h"
 #include "z80/fake_z80.h"
 
 #include "vdp/vdp.h"

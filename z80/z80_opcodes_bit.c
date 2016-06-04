@@ -15,7 +15,7 @@
 #include "z80_opcodes.h"
 #include "z80_macros.h"
 #include "z80_register_lut.h"
-#include <assert.h>
+#include "debug/sms_debug.h"
 
 static alu_result_t bit_op(uint8_t in_byte, uint8_t bit_index, uint8_t flags) {
     assert(bit_index < 8);

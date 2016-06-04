@@ -91,6 +91,7 @@ add_subdirectory (sdsc)
 add_subdirectory (test)
 add_subdirectory (sms-ui)
 add_subdirectory (savestate)
+add_subdirectory (debug)
 
 # --- The project executables ---
 
@@ -105,8 +106,8 @@ target_link_libraries (psg-play psg ${EXT_LIBS})
 
 # --- test-vdp (SDL2 is presumed to be available)
 add_executable (test-vdp test-vdp.c)
-target_link_libraries (test-vdp vdp ${EXT_LIBS})
+target_link_libraries (test-vdp vdp glue sms_debug ${EXT_LIBS})
 
 # --- sms-emu
 add_executable (emu sms-emu.c)
-target_link_libraries (emu glue smsrom smsio smsram psg z80 peripheral vdp sdsc ${EXT_LIBS})
+target_link_libraries (emu glue sms_debug smsrom smsio smsram psg z80 peripheral vdp sdsc ${EXT_LIBS})

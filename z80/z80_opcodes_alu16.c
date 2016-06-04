@@ -15,7 +15,7 @@
 #include "z80_opcodes.h"
 #include "z80_macros.h"
 #include "z80_register_lut.h"
-#include <assert.h>
+#include "debug/sms_debug.h"
 
 extern struct z80_s z80; //<-- Access to z80 internals
 

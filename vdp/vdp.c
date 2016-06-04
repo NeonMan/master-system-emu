@@ -16,7 +16,7 @@
 #include "vdp_constants.h"
 #include "vdp_render.h"
 #include <string.h>
-#include <assert.h>
+#include "debug/sms_debug.h"
 
 struct vdp_s vdp;
 

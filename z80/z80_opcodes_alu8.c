@@ -15,7 +15,8 @@
 #include "z80_opcodes.h"
 #include "z80_macros.h"
 #include "z80_register_lut.h"
-#include <assert.h>
+//#include "debug/sms_debug.h"
+#include "debug/sms_debug.h"
 
 extern struct z80_s z80; //<-- Access to z80 internals
 
@@ -317,21 +318,58 @@ int INC_HLp() {
 }
 
 
-///NEG; Size: 2; Flags: ???
+///NEG; Size: 2; Flags: All
 int NEG() {
     assert(z80.opcode_index == 2);
-    assert(0); ///<-- Unimplemented
+    Z80_A = Z80_A ^ 0xFF;
+    Z80_F = 0;
+    Z80_F |= Z80_SETFLAG_SIGN(Z80_A);
+    Z80_F |= Z80_SETFLAG_ZERO(Z80_A);
+    Z80_F |= Z80_SETFLAG_HALF_BORROW(Z80_A ^ 0xFF, Z80_A);
+    Z80_F |= (Z80_A == 0x7F) ? Z80_FLAG_PARITY : 0;
+    Z80_F |= Z80_FLAG_SUBTRACT;
+    Z80_F |= (Z80_A == 0xFF) ? 0 : Z80_FLAG_CARRY;
+    Z80_F |= Z80_SETFLAG_UNK3(Z80_A);
+    Z80_F |= Z80_SETFLAG_UNK5(Z80_A);
     return Z80_STAGE_RESET;
 }
 
 /* Stubs for IX/IY/(IX+d)/(IY+d)*/
 
+///INC (IX + d); Size: 3; Flags: All
 int INC_IXYp() {
-    assert(0); /*<-- Unimplemented*/
+    assert(z80.opcode_index == 3);
+    alu_result_t r;
+    const int8_t d = (int8_t) z80.opcode[2];
+    if (z80.opcode[0] == 0xDD) {
+        Z80_8BIT_READ(Z80_IX + d, 0);
+        r = op_inc(z80.read_buffer[0], Z80_F);
+        Z80_8BIT_WRITE(Z80_IX + d, 0, r.result);
+    }
+    else {
+        Z80_8BIT_READ(Z80_IY + d, 0);
+        r = op_inc(z80.read_buffer[0], Z80_F);
+        Z80_8BIT_WRITE(Z80_IY + d, 0, r.result);
+    }
+    Z80_F = r.flags;
     return Z80_STAGE_RESET;
 }
 
+///DEC (IX + d); Size: 3; Flags: All
 int DEC_IXYp() {
-    assert(0); /*<-- Unimplemented*/
+    assert(z80.opcode_index == 3);
+    alu_result_t r;
+    const int8_t d = (int8_t)z80.opcode[2];
+    if (z80.opcode[0] == 0xDD) {
+        Z80_8BIT_READ(Z80_IX + d, 0);
+        r = op_dec(z80.read_buffer[0], Z80_F);
+        Z80_8BIT_WRITE(Z80_IX + d, 0, r.result);
+    }
+    else {
+        Z80_8BIT_READ(Z80_IY + d, 0);
+        r = op_dec(z80.read_buffer[0], Z80_F);
+        Z80_8BIT_WRITE(Z80_IY + d, 0, r.result);
+    }
+    Z80_F = r.flags;
     return Z80_STAGE_RESET;
 }
