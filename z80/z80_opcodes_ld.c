@@ -19,31 +19,62 @@
 
 extern struct z80_s z80; //<-- Access to z80 internals
 
-///CPD; Size: 2; Flags: ???
+///CPD; Size: 2; Flags: All
 int CPD() {
-	assert(z80.opcode_index == 2);
-	assert(0); ///<-- Unimplemented
-	return Z80_STAGE_RESET;
+    assert(z80.opcode_index == 2);
+    Z80_8BIT_READ(Z80_HL, 0);
+    const uint8_t result = Z80_A - z80.read_buffer[0];
+    Z80_BC = Z80_BC - 1;
+    Z80_HL = Z80_HL - 1;
+    Z80_F = Z80_F & Z80_FLAG_CARRY;
+    Z80_F |= Z80_SETFLAG_SIGN(result);
+    Z80_F |= Z80_SETFLAG_ZERO(result);
+    Z80_F |= Z80_SETFLAG_HALF_BORROW(Z80_A, z80.read_buffer[0]);
+    Z80_F |= (Z80_BC) ? 0 : Z80_FLAG_PARITY;
+    Z80_F |= Z80_FLAG_SUBTRACT;
+    return Z80_STAGE_RESET;
 }
 
-///CPI; Size: 2; Flags: ???
+///CPI; Size: 2; Flags: All
 int CPI() {
 	assert(z80.opcode_index == 2);
-	assert(0); ///<-- Unimplemented
+    Z80_8BIT_READ(Z80_HL, 0);
+    const uint8_t result = Z80_A - z80.read_buffer[0];
+    Z80_BC = Z80_BC - 1;
+    Z80_HL = Z80_HL + 1;
+    Z80_F = Z80_F & Z80_FLAG_CARRY;
+    Z80_F |= Z80_SETFLAG_SIGN(result);
+    Z80_F |= Z80_SETFLAG_ZERO(result);
+    Z80_F |= Z80_SETFLAG_HALF_BORROW(Z80_A, z80.read_buffer[0]);
+    Z80_F |= (Z80_BC) ? 0 : Z80_FLAG_PARITY;
+    Z80_F |= Z80_FLAG_SUBTRACT;
 	return Z80_STAGE_RESET;
 }
 
 ///CPDR; Size: 2; Flags: ???
 int CPDR() {
 	assert(z80.opcode_index == 2);
-	assert(0); ///<-- Unimplemented
+    int rv = CPD();
+    if (rv == Z80_STAGE_RESET) {
+        return Z80_STAGE_REFRESH;
+    }
+    else {
+        return rv;
+    }
+    return Z80_STAGE_RESET;
 	return Z80_STAGE_RESET;
 }
 
 ///CPIR; Size: 2; Flags: ???
 int CPIR() {
 	assert(z80.opcode_index == 2);
-	assert(0); ///<-- Unimplemented
+    int rv = CPI();
+    if (rv == Z80_STAGE_RESET) {
+        return Z80_STAGE_REFRESH;
+    }
+    else {
+        return rv;
+    }
 	return Z80_STAGE_RESET;
 }
 
