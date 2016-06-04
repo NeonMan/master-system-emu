@@ -212,7 +212,6 @@ int alu8_IXYp() {
     alu_result_t r = alu_op(alu_operation, Z80_A, z80.read_buffer[0], Z80_F);
     Z80_A = r.result;
     Z80_F = r.flags;
-
     return Z80_STAGE_RESET;
 }
 
