@@ -16,7 +16,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <assert.h>
+#include "debug/sms_debug.h"
 #include "z80/fake_z80.h"
 #include "rom/rom.h"
 #include "io/io.h"

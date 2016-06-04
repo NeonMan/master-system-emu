@@ -12,25 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/*
- * Platform-dependent functions will be wrapped (abstracted) here.
- *
- */
-#include "glue.h"
+#include "debug/sms_debug.h"
+#include <stdio.h>
 
-// --- Windows Includes ---
 #ifdef WIN32
-
-// --- Unix includes ---
+#include <assert.h>
+static void platform_assert(const char* exp, const char* file, unsigned int line) {
+    assert(0);
+}
 #else
-
+static void platform_assert(const char* exp, const char* file, unsigned int line) {
+    exit(-1);
+}
 #endif
 
-// --- Windows implementations ---
-#ifdef WIN32
-
-// --- Unix implementations ---
-#else
-
-#endif
-
+void sms_assert(const char* exp, const char* file, unsigned int line) {
+    fprintf(stderr, "[%s @%d] Assert failed: %s\r\n", file, line, exp);
+    //Call inner assert
+    platform_assert(exp, file, line);
+}

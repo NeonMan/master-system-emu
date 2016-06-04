@@ -16,7 +16,7 @@
 #include "z80_dasm.h"
 #include <string.h>
 #include <stdio.h>
-#include <assert.h>
+#include "debug/sms_debug.h"
 
 const char* z80d_r[8] = { "B", "C", "D", "E", "H", "L", "(HL)", "A" };
 const char* z80d_rp[4] = { "BC", "DE", "HL", "SP" };

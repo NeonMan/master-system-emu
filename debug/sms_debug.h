@@ -12,25 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/*
- * Platform-dependent functions will be wrapped (abstracted) here.
- *
- */
-#include "glue.h"
-
-// --- Windows Includes ---
-#ifdef WIN32
-
-// --- Unix includes ---
-#else
-
+#ifdef __cplusplus
+extern "C" {
 #endif
 
-// --- Windows implementations ---
-#ifdef WIN32
 
-// --- Unix implementations ---
+void sms_assert(const char* exp, const char* file, unsigned int line);
+
+#undef assert
+
+#ifdef NDEBUG
+#define assert(EXPR)
 #else
-
+#define assert(EXPR) if(!(EXPR))  sms_assert((#EXPR), __FILE__, __LINE__);
 #endif
 
+#ifdef __cplusplus
+}
+#endif

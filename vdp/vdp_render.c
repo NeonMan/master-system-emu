@@ -15,7 +15,7 @@
 #include "vdp.h"
 #include "vdp_render.h"
 #include "vdp_constants.h"
-#include <assert.h>
+#include "debug/sms_debug.h"
 
 extern struct vdp_s vdp; //<-- Provided by vdp.c
 

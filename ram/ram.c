@@ -23,7 +23,7 @@
 #include "../z80/z80_externs.h"
 #include "../io/io_externs.h"
 #include <stdint.h>
-#include <assert.h>
+#include "debug/sms_debug.h"
 
 uint8_t ram_image[RAM_SIZE];
 

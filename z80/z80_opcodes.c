@@ -15,7 +15,7 @@
 #include "z80_opcodes.h"
 #include "z80_macros.h"
 #include "z80_register_lut.h"
-#include <assert.h>
+#include "debug/sms_debug.h"
 
 extern struct z80_s z80; //<-- Access to z80 internals
 
@@ -121,7 +121,7 @@ int NOP(){
 
 ///RLA; Size: 2; Flags: HC,A,C
 int RLA(){
-    assert(z80.opcode_index == 2);
+    assert(z80.opcode_index == 1);
     const uint8_t next_carry = Z80_A & (1 << 7);
     Z80_A = (Z80_A << 1) | (Z80_F & Z80_FLAG_CARRY ? 1 : 0);
     Z80_F = (Z80_A & (Z80_CLRFLAG_HC & Z80_CLRFLAG_SUBTRACT & Z80_CLRFLAG_CARRY))

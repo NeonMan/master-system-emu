@@ -21,7 +21,7 @@
 #include "../z80/z80_externs.h"
 #include "../io/io_externs.h"
 #include <string.h>
-#include <assert.h>
+#include "debug/sms_debug.h"
 #include <stdio.h>
 
 #include "rom.h"

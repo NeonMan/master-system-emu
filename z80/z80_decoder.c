@@ -17,7 +17,7 @@
 #include "z80_register_lut.h"
 #include "z80_opcodes.h"
 #include "z80_decoder_tables.h"
-#include <assert.h>
+#include "debug/sms_debug.h"
 
 /*
 Most information taken from z80.info
