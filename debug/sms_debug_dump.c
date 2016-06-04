@@ -13,8 +13,12 @@
 // limitations under the License.
 
 #include "sms_debug.h"
+#include <z80/z80.h>
+#include <z80/z80_macros.h>
 #include <stdio.h>
 #include "savestate/savestate.h"
+
+extern z80_t z80;
 
 #ifdef WIN32
 #include <assert.h>
@@ -32,6 +36,15 @@ void sms_assert(const char* exp, const char* file, unsigned int line) {
     fprintf(stderr, "\r\n\r\n");
     fprintf(stderr, "--- ASSERTION ERROR !!! ---\r\n");
     fprintf(stderr, "   [%s @%d] Assert failed: %s\r\n", file, line, exp);
+    fprintf(stderr, "   Opcode buffer: %02X %02X %02X %02X (%d)\r\n", z80.opcode[0], z80.opcode[1], z80.opcode[2], z80.opcode[3], z80.opcode_index);
+    fprintf(stderr, "   Stage: %d\r\n", z80.stage);
+    fprintf(stderr, "   PC: 0x%04X\r\n", z80.rPC);
+    
+    //Fixup crash savestate so it can be loaded directly.
+    //In essence, set the state _just before_ it crashed.
+    z80.rPC -= z80.opcode_index;
+    z80.opcode_index = 0;
+    z80.stage = Z80_STAGE_RESET;
 
     //Dump state
     FILE* f = fopen("CRASH_DUMP.sav", "wb");

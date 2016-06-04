@@ -26,7 +26,15 @@
 
 #define SAVESTATE_LINE_BUFFER 256
 
-int ss_save(FILE* f, const char* rom_name);
-int ss_restore(FILE* f);
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+    int ss_save(FILE* f, const char* rom_name);
+    int ss_restore(FILE* f);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

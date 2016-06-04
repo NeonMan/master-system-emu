@@ -37,6 +37,7 @@
 #include <sdsc/sdsc.h>
 #include <vdp/vdp.h>
 #include <z80/z80.h>
+#include <savestate/savestate.h>
 #include "sms-emu.h" /*<-- Refactor me!*/
 
 #ifdef _WIN32
@@ -68,6 +69,51 @@ void emu_log(const char* msg, int level){
     std::cerr << "[" << emu_logelvel_names[level][0] << "] " << msg << std::endl;
 }
 
+static void load_rom(const char* f_path) {
+
+    const char* f_default = "zexdoc_sdsc.sms";
+    FILE* in_f = 0;
+    if (f_path) {
+        in_f = fopen(f_path, "rb");
+    }
+    else {
+        in_f = fopen("zexdoc.sms", "rb");
+    }
+    if (!in_f) {
+        emu_log("Unable to open ROM:", EMU_LOG_CRITICAL);
+        emu_log(f_path ? f_path : f_default, EMU_LOG_CRITICAL);
+        quick_exit(-1);
+    }
+    uint8_t* read_buffer = (uint8_t*)malloc(ROM_MAX_SIZE);
+    if (!read_buffer) {
+        emu_log("Unable to allocate read buffer.", EMU_LOG_CRITICAL);
+        quick_exit(-1);
+    }
+    memset(read_buffer, 0, ROM_MAX_SIZE);
+    {
+        char read_bytes_s[12];
+        sprintf(read_bytes_s, "%d", (int)fread(read_buffer, 1, ROM_MAX_SIZE, in_f));
+        emu_log("Rom loaded:", EMU_LOG_INFO);
+        emu_log(f_path ? f_path : f_default, EMU_LOG_INFO);
+        emu_log("Read bytes:", EMU_LOG_INFO);
+        emu_log(read_bytes_s, EMU_LOG_INFO);
+    }
+    rom_set_image(read_buffer, ROM_MAX_SIZE);
+    free(read_buffer);
+    fclose(in_f);
+}
+
+static void restore_state(const char* f_path) {
+    FILE* in_f = fopen(f_path, "rb");
+    if (ss_restore(in_f) == 0) {
+        //All ok
+    }
+    else {
+        exit(-2);
+    }
+    fclose(in_f);
+}
+
 int emu_init(){
     emu_log("Hello!", EMU_LOG_INFO);
     //Redirect stderr/stdout
@@ -87,7 +133,7 @@ int emu_init(){
     Fl_Native_File_Chooser fnfc;
     fnfc.title("Open ROM");
     fnfc.type(Fl_Native_File_Chooser::BROWSE_FILE);
-    fnfc.filter("Supported formats\t*.{bin,sg,sms}\nMastersystem ROM\t*.{sms,bin}\nSG 1000 ROM\t*.{sg,bin}");
+    fnfc.filter("Supported formats\t*.{bin,sg,sms,sav}\nMastersystem ROM\t*.{sms,bin}\nSG 1000 ROM\t*.{sg,bin}\nSave states\t*.sav");
     fnfc.directory(".");
     switch (fnfc.show()){
     case -1:
@@ -96,37 +142,19 @@ int emu_init(){
     default:
         f_path = fnfc.filename();
     }
-
-    const char* f_default = "zexdoc_sdsc.sms";
-    FILE* in_f = 0;
-    if (f_path){
-        in_f = fopen(f_path, "rb");
+    if (f_path) {
+        size_t path_len = strlen(f_path);
+        const char* ext = f_path + path_len - 3;
+        if (strncmp(ext, "sav", 3) == 0) {
+            restore_state(f_path);
+        }
+        else {
+            load_rom(f_path);
+        }
     }
-    else{
-        in_f = fopen("zexdoc.sms", "rb");
+    else {
+        exit(-1);
     }
-    if (!in_f){
-        emu_log("Unable to open ROM:", EMU_LOG_CRITICAL);
-        emu_log(f_path ? f_path : f_default, EMU_LOG_CRITICAL);
-        quick_exit(-1);
-    }
-    uint8_t* read_buffer = (uint8_t*) malloc(ROM_MAX_SIZE);
-    if (!read_buffer){
-        emu_log("Unable to allocate read buffer.", EMU_LOG_CRITICAL);
-        quick_exit(-1);
-    }
-    memset(read_buffer, 0, ROM_MAX_SIZE);
-    {
-      char read_bytes_s[12];
-      sprintf(read_bytes_s, "%d", (int) fread(read_buffer, 1, ROM_MAX_SIZE, in_f));
-      emu_log("Rom loaded:", EMU_LOG_INFO);
-      emu_log(f_path ? f_path : f_default, EMU_LOG_INFO);
-      emu_log("Read bytes:", EMU_LOG_INFO);
-      emu_log(read_bytes_s, EMU_LOG_INFO);
-    }
-    rom_set_image(read_buffer, ROM_MAX_SIZE);
-    free(read_buffer);
-    fclose(in_f);
 
     //Setup SDL
     ///@note Implement me
