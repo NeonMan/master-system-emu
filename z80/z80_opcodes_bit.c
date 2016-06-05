@@ -61,7 +61,10 @@ int BIT_b_r() {
 ///RES y, (HL); Size: 2; Flags: None
 int RES_b_HLp() {
     assert(z80.opcode_index == 2);
-    assert(0);
+    Z80_8BIT_READ(Z80_HL, 0);
+    Z80_OPCODE_SUBDIV;
+    uint8_t r = res_op(z80.read_buffer[0], y[1]);
+    Z80_8BIT_WRITE(Z80_HL, 0, r);
     return Z80_STAGE_RESET;
 }
 
@@ -76,7 +79,10 @@ int RES_b_r() {
 ///SET y, (HL); Size: 2; Flags: None
 int SET_b_HLp() {
     assert(z80.opcode_index == 2);
-    assert(0);
+    Z80_8BIT_READ(Z80_HL, 0);
+    Z80_OPCODE_SUBDIV;
+    uint8_t r = set_op(z80.read_buffer[0], y[1]);
+    Z80_8BIT_WRITE(Z80_HL, 0, r);
     return Z80_STAGE_RESET;
 }
 

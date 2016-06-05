@@ -17,8 +17,27 @@
 #include <z80/z80_macros.h>
 #include <stdio.h>
 #include "savestate/savestate.h"
+#include <string.h>
 
 extern z80_t z80;
+
+static int trim_path(const char* path) {
+    //Search, right to left, the second slash.
+    size_t len = strlen(path);
+    int slash_count = 0;
+    while ((slash_count < 2) && (len > 0)) {
+        if ((path[len] == '/') || (path[len] == '\\')) {
+            ++slash_count;
+        }
+        --len;
+    }
+    if (slash_count == 2) {
+        return len + 2;
+    }
+    else {
+        return len;
+    }
+}
 
 #ifdef WIN32
 #include <assert.h>
@@ -32,10 +51,11 @@ static void platform_assert(const char* exp, const char* file, unsigned int line
 #endif
 
 void sms_assert(const char* exp, const char* file, unsigned int line) {
+    const char* trimmed_path = file + trim_path(file);
     //Show info
     fprintf(stderr, "\r\n\r\n");
     fprintf(stderr, "--- ASSERTION ERROR !!! ---\r\n");
-    fprintf(stderr, "   [%s @%d] Assert failed: %s\r\n", file, line, exp);
+    fprintf(stderr, "   [%s @%d] Assert failed: %s\r\n", trimmed_path, line, exp);
     fprintf(stderr, "   Opcode buffer: %02X %02X %02X %02X (%d)\r\n", z80.opcode[0], z80.opcode[1], z80.opcode[2], z80.opcode[3], z80.opcode_index);
     fprintf(stderr, "   Stage: %d\r\n", z80.stage);
     fprintf(stderr, "   PC: 0x%04X\r\n", z80.rPC);
@@ -60,5 +80,5 @@ void sms_assert(const char* exp, const char* file, unsigned int line) {
     fprintf(stderr, "---------------------------\r\n");
     fprintf(stderr, "Please file a bug report with the crash dump file and the block above.\r\n");
     //Call inner assert
-    platform_assert(exp, file, line);
+    platform_assert(exp, trimmed_path, line);
 }

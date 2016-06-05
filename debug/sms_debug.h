@@ -16,7 +16,6 @@
 extern "C" {
 #endif
 
-
 void sms_assert(const char* exp, const char* file, unsigned int line);
 
 #undef assert
