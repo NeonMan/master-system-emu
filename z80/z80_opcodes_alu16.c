@@ -22,7 +22,15 @@ extern struct z80_s z80; //<-- Access to z80 internals
 ///ADC HL, rp; Size: 2; Flags: ???
 int ADC_HL_rp() {
     assert(z80.opcode_index == 2);
-    assert(0); ///<-- Unimplemented
+    Z80_OPCODE_SUBDIV;
+    const uint16_t result = (Z80_F & Z80_FLAG_CARRY) ? (Z80_HL + *(z80_rp[p[1]])) : ((Z80_HL + *(z80_rp[p[1]])) + 1);
+    Z80_F = 0;
+    Z80_F |= Z80_SETFLAG_SIGN_16(result);
+    Z80_F |= Z80_SETFLAG_ZERO_16(result);
+    Z80_F |= Z80_SETFLAG_HALF_CARRY_16(Z80_HL, result);
+    Z80_F |= Z80_SETFLAG_PARITY_16(result);
+    Z80_F |= Z80_SETFLAG_CARRY_16(Z80_HL, result);
+    Z80_HL = result;
     return Z80_STAGE_RESET;
 }
 
@@ -31,11 +39,11 @@ int ADD_HL_rp() {
     assert(z80.opcode_index == 1);
     Z80_OPCODE_SUBDIV;
     const uint16_t old_hl = Z80_HL;
-    Z80_HL = Z80_HL + *z80_rp[p[0]];
+    Z80_HL = Z80_HL + *(z80_rp[p[0]]);
     //Clear N/Carry flag (bits 1,0)
     Z80_F = (Z80_F & (Z80_CLRFLAG_CARRY & Z80_CLRFLAG_SUBTRACT))
         //Set carry flag (bit 0)
-        | Z80_SETFLAG_CARRY(old_hl, Z80_HL);
+        | Z80_SETFLAG_CARRY_16(old_hl, Z80_HL);
     return Z80_STAGE_RESET;
 }
 
@@ -63,18 +71,33 @@ int SBC_HL_rp() {
     const uint16_t old_hl = Z80_HL;
     Z80_HL = (Z80_F & Z80_FLAG_CARRY) ? Z80_HL - *(z80_rp[p[1]]) : Z80_HL - *(z80_rp[p[1]]) - 1;
     Z80_F = Z80_FLAG_SUBTRACT
-        | Z80_SETFLAG_BORROW(old_hl, Z80_HL)
-        | Z80_SETFLAG_SIGN(Z80_HL)
-        | Z80_SETFLAG_ZERO(Z80_HL)
+        | Z80_SETFLAG_BORROW_16(old_hl, Z80_HL)
+        | Z80_SETFLAG_SIGN_16(Z80_HL)
+        | Z80_SETFLAG_ZERO_16(Z80_HL)
         | Z80_SETFLAG_HALF_BORROW_16(old_hl, *(z80_rp[p[1]]))
-        | Z80_SETFLAG_OVERFLOW(old_hl, Z80_HL);
+        | Z80_SETFLAG_OVERFLOW_16(old_hl, Z80_HL);
     return Z80_STAGE_RESET;
 }
 
 /* Stubs for IX/IY/(IX+d)/(IY+d)*/
 
 int ADD_IXY_rp() {
-    assert(0); /*<-- Unimplemented*/
+    assert(z80.opcode_index == 2);
+    Z80_OPCODE_SUBDIV;
+    uint16_t result;
+    if (z80.opcode[0] == 0xDD) {
+        result = Z80_IX + (*(z80_rp[p[1]]));
+        Z80_F = Z80_F & (Z80_FLAG_SIGN | Z80_FLAG_ZERO | Z80_FLAG_PARITY);
+        Z80_F |= Z80_SETFLAG_HALF_CARRY_16(Z80_IX, result);
+        Z80_F |= Z80_SETFLAG_CARRY_16(Z80_IX, result);
+    }
+    else {
+        result = Z80_IY + (*(z80_rp[p[1]]));
+        Z80_F = Z80_F & (Z80_FLAG_SIGN | Z80_FLAG_ZERO | Z80_FLAG_PARITY);
+        Z80_F |= Z80_SETFLAG_HALF_CARRY_16(Z80_IY, result);
+        Z80_F |= Z80_SETFLAG_CARRY_16(Z80_IY, result);
+    }
+    Z80_HL = result;
     return Z80_STAGE_RESET;
 }
 
