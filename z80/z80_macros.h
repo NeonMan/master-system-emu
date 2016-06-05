@@ -181,7 +181,9 @@ const uint8_t q[4] = { z80.opcode[0] & (1 << 3), z80.opcode[1] & (1 << 3), z80.o
 
 // --- Flag update macros
 #define Z80_SETFLAG_SIGN(X) (((X)&(1<<7)) ? Z80_FLAG_SIGN : 0) /**<-- [S] Set sign flag (bit 7)*/
+#define Z80_SETFLAG_SIGN_16(X) (((X)&(1<<15)) ? Z80_FLAG_SIGN : 0) /**<-- [S] Set sign flag (bit7)*/
 #define Z80_SETFLAG_ZERO(X) (((X) == 0) ? Z80_FLAG_ZERO : 0) /**<-- [Z] Set Zero flag (bit 6)*/
+#define Z80_SETFLAG_ZERO_16(X) (Z80_SETFLAG_ZERO(X))
 //#define Z80_SETFLAG_HC(O,N) (((O & (1 << 3)) == 0) && ((N) & (1 << 3)) ? Z80_FLAG_HC : 0) /**<-- [H] Set Half-carry flag (bit 4)*/
 
 #define Z80_SETFLAG_HALF_CARRY(OP1,OP2)    (((((OP1)&0x0F) + ((OP2)&0x0F)) > 0x0F) ? Z80_FLAG_HC : 0)
@@ -191,10 +193,14 @@ const uint8_t q[4] = { z80.opcode[0] & (1 << 3), z80.opcode[1] & (1 << 3), z80.o
 
 
 #define Z80_SETFLAG_PARITY(X) (z80_parity_lut[(X)] ? Z80_FLAG_PARITY : 0) /**<-- [P] Set parity flag (bit 2)*/
+#define Z80_SETFLAG_PARITY_16(X) (z80_parity_lut[(X) & 0x00FF] ^ z80_parity_lut[((X)>>8) & 0x00FF])
 #define Z80_SETFLAG_OVERFLOW(O,N) (((int16_t)O) > ((int16_t)N) ? 0 : Z80_FLAG_PARITY) /**<-- [V] Set overflow flag (bit 2)*/
+#define Z80_SETFLAG_OVERFLOW_16(O,N) (((int32_t)O) > ((int32_t)N) ? 0 : Z80_FLAG_PARITY)
 #define Z80_SETFLAG_SUBTRACT(A) (A ? Z80_FLAG_SUBTRACT : 0) /**<-- [N] Set Add/Subtract flag (bit 1)*/
 #define Z80_SETFLAG_CARRY(O,N) (O > N ? Z80_FLAG_CARRY : 0) /**<-- [C] Set Carry flag, adition (bit 0)*/
+#define Z80_SETFLAG_CARRY_16(O,N) (Z80_SETFLAG_CARRY(O,N))
 #define Z80_SETFLAG_BORROW(O,N) (O < N ? Z80_FLAG_CARRY : 0) /**<-- [C] Set carry flag, subtraction, (bit 0)*/
+#define Z80_SETFLAG_BORROW_16(O,N) (Z80_SETFLAG_BORROW(O,N))
 ///@bug Decimal Adjust Accumulate is not implemented
 
 #define Z80_SETFLAG_UNK3(RESULT) ((RESULT) & (1<<3))
