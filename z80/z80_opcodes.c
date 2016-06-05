@@ -138,13 +138,6 @@ int RLCA(){
     return Z80_STAGE_RESET;
 }
 
-///RLD; Size: 2; Flags: ???
-int RLD(){
-    assert(z80.opcode_index == 2);
-    assert(0); ///<-- Unimplemented
-    return Z80_STAGE_RESET;
-}
-
 ///RRA; Size: 1; Flags: H,N,C
 int RRA(){
     assert(z80.opcode_index == 1);
@@ -161,14 +154,6 @@ int RRCA(){
     Z80_A = (Z80_A >> 1) | (Z80_A & 1 ? (1 << 7) : 0);
     Z80_F = (Z80_F & (Z80_CLRFLAG_HC & Z80_CLRFLAG_SUBTRACT & Z80_CLRFLAG_CARRY))
         | ((Z80_A & (1 << 7)) ? Z80_FLAG_CARRY : 0);
-    return Z80_STAGE_RESET;
-}
-
-
-///RRD; Size: 2; Flags: ???
-int RRD(){
-    assert(z80.opcode_index == 2);
-    assert(0); ///<-- Unimplemented
     return Z80_STAGE_RESET;
 }
 

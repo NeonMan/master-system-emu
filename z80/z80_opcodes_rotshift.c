@@ -133,3 +133,38 @@ int shift_rot_r() {
     Z80_F = r.flags;
     return Z80_STAGE_RESET;
 }
+
+///RRD; Size: 2; Flags: S,Z,H,P,N
+int RRD() {
+    assert(z80.opcode_index == 2);
+    uint8_t result;
+    result = Z80_A & (3 << 6);         //Keep first half nibble (hn)
+    result |= (Z80_A << 4) & (3 << 4); //second hn <- fourth hn
+    result |= (Z80_A >> 2) & (3 << 2); //third hn <- second hn
+    result |= (Z80_A >> 2) & (3);      //fourth hn <- third hn
+
+    Z80_F = Z80_F & Z80_FLAG_CARRY;
+    Z80_F |= Z80_SETFLAG_SIGN(result);
+    Z80_F |= Z80_SETFLAG_ZERO(result);
+    Z80_F |= Z80_FLAG_HC;
+    Z80_F |= Z80_SETFLAG_PARITY(result);
+    return Z80_STAGE_RESET;
+}
+
+///RLD; Size: 2; Flags: S,Z,H,P,N
+int RLD() {
+    assert(z80.opcode_index == 2);
+    uint8_t result;
+    result = Z80_A & (3 << 6);         //Keep first half nibble.
+    result |= (Z80_A << 2) & (3 << 4); //Second half nibble <- third half nibble
+    result |= (Z80_A << 2) & (3 << 2); //Third half nibble <- Fourth half nibble
+    result |= (Z80_A >> 4) & (3);      //Fourth half nibble <- Second half nibble
+
+    Z80_F = Z80_F & Z80_FLAG_CARRY;
+    Z80_F |= Z80_SETFLAG_SIGN(result);
+    Z80_F |= Z80_SETFLAG_ZERO(result);
+    Z80_F |= Z80_FLAG_HC;
+    Z80_F |= Z80_SETFLAG_PARITY(result);
+    return Z80_STAGE_RESET;
+}
+
