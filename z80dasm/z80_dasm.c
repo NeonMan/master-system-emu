@@ -19,6 +19,8 @@
 #include "debug/sms_debug.h"
 
 const char* z80d_r[8] = { "B", "C", "D", "E", "H", "L", "(HL)", "A" };
+const char* z80d_r_ix[8] = { "B", "C", "D", "E", "IXH", "IXL", "(IX + d)", "A" };
+const char* z80d_r_iy[8] = { "B", "C", "D", "E", "IYH", "IYL", "(IY + d)", "A" };
 const char* z80d_rp[4] = { "BC", "DE", "HL", "SP" };
 const char* z80d_rp2[4] = { "BC", "DE", "HL", "AF" };
 const char* const z80d_cc[8] = { "NZ", "Z", "NC", "C", "PO", "PE", "P", "M" };
@@ -501,6 +503,18 @@ int zd_LD_r_r(const uint8_t* opcode, char* result) {
     const uint8_t y = (opcode[0] >> 3) & 0x07;
     const uint8_t z = opcode[0] & 0x07;
     sprintf(result, "LD %s, %s", z80d_r[y], z80d_r[z]);
+    return 1;
+}
+
+int zd_LD_r_r_undoc(const uint8_t* opcode, char* result) {
+    const uint8_t y = (opcode[1] >> 3) & 0x07;
+    const uint8_t z = opcode[1] & 0x07;
+    if (opcode[0] == 0xDD) {
+        sprintf(result, "LD %s, %s", z80d_r_ix[y], z80d_r_ix[z]);
+    }
+    else {
+        sprintf(result, "LD %s, %s", z80d_r_iy[y], z80d_r_iy[z]);
+    }
     return 1;
 }
 

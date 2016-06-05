@@ -34,8 +34,8 @@ LD IXH,n	LD_IXYH_n	0b1101110100100110????????
 LD IXL,n	LD_IXYL_n	0b1101110100101110????????		
 LD IYH,n	LD_IXYH_n	0b1111110100100110????????		
 LD IYL,n	LD_IXYL_n	0b1111110100101110????????		
-LD r, r' (long)	UNDOC	0b1101110101??????		
-LD r, r' (long)	UNDOC	0b1111110101??????		
+LD r, r' (long)	LD_r_r_undoc	0b1101110101??????		
+LD r, r' (long)	LD_r_r_undoc	0b1111110101??????		
 #16-bit load group				
 LD dd,nn	LD_rp_nn	0b00??0001????????????????		
 LD IX,nn	LD_IXY_nn	0b1101110100100001????????????????	#DD prefix	
@@ -159,34 +159,34 @@ RLCA	RLCA	0b00000111
 RLA	RLA	0b00010111		
 RRCA	RRCA	0b00001111		
 RRA	RRA	0b00011111		
-RLC r	RLC_r	0b1100101100000???	Duplicated?	
-RLC (HL)	RLC_HLp	0b1100101100000110	Duplicated?	
-RLC (IX+d)	RLC_IXYp	0b1101110111001011????????00000110	Duplicated?	#DD prefix
-RLC (IY+d)	RLC_IXYp	0b1111110111001011????????00000110	Duplicated?	#FD prefix
-RL r	RL_r	0b1100101100010???		
-RL (HL)	RL_HLp	0b1100101100010110		
-RL (IX+d)	RL_IXYp	0b1101110111001011????????00010110	#DD prefix	
-RL (IY+d)	RL_IXYp	0b1111110111001011????????00010110	#FD prefix	
-RRC r	RRC_r	0b1100101100001???		
-RRC (HL)	RRC_HLp	0b1100101100001110		
-RRC (IX+d)	RRC_IXYp	0b1101110111001011????????00001110	#DD prefix	
-RRC (IY+d)	RRC_IXYp	0b1111110111001011????????00001110	#FD prefix	
-RR r	RR_r	0b1100101100011???		
-RR (HL)	RR_HLp	0b1100101100011110		
-RR (IX+d)	RR_IXYp	0b1101110111001011????????00011110	#DD prefix	
-RR (IY+d)	RR_IXYp	0b1111110111001011????????00011110	#FD prefix	
-SLA r	SLA_r	0b1100101100100???	Ambiguity on datasheet! SRA r	
-SLA (HL)	SLA_HLp	0b1100101100100110		
-SLA (IX+d)	SLA_IXYp	0b1101110111001011????????00100110	#DD prefix	
-SLA (IY+d)	SLA_IXYp	0b1111110111001011????????00100110	#FD prefix	
-SRA r	SRA_r	0b1100101100101???	Ambiguity on datasheet! SLA r	
-SRA (HL)	SRA_HLp	0b1100101100101110		
-SRA (IX+d)	SRA_IXYp	0b1101110111001011????????00101110	#DD prefix	
-SRA (IY+d)	SRA_IXYp	0b1111110111001011????????00101110	#FD prefix	
-SRL r	SRL_r	0b1100101100111???		
-SRL (HL)	SRL_HLp	0b1100101100111110		
-SRL (IX+d)	SRL_IXYp	0b1101110111001011????????00111110	#DD prefix	
-SRL (IY+d)	SRL_IXYp	0b1111110111001011????????00111110	#FD prefix	
+RLC r	shift_rot_r	0b1100101100000???	Duplicated?	
+RLC (HL)	shift_rot_HLp	0b1100101100000110	Duplicated?	
+RLC (IX+d)	shift_rot_IXYp	0b1101110111001011????????00000110	Duplicated?	#DD prefix
+RLC (IY+d)	shift_rot_IXYp	0b1111110111001011????????00000110	Duplicated?	#FD prefix
+RL r	shift_rot_r	0b1100101100010???		
+RL (HL)	shift_rot_HLp	0b1100101100010110		
+RL (IX+d)	shift_rot_IXYp	0b1101110111001011????????00010110	#DD prefix	
+RL (IY+d)	shift_rot_IXYp	0b1111110111001011????????00010110	#FD prefix	
+RRC r	shift_rot_r	0b1100101100001???		
+RRC (HL)	shift_rot_HLp	0b1100101100001110		
+RRC (IX+d)	shift_rot_IXYp	0b1101110111001011????????00001110	#DD prefix	
+RRC (IY+d)	shift_rot_IXYp	0b1111110111001011????????00001110	#FD prefix	
+RR r	shift_rot_r	0b1100101100011???		
+RR (HL)	shift_rot_HLp	0b1100101100011110		
+RR (IX+d)	shift_rot_IXYp	0b1101110111001011????????00011110	#DD prefix	
+RR (IY+d)	shift_rot_IXYp	0b1111110111001011????????00011110	#FD prefix	
+SLA r	shift_rot_r	0b1100101100100???	Ambiguity on datasheet! SRA r	
+SLA (HL)	shift_rot_HLp	0b1100101100100110		
+SLA (IX+d)	shift_rot_IXYp	0b1101110111001011????????00100110	#DD prefix	
+SLA (IY+d)	shift_rot_IXYp	0b1111110111001011????????00100110	#FD prefix	
+SRA r	shift_rot_r	0b1100101100101???	Ambiguity on datasheet! SLA r	
+SRA (HL)	shift_rot_HLp	0b1100101100101110		
+SRA (IX+d)	shift_rot_IXYp	0b1101110111001011????????00101110	#DD prefix	
+SRA (IY+d)	shift_rot_IXYp	0b1111110111001011????????00101110	#FD prefix	
+SRL r	shift_rot_r	0b1100101100111???		
+SRL (HL)	shift_rot_HLp	0b1100101100111110		
+SRL (IX+d)	shift_rot_IXYp	0b1101110111001011????????00111110	#DD prefix	
+SRL (IY+d)	shift_rot_IXYp	0b1111110111001011????????00111110	#FD prefix	
 RLD	RLD	0b1110110101101111		
 RRD	RRD	0b1110110101100111		
 #Bit set, reset and test group				
@@ -236,10 +236,10 @@ OTIR	OTIR	0b1110110110110011
 OUTD	OUTD	0b1110110110101011		
 OTDR	OTDR	0b1110110110111011		
 #Undocumented opcodes				
-SLL r	SLL_r	0b1100101100110???	#Undocumented(?) Duplicated?	
-SLL (HL)	SLL_HLp	0b1100101100110110	#Undocumented(?) Duplicated?	
-SLL (IX+d)	SLL_IXYp	0b1101110111001011????????00110110	#Undocumented(?) Duplicated?	
-SLL (IY+d)	SLL_IXYp	0b1111110111001011????????00110110	#Undocumented(?) Duplicated?	
+SLL r	shift_rot_r	0b1100101100110???	#Undocumented(?) Duplicated?	
+SLL (HL)	shift_rot_HLp	0b1100101100110110	#Undocumented(?) Duplicated?	
+SLL (IX+d)	shift_rot_IXYp	0b1101110111001011????????00110110	#Undocumented(?) Duplicated?	
+SLL (IY+d)	shift_rot_IXYp	0b1111110111001011????????00110110	#Undocumented(?) Duplicated?	
 LD r; rot (IX+d)	UNDOC	0b1101110111001011????????00??????		
 LD r; rot (IY+d)	UNDOC	0b1111110111001011????????00??????		
 LD r; RES y,(IX+d)	UNDOC	0b1101110111001011????????10??????		

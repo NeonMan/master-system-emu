@@ -97,6 +97,7 @@ int LD_r_r();
 /* ------------------------------- */
 int LD_IXYH_n();
 int LD_IXYL_n();
+int LD_r_r_undoc();
 
 /* ------------------- */
 /* --- 16-bit Load --- */
@@ -171,28 +172,16 @@ int SBC_HL_rp();
 /* ------------------------ */
 /* --- Rotate and shift --- */
 /* ------------------------ */
-int RL_HLp();
-int RL_r();
+int shift_rot_IXYp();
+int shift_rot_HLp();
+int shift_rot_r();
+
 int RLA();
-int RLC_HLp();
-int RLC_r();
 int RLCA();
 int RLD();
-int RR_HLp();
-int RR_r();
 int RRA();
-int RRC_HLp();
-int RRC_r();
 int RRCA();
 int RRD();
-int SLA_HLp();
-int SLA_r();
-int SLL_HLp();
-int SLL_r();
-int SRA_HLp();
-int SRA_r();
-int SRL_HLp();
-int SRL_r();
 
 /* ------------------------------- */
 /* --- Bit set, reset and test --- */
@@ -264,17 +253,9 @@ int EX_SPp_IXY();
 int PUSH_IXY();
 int JP_IXYp();
 int LD_SP_IXY();
-int SLL_IXYp();
-int RRC_IXYp();
-int RL_IXYp();
-int SLA_IXYp();
-int RR_IXYp();
 int SRA_IXYp();
 int SRL_IXYp();
 int RR_IXYp();
-int SRA_IXYp();
-int SRL_IXYp();
-int RLC_IXYp();
 
 int SET_b_IXYp();
 int RES_b_IXYp();

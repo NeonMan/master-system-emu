@@ -260,6 +260,21 @@ int LD_r_r() {
 	return Z80_STAGE_RESET;
 }
 
+///LD r[y],r[z]; Size: 2; Flags: None
+int LD_r_r_undoc() {
+    assert(z80.opcode_index == 2);
+    Z80_OPCODE_SUBDIV;
+    assert(y[1] != 0x06); //
+    assert(z[1] != 0x06); // (HL) is treated as a special case
+    if (z80.opcode[0] == 0xDD) {
+        *(z80_r_ix[y[1]]) = *(z80_r_ix[z[1]]);
+    }
+    else {
+        *(z80_r_iy[y[1]]) = *(z80_r_iy[z[1]]);
+    }
+    return Z80_STAGE_RESET;
+}
+
 ///LD rp[n], nn; Size: 3; Flags: None
 int LD_rp_nn() {
 	assert(z80.opcode_index == 3);
