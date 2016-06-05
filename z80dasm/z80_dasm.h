@@ -147,6 +147,7 @@ int zd_LD_r_IXYp(const uint8_t* opcode, char* result);
 int zd_LD_r_IXYp(const uint8_t* opcode, char* result);
 int zd_LD_r_n(const uint8_t* opcode, char* result);
 int zd_LD_r_r(const uint8_t* opcode, char* result);
+int zd_LD_r_r_undoc(const uint8_t* opcode, char* result);
 int zd_LD_RES(const uint8_t* opcode, char* result);
 int zd_LD_RES(const uint8_t* opcode, char* result);
 int zd_LD_ROT(const uint8_t* opcode, char* result);
