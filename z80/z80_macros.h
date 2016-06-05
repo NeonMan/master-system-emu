@@ -73,6 +73,16 @@ const uint8_t q[4] = { z80.opcode[0] & (1 << 3), z80.opcode[1] & (1 << 3), z80.o
 #define Z80_ALUOP_OR  6
 #define Z80_ALUOP_CP  7
 
+//Rotation operations
+#define Z80_SHIFT_RLC 0
+#define Z80_SHIFT_RRC 1
+#define Z80_SHIFT_RL  2
+#define Z80_SHIFT_RR  3
+#define Z80_SHIFT_SLA 4
+#define Z80_SHIFT_SRA 5
+#define Z80_SHIFT_SLL 6
+#define Z80_SHIFT_SRL 7
+
 //Sub-byte opcode masks
 #define Z80_OPCODE_X(X) ((X&0x03)<<6)
 #define Z80_OPCODE_Y(Y) ((Y&0x07)<<3)
