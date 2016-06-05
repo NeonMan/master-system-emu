@@ -367,6 +367,7 @@ int LDI() {
 int LDDR() {
 	assert(z80.opcode_index == 2);
 	int rv = LDD();
+    Z80_F = Z80_F & Z80_CLRFLAG_PARITY;
 	if (rv == Z80_STAGE_RESET) {
 		return Z80_STAGE_REFRESH;
 	}
@@ -379,6 +380,7 @@ int LDDR() {
 int LDIR() {
 	assert(z80.opcode_index == 2);
 	int rv = LDI();
+    Z80_F = Z80_F & Z80_CLRFLAG_PARITY;
 	if (rv == Z80_STAGE_RESET) {
 		return Z80_STAGE_REFRESH;
 	}

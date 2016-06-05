@@ -213,7 +213,7 @@ int main(int argc, char** argv){
     dlg_z80->set_z80_ptr(z80dbg_get_z80());
     dlg_brk->set_breakpoint_table(z80dbg_get_breakpoints());
 
-    unsigned int edge_count = 0;
+    unsigned long edge_count = 0;
     while (is_running){
         while (is_clocked && is_running){
             //
@@ -248,7 +248,7 @@ int main(int argc, char** argv){
                 psg_io();
             }
             ++edge_count;
-            --is_clocked;
+            //--is_clocked;
             __UPDATE_FLTK;
         }
         // --- Just update the UI if not clocked ---
