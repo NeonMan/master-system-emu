@@ -37,7 +37,29 @@ int CPL(){
 ///DAA; Size: 1; Flags: ???
 int DAA(){
     assert(z80.opcode_index == 1);
-    assert(0); ///<-- Unimplemented
+    
+    /* C&P from z80 heaven.
+    When this instruction is executed, the A register is BCD corrected using the
+    contents of the flags. The exact process is the following: if the least
+    significant four bits of A contain a non-BCD digit (i. e. it is greater
+    than 9) or the H flag is set, then $06 is added to the register. Then the
+    four most significant bits are checked. If this more significant digit also
+    happens to be greater than 9 or the C flag is set, then $60 is added.
+    */
+    /**@ToDo This is probably not correcttly  implemented :/ .*/
+    uint8_t result = Z80_A;
+    uint8_t flags = 0;
+    if (((result & 0x0F) > 0x09) || (Z80_F & Z80_FLAG_HC)){
+        result += 0x06;
+    }
+    if ((((result >> 4) & 0x0F) > 0x09) || (Z80_F & Z80_FLAG_CARRY)) {
+        result += 0x60;
+        flags |= Z80_FLAG_CARRY;
+    }
+    flags |= Z80_SETFLAG_SIGN(result);
+    flags |= Z80_SETFLAG_ZERO(result);
+    flags |= Z80_SETFLAG_PARITY(result);
+    flags |= (Z80_F & Z80_FLAG_SUBTRACT);
     return Z80_STAGE_RESET;
 }
 

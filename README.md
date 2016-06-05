@@ -26,10 +26,8 @@ emulated independently.
 
 Issues listed here describe inaccurate behaviours and inefficiencies in implemented code.
 
-* LDDR/LDIR ignore the extra refresh cycles, making them equivalent to LDD/LDI
-* LDDR/LDIR/LDD/LDI *do not* pass the ZEXDOC/ZEXALL test.
-* Shift/Rotate (IX + d) does not pass ZEXALL test.
-* Read-modify-writeback instructions like RLC (IX + d) redo all the work multiple times
+* Most opcodes that modify flags, fail the ZEXALL/ZEXDOC tests.
+* Read-modify-writeback instructions like RLC (IX + d) redo all the work multiple times.
 * ALU16 flags are internally using ALU8 macros which might or might not work.
 
 ## Licensing ##
