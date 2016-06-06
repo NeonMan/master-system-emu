@@ -135,6 +135,18 @@ int zd_alu_r(const uint8_t* opcode, char* result) {
     return 1;
 }
 
+int zd_alu_r_undoc(const uint8_t* opcode, char* result) {
+    const uint8_t y = (opcode[1] >> 3) & 0x07;
+    const uint8_t z = (opcode[1]) & 0x07;
+    if (opcode[0] == 0xDD) {
+        sprintf(result, "%s A, %s", z80d_alu[y], z80d_r_ix[z]);
+    }
+    else {
+        sprintf(result, "%s A, %s", z80d_alu[y], z80d_r_iy[z]);
+    }
+    return 1;
+}
+
 int zd_BIT_b_IXYp(const uint8_t* opcode, char* result) {
     const uint8_t y = (opcode[3] >> 3) & 0x07;
     const uint8_t z = (opcode[3]) & 0x07;
