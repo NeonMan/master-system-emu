@@ -143,6 +143,7 @@ int INC_r();
 /* -------------------------------------- */
 int INC_rIXY();
 int DEC_rIXY();
+int alu8_r_undoc();
 
 /* ---------------------------------------------- */
 /* --- General purpose arithmetic and control --- */
