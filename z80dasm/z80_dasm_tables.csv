@@ -73,6 +73,8 @@ INC (IY+d)	zd_INC_IXYp	0b1111110100110100????????	#FD prefix
 DEC r	zd_DEC_r	0b00???101		
 DEC (IX+d)	zd_DEC_IXYp	0b1101110100110101????????	#DD prefix	
 DEC (IY+d)	zd_DEC_IXYp	0b1111110100110101????????	#FD prefix	
+alu A,r (IX set)	zd_alu_r_undoc	0b1101110110??????		
+alu A,r (IY set)	zd_alu_r_undoc	0b1111110110??????		
 #General purpose arithmetic and CPU control groups				
 DAA	zd_DAA	0b00100111		
 CPL	zd_CPL	0b00101111		

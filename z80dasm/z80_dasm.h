@@ -66,6 +66,7 @@ int zd_alu_IXYp(const uint8_t* opcode, char* result);
 int zd_alu_IXYp(const uint8_t* opcode, char* result);
 int zd_alu_n(const uint8_t* opcode, char* result);
 int zd_alu_r(const uint8_t* opcode, char* result);
+int zd_alu_r_undoc(const uint8_t* opcode, char* result);
 int zd_BIT_b_IXYp(const uint8_t* opcode, char* result);
 int zd_BIT_b_IXYp(const uint8_t* opcode, char* result);
 int zd_BIT_b_r(const uint8_t* opcode, char* result);
