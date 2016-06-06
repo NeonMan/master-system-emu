@@ -98,16 +98,16 @@ AND A,n	alu8_n	0b11100110????????
 AND A,(HL)	alu8_HLp	0b10100110		
 AND A,(IX+d)	alu8_IXYp	0b1101110110100110????????	#DD prefix	
 AND A,(IY+d)	alu8_IXYp	0b1111110110100110????????	#FD prefix	
-OR A,r	alu8_r	0b10110???	Ambiguity on datasheet! (XOR/OR)	
-OR A,n	alu8_n	0b11110110????????	Ambiguity on datasheet! (XOR/OR)	
-OR A,(HL)	alu8_HLp	0b10110110	Ambiguity on datasheet! (XOR/OR)	
-OR A,(IX+d)	alu8_IXYp	0b1101110110110110????????	Ambiguity on datasheet! (XOR/OR)	#DD prefix
-OR A,(IY+d)	alu8_IXYp	0b1111110110110110????????	Ambiguity on datasheet! (XOR/OR)	#FD prefix
-XOR A,r	alu8_r	0b10101???	Ambiguity on datasheet! (XOR/OR)	
-XOR A,n	alu8_n	0b11101110????????	Ambiguity on datasheet! (XOR/OR)	
-XOR A,(HL)	alu8_HLp	0b10101110	Ambiguity on datasheet! (XOR/OR)	
-XOR A,(IX+d)	alu8_IXYp	0b1101110110110101????????	Ambiguity on datasheet! (XOR/OR)	#DD prefix
-XOR A,(IY+d)	alu8_IXYp	0b1111110110110101????????	Ambiguity on datasheet! (XOR/OR)	#FD prefix
+OR A,r	alu8_r	0b10101???	Ambiguity on datasheet! (XOR/OR)	
+OR A,n	alu8_n	0b11101110????????	Ambiguity on datasheet! (XOR/OR)	
+OR A,(HL)	alu8_HLp	0b10101110	Ambiguity on datasheet! (XOR/OR)	
+OR A,(IX+d)	alu8_IXYp	0b1101110110101110????????	Ambiguity on datasheet! (XOR/OR)	#DD prefix
+OR A,(IY+d)	alu8_IXYp	0b1111110110101110????????	Ambiguity on datasheet! (XOR/OR)	#FD prefix
+XOR A,r	alu8_r	0b10110???	Ambiguity on datasheet! (XOR/OR)	
+XOR A,n	alu8_n	0b11110110????????	Ambiguity on datasheet! (XOR/OR)	
+XOR A,(HL)	alu8_HLp	0b10110110	Ambiguity on datasheet! (XOR/OR)	
+XOR A,(IX+d)	alu8_IXYp	0b1101110110110110????????	Ambiguity on datasheet! (XOR/OR)	#DD prefix
+XOR A,(IY+d)	alu8_IXYp	0b1111110110110110????????	Ambiguity on datasheet! (XOR/OR)	#FD prefix
 CP A,r	alu8_r	0b10111???		
 CP A,n	alu8_n	0b11111110????????		
 CP (HL)	alu8_HLp	0b10111110		
@@ -130,6 +130,22 @@ DEC IXH	DEC_rIXY	0b1101110100100101
 DEC IYH	DEC_rIXY	0b1111110100100101		
 DEC IXL	DEC_rIXY	0b1101110100101101		
 DEC IYL	DEC_rIXY	0b1111110100101101		
+ADD A,r (IX set)	alu8_r_undoc	0b1101110110000???		
+ADC A,r (IX set)	alu8_r_undoc	0b1101110110001???		
+SUB A,r (IX set)	alu8_r_undoc	0b1101110110010???		
+SBC A,r (IX set)	alu8_r_undoc	0b1101110110011???		
+AND A,r (IX set)	alu8_r_undoc	0b1101110110100???		
+XOR A,r (IX set)	alu8_r_undoc	0b1101110110101???		
+OR A,r (IX set)	alu8_r_undoc	0b1101110110110???		
+CP A,r (IX set)	alu8_r_undoc	0b1101110110111???		
+ADD A,r (IY set)	alu8_r_undoc	0b1111110110000???		
+ADC A,r (IY set)	alu8_r_undoc	0b1111110110001???		
+SUB A,r (IY set)	alu8_r_undoc	0b1111110110010???		
+SBC A,r (IY set)	alu8_r_undoc	0b1111110110011???		
+AND A,r (IY set)	alu8_r_undoc	0b1111110110100???		
+XOR A,r (IY set)	alu8_r_undoc	0b1111110110101???		
+OR A,r (IY set)	alu8_r_undoc	0b1111110110110???		
+CP A,r (IY set)	alu8_r_undoc	0b1111110110111???		
 #General purpose arithmetic and CPU control groups				
 DAA	DAA	0b00100111		
 CPL	CPL	0b00101111		
