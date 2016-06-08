@@ -266,4 +266,7 @@ int BIT_b_IXYp();
 /* --- Calling this will make an assertion failure   --- */
 int UNDOC();
 
+/* --- Exposed internals, just for unit testing --- */
+alu_result_t alu8_op(uint8_t operation, int8_t op1, int8_t op2, uint8_t flags);
+
 #endif

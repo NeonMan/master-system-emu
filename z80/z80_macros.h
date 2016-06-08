@@ -194,8 +194,8 @@ const uint8_t q[4] = { z80.opcode[0] & (1 << 3), z80.opcode[1] & (1 << 3), z80.o
 
 #define Z80_SETFLAG_PARITY(X) (z80_parity_lut[(X)] ? Z80_FLAG_PARITY : 0) /**<-- [P] Set parity flag (bit 2)*/
 #define Z80_SETFLAG_PARITY_16(X) (z80_parity_lut[(X) & 0x00FF] ^ z80_parity_lut[((X)>>8) & 0x00FF])
-#define Z80_SETFLAG_OVERFLOW(O,N) (((int16_t)O) > ((int16_t)N) ? 0 : Z80_FLAG_PARITY) /**<-- [V] Set overflow flag (bit 2)*/
-#define Z80_SETFLAG_OVERFLOW_16(O,N) (((int32_t)O) > ((int32_t)N) ? 0 : Z80_FLAG_PARITY)
+#define Z80_SETFLAG_OVERFLOW(O,N) (((int16_t)O) >= ((int16_t)N) ? 0 : Z80_FLAG_PARITY) /**<-- [V] Set overflow flag (bit 2)*/
+#define Z80_SETFLAG_OVERFLOW_16(O,N) (((int32_t)O) >= ((int32_t)N) ? 0 : Z80_FLAG_PARITY)
 #define Z80_SETFLAG_SUBTRACT(A) (A ? Z80_FLAG_SUBTRACT : 0) /**<-- [N] Set Add/Subtract flag (bit 1)*/
 #define Z80_SETFLAG_CARRY(O,N) (O > N ? Z80_FLAG_CARRY : 0) /**<-- [C] Set Carry flag, adition (bit 0)*/
 #define Z80_SETFLAG_CARRY_16(O,N) (Z80_SETFLAG_CARRY(O,N))
