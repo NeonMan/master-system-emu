@@ -44,6 +44,7 @@ CMakeCache.txt
 z80/z80_decoder_tables.h
 z80/z80_dasm_decoder_tables.h
 z80dasm/z80_dasm_tables.h
+run_doxygen_win.bat
 
 #Executables
 psg-play

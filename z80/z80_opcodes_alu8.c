@@ -15,12 +15,11 @@
 #include "z80_opcodes.h"
 #include "z80_macros.h"
 #include "z80_register_lut.h"
-//#include "debug/sms_debug.h"
 #include "debug/sms_debug.h"
 
 extern struct z80_s z80; //<-- Access to z80 internals
 
-static alu_result_t alu_op(uint8_t operation, int8_t op1, int8_t op2, uint8_t flags) {
+alu_result_t alu8_op(uint8_t operation, int8_t op1, int8_t op2, uint8_t flags) {
     assert(operation <= Z80_ALUOP_CP);
     alu_result_t rv = { 0, 0 };
 
@@ -168,7 +167,7 @@ int alu8_HLp() {
     Z80_OPCODE_SUBDIV;
     const uint8_t alu_operation = y[0];
     Z80_8BIT_READ(Z80_HL, 0);
-    alu_result_t r = alu_op(alu_operation, Z80_A, z80.read_buffer[0], Z80_F);
+    alu_result_t r = alu8_op(alu_operation, Z80_A, z80.read_buffer[0], Z80_F);
     Z80_A = r.result;
     Z80_F = r.flags;
     return Z80_STAGE_RESET;
@@ -179,7 +178,7 @@ int alu8_n() {
     assert(z80.opcode_index == 2);
     Z80_OPCODE_SUBDIV;
     const uint8_t alu_operation = y[0];
-    alu_result_t r = alu_op(alu_operation, Z80_A, z80.opcode[1], Z80_F);
+    alu_result_t r = alu8_op(alu_operation, Z80_A, z80.opcode[1], Z80_F);
     Z80_A = r.result;
     Z80_F = r.flags;
     return Z80_STAGE_RESET;
@@ -191,7 +190,7 @@ int alu8_r() {
     Z80_OPCODE_SUBDIV;
     assert(z[0] != Z80_R_INDEX_HL);
     const uint8_t alu_operation = y[0];
-    alu_result_t r = alu_op(alu_operation, Z80_A, *(z80_r[z[0]]), Z80_F);
+    alu_result_t r = alu8_op(alu_operation, Z80_A, *(z80_r[z[0]]), Z80_F);
     Z80_A = r.result;
     Z80_F = r.flags;
     return Z80_STAGE_RESET;
@@ -204,10 +203,10 @@ int alu8_r_undoc() {
     const uint8_t alu_operation = y[1];
     alu_result_t r;
     if (z80.opcode[0] == 0xDD) {
-        r = alu_op(alu_operation, Z80_A, *(z80_r_ix[z[1]]), Z80_F);
+        r = alu8_op(alu_operation, Z80_A, *(z80_r_ix[z[1]]), Z80_F);
     }
     else {
-        r = alu_op(alu_operation, Z80_A, *(z80_r_iy[z[1]]), Z80_F);
+        r = alu8_op(alu_operation, Z80_A, *(z80_r_iy[z[1]]), Z80_F);
     }
     Z80_A = r.result;
     Z80_F = r.flags;
@@ -227,7 +226,7 @@ int alu8_IXYp() {
     Z80_8BIT_READ(address, 0);
     Z80_OPCODE_SUBDIV;
     const uint8_t alu_operation = y[1];
-    alu_result_t r = alu_op(alu_operation, Z80_A, z80.read_buffer[0], Z80_F);
+    alu_result_t r = alu8_op(alu_operation, Z80_A, z80.read_buffer[0], Z80_F);
     Z80_A = r.result;
     Z80_F = r.flags;
     return Z80_STAGE_RESET;

@@ -15,10 +15,10 @@ add_test(test_z80_stack zzz_test_z80_stack)
 #target_link_libraries(zzz_test_z80_alu16 z80 smsram unity)
 #add_test(test_z80_alu16 zzz_test_z80_alu16)
 
-#8-bit ALU
-#add_executable(zzz_test_z80_alu8 test_z80_alu8.c)
-#target_link_libraries(zzz_test_z80_alu8 z80 smsram unity)
-#add_test(test_z80_alu8 zzz_test_z80_alu8)
+#8-bit ALU internals
+add_executable(zzz_test_z80_alu8_internal test_z80_alu8_internal.c)
+target_link_libraries(zzz_test_z80_alu8_internal z80 smsram unity glue sms_debug)
+add_test(test_z80_alu8 zzz_test_z80_alu8_internal)
 
 #16-bit LD
 add_executable(zzz_test_z80_ld16 test_z80_ld16.c)
