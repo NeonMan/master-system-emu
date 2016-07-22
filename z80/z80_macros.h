@@ -178,6 +178,7 @@ const uint8_t q[4] = { z80.opcode[0] & (1 << 3), z80.opcode[1] & (1 << 3), z80.o
 #define Z80_FLAG_PARITY   (1<<2)
 #define Z80_FLAG_SUBTRACT (1<<1)
 #define Z80_FLAG_CARRY    (1)
+#define Z80_FLAG_OVERFLOW (Z80_FLAG_PARITY)
 
 // --- Flag update macros
 #define Z80_SETFLAG_SIGN(X) (((X)&(1<<7)) ? Z80_FLAG_SIGN : 0) /**<-- [S] Set sign flag (bit 7)*/
@@ -192,10 +193,10 @@ const uint8_t q[4] = { z80.opcode[0] & (1 << 3), z80.opcode[1] & (1 << 3), z80.o
 #define Z80_SETFLAG_HALF_BORROW_16(OP1,OP2)   ((((((OP1)&0xF000) - ((OP2)&0xF000)))&0xF000) > (((OP1)&0xF000)) ? Z80_FLAG_HC : 0)
 
 
+#define Z80_SETFLAG_OVERFLOW(O,N) (((uint16_t)O) > ((uint16_t)N) ? 0 : Z80_FLAG_OVERFLOW) /**<-- [V] Set overflow flag (bit 2)*/
+#define Z80_SETFLAG_OVERFLOW_16(O,N) (((uint32_t)O) > ((uint32_t)N) ? 0 : Z80_FLAG_OVERFLOW)
 #define Z80_SETFLAG_PARITY(X) (z80_parity_lut[(X)] ? Z80_FLAG_PARITY : 0) /**<-- [P] Set parity flag (bit 2)*/
 #define Z80_SETFLAG_PARITY_16(X) (z80_parity_lut[(X) & 0x00FF] ^ z80_parity_lut[((X)>>8) & 0x00FF])
-#define Z80_SETFLAG_OVERFLOW(O,N) (((int16_t)O) >= ((int16_t)N) ? 0 : Z80_FLAG_PARITY) /**<-- [V] Set overflow flag (bit 2)*/
-#define Z80_SETFLAG_OVERFLOW_16(O,N) (((int32_t)O) >= ((int32_t)N) ? 0 : Z80_FLAG_PARITY)
 #define Z80_SETFLAG_SUBTRACT(A) (A ? Z80_FLAG_SUBTRACT : 0) /**<-- [N] Set Add/Subtract flag (bit 1)*/
 #define Z80_SETFLAG_CARRY(O,N) (O > N ? Z80_FLAG_CARRY : 0) /**<-- [C] Set Carry flag, adition (bit 0)*/
 #define Z80_SETFLAG_CARRY_16(O,N) (Z80_SETFLAG_CARRY(O,N))
@@ -223,16 +224,6 @@ const uint8_t q[4] = { z80.opcode[0] & (1 << 3), z80.opcode[1] & (1 << 3), z80.o
 #define Z80_BREAK_IO_RD  (1 << 3) /*Break on IO read*/
 #define Z80_BREAK_IO_WR  (1 << 4) /*Break on IO write*/
 #define Z80_BREAK_IO_16B (1 << 5) /*Use 16-bit IO Addressing*/
-
-// --- IX/IY register lut selection macros ---
-//This macros provide a pointer to the IX/IY version of the register
-//look-up tables. It is presumed a z80 struct is present wherever
-//this macro is invoked. Note that any non-0xDD prefix will be
-//considered a 0xFD prefix so the decoder must discriminate invalid
-//prefixes first.  Return type is `uint16_t* const *`
-#define Z80_PREFIX_R_LUT   (((z80.opcode[0]) == 0xDD) ? z80_r_ix : z80_r_iy)
-#define Z80_PREFIX_RP_LUT  (((z80.opcode[0]) == 0xDD) ? z80_rp_ix : z80_rp_iy) 
-#define Z80_PREFIX_RP2_LUT (((z80.opcode[0]) == 0xDD) ? z80_rp2_ix : z80_rp2_iy) 
 
 // --- Constants ---
 #define Z80_ADDRESS_SIZE (65536) /*Address space. 2^16*/

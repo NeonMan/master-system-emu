@@ -32,6 +32,11 @@ doxygen\/
 \.exe$
 \.cbp$
 \.orig$
+\.ihx$
+\.rel$
+\.lk$
+\.lst$
+\.map$
 
 #Other
 Makefile$
