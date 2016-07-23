@@ -100,7 +100,9 @@ int EX_DE_HL(){
 ///EX (SP), HL; Size: 1; Flags: None
 int EX_SPp_HL(){
     assert(z80.opcode_index == 1);
-    assert(0); ///<-- Unimplemented
+	Z80_16BIT_READ(Z80_SP, 0);
+	Z80_16BIT_WRITE(Z80_SP, 0, (Z80_HL & 0x00FF), ((Z80_HL >> 8) & 0x00FF));
+	Z80_HL = z80.read_buffer[0] + (((uint16_t)z80.read_buffer[1]) << 8);
     return Z80_STAGE_RESET;
 }
 
@@ -121,8 +123,17 @@ int EXX(){
 
 ///HALT; Size: 1; Flags: None
 int HALT(){
-    assert(z80.opcode_index == 1);
-    assert(0); ///<-- Unimplemented
+    
+	if (z80.opcode_index != 1) {
+		assert(z80.opcode_index == 2);
+		/*Emulator hooks*/
+		/* op, arg1 and arg2 are on the stack */
+		assert(0); ///<-- Unimplemented
+	}
+	else {
+		/*Regular HALT*/
+		assert(0); ///<-- Unimplemented
+	}    
     return Z80_STAGE_RESET;
 }
 

@@ -2,7 +2,7 @@
 __sfr __at 0xFD __sdsc_data;
 __sfr __at 0xFC __sdsc_control;
 
-static const char hex_lut[] = "01234567890ABCDEF";
+static const char hex_lut[] = "0123456789ABCDEF";
 
 void sdsc_putc(char c){
 	__sdsc_data = c;
