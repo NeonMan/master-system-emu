@@ -14,3 +14,10 @@ void sdsc_puts(const char* str){
 	__sdsc_data = '\r';
 	__sdsc_data = '\n';
 }
+
+void sdsc_puth(char c){
+	unsigned char h = ((c>>4) & 0xF) + '0';
+	unsigned char l = ((c>>0) & 0xF) + '0';
+	__sdsc_data = h;
+	__sdsc_data = l;
+}

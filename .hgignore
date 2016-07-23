@@ -37,6 +37,8 @@ doxygen\/
 \.lk$
 \.lst$
 \.map$
+\.asm$
+\.noi$
 
 #Other
 Makefile$
