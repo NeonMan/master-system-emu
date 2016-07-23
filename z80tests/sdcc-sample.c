@@ -5,12 +5,16 @@
 
 #include <stdint.h>
 #include "sdsc.h"
+#include "emu-hooks.h"
 
-void sdsc_test(){
-	uint8_t i;
-	
+/* ------------------------------------- */
+/* --- Print stuff do some for loops --- */
+/* ------------------------------------- */
+void printing_test(){
+	uint16_t i;
 	//Simple FOR loop
-	sdsc_puts("Print 10 dots\r\n1234567890");
+	sdsc_puts("Print 10 dots");
+	sdsc_puts("1234567890");
 	for(i=0;i<10;++i){
 		sdsc_putc('.');
 	}
@@ -18,7 +22,10 @@ void sdsc_test(){
 	
 	//Print some integers
 	sdsc_puts("Print hex numbers from 0x00 to 0xFF");
-	for(i=0; i<16; ++i){
+	for(i=0; i<256; ++i){
+		if(((i%16)==0) && (i>0)){
+			sdsc_puts("");
+		}
 		sdsc_putc('0');
 		sdsc_putc('x');
 		sdsc_puth(i);
@@ -27,8 +34,11 @@ void sdsc_test(){
 	sdsc_puts("");
 }
 
-int main(){
-	sdsc_test();
+
+
+void main(){
+	printing_test();
+	emu_hook(EMU_BREAK, 0xAAAA, 0x7777);
 	while(1){
 		
 	}
