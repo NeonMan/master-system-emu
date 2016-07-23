@@ -37,7 +37,14 @@ void printing_test(){
 
 
 void main(){
+	/*Say Hello!*/
+	sdsc_puts("Test program for sms emu.");
+	sdsc_puts("");
+	
+	/*Do tests*/
 	printing_test();
+	
+	/*Stop emulation*/
 	emu_hook(EMU_BREAK, 0xAAAA, 0x7777);
 	while(1){
 		
