@@ -43,7 +43,16 @@ are the same as with regular GNU but providing CMake with the toolchain file:
 
     cmake -DCMAKE_TOOLCHAIN_FILE=../Toolchain-cross-mingw32-linux.cmake ..
 
-## Debug builds ##
+### Debug builds ###
 
 To select debug build for coverage tests, add `-DCMAKE_BUILD_TYPE=Debug` to the
 CMake command.
+
+# Building test ROMs #
+
+The test-roms directory has another CMake project that can be built separately. 
+
+## Requisites ##
+
+* SDCC (Small Device C Compiler)
+* make (nmake on windows works as well)
