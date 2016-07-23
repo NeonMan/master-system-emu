@@ -90,14 +90,15 @@ int ADD_IXY_rp() {
         Z80_F = Z80_F & (Z80_FLAG_SIGN | Z80_FLAG_ZERO | Z80_FLAG_PARITY);
         Z80_F |= Z80_SETFLAG_HALF_CARRY_16(Z80_IX, result);
         Z80_F |= Z80_SETFLAG_CARRY_16(Z80_IX, result);
+		Z80_IX = result;
     }
     else {
         result = Z80_IY + (*(z80_rp[p[1]]));
         Z80_F = Z80_F & (Z80_FLAG_SIGN | Z80_FLAG_ZERO | Z80_FLAG_PARITY);
         Z80_F |= Z80_SETFLAG_HALF_CARRY_16(Z80_IY, result);
         Z80_F |= Z80_SETFLAG_CARRY_16(Z80_IY, result);
+		Z80_IY = result;
     }
-    Z80_HL = result;
     return Z80_STAGE_RESET;
 }
 

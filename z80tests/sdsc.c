@@ -2,6 +2,8 @@
 __sfr __at 0xFD __sdsc_data;
 __sfr __at 0xFC __sdsc_control;
 
+static const char hex_lut[] = "01234567890ABCDEF";
+
 void sdsc_putc(char c){
 	__sdsc_data = c;
 }
@@ -16,8 +18,8 @@ void sdsc_puts(const char* str){
 }
 
 void sdsc_puth(char c){
-	unsigned char h = ((c>>4) & 0xF) + '0';
-	unsigned char l = ((c>>0) & 0xF) + '0';
-	__sdsc_data = h;
-	__sdsc_data = l;
+	unsigned char h = ((c>>4) & 0xF);
+	unsigned char l = ((c   ) & 0xF);
+	__sdsc_data = hex_lut[h];
+	__sdsc_data = hex_lut[l];
 }
