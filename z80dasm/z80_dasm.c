@@ -106,9 +106,9 @@ int zd_ADD_HL_rp(const uint8_t* opcode, char* result) {
 int zd_ADD_IXY_rp(const uint8_t* opcode, char* result) {
     const uint8_t q = ((opcode[1]) >> 4) & 0x03;
     if(opcode[0] == 0xDD)
-        sprintf(result, "ADC IX, %s", z80d_rp[q]);
+        sprintf(result, "ADD IX, %s", z80d_rp[q]);
     else
-        sprintf(result, "ADC IY, %s", z80d_rp[q]);
+        sprintf(result, "ADD IY, %s", z80d_rp[q]);
     return 2;
 }
 
@@ -500,7 +500,12 @@ int zd_LD_R_A(const uint8_t* opcode, char* result) {
 int zd_LD_r_IXYp(const uint8_t* opcode, char* result) {
     const uint8_t y = (opcode[1] >> 3) & 0x07;
     const int8_t  d = (int8_t)opcode[2];
-    sprintf(result, "LD %s, (IX%+d)", z80d_r[y], d);
+	if (opcode[0] == 0xDD) {
+		sprintf(result, "LD %s, (IX%+d)", z80d_r[y], d);
+	}
+	else {
+		sprintf(result, "LD %s, (IY%+d)", z80d_r[y], d);
+	}
     return 3;
 }
 
@@ -610,7 +615,12 @@ int zd_PUSH_rp2(const uint8_t* opcode, char* result) {
 int zd_RES_b_IXYp(const uint8_t* opcode, char* result) {
     const int8_t d = (int8_t)opcode[2];
     const uint8_t y = (opcode[3] >> 3) & 0x07;
-    sprintf(result, "RES %d, (IX%+d)", y, d);
+	if (opcode[0] == 0xDD) {
+		sprintf(result, "RES %d, (IX%+d)", y, d);
+	}
+	else {
+		sprintf(result, "RES %d, (IY%+d)", y, d);
+	}
     return 4;
 }
 
@@ -667,7 +677,12 @@ int zd_rot(const uint8_t* opcode, char* result) {
 int zd_rot_IXYp(const uint8_t* opcode, char* result) {
     const uint8_t d = opcode[2];
     const uint8_t y = (opcode[3] >> 3) & 0x07;
-    sprintf(result, "%s (IX%+d)", z80d_rot[y], d);
+	if (opcode[0] == 0xDD) {
+		sprintf(result, "%s (IX%+d)", z80d_rot[y], d);
+	}
+	else {
+		sprintf(result, "%s (IY%+d)", z80d_rot[y], d);
+	}
     return 4;
 }
 
@@ -706,7 +721,12 @@ int zd_SCF(const uint8_t* opcode, char* result) {
 int zd_SET_b_IXYp(const uint8_t* opcode, char* result) {
     const int8_t d = (int8_t)opcode[2];
     const uint8_t y = (opcode[3] >> 3) & 0x07;
-    sprintf(result, "SET %d, (IX%+d)", y, d);
+	if (opcode[0] == 0xDD) {
+		sprintf(result, "SET %d, (IX%+d)", y, d);
+	}
+	else {
+		sprintf(result, "SET %d, (IY%+d)", y, d);
+	}
     return 4;
 }
 
