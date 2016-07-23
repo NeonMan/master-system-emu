@@ -128,7 +128,7 @@ int HALT(){
 		assert(z80.opcode_index == 2);
 		/*Emulator hooks*/
 		/* op, arg1 and arg2 are on the stack */
-		assert(0); ///<-- Unimplemented
+		/**@note Hooks are unimplemented.*/
 	}
 	else {
 		/*Regular HALT*/
