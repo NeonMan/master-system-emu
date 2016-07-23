@@ -9,6 +9,7 @@ Debug\/
 Release\/
 CMakeFiles\/
 doxygen\/
+test-roms\/Build
 
 #File types
 \.suo$
