@@ -1,5 +1,5 @@
 ;--------------------------------------------------------------------------
-;  crt0.s - Generic crt0.s for a Z80
+;  crt0.s - crt0.s for the SEGA master system, Z80 based system.
 ;
 ;  Copyright (C) 2000, Michael Hope
 ;
@@ -32,21 +32,50 @@
 	.area	_HEADER (ABS)
 	;; Reset vector
 	.org 	0
+	di
 	jp	init
 
 	.org	0x08
+	call _rst_08h
 	reti
+
 	.org	0x10
+	call _rst_10h
 	reti
+
 	.org	0x18
+	call _rst_18h
 	reti
+
 	.org	0x20
+	call _rst_20h
 	reti
+
 	.org	0x28
+	call _rst_28h
 	reti
+
 	.org	0x30
+	call _rst_08h
 	reti
+
 	.org	0x38
+	call _rst_38h
+	reti
+
+nmi_hook:
+	;NMI call codedoes not fit it INT1 is being used, so we make an extra
+	;jump before performing the call
+	call _nmi
+	reti
+	
+	;NMI vector
+	.org	0x66
+	jr nmi_hook
+	
+	;INT vector
+	.org	0x68
+	call _int1
 	reti
 
 	.org	0x100

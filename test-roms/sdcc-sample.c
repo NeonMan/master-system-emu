@@ -6,6 +6,7 @@
 #include <stdint.h>
 #include "sdsc.h"
 #include "emu-hooks.h"
+#include "intv-dummy.h" /*<-- Ignore interrupts*/
 
 /* ------------------------------------- */
 /* --- Print stuff do some for loops --- */
