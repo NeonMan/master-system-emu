@@ -42,7 +42,7 @@ char z80d_byte_to_char(uint8_t b){
 }
 
 static int unknown_decode(const uint8_t * opcode, char* result) {
-    sprintf(result, "UNK 0x%02X", opcode[0]);
+    sprintf(result, "UNK %02X%02X%02X%02X", opcode[0], opcode[1], opcode[2], opcode[3]);
     return 0;
 }
 
