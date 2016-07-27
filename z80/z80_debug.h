@@ -17,4 +17,7 @@
 
 #include "z80.h"
 
+void z80dbg_hook_entry();
+void z80dbg_register_hooh(void(*callback)(void));
+
 #endif
