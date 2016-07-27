@@ -40,6 +40,7 @@ void printing_test(){
 void main(){
 	/*Say Hello!*/
 	sdsc_puts("Test program for sms emu.");
+	sdsc_puts((void*) 0x0050); /*<-- crt0 ID string*/
 	sdsc_puts("");
 	
 	/*Do tests*/

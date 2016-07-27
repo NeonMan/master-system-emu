@@ -64,7 +64,7 @@
 	reti
 
 nmi_hook:
-	;NMI call codedoes not fit it INT1 is being used, so we make an extra
+	;NMI call code does not fit it INT1 is being used, so we make an extra
 	;jump before performing the call
 	call _nmi
 	reti
@@ -77,8 +77,13 @@ nmi_hook:
 	.org	0x68
 	call _int1
 	reti
-
-	.org	0x100
+	
+	.org	0x50
+	.ascii "SMS crt0 V0.1  "
+	.db 0x00
+	
+	;.org	0x100
+	.org	0x70
 init:
 	;; Set stack pointer directly above top of memory.
 	ld	sp,#0xE000
@@ -110,16 +115,12 @@ gsinit_next:
 	.area   _HEAP
 
 	.area   _CODE
-__clock::
-	ld	a,#2
-	rst	0x08
-	ret
 
 _exit::
 	;; Exit - special code to the emulator
-	ld	a,#0
-	rst	0x08
+	ld	a,#0xFF
 1$:
-	halt
+	.db 0xFD ;
+	halt     ; NONI/HALT used for emulator hooks.
 	jr	1$
 

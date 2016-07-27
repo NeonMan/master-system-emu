@@ -41,6 +41,11 @@ char z80d_byte_to_char(uint8_t b){
         return '.';
 }
 
+static int unknown_decode(const uint8_t * opcode, char* result) {
+    sprintf(result, "UNK 0x%02X", opcode[0]);
+    return 0;
+}
+
 int z80d_decode(const uint8_t* opcode, unsigned int size, char* result){
     result[0] = '\0';
     if (opcode[0] == 0xDD) {
@@ -49,8 +54,10 @@ int z80d_decode(const uint8_t* opcode, unsigned int size, char* result){
             return op_ddcb[opcode[3]].f(opcode, result);
         }
         else {
-            assert(op_dd[opcode[1]].f);
-            return op_dd[opcode[1]].f(opcode, result);
+            if (op_dd[opcode[1]].f)
+                return op_dd[opcode[1]].f(opcode, result);
+            else
+                return unknown_decode(opcode, result);
         }
     }
     else if (opcode[0] == 0xFD) {
@@ -59,8 +66,10 @@ int z80d_decode(const uint8_t* opcode, unsigned int size, char* result){
             return op_fdcb[opcode[3]].f(opcode, result);
         }
         else {
-            assert(op_fd[opcode[1]].f);
-            return op_fd[opcode[1]].f(opcode, result);
+            if (op_fd[opcode[1]].f)
+                return op_fd[opcode[1]].f(opcode, result);
+            else
+                return unknown_decode(opcode, result);
         }
     }
     else if (opcode[0] == 0xCB) {

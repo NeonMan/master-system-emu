@@ -254,9 +254,6 @@ int EX_SPp_IXY();
 int PUSH_IXY();
 int JP_IXYp();
 int LD_SP_IXY();
-int SRA_IXYp();
-int SRL_IXYp();
-int RR_IXYp();
 
 int SET_b_IXYp();
 int RES_b_IXYp();
