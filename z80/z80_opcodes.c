@@ -16,6 +16,8 @@
 #include "z80_macros.h"
 #include "z80_register_lut.h"
 #include "debug/sms_debug.h"
+/*For hook entry point*/
+#include "z80_debug.h"
 
 extern struct z80_s z80; //<-- Access to z80 internals
 
@@ -127,8 +129,7 @@ int HALT(){
 	if (z80.opcode_index != 1) {
 		assert(z80.opcode_index == 2);
 		/*Emulator hooks*/
-		/* op, arg1 and arg2 are on the stack */
-		/**@note Hooks are unimplemented.*/
+		z80dbg_hook_entry();
 	}
 	else {
 		/*Regular HALT*/
