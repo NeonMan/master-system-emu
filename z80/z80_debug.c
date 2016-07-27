@@ -13,3 +13,23 @@
 // limitations under the License.
 
 #include "z80_debug.h"
+#include "z80.h"
+#include "z80_macros.h"
+#include <assert.h>
+
+extern struct z80_s z80;
+static void(*_hook_callback)(void) = 0;
+
+void z80dbg_register_hooh(void(*callback)(void)) {
+	_hook_callback = callback;
+}
+
+void z80dbg_hook_entry() {
+	/* op, arg1 and arg2 are on the stack */
+	if (_hook_callback) {
+		_hook_callback();
+	}
+	else {
+		/**@ToDo Make a default hook handler?*/
+	}
+}
