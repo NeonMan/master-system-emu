@@ -12,13 +12,16 @@ set(CMAKE_C_FLAGS "-mz80 --std-c99 --xram-size 0x4000 --code-loc 0x0090 --data-l
 ADD_SUBDIRECTORY(sms)
 
 #ROM "executables" ;)
+ADD_EXECUTABLE(empty empty.c)
+ADD_DEPENDENCIES(empty crt0-sms)
+
 ADD_EXECUTABLE(sdcc-sample sdcc-sample.c)
 ADD_DEPENDENCIES(sdcc-sample crt0-sms)
 TARGET_LINK_LIBRARIES(sdcc-sample sdsc emu-hooks )
 
-ADD_EXECUTABLE(empty empty.c)
-ADD_DEPENDENCIES(empty crt0-sms)
-
+ADD_EXECUTABLE(ram-test ram-test.c)
+ADD_DEPENDENCIES(ram-test crt0-sms)
+TARGET_LINK_LIBRARIES(ram-test sdsc )
 
 #Make .bin ROMs from the .ihx files
 ADD_CUSTOM_TARGET(sdcc-sample-bin ALL
@@ -26,4 +29,7 @@ ADD_CUSTOM_TARGET(sdcc-sample-bin ALL
     )
 ADD_CUSTOM_TARGET(empty-bin ALL
         COMMAND makebin -p empty.ihx empty.bin
+    )
+ADD_CUSTOM_TARGET(ram-test-bin ALL
+        COMMAND makebin -p ram-test.ihx ram-test.bin
     )
