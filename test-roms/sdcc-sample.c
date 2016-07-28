@@ -4,9 +4,9 @@
 */
 
 #include <stdint.h>
-#include "sdsc.h"
-#include "emu-hooks.h"
-#include "intv-dummy.h" /*<-- Ignore interrupts*/
+#include "sms/sdsc.h"
+#include "sms/emu-hooks.h"
+#include "sms/intv-dummy.h" /*<-- Ignore interrupts*/
 
 /* ------------------------------------- */
 /* --- Print stuff do some for loops --- */
