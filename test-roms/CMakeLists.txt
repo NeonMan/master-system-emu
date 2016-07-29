@@ -1,0 +1,35 @@
+cmake_minimum_required (VERSION 2.8)
+project(test-roms C)
+ENABLE_LANGUAGE(C)
+
+#Configure SDCC to make z80 binaries
+set(CMAKE_C_FLAGS "-mz80 --std-c99 --xram-size 0x4000 --code-loc 0x0090 --data-loc 0xc000 --no-std-crt0 sms/crt0-sms.rel")
+
+#crt0 for Sega Master System
+# -- ToDo. Using a prebuilt one
+
+#Libraries
+ADD_SUBDIRECTORY(sms)
+
+#ROM "executables" ;)
+ADD_EXECUTABLE(empty empty.c)
+ADD_DEPENDENCIES(empty crt0-sms)
+
+ADD_EXECUTABLE(sdcc-sample sdcc-sample.c)
+ADD_DEPENDENCIES(sdcc-sample crt0-sms)
+TARGET_LINK_LIBRARIES(sdcc-sample sdsc emu-hooks )
+
+ADD_EXECUTABLE(ram-test ram-test.c)
+ADD_DEPENDENCIES(ram-test crt0-sms)
+TARGET_LINK_LIBRARIES(ram-test sdsc )
+
+#Make .bin ROMs from the .ihx files
+ADD_CUSTOM_TARGET(sdcc-sample-bin ALL
+        COMMAND makebin -p sdcc-sample.ihx sdcc-sample.bin
+    )
+ADD_CUSTOM_TARGET(empty-bin ALL
+        COMMAND makebin -p empty.ihx empty.bin
+    )
+ADD_CUSTOM_TARGET(ram-test-bin ALL
+        COMMAND makebin -p ram-test.ihx ram-test.bin
+    )
