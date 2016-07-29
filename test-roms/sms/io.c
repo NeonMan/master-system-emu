@@ -3,18 +3,20 @@
 /*IO port for the IO chip*/
 __sfr __at 0x3E __io_chip;
 
+void io_set(uint8_t r){
+  __io_chip = r;
+}
+
+uint8_t io_get(){
+  return __io_chip;
+}
+
 uint8_t io_enable(uint8_t f){
-	uint8_t v;
-	v = __io_chip;
-	v = v & (f ^ 0xFF);
-	__io_chip = v;
-	return 0;
+	__io_chip = __io_chip & f;
+	return __io_chip;
 }
 
 uint8_t io_disable(uint8_t f){
-	uint8_t v;
-	v = __io_chip;
-	v = v | f;
-	__io_chip = v;
-	return 0;
+	__io_chip = __io_chip | f;
+	return __io_chip;
 }
