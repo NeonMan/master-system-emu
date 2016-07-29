@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include "sms/sms.h"
 #include "sms/sdsc.h"
 #include "sms/intv-dummy.h"
 #include "sms/io.h"
@@ -84,6 +85,11 @@ void boot_jump(uint16_t address, uint8_t io){
 void main(){
   uint16_t i;
   uint8_t* boot_jump_bytes = (void*) boot_jump;
+  /* --- Configure the SEGA mapper --- */
+  __mapper_bank0 = 0x00;
+  __mapper_bank1 = 0x01;
+  __mapper_bank2 = 0x02;
+  
   /* --- Clean bootloader buffers --- */
   for(i=0; i<BOOTJUMP_SIZE; ++i){
     bootjump_buff[i] = 0;
