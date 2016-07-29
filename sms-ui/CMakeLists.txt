@@ -14,7 +14,7 @@ if (MINGW)
 endif()
 
 add_executable(smsui smsui.cxx sms-emu.h ${VC_RESOURCE_FILES} ${FLTK_DIALOGS})
-target_link_libraries(smsui glue sms_debug_dump fltk smsrom smsio smsram psg z80 peripheral vdp sdsc savestate SDL2 SDL2main)
+target_link_libraries(smsui glue sms_debug_dump fltk smsrom smsio smsram psg z80 peripheral vdp sdsc sms_debug_dump savestate SDL2 SDL2main)
 
 #Compile FL files
 add_custom_command(OUTPUT 
