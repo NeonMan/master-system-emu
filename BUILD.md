@@ -1,4 +1,5 @@
-This document describes the required tools and steps to build the emulator and selftest ROMs.
+This document describes the required tools and steps to build the emulator and
+selftest ROMs.
 
 # Master system emulator #
 
@@ -6,7 +7,10 @@ Emulator build is managed by CMake, required additional tools and tips below.
 
 ## Requisites ##
 
-This project uses CMake to build the binaries. However, the following tools must be available in your path. These tools should be readily available on any linux distribution, windows versions are usually available on the links provided.
+This project uses CMake to build the binaries. However, the following tools
+must be available in your PATH. These tools should be readily available on any
+linux distribution, windows versions are usually available on the links
+provided.
 
 * [CMake]
 * [Python 3]
@@ -21,7 +25,7 @@ tools should be available.
 ## Building on Windows (Visual Studio) ##
 
 Run the provided `run_cmake_win.bat` file, VS project files will be available
-on the `build` directory
+on the `build` directory.
 
 ## Building on GNU (Linux/MinGW/etc) ##
 
@@ -39,8 +43,8 @@ Optionally, for a separate build tree, go to the source directory then run:
 
 ### Debug builds ###
 
-To select debug build for coverage tests, add `-DCMAKE_BUILD_TYPE=Debug` to the
-CMake command.
+To select debug build for coverage tests, add `-DCMAKE_BUILD_TYPE=Debug` to
+the CMake command.
 
 # Building test ROMs #
 
