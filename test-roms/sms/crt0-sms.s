@@ -79,7 +79,7 @@ nmi_hook:
 	reti
 	
 	.org	0x50
-	.ascii "SMS crt0 V0.1  "
+	.ascii "#SMS crt0 V0.1#"
 	.db 0x00
 	
 	;.org	0x100

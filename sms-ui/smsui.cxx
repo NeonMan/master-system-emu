@@ -117,7 +117,7 @@ static void restore_state(const char* f_path) {
 int emu_init(){
     emu_log("Hello!", EMU_LOG_INFO);
     //Redirect stderr/stdout
-    *stderr = *fopen("err.txt", "wb");
+    //*stderr = *fopen("err.txt", "wb");
     //*stdout = *fopen("out.txt", "wb");
 
     //Init emulator modules

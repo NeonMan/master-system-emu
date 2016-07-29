@@ -21,7 +21,11 @@ TARGET_LINK_LIBRARIES(sdcc-sample sdsc emu-hooks )
 
 ADD_EXECUTABLE(ram-test ram-test.c)
 ADD_DEPENDENCIES(ram-test crt0-sms)
-TARGET_LINK_LIBRARIES(ram-test sdsc )
+TARGET_LINK_LIBRARIES(ram-test sdsc)
+
+ADD_EXECUTABLE(bootloader bootloader.c)
+ADD_DEPENDENCIES(bootloader crt0-sms)
+TARGET_LINK_LIBRARIES(bootloader sdsc io)
 
 #Make .bin ROMs from the .ihx files
 ADD_CUSTOM_TARGET(sdcc-sample-bin ALL
@@ -32,4 +36,7 @@ ADD_CUSTOM_TARGET(empty-bin ALL
     )
 ADD_CUSTOM_TARGET(ram-test-bin ALL
         COMMAND makebin -p ram-test.ihx ram-test.bin
+    )
+ADD_CUSTOM_TARGET(bootloader-bin ALL
+        COMMAND makebin -p bootloader.ihx bootloader.bin
     )
