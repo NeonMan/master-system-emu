@@ -1,28 +1,29 @@
-# Building #
+This document describes the required tools and steps to build the emulator and selftest ROMs.
+
+# Master system emulator #
+
+Emulator build is managed by CMake, required additional tools and tips below.
 
 ## Requisites ##
 
-This project uses CMake to help building the binaries. However, the following
-tools must be available in your path for a successful build.
+This project uses CMake to build the binaries. However, the following tools must be available in your path. These tools should be readily available on any linux distribution, windows versions are usually available on the links provided.
 
-* CMake
-* Python 3
-* FLUID (FLTK User Interface Designer)
+* [CMake]
+* [Python 3]
+* FLUID ([FLTK] User Interface Designer)
 
 Additionally, for coverage tests on a debug build (only on GCC) the following
 tools should be available.
 
-* gcov
-* lcov
+* gcov (part of gcc)
+* [lcov]
 
-## Building ##
-
-### Windows ###
+## Building on Windows (Visual Studio) ##
 
 Run the provided `run_cmake_win.bat` file, VS project files will be available
 on the `build` directory
 
-### GNU (Linux/MinGW/etc) ###
+## Building on GNU (Linux/MinGW/etc) ##
 
 Point a shell into the source directory then run:
 
@@ -36,13 +37,6 @@ Optionally, for a separate build tree, go to the source directory then run:
     cmake ..
     make
 
-### Cross compile on linux MinGW ###
-
-A toolchain file is provided to cross-build using MinGW on linux. Instructions
-are the same as with regular GNU but providing CMake with the toolchain file:
-
-    cmake -DCMAKE_TOOLCHAIN_FILE=../Toolchain-cross-mingw32-linux.cmake ..
-
 ### Debug builds ###
 
 To select debug build for coverage tests, add `-DCMAKE_BUILD_TYPE=Debug` to the
@@ -50,9 +44,25 @@ CMake command.
 
 # Building test ROMs #
 
-The test-roms directory has another CMake project that can be built separately. 
+The test-roms directory is another CMake project that can be built separately. 
 
 ## Requisites ##
 
-* SDCC (Small Device C Compiler)
-* make (nmake on windows works as well)
+These tools must be installed and available on your PATH.
+
+* [SDCC] (Small Device C Compiler)
+* make (nmake on windows)
+ 
+## Building on Windows ##
+
+Run the provided `test-roms\run_cmake_win.bat` file, binaries should be readily built and available on the `test-roms\Build` directory.
+
+## Building on GNU ##
+
+Follow the same instructions as in building the emulator.
+
+   [lcov]:     http://ltp.sourceforge.net/coverage/lcov.php
+   [CMake]:    https://cmake.org/
+   [Python 3]: https://www.python.org
+   [FLTK]:     http://www.fltk.org/index.php
+   [SDCC]:     http://sdcc.sourceforge.net/
