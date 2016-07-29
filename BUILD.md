@@ -65,7 +65,7 @@ Building the test ROMs requires usign the provided toolchain file
 Pointing a shell to the `test-roms` directory and executing the following shall
 compile the ROM files in `.bin` and `.ihx` format
 
-    cmake -DCMAKE_TOOLCHAIN_FILE=../Toolchain-sdcc.cmake -G "NMake Makefiles" .
+    cmake -DCMAKE_TOOLCHAIN_FILE=./Toolchain-sdcc.cmake .
     make
 
 As with the emulator build, a separate build tree can be used.
