@@ -110,4 +110,4 @@ target_link_libraries (test-vdp vdp glue sms_debug ${EXT_LIBS})
 
 # --- sms-emu
 add_executable (emu sms-emu.c)
-target_link_libraries (emu glue sms_debug smsrom smsio smsram psg z80 peripheral vdp sdsc ${EXT_LIBS})
+target_link_libraries (emu glue sms_debug smsrom smsio smsram psg z80 peripheral vdp sdsc sms_debug ${EXT_LIBS})
