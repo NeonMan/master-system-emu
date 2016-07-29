@@ -55,11 +55,20 @@ These tools must be installed and available on your PATH.
  
 ## Building on Windows ##
 
-Run the provided `test-roms\run_cmake_win.bat` file, binaries should be readily built and available on the `test-roms\Build` directory.
+Run the provided `test-roms\run_cmake_win.bat` file, binaries should be readily
+built and available on the `test-roms\Build` directory.
 
 ## Building on GNU ##
 
-Follow the same instructions as in building the emulator.
+Building the test ROMs requires usign the provided toolchain file 
+`Toolchain-sdcc.cmake` to use SDCC instead of gcc to build the ROM sources. 
+Pointing a shell to the `test-roms` directory and executing the following shall
+compile the ROM files in `.bin` and `.ihx` format
+
+    cmake -DCMAKE_TOOLCHAIN_FILE=../Toolchain-sdcc.cmake -G "NMake Makefiles" .
+    make
+
+As with the emulator build, a separate build tree can be used.
 
    [lcov]:     http://ltp.sourceforge.net/coverage/lcov.php
    [CMake]:    https://cmake.org/
