@@ -1,8 +1,5 @@
 #include "io.h"
 
-/*IO port for the IO chip*/
-__sfr __at 0x3E __io_chip;
-
 void io_set(uint8_t r){
   __io_chip = r;
 }

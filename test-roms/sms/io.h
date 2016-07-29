@@ -34,6 +34,9 @@
 #define IO_DISABLE_UNK1       (IO_UNK1)
 #define IO_DISABLE_UNK0       (IO_UNK0)
 
+/*IO port for the IO chip*/
+__sfr __at 0x3E __io_chip;
+
 uint8_t io_enable(uint8_t f);
 uint8_t io_disable(uint8_t f);
 void    io_set(uint8_t r);

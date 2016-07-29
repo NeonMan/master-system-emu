@@ -233,7 +233,6 @@ void z80_reset_pipeline(){
         if (disasm_size != z80.opcode_index) {
             fprintf(stderr, "Warning: Disasm opcode size mismatch! Dasm: %d; z80: %d\n", disasm_size, z80.opcode_index);
             fflush(stderr);
-            assert(disasm_size == z80.opcode_index);
         }
         fflush(stderr);
     }
