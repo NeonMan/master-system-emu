@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/** @file z80.c
+/** @file z80/z80.c
  *  @brief z80 implementation.
  *
  *  Implementation of a z80 CPU, ideally cycle-perfect.

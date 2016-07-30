@@ -1,6 +1,9 @@
-
 #ifndef __INTV_DUMMY_RST_H
 #define __INTV_DUMMY_RST_H
+/**
+ * @file  intv-dummy-rst.h
+ * @brief Define all RST vectors with empty handlers.
+ */
 
 #include "intv.h"
 

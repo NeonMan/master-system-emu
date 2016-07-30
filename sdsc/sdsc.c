@@ -12,10 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/** @file sdsc.c
-*  @brief SDSC debug console implementation.
-*
-*/
+/**
+ * @file sdsc/sdsc.c
+ * @brief SDSC debug console implementation.
+ *
+ */
 #include "sdsc.h"
 #include <stdint.h>
 #include <stdio.h>

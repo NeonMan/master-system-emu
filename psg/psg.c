@@ -13,7 +13,7 @@
 // limitations under the License.
 
 /**
- *  @file psg.c
+ *  @file  psg/psg.c
  *  @brief PSG implementation.
  *
  *  Implements the SN79489 sound generator IC as used

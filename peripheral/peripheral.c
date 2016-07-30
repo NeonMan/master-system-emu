@@ -13,8 +13,8 @@
 // limitations under the License.
 
 /**
- * @file peripherial.c
- * @brief peripherial ports implementation.
+ * @file  peripheral/peripheral.c
+ * @brief peripheral ports implementation.
  *
  * Implements the master system peripherial ports, usually used by gamepads.
  */

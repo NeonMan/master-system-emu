@@ -1,5 +1,9 @@
 #ifndef __EMU_HOOKS_H
 #define __EMU_HOOKS_H
+/**
+ * @file  emu-hooks.h
+ * @brief Header file for emu-hooks.
+ */
 
 #include <stdint.h>
 

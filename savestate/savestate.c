@@ -13,7 +13,7 @@
 // limitations under the License.
 
 /**
- *  @file savestate.c
+ *  @file  savestate/savestate.c
  *  @brief Utilities to dump/restore emulator state.
  *
  */

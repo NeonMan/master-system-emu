@@ -1,6 +1,7 @@
-/*
-  IO chip headers.
-*/
+/**
+ * @file  io.h
+ * @brief Header for io module.
+ */
 
 #ifndef __IO_H
 #define __IO_H

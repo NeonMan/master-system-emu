@@ -1,6 +1,13 @@
-
 #ifndef __INTV_H
 #define __INTV_H
+/**
+ * @file  intv.h
+ * @brief Declaration of interrupt vector handlers.
+ *
+ * Interrupt vector entry points are coded on crt0 and will look for
+ * a number of global functions. This functions _must_ be defined for
+ * a successful build, even if they are an empty function.
+ */
 
 /*RST vectors*/
 void rst_08h();

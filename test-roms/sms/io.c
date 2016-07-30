@@ -1,4 +1,9 @@
+/**
+ * @file  test-roms/sms/io.c
+ * @brief Functions to control the IO chip state.
+ */
 #include "io.h"
+#include "sms.h"
 
 /** Copy of the IO register.*/
 uint8_t io_reg;
