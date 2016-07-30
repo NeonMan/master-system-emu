@@ -13,7 +13,7 @@
 /* ------------------------------------- */
 void printing_test(){
 	uint16_t i;
-	//Simple FOR loop
+	/*Simple FOR loop*/
 	sdsc_puts("Print 10 dots");
 	sdsc_puts("1234567890");
 	for(i=0;i<10;++i){
@@ -21,7 +21,7 @@ void printing_test(){
 	}
 	sdsc_puts("");
 	
-	//Print some integers
+	/*Print some integers*/
 	sdsc_puts("Print hex numbers from 0x00 to 0xFF");
 	for(i=0; i<256; ++i){
 		if(((i%16)==0) && (i>0)){

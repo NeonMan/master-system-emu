@@ -3,7 +3,7 @@ project(test-roms C)
 ENABLE_LANGUAGE(C)
 
 #Configure SDCC to make z80 binaries
-set(CMAKE_C_FLAGS "-mz80 --std-c99 --xram-size 0x4000 --code-loc 0x0090 --data-loc 0xc000 --no-std-crt0 sms/crt0-sms.rel")
+set(CMAKE_C_FLAGS "-mz80 --std-c89 --xram-size 0x4000 --code-loc 0x0090 --data-loc 0xc000 --no-std-crt0 sms/crt0-sms.rel")
 
 #crt0 for Sega Master System
 # -- ToDo. Using a prebuilt one
@@ -29,14 +29,14 @@ TARGET_LINK_LIBRARIES(bootloader sdsc io)
 
 #Make .bin ROMs from the .ihx files
 ADD_CUSTOM_TARGET(sdcc-sample-bin ALL
-        COMMAND makebin -p sdcc-sample.ihx sdcc-sample.bin
+        COMMAND makebin -p sdcc-sample.ihx sdcc-sample.sms
     )
 ADD_CUSTOM_TARGET(empty-bin ALL
-        COMMAND makebin -p empty.ihx empty.bin
+        COMMAND makebin -p empty.ihx empty.sms
     )
 ADD_CUSTOM_TARGET(ram-test-bin ALL
-        COMMAND makebin -p ram-test.ihx ram-test.bin
+        COMMAND makebin -p ram-test.ihx ram-test.sms
     )
 ADD_CUSTOM_TARGET(bootloader-bin ALL
-        COMMAND makebin -p bootloader.ihx bootloader.bin
+        COMMAND makebin -s 1024 bootloader.ihx bootloader.sms
     )
