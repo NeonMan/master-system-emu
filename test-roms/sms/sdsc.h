@@ -1,3 +1,8 @@
+/**
+ * @file  sdsc.h
+ * @brief Headers for SDSC module.
+ */
+
 #ifndef __SDSC_H
 #define __SDSC_H
 

@@ -38,5 +38,5 @@ ADD_CUSTOM_TARGET(ram-test-bin ALL
         COMMAND makebin -p ram-test.ihx ram-test.sms
     )
 ADD_CUSTOM_TARGET(bootloader-bin ALL
-        COMMAND makebin -s 1024 bootloader.ihx bootloader.sms
+        COMMAND makebin -s 16384 bootloader.ihx bootloader.sms
     )

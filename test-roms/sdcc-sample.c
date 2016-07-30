@@ -1,7 +1,9 @@
-/*
- Build with:
-   sdcc -mz80 --std-c99 -c 
-*/
+/**
+ * @file  test-roms/sdcc-sample.c
+ * @brief Sample routines.
+ *
+ * Test tube for new stuff.
+ */
 
 #include <stdint.h>
 #include "sms/sdsc.h"

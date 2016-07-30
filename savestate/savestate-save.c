@@ -13,7 +13,7 @@
 // limitations under the License.
 
 /**
- *  @file savestate-save.c
+ *  @file  savestate/savestate-save.c
  *  @brief Utilities to dump emulator state.
  *
  *  Savestate file format.

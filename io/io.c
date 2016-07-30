@@ -13,7 +13,7 @@
 // limitations under the License.
 
 /**
- * @file io.c
+ * @file io/io.c
  * @brief Master System IO mapper.
  *
  * Emulates the behaviour of the SMS IO controller chip, accessible using 

@@ -1,8 +1,20 @@
+/**
+ * @file  test-roms/bootloader.c
+ * @brief BIOS replacement with bootloader capabilities.
+ *
+ * This program aims to provide a Master System BIOS replacement
+ * that removes region checking and (will ;) provide bootlader 
+ * capabilities to load binaries through other means like SDSC port
+ * or UART peripheral.
+ *
+ */
+
 #include <stdint.h>
+#include "sms/io.h"
 #include "sms/sms.h"
 #include "sms/sdsc.h"
+#include "sms/mapper.h"
 #include "sms/intv-dummy.h"
-#include "sms/io.h"
 
 #define CLEANUP_RAM 
 

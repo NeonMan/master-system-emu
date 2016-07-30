@@ -13,7 +13,7 @@
 // limitations under the License.
 
 /**
- *  @file rom.c
+ *  @file  rom/rom.c
  *  @brief Implementation of ROM cartridge.
  *
  *  Implements a master system cartridge emulating a full sega mapper.

@@ -13,7 +13,7 @@
 // limitations under the License.
 
 /**
- *  @file ram.c
+ *  @file  ram/ram.c
  *  @brief RAM implementation.
  *
  *  Implementation of the 8K ram bank as used in the sega

@@ -1,10 +1,17 @@
+/**
+ * @file  test-roms/ram-test.c
+ * @brief Perform a RAM self-test.
+ *
+ * This program will check the correctness of the SMS RAM reads/writes.
+ */
+
 #include "sms/intv-dummy.h"
 #include <stdint.h>
 #include "sms/sdsc.h"
+#include "sms/sms.h"
 
-volatile uint8_t* const RAM_BASE   = ((volatile uint8_t*)0xc000);
-volatile uint8_t* const RAM_MIRROR = ((volatile uint8_t*)0xe000);
-#define RAM_SIZE   0x2000
+volatile uint8_t* const ram_base   = ((volatile uint8_t*)SMS_RAM_BASE_ADDRESS);
+volatile uint8_t* const ram_mirror = ((volatile uint8_t*)SMS_RAM_MIRROR_ADDRESS);
 
 static uint8_t all_ok;
 
@@ -34,27 +41,27 @@ void main(){
 	sdsc_puts(" -- Base write/Mirror read.");
 	/* Write a pattern on the lower mirror */
 	/* Not all of it since this test needs some RAM ;) */
-	for(i=0x100; i<(RAM_SIZE-0x100); i++){
-		RAM_BASE[i] = (uint8_t)i;
+	for(i=0x100; i<(SMS_RAM_SIZE-0x100); i++){
+		ram_base[i] = (uint8_t)i;
 	}
 	
 	/* Check if the pattern is available at the mirror */
-	for(i=0; i<RAM_SIZE; i++){
-		if(RAM_BASE[i] != RAM_MIRROR[i]){
-			read_err(RAM_BASE + i);
+	for(i=0; i<SMS_RAM_SIZE; i++){
+		if(ram_base[i] != ram_mirror[i]){
+			read_err(ram_base + i);
 		}
 	}
 	
 	sdsc_puts(" -- Mirror write/Base read.");
 	/* Write a pattern on the upper mirror */
-	for(i=0x100; i<(RAM_SIZE-0x100); i++){
-		RAM_MIRROR[i] = (uint8_t)i;
+	for(i=0x100; i<(SMS_RAM_SIZE-0x100); i++){
+		ram_mirror[i] = (uint8_t)i;
 	}
 	
 	/* Check if the pattern is available at the mirror */
-	for(i=0; i<RAM_SIZE; i++){
-		if(RAM_BASE[i] != RAM_MIRROR[i]){
-			read_err(RAM_BASE + i);
+	for(i=0; i<SMS_RAM_SIZE; i++){
+		if(ram_base[i] != ram_mirror[i]){
+			read_err(ram_base + i);
 		}
 	}
 	

@@ -1,3 +1,10 @@
+/**
+ * @file  test-roms/sms/sdsc.c
+ * @brief SDSC debug console.
+ *
+ * This module provides functions to send information through the SDSC console
+ */
+
 #include "sdsc.h"
 __sfr __at 0xFD __sdsc_data;
 __sfr __at 0xFC __sdsc_control;
