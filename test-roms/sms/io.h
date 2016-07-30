@@ -34,6 +34,9 @@
 #define IO_DISABLE_UNK1       IO_UNK1
 #define IO_DISABLE_UNK0       IO_UNK0
 
+/** Lower 2 bits must be always cleared, use this mask for that.*/
+#define UNDEFINED_BIT_MASK 0xFC
+
 #define IO_PORT_ADDRESS 0x3E
 
 /*IO port for the IO chip*/

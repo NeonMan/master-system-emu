@@ -4,6 +4,8 @@
 #include "sms/intv-dummy.h"
 #include "sms/io.h"
 
+#define CLEANUP_RAM 
+
 #define RAM_CODE_SIZE 0x1000
 #define BOOTJUMP_SIZE 0x0100
 
@@ -11,23 +13,18 @@
 #define BOOT_NO_SIGNATURE "Failed to find bootloader signature."
 #define BOOT_NO_CHAINLOAD "Failed to start program."
 
-#undef CLEANUP_RAM
-
 uint8_t bootjump_buff[BOOTJUMP_SIZE];
 uint8_t ram_code_buff[RAM_CODE_SIZE];
 
 /** Prints a string.
  *
  *  Convenient place to make the bootloader prints its stuff to SDSC or
- *  to the screen.
+ *  to the VDP.
  */
 void print(const char* str){
-  /*SDSC messages disabled since IO functions don't seem to work :/*/
-  /*
   io_disable(IO_DISABLE_PERIPHERAL);
   sdsc_puts(str);
   io_enable(IO_ENABLE_PERIPHERAL);
-  */
 }
 
 /** Makes jumps to the memory copy of boot_jump.
@@ -59,8 +56,8 @@ void boot_call(uint16_t address, uint8_t io){
  *  @param io      Value of the IO chip register.
  */
 void boot_jump(uint16_t address, uint8_t io){
-  (void) address;
-  (void) io;
+  (void) address; /*                                 */
+  (void) io;      /* <-- Remove unused param warning */
   /* Signature at the start of the boot_jump code so _I_ can easily find it on
    * the ROM dumps. It can be safely removed
    */
@@ -71,11 +68,22 @@ void boot_jump(uint16_t address, uint8_t io){
   __endasm;
   /* ----------------------------------------------------------------------- */
   
-  /** @todo Implement the chainloader Address/Media functionality. */
+  /*Set the IO chip register*/
+  __io_chip = io;
   
-  /* Just load the cartridge ROM for now */
-  __io_chip = 0xA8;     /* <-- Enable RAM, pads and cartridge*/
-  __asm__("JP 0x0000"); /* <-- Jump to ROM entry point */
+  /* Jump to the selected address
+   * Parameters are passed on the Stack:
+   * SP --> Return addres (Low byte)
+   * +1                   (High byte)
+   * +2     arg: address (Low byte)
+   * +3                  (High byte)
+   * +4     arg: io
+   *
+   * Moving SP to point to address_L then returning should jump to the selected
+   * ROM entry point
+   */
+  __asm__("POP HL"); /* <-- Jump address pointed by SP */
+  __asm__("RET");    /* <-- Jump to ROM entry point */
   
   /* Bootloader code searches for this signature at the end of the boot_jump
    * code. Any code beyond this point is not guaranteed to be available.
@@ -96,6 +104,9 @@ void main(){
   __mapper_bank0 = 0x00;
   __mapper_bank1 = 0x01;
   __mapper_bank2 = 0x02;
+  
+  /* --- Configure IO chip --- */
+  io_set(IO_ENABLE_BIOS & IO_ENABLE_RAM & UNDEFINED_BIT_MASK);
   
   /* --- Clean bootloader buffers --- */
 #ifdef CLEANUP_RAM
@@ -128,7 +139,7 @@ void main(){
       )
     {
       /*Signature found. Execute it!*/
-      boot_call(0x000, 0xFF);
+      boot_call(0x000, 0xA8); /* <-- Chainload a ROM cartridge */
       break;
     }
   }
