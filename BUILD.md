@@ -67,7 +67,7 @@ built and available on the `test-roms\Build` directory.
 Building the test ROMs requires usign the provided toolchain file 
 `Toolchain-sdcc.cmake` to use SDCC instead of gcc to build the ROM sources. 
 Pointing a shell to the `test-roms` directory and executing the following shall
-compile the ROM files in `.bin` and `.ihx` format
+compile the ROM files in `.sms` and `.ihx` format
 
     cmake -DCMAKE_TOOLCHAIN_FILE=./Toolchain-sdcc.cmake .
     make
