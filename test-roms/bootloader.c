@@ -11,6 +11,8 @@
 #define BOOT_NO_SIGNATURE "Failed to find bootloader signature."
 #define BOOT_NO_CHAINLOAD "Failed to start program."
 
+#undef CLEANUP_RAM
+
 uint8_t bootjump_buff[BOOTJUMP_SIZE];
 uint8_t ram_code_buff[RAM_CODE_SIZE];
 
@@ -20,9 +22,12 @@ uint8_t ram_code_buff[RAM_CODE_SIZE];
  *  to the screen.
  */
 void print(const char* str){
+  /*SDSC messages disabled since IO functions don't seem to work :/*/
+  /*
   io_disable(IO_DISABLE_PERIPHERAL);
   sdsc_puts(str);
   io_enable(IO_ENABLE_PERIPHERAL);
+  */
 }
 
 /** Makes jumps to the memory copy of boot_jump.
@@ -62,12 +67,15 @@ void boot_jump(uint16_t address, uint8_t io){
   __asm
       jr boot_signature_begin
       .ascii "YIP!"
-      .db 0x00
     boot_signature_begin:
   __endasm;
   /* ----------------------------------------------------------------------- */
   
-  /** @todo Chainload code here. */
+  /** @todo Implement the chainloader Address/Media functionality. */
+  
+  /* Just load the cartridge ROM for now */
+  __io_chip = 0xA8;     /* <-- Enable RAM, pads and cartridge*/
+  __asm__("JP 0x0000"); /* <-- Jump to ROM entry point */
   
   /* Bootloader code searches for this signature at the end of the boot_jump
    * code. Any code beyond this point is not guaranteed to be available.
@@ -75,7 +83,6 @@ void boot_jump(uint16_t address, uint8_t io){
   __asm
       jr boot_signature_end
       .ascii "YAP!"
-      .db 0x00
     boot_signature_end:
   __endasm;
   /* ----------------------------------------------------------------------- */
@@ -91,12 +98,14 @@ void main(){
   __mapper_bank2 = 0x02;
   
   /* --- Clean bootloader buffers --- */
+#ifdef CLEANUP_RAM
   for(i=0; i<BOOTJUMP_SIZE; ++i){
     bootjump_buff[i] = 0;
   }
   for(i=0; i<RAM_CODE_SIZE; i++){
     ram_code_buff[i] = 0;
   }
+#endif
   
   /* --- Say Hello! --- */
   print(BOOT_HELLO);
