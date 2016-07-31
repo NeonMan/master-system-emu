@@ -192,8 +192,12 @@ const uint8_t q[4] = { z80.opcode[0] & (1 << 3), z80.opcode[1] & (1 << 3), z80.o
 #define Z80_SETFLAG_HALF_CARRY_16(OP1,OP2)  (((((OP1)&0x0F00) + ((OP2)&0x0F00)) > 0x0F00) ? Z80_FLAG_HC : 0)
 #define Z80_SETFLAG_HALF_BORROW_16(OP1,OP2)   ((((((OP1)&0xF000) - ((OP2)&0xF000)))&0xF000) > (((OP1)&0xF000)) ? Z80_FLAG_HC : 0)
 
-
-#define Z80_SETFLAG_OVERFLOW(O,N) (((uint16_t)O) > ((uint16_t)N) ? 0 : Z80_FLAG_OVERFLOW) /**<-- [V] Set overflow flag (bit 2)*/
+/**[V] Set overflow flag (bit 2)*/
+#define Z80_SETFLAG_OVERFLOW(OP1,OP2,RES) \
+    ( \
+        ( (((int8_t)(OP1))>=0) &&  (((int8_t)(OP2))>=0) && (((int8_t)(RES))<0) ) ? (Z80_FLAG_OVERFLOW) : (\
+        ( (((int8_t)(OP1))<0) &&  (((int8_t)(OP2))<0) && (((int8_t)(RES))>=0) ) ? (Z80_FLAG_OVERFLOW) : 0 )\
+    )
 #define Z80_SETFLAG_OVERFLOW_16(O,N) (((uint32_t)O) > ((uint32_t)N) ? 0 : Z80_FLAG_OVERFLOW)
 #define Z80_SETFLAG_PARITY(X) (z80_parity_lut[(X)] ? Z80_FLAG_PARITY : 0) /**<-- [P] Set parity flag (bit 2)*/
 #define Z80_SETFLAG_PARITY_16(X) (z80_parity_lut[(X) & 0x00FF] ^ z80_parity_lut[((X)>>8) & 0x00FF])
