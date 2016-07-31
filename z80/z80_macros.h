@@ -198,7 +198,11 @@ const uint8_t q[4] = { z80.opcode[0] & (1 << 3), z80.opcode[1] & (1 << 3), z80.o
         ( (((int8_t)(OP1))>=0) &&  (((int8_t)(OP2))>=0) && (((int8_t)(RES))<0) ) ? (Z80_FLAG_OVERFLOW) : (\
         ( (((int8_t)(OP1))<0) &&  (((int8_t)(OP2))<0) && (((int8_t)(RES))>=0) ) ? (Z80_FLAG_OVERFLOW) : 0 )\
     )
-#define Z80_SETFLAG_OVERFLOW_16(O,N) (((uint32_t)O) > ((uint32_t)N) ? 0 : Z80_FLAG_OVERFLOW)
+#define Z80_SETFLAG_OVERFLOW_16(OP1, OP2, RES) \
+    ( \
+        ( (((int16_t)(OP1))>=0) &&  (((int16_t)(OP2))>=0) && (((int16_t)(RES))<0) ) ? (Z80_FLAG_OVERFLOW) : (\
+        ( (((int16_t)(OP1))<0) &&  (((int16_t)(OP2))<0) && (((int16_t)(RES))>=0) ) ? (Z80_FLAG_OVERFLOW) : 0 )\
+    )
 #define Z80_SETFLAG_PARITY(X) (z80_parity_lut[(X)] ? Z80_FLAG_PARITY : 0) /**<-- [P] Set parity flag (bit 2)*/
 #define Z80_SETFLAG_PARITY_16(X) (z80_parity_lut[(X) & 0x00FF] ^ z80_parity_lut[((X)>>8) & 0x00FF])
 #define Z80_SETFLAG_SUBTRACT(A) (A ? Z80_FLAG_SUBTRACT : 0) /**<-- [N] Set Add/Subtract flag (bit 1)*/
