@@ -141,7 +141,7 @@ static alu_result_t op_inc(uint8_t op, uint8_t flags) {
     rv.flags |= Z80_SETFLAG_UNK3(rv.result);
     rv.flags |= Z80_SETFLAG_HALF_CARRY(op, rv.result); ///<-- @bug This is probably wrong AF.
     rv.flags |= Z80_SETFLAG_UNK5(rv.result);
-    rv.flags |= (op == 0x7f) ? Z80_FLAG_PARITY : 0;
+    rv.flags |= (op == 0x7f) ? Z80_FLAG_OVERFLOW : 0;
     //N is reset
     rv.flags |= flags & Z80_FLAG_CARRY;
     return rv;
@@ -155,7 +155,7 @@ static alu_result_t op_dec(uint8_t op, uint8_t flags) {
     rv.flags |= Z80_SETFLAG_UNK3(rv.result);
     rv.flags |= Z80_SETFLAG_HALF_BORROW(op, rv.result); ///<-- @bug This is probably wrong AF.
     rv.flags |= Z80_SETFLAG_UNK5(rv.result);
-    rv.flags |= (op == 0x80) ? Z80_FLAG_PARITY : 0;
+    rv.flags |= (op == 0x80) ? Z80_FLAG_OVERFLOW : 0;
     rv.flags |= Z80_FLAG_SUBTRACT;
     rv.flags |= flags & Z80_FLAG_CARRY;
     return rv;
@@ -237,15 +237,9 @@ int DEC_r() {
     assert(z80.opcode_index == 1);
     Z80_OPCODE_SUBDIV;
     const uint8_t old_r = *z80_r[y[0]];
-    --(*(z80_r[y[0]]));
-    Z80_F = (Z80_F & (
-        Z80_CLRFLAG_SIGN & Z80_CLRFLAG_ZERO & Z80_CLRFLAG_HC
-        & Z80_CLRFLAG_PARITY & Z80_CLRFLAG_SUBTRACT)
-        )  //Clear S,Z,H,P,N (7,6,4,2,1) ***V0-
-        | Z80_SETFLAG_SIGN(*z80_r[y[0]])
-        | Z80_SETFLAG_ZERO(*z80_r[y[0]])
-        | Z80_SETFLAG_HALF_BORROW(old_r, 1)
-        | Z80_SETFLAG_OVERFLOW(old_r, ((int8_t)-1), old_r - 1);
+    const alu_result_t r = op_dec(old_r, Z80_F);
+    *z80_r[y[0]] = r.result;
+    Z80_F = r.flags;
     return Z80_STAGE_RESET;
 }
 
@@ -282,16 +276,10 @@ int INC_r() {
     assert(z80.opcode_index == 1);
     Z80_OPCODE_SUBDIV;
 
-    uint8_t old_r = *z80_r[y[0]];
-    ++(*(z80_r[y[0]]));
-    Z80_F = (Z80_F & (
-        Z80_CLRFLAG_SIGN & Z80_CLRFLAG_ZERO & Z80_CLRFLAG_HC
-        & Z80_CLRFLAG_PARITY & Z80_CLRFLAG_SUBTRACT)
-        )  //Clear S,Z,H,P,N (7,6,4,2,1) ***V0-
-        | Z80_SETFLAG_SIGN(*z80_r[y[0]])
-        | Z80_SETFLAG_ZERO(*z80_r[y[0]])
-        | Z80_SETFLAG_HALF_CARRY(old_r, 1)
-        | Z80_SETFLAG_OVERFLOW(old_r, 1, old_r + 1);
+    const uint8_t old_r = *z80_r[y[0]];
+    const alu_result_t r = op_inc(old_r, Z80_F);
+    *z80_r[y[0]] = r.result;
+    Z80_F = r.flags;
     return Z80_STAGE_RESET;
 }
 
@@ -322,14 +310,8 @@ int INC_HLp() {
     Z80_8BIT_WRITE(Z80_HL, 0, z80.read_buffer[0] + 1);
 
     const uint8_t old_r = z80.read_buffer[0];
-    Z80_F = (Z80_F & (
-        Z80_CLRFLAG_SIGN & Z80_CLRFLAG_ZERO & Z80_CLRFLAG_HC
-        & Z80_CLRFLAG_PARITY & Z80_CLRFLAG_SUBTRACT)
-        )  //Clear S,Z,H,P,N (7,6,4,2,1) ***V0-
-        | Z80_SETFLAG_SIGN(old_r + 1)
-        | Z80_SETFLAG_ZERO(old_r + 1)
-        | Z80_SETFLAG_HALF_CARRY(old_r, 1)
-        | Z80_SETFLAG_OVERFLOW(old_r, 1, old_r + 1);
+    const alu_result_t r = op_inc(old_r, Z80_F);
+    Z80_F = r.flags;
     return Z80_STAGE_RESET;
 }
 
