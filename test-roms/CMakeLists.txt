@@ -30,13 +30,17 @@ TARGET_LINK_LIBRARIES(bootloader sdsc io)
 #Make .bin ROMs from the .ihx files
 ADD_CUSTOM_TARGET(sdcc-sample-bin ALL
         COMMAND makebin -p sdcc-sample.ihx sdcc-sample.sms
+		DEPENDS sdcc-sample
     )
 ADD_CUSTOM_TARGET(empty-bin ALL
         COMMAND makebin -p empty.ihx empty.sms
+		DEPENDS empty
     )
 ADD_CUSTOM_TARGET(ram-test-bin ALL
         COMMAND makebin -p ram-test.ihx ram-test.sms
+		DEPENDS ram-test
     )
 ADD_CUSTOM_TARGET(bootloader-bin ALL
         COMMAND makebin -s 16384 bootloader.ihx bootloader.sms
+		DEPENDS bootloader
     )
