@@ -25,7 +25,7 @@
 #include <stdint.h>
 
 uint8_t io_stat = 0xFF;
-uint8_t io_reg  = 0;    ///<-- Internal mapper register
+uint8_t io_reg  = IO_RESET_VALUE_NOBIOS;    ///<-- Internal mapper register
 
 void io_tick(){
     //If IO operation on IOmapper's port
