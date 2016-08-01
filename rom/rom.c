@@ -29,6 +29,7 @@
 uint8_t mapper_slots[3] = {0,1,2}; ///<-- ROM slot selector
 uint8_t mapper_ram = 0; ///<-- @todo RAM slot config
 uint8_t rom_image[ROM_MAX_SIZE]; ///<-- ROM contents.
+uint8_t bios_image[ROM_MAX_SIZE]; ///<-- BIOS ROM contents
 
 uint8_t* romdbg_get_slot(uint8_t slot){
     if (slot > 2)
@@ -41,13 +42,23 @@ void* romdbg_get_rom(){
     return rom_image;
 }
 
+void* romdbg_get_bios() {
+    return bios_image;
+}
+
 void rom_set_image(uint8_t* data, size_t count){
     if (count < 1) return;
     memcpy(rom_image, data, count <= ROM_MAX_SIZE ? count : ROM_MAX_SIZE);
 }
 
-void rom_tick(){
+void bios_set_image(uint8_t* data, size_t count) {
+    if (count < 1) return;
+    memcpy(bios_image, data, count <= ROM_MAX_SIZE ? count : ROM_MAX_SIZE);
+}
+
+static void _rom_tick(){
     //if MREQ is high there's nothing to do. return.
+    if (z80_n_mreq) return;
     //Since MREQ is shared with other circuits, we 
     //use the IO mapper instead (#CE pin).
     if (io_stat & IO_CARTRIDGE_SLOT) return;
@@ -78,6 +89,18 @@ void rom_tick(){
         if   (z80_address == 0xFFFC) mapper_ram = z80_data;
         else mapper_slots[z80_address - 0xFFFD] = z80_data;
     }
+}
+
+static void _bios_tick() {
+
+}
+
+void rom_tick() {
+    //Check BIOS and ROM are not colliding, in essen,ce, at least one has to be inactive
+    assert(((io_stat & IO_CARTRIDGE_SLOT) != 0) || ((io_stat & IO_BIOS) != 0));
+
+    _rom_tick();
+    _bios_tick();
 }
 
 int rom_load_file(const char* path){

@@ -35,7 +35,10 @@ extern "C" {
 #define IO_BIOS           (1<<3)
 #define IO_PERIPHERIAL    (1<<2)
 #define IO_UNK1           (1<<1)
-#define IO_UNK0           (1)
+#define IO_UNK0           (1   )
+
+#define IO_RESET_VALUE_BIOS   ((IO_BIOS | IO_RAM | IO_PERIPHERIAL | IO_UNK1 | IO_UNK0) ^ 0xFF)
+#define IO_RESET_VALUE_NOBIOS ((IO_CARTRIDGE_SLOT | IO_RAM | IO_PERIPHERIAL | IO_UNK1 | IO_UNK0) ^ 0xFF)
 
 extern uint8_t io_stat; ///<-- The exported CE lines. MREQ/IOREQ dependant
 

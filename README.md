@@ -10,6 +10,7 @@ emulated independently.
 
 | Module        | Progress        | Comments                                            |
 | ------------- |:---------------:| --------------------------------------------------- |
+| BIOS          | Unimplemented   | Part of the ROM module. Not working.                |
 | FM            | Unimplemented   | JAP region only, not a priority                     |
 | IO            | Complete        |                                                     |
 | Peripheral    | WIP             | GPIO and input are ignored                          |
