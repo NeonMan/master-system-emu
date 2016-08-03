@@ -1,5 +1,5 @@
 /**
- * @file  test-roms/sdcc-sample.c
+ * @file  test-roms/sample.c
  * @brief Sample routines.
  *
  * Test tube for new stuff.

@@ -18,6 +18,7 @@
 #include <stdio.h>
 #include "savestate/savestate.h"
 #include <string.h>
+#include <stdlib.h>
 
 extern z80_t z80;
 
