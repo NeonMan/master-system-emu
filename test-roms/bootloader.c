@@ -25,6 +25,18 @@
 #define BOOT_NO_SIGNATURE "Failed to find bootloader signature."
 #define BOOT_NO_CHAINLOAD "Failed to start program."
 
+/**
+ * @brief Signature mark for RAM loadable code.
+ * Bootloader code searches for this signature at the end of the RAM-loaded
+ * function. Any code beyond this point is not guaranteed to be available.
+ */
+#define RAM_CODE_SIGNATURE \
+  __asm \
+      jr boot_signature_end \
+      .ascii "YAP!" \
+    boot_signature_end: \
+  __endasm; 
+
 uint8_t bootjump_buff[BOOTJUMP_SIZE];
 uint8_t ram_code_buff[RAM_CODE_SIZE];
 
@@ -70,15 +82,6 @@ void boot_call(uint16_t address, uint8_t io){
 void boot_jump(uint16_t address, uint8_t io){
   (void) address; /*                                 */
   (void) io;      /* <-- Remove unused param warning */
-  /* Signature at the start of the boot_jump code so _I_ can easily find it on
-   * the ROM dumps. It can be safely removed
-   */
-  __asm
-      jr boot_signature_begin
-      .ascii "YIP!"
-    boot_signature_begin:
-  __endasm;
-  /* ----------------------------------------------------------------------- */
   
   /*Set the IO chip register*/
   __io_chip = io;
@@ -97,15 +100,7 @@ void boot_jump(uint16_t address, uint8_t io){
   __asm__("POP HL"); /* <-- Jump address pointed by SP */
   __asm__("RET");    /* <-- Jump to ROM entry point */
   
-  /* Bootloader code searches for this signature at the end of the boot_jump
-   * code. Any code beyond this point is not guaranteed to be available.
-   */
-  __asm
-      jr boot_signature_end
-      .ascii "YAP!"
-    boot_signature_end:
-  __endasm;
-  /* ----------------------------------------------------------------------- */
+  RAM_CODE_SIGNATURE; /* <-- Mark this function for RAM execution.*/
 }
 
 /** ROM entry point.*/
@@ -123,10 +118,10 @@ void main(){
   /* --- Clean bootloader buffers --- */
 #ifdef CLEANUP_RAM
   for(i=0; i<BOOTJUMP_SIZE; ++i){
-    bootjump_buff[i] = 0;
+    bootjump_buff[i] = 0xFF;
   }
   for(i=0; i<RAM_CODE_SIZE; i++){
-    ram_code_buff[i] = 0;
+    ram_code_buff[i] = 0xFF;
   }
 #endif
   
