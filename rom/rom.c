@@ -96,11 +96,16 @@ static void _bios_tick() {
 }
 
 void rom_tick() {
-    //Check BIOS and ROM are not colliding, in essen,ce, at least one has to be inactive
+    //Check BIOS and ROM are not colliding.
+    //In essence, at least one has to be inactive.
     assert(((io_stat & IO_CARTRIDGE_SLOT) != 0) || ((io_stat & IO_BIOS) != 0));
 
-    _rom_tick();
-    _bios_tick();
+    if (!(io_stat & IO_CARTRIDGE_SLOT)) {
+        _rom_tick();
+    }
+    else {
+        _bios_tick();
+    }
 }
 
 int rom_load_file(const char* path){
