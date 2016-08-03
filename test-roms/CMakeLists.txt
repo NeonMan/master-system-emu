@@ -15,9 +15,9 @@ ADD_SUBDIRECTORY(sms)
 ADD_EXECUTABLE(empty empty.c)
 ADD_DEPENDENCIES(empty crt0-sms)
 
-ADD_EXECUTABLE(sdcc-sample sdcc-sample.c)
-ADD_DEPENDENCIES(sdcc-sample crt0-sms)
-TARGET_LINK_LIBRARIES(sdcc-sample sdsc emu-hooks )
+ADD_EXECUTABLE(sample sample.c)
+ADD_DEPENDENCIES(sample crt0-sms)
+TARGET_LINK_LIBRARIES(sample sdsc emu-hooks )
 
 ADD_EXECUTABLE(ram-test ram-test.c)
 ADD_DEPENDENCIES(ram-test crt0-sms)
@@ -28,9 +28,9 @@ ADD_DEPENDENCIES(bootloader crt0-sms)
 TARGET_LINK_LIBRARIES(bootloader sdsc io)
 
 #Make .bin ROMs from the .ihx files
-ADD_CUSTOM_TARGET(sdcc-sample-bin ALL
-        COMMAND makebin -p sdcc-sample.ihx sdcc-sample.sms
-		DEPENDS sdcc-sample
+ADD_CUSTOM_TARGET(sample-bin ALL
+        COMMAND makebin -p sample.ihx sample.sms
+		DEPENDS sample
     )
 ADD_CUSTOM_TARGET(empty-bin ALL
         COMMAND makebin -p empty.ihx empty.sms

@@ -44,12 +44,20 @@ extern "C" {
 void rom_tick();
 
 /**
- * @brief Writes the rom image to be used.
+ * @brief Writes the ROM image to be used.
  *
  * @param data Pointer to the rom bytes.
  * @param count Size of the rom.
  */
 void rom_set_image(uint8_t* data, size_t count);
+
+/**
+* @brief Writes the BIOS ROM image to be used.
+*
+* @param data Pointer to the BIOS ROM bytes.
+* @param count Size of the BIOS ROM.
+*/
+void bios_set_image(uint8_t* data, size_t count);
 
 /**
  * @brief Loads a ROM image from file.
@@ -59,9 +67,20 @@ void rom_set_image(uint8_t* data, size_t count);
  */
 int rom_load_file(const char* path);
 
+/**
+* @brief Loads a BIOS ROM image from file.
+*
+* @param Path to BIOS ROM file.
+* @returns Zero on success.
+*/
+int bios_load_file(const char* path);
+
 //Debug functions
 ///Return a pointer to the whole ROM image.
 void* romdbg_get_rom();
+
+///Return a pointer to the BIOS ROM image.
+void* romdbg_get_bios();
 
 ///Return the mapper status
 uint8_t* romdbg_get_slot(uint8_t slot);

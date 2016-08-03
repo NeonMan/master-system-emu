@@ -121,3 +121,17 @@ int rom_load_file(const char* path){
 
     return 0;
 }
+
+int bios_load_file(const char* path) {
+    FILE* f;
+    f = fopen(path, "rb");
+
+    if (f == 0) {
+        return -1;
+    }
+
+    fread(bios_image, 1, ROM_MAX_SIZE, f);
+    fclose(f);
+
+    return 0;
+}
