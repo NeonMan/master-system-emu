@@ -25,8 +25,8 @@
  * Implements the SDSC debug console.
  */
 #define SDSC_CTL_BUFFER_SIZE 10
-uint8_t sdsc_cbuff[SDSC_CTL_BUFFER_SIZE];
-uint8_t sdsc_cbuff_index = 0;
+static uint8_t sdsc_cbuff[SDSC_CTL_BUFFER_SIZE];
+static uint8_t sdsc_cbuff_index = 0;
 
 //sdsc console control port 0xFC
 void sdsc_control(uint8_t b){

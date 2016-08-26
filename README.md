@@ -10,18 +10,19 @@ emulated independently.
 
 | Module        | Progress        | Comments                                            |
 | ------------- |:---------------:| --------------------------------------------------- |
-| BIOS          | Unimplemented   | Part of the ROM module. Not working.                |
-| FM            | Unimplemented   | JAP region only, not a priority                     |
+| BIOS          | Working         | Requires a rework to remove copy/pasted ROM code.   |
+| FM            | Unimplemented   | YM2413 FM chip on JAP region only, not a priority.  |
 | IO            | Complete        |                                                     |
-| Peripheral    | WIP             | GPIO and input are ignored                          |
-| PSG           | Complete        | Complete emulation, must test for accuracy          |
+| Peripheral    | WIP             | GPIO and input are ignored.                         |
+| PSG           | Complete        | Complete emulation, must test for accuracy.         |
 | RAM           | Complete        |                                                     |
-| ROM (SEGA)    | Working         | SEGA mapper roms                                    |
-| ROM (other)   | Unimplemented   | Other mappers (Codemasters, unlicensed, custom)     |
-| SDSC          | Working         | Simple SDSC console callbacks provided              |
-| VDP           | Working/WIP     | Missing interrupts, counters, mode 4, sprite system |
+| RAM (cart)    | Unimplemented   |                                                     |
+| ROM (SEGA)    | Working         | SEGA mapper roms.                                   |
+| ROM (other)   | Unimplemented   | Other mappers (Codemasters, unlicensed, custom).    |
+| SDSC          | Working         | Simple SDSC console callbacks provided.             |
+| VDP           | Working/WIP     | Missing interrupts, counters, mode 4, sprite system.|
 | z80           | Working/WIP     | All documented opcodes, most undoc; No interrupts.  |
-| GUI           | WIP             | Implements a basic z80 Debugger                     |
+| GUI           | WIP             | Implements a basic z80 Debugger.                    |
 
 ## Known issues ##
 
@@ -30,6 +31,7 @@ Issues listed here describe inaccurate behaviours and inefficiencies in implemen
 - Most opcodes that modify flags, fail the ZEXALL/ZEXDOC tests.
 - Read-modify-writeback instructions like RLC (IX + d) redo all the work multiple times.
 - ALU16 flags are internally using ALU8 macros which might or might not work.
+- ROM and BIOS share mapper.
 
 ## Licensing ##
 

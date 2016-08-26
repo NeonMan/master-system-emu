@@ -29,9 +29,9 @@
  * Port 0xDD: Port B and misc (Read only?)
  */
 
-uint8_t per_control = 0xFF; ///<-- Port configuration. All input by default
-uint8_t per_port_ab = 0xFF; ///<-- Port AB register
-uint8_t per_port_bm = 0xFF; ///<-- Port B+Misc register
+static uint8_t per_control = 0xFF; ///<-- Port configuration. All input by default
+static uint8_t per_port_ab = 0xFF; ///<-- Port AB register
+static uint8_t per_port_bm = 0xFF; ///<-- Port B+Misc register
 
 uint8_t* perdbg_reg_control(){
     return &per_control;
