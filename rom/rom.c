@@ -26,10 +26,10 @@
 
 #include "rom.h"
 
-uint8_t mapper_slots[3] = {0,1,2}; ///<-- ROM slot selector
-uint8_t mapper_ram = 0; ///<-- @todo RAM slot config
-uint8_t rom_image[ROM_MAX_SIZE]; ///<-- ROM contents.
-uint8_t bios_image[ROM_MAX_SIZE]; ///<-- BIOS ROM contents
+static uint8_t mapper_slots[3] = {0,1,2}; ///<-- ROM slot selector
+static uint8_t mapper_ram = 0; ///<-- @todo RAM slot config
+static uint8_t rom_image[ROM_MAX_SIZE]; ///<-- ROM contents.
+static uint8_t bios_image[ROM_MAX_SIZE]; ///<-- BIOS ROM contents
 
 uint8_t* romdbg_get_slot(uint8_t slot){
     if (slot > 2)
@@ -92,7 +92,38 @@ static void _rom_tick(){
 }
 
 static void _bios_tick() {
-
+    //if MREQ is high there's nothing to do. return.
+    if (z80_n_mreq) return;
+    //Since MREQ is shared with other circuits, we 
+    //use the IO mapper instead (#CE pin).
+    if (io_stat & IO_BIOS) return;
+    //if RD is low and address is in ROM space (first 48K), perform a read operation
+    if ((z80_n_rd == 0) && (z80_address < 0xC000)) {
+        // -----------------
+        // --- BIOS READ ---
+        // -----------------
+        assert(z80_n_wr);
+        if (z80_address <= 0x03FF)
+            z80_data = bios_image[z80_address]; //First 1K is unmapped
+                                               //Slot 0
+        else if (z80_address <= 0x3FFF)
+            z80_data = bios_image[(0x4000 * mapper_slots[0]) + (z80_address & 0x3FFF)];
+        //Slot 1
+        else if (z80_address <= 0x7FFF)
+            z80_data = bios_image[(0x4000 * mapper_slots[1]) + (z80_address & 0x3FFF)];
+        //Slot 2
+        else /*if (z80_address <= 0xBFFF)*/
+            z80_data = bios_image[(0x4000 * mapper_slots[2]) + (z80_address & 0x3FFF)];
+    }
+    //If WR is low and address is in mapper space (last 4 bytes), perform a mapper write
+    else if ((z80_n_wr == 0) && (z80_address >= 0xfffc)) {
+        // --------------------
+        // --- MAPPER WRITE ---
+        // --------------------
+        assert(z80_n_rd);
+        if (z80_address == 0xFFFC) mapper_ram = z80_data;
+        else mapper_slots[z80_address - 0xFFFD] = z80_data;
+    }
 }
 
 void rom_tick() {

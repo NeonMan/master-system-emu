@@ -18,16 +18,16 @@
 #include <stdio.h>
 #include "debug/sms_debug.h"
 
-const char* z80d_r[8] = { "B", "C", "D", "E", "H", "L", "(HL)", "A" };
-const char* z80d_r_ix[8] = { "B", "C", "D", "E", "IXH", "IXL", "(IX + d)", "A" };
-const char* z80d_r_iy[8] = { "B", "C", "D", "E", "IYH", "IYL", "(IY + d)", "A" };
-const char* z80d_rp[4] = { "BC", "DE", "HL", "SP" };
-const char* z80d_rp2[4] = { "BC", "DE", "HL", "AF" };
-const char* const z80d_cc[8] = { "NZ", "Z", "NC", "C", "PO", "PE", "P", "M" };
-const char* const z80d_alu[8] = { "ADD A,", "ADC A,", "SUB", "SBC A,", "AND", "XOR", "OR", "CP" };
-const char* const z80d_rot[8] = { "RLC", "RRC", "RL", "RR", "SLA", "SRA", "SLL", "SRL" };
-const char* const z80d_im[8] = { "0", "0/1", "1", "2", "0", "0/1", "1", "2" };
-const char* const z80d_bli[4*4] = {
+static const char* z80d_r[8] = { "B", "C", "D", "E", "H", "L", "(HL)", "A" };
+static const char* z80d_r_ix[8] = { "B", "C", "D", "E", "IXH", "IXL", "(IX + d)", "A" };
+static const char* z80d_r_iy[8] = { "B", "C", "D", "E", "IYH", "IYL", "(IY + d)", "A" };
+static const char* z80d_rp[4] = { "BC", "DE", "HL", "SP" };
+static const char* z80d_rp2[4] = { "BC", "DE", "HL", "AF" };
+static const char* const z80d_cc[8] = { "NZ", "Z", "NC", "C", "PO", "PE", "P", "M" };
+static const char* const z80d_alu[8] = { "ADD A,", "ADC A,", "SUB", "SBC A,", "AND", "XOR", "OR", "CP" };
+static const char* const z80d_rot[8] = { "RLC", "RRC", "RL", "RR", "SLA", "SRA", "SLL", "SRL" };
+static const char* const z80d_im[8] = { "0", "0/1", "1", "2", "0", "0/1", "1", "2" };
+static const char* const z80d_bli[4*4] = {
     "LDI", "CPI", "INI", "OUTI",
     "LDD", "CPD", "IND", "OUTD",
     "LDIR", "CPIR", "INIR", "OTIR",

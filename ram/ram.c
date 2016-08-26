@@ -25,7 +25,7 @@
 #include <stdint.h>
 #include "debug/sms_debug.h"
 
-uint8_t ram_image[RAM_SIZE];
+static uint8_t ram_image[RAM_SIZE];
 
 void* ramdbg_get_mem(){
     return ram_image;
