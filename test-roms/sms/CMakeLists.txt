@@ -16,4 +16,5 @@ add_custom_target(crt0-sms DEPENDS crt0-sms.rel)
 #Libraries
 ADD_LIBRARY(sdsc sdsc.c sdsc.h)
 ADD_LIBRARY(io io.c io.h)
-ADD_LIBRARY(emu-hooks emu-hooks.c)
+ADD_LIBRARY(emu-hooks emu-hooks.c emu-hooks.h)
+ADD_LIBRARY(vdp vdp.c vdp.h)

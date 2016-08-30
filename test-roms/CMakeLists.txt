@@ -27,6 +27,11 @@ ADD_EXECUTABLE(bootloader bootloader.c)
 ADD_DEPENDENCIES(bootloader crt0-sms)
 TARGET_LINK_LIBRARIES(bootloader sdsc io)
 
+ADD_EXECUTABLE(vdp-test vdp-test.c)
+ADD_DEPENDENCIES(vdp-test crt0-sms)
+TARGET_LINK_LIBRARIES(vdp-test vdp)
+
+
 #Make .bin ROMs from the .ihx files
 ADD_CUSTOM_TARGET(sample-bin ALL
         COMMAND makebin -p sample.ihx sample.sms
