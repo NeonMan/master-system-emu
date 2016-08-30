@@ -49,3 +49,7 @@ ADD_CUSTOM_TARGET(bootloader-bin ALL
         COMMAND makebin -s 16384 bootloader.ihx bootloader.sms
 		DEPENDS bootloader
     )
+ADD_CUSTOM_TARGET(vdp-test-bin ALL
+        COMMAND makebin -p vdp-test.ihx vdp-test.sms
+		DEPENDS vdp-test
+    )
