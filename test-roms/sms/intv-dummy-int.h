@@ -8,11 +8,11 @@
 #include "intv.h"
 
 void nmi(){
-	
+    
 }
 
 void int1(){
-	
+    
 }
 
 #endif
