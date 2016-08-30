@@ -1,44 +1,44 @@
 #ifndef __BBC_MICRO_FONT_H
 #define __BBC_MICRO_FONT_H
-//------------------------------------------
-// In loving memory of Acorn Computers Ltd.
-//      Mike G proudly presents the:
+/*------------------------------------------ */
+/* In loving memory of Acorn Computers Ltd.  */
+/*      Mike G proudly presents the:         */
 
-//
-//       BBC Micro Character Set!
-//       ========================
-//
-// This source was created automatically
-// from character data stored in the BBC
-// Microcomputer operating system ROM.
-//
-// The BBC set is a nice, clear font which
-// (unlike the classic Namco/Sega font)
-// includes lower-case letters as well as
-// upper-case.
-//
-// Being a British micro, there's even a
-// Pound Sterling currency symbol, which
-// should come in handy when I begin to
-// write financial apps on the SMS. (Just
-// kidding!)
-//
-// Hopefully by using binary representation
-// it will be obvious how the character
-// data is stored.
-//
-//------------------------------------------
+/*                                           */
+/*       BBC Micro Character Set!            */
+/*       ========================            */
+/*                                           */
+/* This source was created automatically     */
+/* from character data stored in the BBC     */
+/* Microcomputer operating system ROM.       */
+/*                                           */
+/* The BBC set is a nice, clear font which   */
+/* (unlike the classic Namco/Sega font)      */
+/* includes lower-case letters as well as    */
+/* upper-case.                               */
+/*                                           */
+/* Being a British micro, there's even a     */
+/* Pound Sterling currency symbol, which     */
+/* should come in handy when I begin to      */
+/* write financial apps on the SMS. (Just    */
+/* kidding!)                                 */
+/*                                           */
+/* Hopefully by using binary representation  */
+/* it will be obvious how the character      */
+/* data is stored.                           */
+/*                                           */
+/*------------------------------------------ */
 
-//Quick conversion into a C header
+/*Quick conversion into a C header */
 
 #include <stdint.h>
 
 #define BBC_FONT_BASE      0x20
 #define BBC_FONT_SIZE      0x60
 #define BBC_FONT_CHAR_SIZE 8
-static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
+const uint8_t bbc_font[BBC_FONT_SIZE * BBC_FONT_CHAR_SIZE] = {
 
-    // Character 0x20 (space)
+    /* Character 0x20 (space) */
 
     /* %00000000 */ 0x00,
     /* %00000000 */ 0x00,
@@ -51,7 +51,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x21 !
+    /* Character 0x21 ! */
 
     /* %00011000 */ 0x18,
     /* %00011000 */ 0x18,
@@ -64,7 +64,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x22 "
+    /* Character 0x22 " */
 
     /* %01101100 */ 0x6C,
     /* %01101100 */ 0x6C,
@@ -77,7 +77,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x23 #
+    /* Character 0x23 # */
 
     /* %00110110 */ 0x36,
     /* %00110110 */ 0x36,
@@ -90,7 +90,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x24 $
+    /* Character 0x24 $ */
 
     /* %00001100 */ 0x0C,
     /* %00111111 */ 0x3F,
@@ -103,7 +103,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x25 %
+    /* Character 0x25 % */
 
     /* %01100000 */ 0x60,
     /* %01100110 */ 0x66,
@@ -116,7 +116,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x26 &
+    /* Character 0x26 & */
 
     /* %00111000 */ 0x38,
     /* %01101100 */ 0x6C,
@@ -129,7 +129,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x27 '
+    /* Character 0x27 ' */
 
     /* %00001100 */ 0x0C,
     /* %00011000 */ 0x18,
@@ -142,7 +142,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x28 (
+    /* Character 0x28 ( */
 
     /* %00001100 */ 0x0C,
     /* %00011000 */ 0x18,
@@ -155,7 +155,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x29 )
+    /* Character 0x29 ) */
 
     /* %00110000 */ 0x30,
     /* %00011000 */ 0x18,
@@ -168,7 +168,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x2A *
+    /* Character 0x2A * */
 
     /* %00000000 */ 0x00,
     /* %00011000 */ 0x18,
@@ -181,7 +181,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x2B +
+    /* Character 0x2B + */
 
     /* %00000000 */ 0x00,
     /* %00011000 */ 0x18,
@@ -194,7 +194,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x2C ,
+    /* Character 0x2C , */
 
     /* %00000000 */ 0x00,
     /* %00000000 */ 0x00,
@@ -207,7 +207,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x2D -
+    /* Character 0x2D - */
 
     /* %00000000 */ 0x00,
     /* %00000000 */ 0x00,
@@ -220,7 +220,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x2E .
+    /* Character 0x2E . */
 
     /* %00000000 */ 0x00,
     /* %00000000 */ 0x00,
@@ -233,7 +233,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x2F /
+    /* Character 0x2F / */
 
     /* %00000000 */ 0x00,
     /* %00000110 */ 0x06,
@@ -246,7 +246,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x30 0
+    /* Character 0x30 0 */
 
     /* %00111100 */ 0x3C,
     /* %01100110 */ 0x66,
@@ -259,7 +259,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x31 1
+    /* Character 0x31 1 */
 
     /* %00011000 */ 0x18,
     /* %00111000 */ 0x38,
@@ -272,7 +272,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x32 2
+    /* Character 0x32 2 */
 
     /* %00111100 */ 0x3C,
     /* %01100110 */ 0x66,
@@ -285,7 +285,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x33 3
+    /* Character 0x33 3 */
 
     /* %00111100 */ 0x3C,
     /* %01100110 */ 0x66,
@@ -298,7 +298,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x34 4
+    /* Character 0x34 4 */
 
     /* %00001100 */ 0x0C,
     /* %00011100 */ 0x1C,
@@ -311,7 +311,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x35 5
+    /* Character 0x35 5 */
 
     /* %01111110 */ 0x7E,
     /* %01100000 */ 0x60,
@@ -324,7 +324,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x36 6
+    /* Character 0x36 6 */
 
     /* %00011100 */ 0x1C,
     /* %00110000 */ 0x30,
@@ -337,7 +337,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x37 7
+    /* Character 0x37 7 */
 
     /* %01111110 */ 0x7E,
     /* %00000110 */ 0x06,
@@ -350,7 +350,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x38 8
+    /* Character 0x38 8 */
 
     /* %00111100 */ 0x3C,
     /* %01100110 */ 0x66,
@@ -363,7 +363,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x39 9
+    /* Character 0x39 9 */
 
     /* %00111100 */ 0x3C,
     /* %01100110 */ 0x66,
@@ -376,7 +376,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x3A :
+    /* Character 0x3A : */
 
     /* %00000000 */ 0x00,
     /* %00000000 */ 0x00,
@@ -389,7 +389,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x3B //
+    /* Character 0x3B ; */
 
     /* %00000000 */ 0x00,
     /* %00000000 */ 0x00,
@@ -402,7 +402,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x3C <
+    /* Character 0x3C < */
 
     /* %00001100 */ 0x0C,
     /* %00011000 */ 0x18,
@@ -415,7 +415,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x3D =
+    /* Character 0x3D = */
 
     /* %00000000 */ 0x00,
     /* %00000000 */ 0x00,
@@ -428,7 +428,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x3E >
+    /* Character 0x3E > */
 
     /* %00110000 */ 0x30,
     /* %00011000 */ 0x18,
@@ -441,7 +441,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x3F ?
+    /* Character 0x3F ? */
 
     /* %00111100 */ 0x3C,
     /* %01100110 */ 0x66,
@@ -454,7 +454,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x40 @
+    /* Character 0x40 @ */
 
     /* %00111100 */ 0x3C,
     /* %01100110 */ 0x66,
@@ -467,7 +467,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x41 A
+    /* Character 0x41 A */
 
     /* %00111100 */ 0x3C,
     /* %01100110 */ 0x66,
@@ -480,7 +480,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x42 B
+    /* Character 0x42 B */
 
     /* %01111100 */ 0x7C,
     /* %01100110 */ 0x66,
@@ -493,7 +493,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x43 C
+    /* Character 0x43 C */
 
     /* %00111100 */ 0x3C,
     /* %01100110 */ 0x66,
@@ -506,7 +506,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x44 D
+    /* Character 0x44 D */
 
     /* %01111000 */ 0x78,
     /* %01101100 */ 0x6C,
@@ -519,7 +519,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x45 E
+    /* Character 0x45 E */
 
     /* %01111110 */ 0x7E,
     /* %01100000 */ 0x60,
@@ -532,7 +532,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x46 F
+    /* Character 0x46 F */
 
     /* %01111110 */ 0x7E,
     /* %01100000 */ 0x60,
@@ -545,7 +545,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x47 G
+    /* Character 0x47 G */
 
     /* %00111100 */ 0x3C,
     /* %01100110 */ 0x66,
@@ -558,7 +558,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x48 H
+    /* Character 0x48 H */
 
     /* %01100110 */ 0x66,
     /* %01100110 */ 0x66,
@@ -571,7 +571,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x49 I
+    /* Character 0x49 I */
 
     /* %01111110 */ 0x7E,
     /* %00011000 */ 0x18,
@@ -584,7 +584,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x4A J
+    /* Character 0x4A J */
 
     /* %00111110 */ 0x3E,
     /* %00001100 */ 0x0C,
@@ -597,7 +597,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x4B K
+    /* Character 0x4B K */
 
     /* %01100110 */ 0x66,
     /* %01101100 */ 0x6C,
@@ -610,7 +610,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x4C L
+    /* Character 0x4C L */
 
     /* %01100000 */ 0x60,
     /* %01100000 */ 0x60,
@@ -623,7 +623,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x4D M
+    /* Character 0x4D M */
 
     /* %01100011 */ 0x63,
     /* %01110111 */ 0x77,
@@ -636,7 +636,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x4E N
+    /* Character 0x4E N */
 
     /* %01100110 */ 0x66,
     /* %01100110 */ 0x66,
@@ -649,7 +649,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x4F O
+    /* Character 0x4F O */
 
     /* %00111100 */ 0x3C,
     /* %01100110 */ 0x66,
@@ -662,7 +662,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x50 P
+    /* Character 0x50 P */
 
     /* %01111100 */ 0x7C,
     /* %01100110 */ 0x66,
@@ -675,7 +675,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x51 Q
+    /* Character 0x51 Q */
 
     /* %00111100 */ 0x3C,
     /* %01100110 */ 0x66,
@@ -688,7 +688,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x52 R
+    /* Character 0x52 R */
 
     /* %01111100 */ 0x7C,
     /* %01100110 */ 0x66,
@@ -701,7 +701,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x53 S
+    /* Character 0x53 S */
 
     /* %00111100 */ 0x3C,
     /* %01100110 */ 0x66,
@@ -714,7 +714,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x54 T
+    /* Character 0x54 T */
 
     /* %01111110 */ 0x7E,
     /* %00011000 */ 0x18,
@@ -727,7 +727,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x55 U
+    /* Character 0x55 U */
 
     /* %01100110 */ 0x66,
     /* %01100110 */ 0x66,
@@ -740,7 +740,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x56 V
+    /* Character 0x56 V */
 
     /* %01100110 */ 0x66,
     /* %01100110 */ 0x66,
@@ -753,7 +753,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x57 W
+    /* Character 0x57 W */
 
     /* %01100011 */ 0x63,
     /* %01100011 */ 0x63,
@@ -766,7 +766,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x58 X
+    /* Character 0x58 X */
 
     /* %01100110 */ 0x66,
     /* %01100110 */ 0x66,
@@ -779,7 +779,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x59 Y
+    /* Character 0x59 Y */
 
     /* %01100110 */ 0x66,
     /* %01100110 */ 0x66,
@@ -792,7 +792,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x5A Z
+    /* Character 0x5A Z */
 
     /* %01111110 */ 0x7E,
     /* %00000110 */ 0x06,
@@ -805,7 +805,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x5B [
+    /* Character 0x5B [ */
 
     /* %01111100 */ 0x7C,
     /* %01100000 */ 0x60,
@@ -818,7 +818,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x5C \
+    /* Character 0x5C \ */
 
     /* %00000000 */ 0x00,
     /* %01100000 */ 0x60,
@@ -831,7 +831,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x5D ]
+    /* Character 0x5D ] */
 
     /* %00111110 */ 0x3E,
     /* %00000110 */ 0x06,
@@ -844,7 +844,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x5E ^
+    /* Character 0x5E ^ */
 
     /* %00011000 */ 0x18,
     /* %00111100 */ 0x3C,
@@ -857,7 +857,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x5F (underscore)
+    /* Character 0x5F (underscore) */
 
     /* %00000000 */ 0x00,
     /* %00000000 */ 0x00,
@@ -870,7 +870,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x60 (Pound Sterling)
+    /* Character 0x60 (Pound Sterling) */
 
     /* %00011100 */ 0x1C,
     /* %00110110 */ 0x36,
@@ -883,7 +883,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x61 a
+    /* Character 0x61 a */
 
     /* %00000000 */ 0x00,
     /* %00000000 */ 0x00,
@@ -896,7 +896,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x62 b
+    /* Character 0x62 b */
 
     /* %01100000 */ 0x60,
     /* %01100000 */ 0x60,
@@ -909,7 +909,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x63 c
+    /* Character 0x63 c */
 
     /* %00000000 */ 0x00,
     /* %00000000 */ 0x00,
@@ -922,7 +922,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x64 d
+    /* Character 0x64 d */
 
     /* %00000110 */ 0x06,
     /* %00000110 */ 0x06,
@@ -935,7 +935,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x65 e
+    /* Character 0x65 e */
 
     /* %00000000 */ 0x00,
     /* %00000000 */ 0x00,
@@ -948,7 +948,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x66 f
+    /* Character 0x66 f */
 
     /* %00011100 */ 0x1C,
     /* %00110000 */ 0x30,
@@ -961,7 +961,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x67 g
+    /* Character 0x67 g */
 
     /* %00000000 */ 0x00,
     /* %00000000 */ 0x00,
@@ -974,7 +974,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x68 h
+    /* Character 0x68 h */
 
     /* %01100000 */ 0x60,
     /* %01100000 */ 0x60,
@@ -987,7 +987,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x69 i
+    /* Character 0x69 i */
 
     /* %00011000 */ 0x18,
     /* %00000000 */ 0x00,
@@ -1000,7 +1000,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x6A j
+    /* Character 0x6A j */
 
     /* %00011000 */ 0x18,
     /* %00000000 */ 0x00,
@@ -1013,7 +1013,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x6B k
+    /* Character 0x6B k */
 
     /* %01100000 */ 0x60,
     /* %01100000 */ 0x60,
@@ -1026,7 +1026,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x6C l
+    /* Character 0x6C l */
 
     /* %00111000 */ 0x38,
     /* %00011000 */ 0x18,
@@ -1039,7 +1039,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x6D m
+    /* Character 0x6D m */
 
     /* %00000000 */ 0x00,
     /* %00000000 */ 0x00,
@@ -1052,7 +1052,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x6E n
+    /* Character 0x6E n */
 
     /* %00000000 */ 0x00,
     /* %00000000 */ 0x00,
@@ -1065,7 +1065,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x6F o
+    /* Character 0x6F o */
 
     /* %00000000 */ 0x00,
     /* %00000000 */ 0x00,
@@ -1078,7 +1078,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x70 p
+    /* Character 0x70 p */
 
     /* %00000000 */ 0x00,
     /* %00000000 */ 0x00,
@@ -1091,7 +1091,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x71 q
+    /* Character 0x71 q */
 
     /* %00000000 */ 0x00,
     /* %00000000 */ 0x00,
@@ -1104,7 +1104,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x72 r
+    /* Character 0x72 r */
 
     /* %00000000 */ 0x00,
     /* %00000000 */ 0x00,
@@ -1117,7 +1117,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x73 s
+    /* Character 0x73 s */
 
     /* %00000000 */ 0x00,
     /* %00000000 */ 0x00,
@@ -1130,7 +1130,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x74 t
+    /* Character 0x74 t */
 
     /* %00110000 */ 0x30,
     /* %00110000 */ 0x30,
@@ -1143,7 +1143,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x75 u
+    /* Character 0x75 u */
 
     /* %00000000 */ 0x00,
     /* %00000000 */ 0x00,
@@ -1156,7 +1156,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x76 v
+    /* Character 0x76 v */
 
     /* %00000000 */ 0x00,
     /* %00000000 */ 0x00,
@@ -1169,7 +1169,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x77 w
+    /* Character 0x77 w */
 
     /* %00000000 */ 0x00,
     /* %00000000 */ 0x00,
@@ -1182,7 +1182,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x78 x
+    /* Character 0x78 x */
 
     /* %00000000 */ 0x00,
     /* %00000000 */ 0x00,
@@ -1195,7 +1195,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x79 y
+    /* Character 0x79 y */
 
     /* %00000000 */ 0x00,
     /* %00000000 */ 0x00,
@@ -1208,7 +1208,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x7A z
+    /* Character 0x7A z */
 
     /* %00000000 */ 0x00,
     /* %00000000 */ 0x00,
@@ -1221,7 +1221,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x7B {
+    /* Character 0x7B { */
 
     /* %00001100 */ 0x0C,
     /* %00011000 */ 0x18,
@@ -1234,7 +1234,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x7C (OR symbol)
+    /* Character 0x7C (OR symbol) */
 
     /* %00011000 */ 0x18,
     /* %00011000 */ 0x18,
@@ -1247,7 +1247,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x7D }
+    /* Character 0x7D } */
 
     /* %00110000 */ 0x30,
     /* %00011000 */ 0x18,
@@ -1260,7 +1260,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x7E ~
+    /* Character 0x7E ~ */
 
     /* %00110001 */ 0x31,
     /* %01101011 */ 0x6B,
@@ -1273,7 +1273,7 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
 
 
-    // Character 0x7F (block)
+    /* Character 0x7F (block) */
 
     /* %11111111 */ 0xFF,
     /* %11111111 */ 0xFF,
@@ -1282,32 +1282,32 @@ static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
     /* %11111111 */ 0xFF,
     /* %11111111 */ 0xFF,
     /* %11111111 */ 0xFF,
-    /* %11111111 */ 0xFF,
+    /* %11111111 */ 0xFF
 };
 
-//------------------------------------------
-//
-// That's all folks! Now that Acorn is no
-// longer with us (RIP), it should be safe
-// to use this font in any homebrew 
-// projects.
-//
-// Anyone is welcome to distribute and use
-// this source file for whatever purpose
-// they wish.
-//
-//
-// Best wishes,
-//
-// Mike G. (mike@mikeg2.freeserve.co.uk)
-//
-// 4th March 2001
-//
-// SMS Power! - www.smspower.org
-// SMSReader - www.smspower.org/smsreader/
-//
-// My Home Page: www.mikeg2.freeserve.co.uk
-//
-//------------------------------------------
+/*------------------------------------------ */
+/*                                           */
+/* That's all folks! Now that Acorn is no    */
+/* longer with us (RIP), it should be safe   */
+/* to use this font in any homebrew          */
+/* projects.                                 */
+/*                                           */
+/* Anyone is welcome to distribute and use   */
+/* this source file for whatever purpose     */
+/* they wish.                                */
+/*                                           */
+/*                                           */
+/* Best wishes,                              */
+/*                                           */
+/* Mike G. (mike@mikeg2.freeserve.co.uk)     */
+/*                                           */
+/* 4th March 2001                            */
+/*                                           */
+/* SMS Power! - www.smspower.org             */
+/* SMSReader - www.smspower.org/smsreader/   */
+/*                                           */
+/* My Home Page: www.mikeg2.freeserve.co.uk  */
+/*                                           */
+/*------------------------------------------ */
 
 #endif
