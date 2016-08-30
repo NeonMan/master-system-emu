@@ -26,9 +26,9 @@ uint8_t io_enable(uint8_t f){
   new_reg = new_reg & f;
   new_reg = new_reg & UNDEFINED_BIT_MASK;
   
-	__io_chip = new_reg;
+    __io_chip = new_reg;
   io_reg = new_reg;
-	return new_reg;
+    return new_reg;
 }
 
 /** Disables a feature.*/
@@ -38,7 +38,7 @@ uint8_t io_disable(uint8_t f){
   new_reg = new_reg | f;
   new_reg = new_reg & UNDEFINED_BIT_MASK;
   
-	__io_chip = new_reg;
+    __io_chip = new_reg;
   io_reg = new_reg;
-	return new_reg;
+    return new_reg;
 }
