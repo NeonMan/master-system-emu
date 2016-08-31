@@ -35,22 +35,22 @@ TARGET_LINK_LIBRARIES(vdp-test vdp)
 
 #Make .bin ROMs from the .ihx files
 ADD_CUSTOM_TARGET(sample-bin ALL
-        COMMAND makebin -p sample.ihx sample.sms
+        COMMAND makebin -s 32768 sample.ihx sample.sms
 		DEPENDS sample
     )
 ADD_CUSTOM_TARGET(empty-bin ALL
-        COMMAND makebin -p empty.ihx empty.sms
+        COMMAND makebin -s 32768 empty.ihx empty.sms
 		DEPENDS empty
     )
 ADD_CUSTOM_TARGET(ram-test-bin ALL
-        COMMAND makebin -p ram-test.ihx ram-test.sms
+        COMMAND makebin -s 32768 ram-test.ihx ram-test.sms
 		DEPENDS ram-test
     )
 ADD_CUSTOM_TARGET(bootloader-bin ALL
-        COMMAND makebin -s 16384 bootloader.ihx bootloader.sms
+        COMMAND makebin -s 32768 bootloader.ihx bootloader.sms
 		DEPENDS bootloader
     )
 ADD_CUSTOM_TARGET(vdp-test-bin ALL
-        COMMAND makebin -p vdp-test.ihx vdp-test.sms
+        COMMAND makebin -s 32768 vdp-test.ihx vdp-test.sms
 		DEPENDS vdp-test
     )
