@@ -4,6 +4,7 @@ ENABLE_LANGUAGE(C)
 
 #Configure SDCC to make z80 binaries
 set(CMAKE_C_FLAGS "-mz80 --std-c89 --xram-size 0x4000 --code-loc 0x0090 --data-loc 0xc000 --no-std-crt0 sms/crt0-sms.rel")
+set(CMAKE_EXE_LINKER_FLAGS "-Wl -w")
 
 #crt0 for Sega Master System
 # -- ToDo. Using a prebuilt one

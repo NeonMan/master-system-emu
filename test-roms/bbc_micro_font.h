@@ -36,7 +36,7 @@
 #define BBC_FONT_BASE      0x20
 #define BBC_FONT_SIZE      0x60
 #define BBC_FONT_CHAR_SIZE 8
-const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
+static const uint8_t bbc_font[BBC_FONT_SIZE][BBC_FONT_CHAR_SIZE] = {
 
     /* Character 0x20 (space) */
     {

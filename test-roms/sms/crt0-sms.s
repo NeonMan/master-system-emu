@@ -87,6 +87,13 @@ nmi_hook:
 init:
 	;; Set stack pointer directly above top of memory.
 	ld	sp,#0xE000
+    ;; Set SEGA mapper to the default 0,1,2 slots
+    ld  hl,#0xFFFD
+    ld  (hl),#0x00
+    inc hl
+    ld  (hl),#0x01
+    inc hl
+    ld  (hl),#0x02
 
 	;; Initialise global variables
 gsinit::
