@@ -21,4 +21,12 @@
 
 void vdp_reg_write(uint8_t reg, uint8_t data);
 
+/* Don't use these >_> */
+uint8_t vdp_get_h();
+uint8_t vdp_get_v();
+uint8_t vdp_get_control();
+uint8_t vdp_get_data();
+void    vdp_set_control(uint8_t b);
+void    vdp_set_data(uint8_t b);
+
 #endif

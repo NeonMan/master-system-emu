@@ -24,3 +24,27 @@ void vdp_command(uint8_t cmd, uint16_t addr){
     __vdp_control = control_word & 0xFF;
     __vdp_control = (control_word >> 8) & 0xFF;
 }
+
+uint8_t vdp_get_h(){
+    return __vdp_h;
+}
+
+uint8_t vdp_get_v(){
+    return __vdp_v;
+}
+
+uint8_t vdp_get_control(){
+    return __vdp_control;
+}
+
+uint8_t vdp_get_data(){
+    return __vdp_data;
+}
+
+void    vdp_set_control(uint8_t b){
+    __vdp_control = b;
+}
+
+void    vdp_set_data(uint8_t b){
+    __vdp_data = b;
+}
