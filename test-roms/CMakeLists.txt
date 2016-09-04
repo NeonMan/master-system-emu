@@ -29,6 +29,9 @@ ADD_EXECUTABLE(console-test console-test.c)
 ADD_DEPENDENCIES(console-test crt0-sms)
 TARGET_LINK_LIBRARIES(console-test vdp console)
 
+ADD_EXECUTABLE(sys-info sys-info.c)
+ADD_DEPENDENCIES(sys-info crt0-sms)
+TARGET_LINK_LIBRARIES(sys-info vdp console)
 
 #Make .bin ROMs from the .ihx files
 ADD_CUSTOM_TARGET(sample-bin ALL
@@ -50,4 +53,8 @@ ADD_CUSTOM_TARGET(bootloader-bin ALL
 ADD_CUSTOM_TARGET(console-test-bin ALL
         COMMAND makebin -s 32768 console-test.ihx console-test.sms
 		DEPENDS console-test
+    )
+ADD_CUSTOM_TARGET(sys-info-bin ALL
+        COMMAND makebin -s 32768 sys-info.ihx sys-info.sms
+		DEPENDS sys-info
     )

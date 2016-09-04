@@ -1,6 +1,6 @@
 /**
- * @file  test-roms/vdp-test.c
- * @brief Sample VDP message.
+ * @file  test-roms/console-test.c
+ * @brief Simple VDP console test.
  */
 
 #include "sms/console.h"
