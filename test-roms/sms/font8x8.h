@@ -2,15 +2,23 @@
  * Based on C headers by Daniel Hepper <daniel@hepper.net> which are based on
  * existing public domain fonts. Available at the GIT repository below:
  *
- * https://github.com/dhepper/font8x8/blob/master/
+ * https://github.com/dhepper/font8x8
  * 
  **/
 
 #define FONT8x8_BASE      0x20
-#define FONT8x8_SIZE      0x60
+#define FONT8x8_ASCII_SIZE      0x60
 #define FONT8x8_CHAR_SIZE 8
- 
+#define FONT8x8_EXTENDED_SIZE (0 + FONT8x8_ASCII_SIZE)
+
+
+#ifndef EXTENDED_ASCII
+#define FONT8x8_SIZE FONT8x8_ASCII_SIZE
 static const char font8x8_basic[FONT8x8_SIZE][FONT8x8_CHAR_SIZE] = {
+#else
+#define FONT8x8_SIZE FONT8x8_EXTENDED_SIZE
+static const char font8x8_basic[FONT8x8_EXTENDED_SIZE][FONT8x8_CHAR_SIZE] = {
+#endif
     {0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00}, /* SPACE */
     {0x18,0x3C,0x3C,0x18,0x18,0x00,0x18,0x00}, /* EXCLAMATION MARK */
     {0x6C,0x6C,0x00,0x00,0x00,0x00,0x00,0x00}, /* QUOTATION MARK */
@@ -107,4 +115,10 @@ static const char font8x8_basic[FONT8x8_SIZE][FONT8x8_CHAR_SIZE] = {
     {0xE0,0x30,0x30,0x1C,0x30,0x30,0xE0,0x00}, /* RIGHT CURLY BRACKET */
     {0x76,0xDC,0x00,0x00,0x00,0x00,0x00,0x00}, /* TILDE */
     {0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00}  /* ? */
+    
+#ifdef EXTENDED_ASCII
+    ,
+    {0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00}  /* ? */
+#endif
 };
+
