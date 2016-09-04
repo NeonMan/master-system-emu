@@ -12,7 +12,9 @@
 #define SpriteTableAddress ((uint16_t) 0x3f00) /*<-- must be a multiple of $100; usually $3f00; fills $100 bytes */
 #define SpriteSet 0 /*<--  0 for sprites to use tiles 0-255, 1 for 256+ */
 
-const uint8_t vdp_init_regs[18] = {
+
+#define REGISTER_INIT_SIZE 18
+const uint8_t vdp_init_regs[REGISTER_INIT_SIZE] = {
     0b00100100, 0x80, 
 /*  |||||||`- Disable synch                        */
 /*  ||||||`-- Enable extra height modes            */
@@ -43,7 +45,8 @@ const uint8_t vdp_init_regs[18] = {
 /*    ``------- Line interrupt spacing */
 };
 
-const uint8_t vdp_init_palette[32] = {
+#define INIT_PALETTE_SIZE 32
+const uint8_t vdp_init_palette[INIT_PALETTE_SIZE] = {
     0x00,0x30,0x0c,0x03,0x3c,0x33,0x0f,0x16,0x19,0x06,0x35,0x21,0x0d,0x37,0x23,0x3f,
     0x00,0x30,0x0c,0x03,0x3c,0x33,0x0f,0x16,0x19,0x06,0x35,0x21,0x0d,0x37,0x23,0x07
 };
@@ -55,7 +58,7 @@ void con_init(){
     /*Shameless ripoff of ZEXALL init code*/
     
     /*Setup registers*/
-    for(i=0; i<16; i++){
+    for(i=0; i < REGISTER_INIT_SIZE; i++){
         vdp_set_control(vdp_init_regs[i]);
     }
     
@@ -86,7 +89,7 @@ void con_init(){
     vdp_set_control(0xc0);
     
     /*Load Palette*/
-    for(i = 0; i<0x20; i++){
+    for(i = 0; i<INIT_PALETTE_SIZE; i++){
         vdp_set_data(vdp_init_palette[i]);
     }
     
@@ -102,7 +105,7 @@ void con_init(){
 /*                    ||`------ VBlank interrupts */
 /*                    |`------- Enable display */
 /*                    `-------- Must be set (VRAM size bit) */
-    vdp_set_control(0xBF);
+    vdp_set_control(0x81);
 }
 
 void con_putc(char c){
@@ -114,7 +117,7 @@ void con_putc(char c){
     
     /* make unprintable characters '?' */
     if((c<0x20) || (c>0x7F)){
-        /*c = '?';*/
+        c = '?';
     }
     
     /* Write the char */
@@ -126,7 +129,7 @@ void con_putc(char c){
     vdp_set_data(1);
     
     /*Increment VRAM*/
-    vram_addr++;
+    vram_addr = vram_addr + 2;
 }
 
 void con_put(const char* str){
