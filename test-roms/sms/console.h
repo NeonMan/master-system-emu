@@ -4,6 +4,7 @@
 #include <stdint.h>
 
 void con_init();
-
+void con_put(const char* str);
+void con_putc(char c);
 
 #endif
