@@ -1,11 +1,11 @@
 #include "console.h"
 #include "vdp.h"
-#include "bbc_micro_font.h"
+#include "font8x8.h"
 
 #include <stdint.h>
 
-#define FONT      bbc_font
-#define FONT_SIZE BBC_FONT_SIZE
+#define FONT      font8x8_basic
+#define FONT_SIZE FONT8x8_SIZE
 
 /* VDP init constants */
 #define NameTableAddress ((uint16_t) 0x3800) /*<-- must be a multiple of $800; usually $3800; fills $700 bytes (unstretched) */
@@ -52,6 +52,8 @@ const uint8_t vdp_init_palette[INIT_PALETTE_SIZE] = {
 };
 
 uint16_t vram_addr;
+uint8_t  cursor_x;
+uint8_t  cursor_y;
 
 void con_init(){
     uint16_t i;
@@ -95,6 +97,8 @@ void con_init(){
     
     /*Initialize state vars*/
     vram_addr = 0;
+    cursor_x = 0;
+    cursor_y = 0;
     
     /*Turn screen on*/
     vdp_set_control(0b11000000);
@@ -106,6 +110,11 @@ void con_init(){
 /*                    |`------- Enable display */
 /*                    `-------- Must be set (VRAM size bit) */
     vdp_set_control(0x81);
+}
+
+/**Scrolls up all text by one line.*/
+void con_scroll(){
+    
 }
 
 void con_putc(char c){

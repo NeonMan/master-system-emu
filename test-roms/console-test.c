@@ -13,7 +13,8 @@ void main(){
     
     con_put("      Hello SMS Console!!       ");
     con_put("                                ");
-        
+    
+    /*Print the whole ASCII range*/
     for(i=0; i<128; i++){
         con_putc(i & 0x7F);
     }
