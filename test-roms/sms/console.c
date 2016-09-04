@@ -53,29 +53,14 @@ static const uint8_t vdp_init_palette[INIT_PALETTE_SIZE] = {
 
 #define LINE_WIDTH 31 /* <-- VDP can show 31 8x8 sprites per line. */
 #define LINE_COUNT 24 /* <-- And 24 lines on screen. */
+#define SCROLL_WRAP 28 /* <-- Memory line Wrap-around count*/
 
+static uint8_t scroll_index;
 static uint16_t vram_addr;
 uint8_t  cursor_x;
 uint8_t  cursor_y;
 
 /* --- Inner functions, shall be made static eventually. --- */
-
-/**Scrolls up all text by one line.*/
-static void new_line(){
-    /* Update the vram_addr to point to the next line.*/
-    vram_addr = vram_addr + (2 * (LINE_WIDTH - cursor_x + 1));
-    
-    /*Reset cursor_x and increment cursor_y*/
-    cursor_x = 0;
-    cursor_y = cursor_y + 1;
-    
-    /* If cursor_y equals LINE_COUNT, decrement, scroll the whole screen up */
-    /* And update vram_addr accordingly. */
-    if(cursor_y == LINE_COUNT){
-        cursor_y = cursor_y - 1;
-        /* ToDo */
-    }
-}
 
 static void draw_char(char c){
     uint8_t vram_h;
@@ -106,6 +91,49 @@ static void draw_char(char c){
     
     /*Increment VRAM*/
     vram_addr = vram_addr + 2;
+}
+
+/**Pretares for a newline; Scrolls up all text by one line if needed.*/
+static void new_line(){
+    /* Update the vram_addr to point to the next line.*/
+    vram_addr = vram_addr + (2 * (LINE_WIDTH - cursor_x + 1));
+    if(vram_addr > (2 * (SCROLL_WRAP - 1) * (LINE_WIDTH + 1))){
+        vram_addr = 0;
+    }
+    
+    /*Reset cursor_x and increment cursor_y*/
+    cursor_x = 0;
+    cursor_y = cursor_y + 1;
+    
+    /* If cursor_y equals LINE_COUNT, decrement, scroll the whole screen up */
+    /* And update vram_addr accordingly. */
+    if(cursor_y == LINE_COUNT){
+        uint8_t i;
+        uint16_t new_vram_addr;
+        /*Clear the next line with spaces*/
+        new_vram_addr = vram_addr;
+        for(i=0; i<LINE_WIDTH; i++){
+            /*
+            uint16_t vram_l = (vram_addr   ) & 0x00FF;
+            uint16_t vram_h = (vram_addr>>8) & 0x00FF;
+            vdp_set_control(vram_l);
+            vdp_set_control(vram_h | 0x78);
+            vdp_set_data(0x00);
+            vdp_set_data(0x01);
+            vram_addr = vram_addr + 2;
+            */
+            draw_char(' ');
+        }
+        vram_addr = new_vram_addr;
+        
+        /*Calculate scroll position*/
+        scroll_index = (scroll_index + 1) % SCROLL_WRAP;
+        cursor_y = cursor_y - 1;
+        
+        /*send new scroll index to the VDP*/
+        vdp_set_control(scroll_index << 3);
+        vdp_set_control(0x89);
+    }
 }
 
 /* --- Exported functions --- */
@@ -154,6 +182,7 @@ void con_init(){
     vram_addr = 0;
     cursor_x = 0;
     cursor_y = 0;
+    scroll_index = 0;
     
     /*Turn screen on*/
     vdp_set_control(0b11000000);

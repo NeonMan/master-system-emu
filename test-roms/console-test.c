@@ -7,6 +7,13 @@
 #include "sms/intv-dummy.h" /*<-- Ignore interrupts*/
 #include <stdint.h>
 
+void delay_loop(){
+    volatile uint16_t i;
+    for(i=0; i<1000; i++){
+        i = i;
+    }
+}
+
 void main(){
     uint16_t i;
     con_init();
@@ -15,16 +22,14 @@ void main(){
     
     /*Print the whole ASCII range*/
     con_put("       -Character  map-\n");
-    for(i=0x20; i<0x80; i++){
-        /*Every 16th char print a newline and a bunch of spaces*/
-        if((i%16) == 0){
-            con_put("\n       ");
-        }
-        con_putc(i & 0x7F);
-    }
-    
-    /*Do nothing*/
     while(1){
-        
+        for(i=0x20; i<0x80; i++){
+            /*Every 16th char print a newline and a bunch of spaces*/
+            if((i%16) == 0){
+                con_put("\n       ");
+            }
+            con_putc(i & 0x7F);
+            delay_loop();
+        }
     }
 }
