@@ -11,7 +11,13 @@ void main(){
     uint16_t i;
     con_init();
     
-    con_put("01234567890123456789012345678901");
+    con_put("      Hello SMS Console!!       ");
+    con_put("                                ");
+        
+    for(i=0; i<128; i++){
+        con_putc(i & 0x7F);
+    }
+    
     /*Do nothing*/
     while(1){
         
