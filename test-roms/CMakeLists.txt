@@ -6,6 +6,8 @@ ENABLE_LANGUAGE(C)
 set(CMAKE_C_FLAGS "-mz80 --std-sdcc89 --xram-size 0x4000 --code-loc 0x0090 --data-loc 0xc000 --no-std-crt0 sms/crt0-sms.rel")
 set(CMAKE_EXE_LINKER_FLAGS "-Wl -w")
 
+ADD_DEFINITIONS(-DCOMPILER_ID="${CMAKE_C_COMPILER_ID}")
+
 #Libraries
 ADD_SUBDIRECTORY(sms)
 
