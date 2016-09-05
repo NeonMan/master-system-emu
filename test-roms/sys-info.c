@@ -7,7 +7,7 @@
 #include "sms/intv-dummy.h" /*<-- Ignore interrupts*/
 #include <stdint.h>
 
-#define READ_BUFFER_SIZE 128
+#define READ_BUFFER_SIZE 1024
 
 
 static uint8_t read_buffer[READ_BUFFER_SIZE];
@@ -60,7 +60,7 @@ void main(){
     
     /*Say byte*/
     con_put("\n -- Info End -- ");
-    
+
     /*Do nothing~*/
     while(1){
         

@@ -138,6 +138,39 @@ static void new_line(){
 
 /* --- Exported functions --- */
 
+void con_clear(){
+    uint8_t x;
+    uint8_t y;
+    uint16_t vram_addr_new;
+    uint8_t  scroll_index_copy;
+    /*Reset everything, fill screen with spaces*/
+    scroll_index_copy = scroll_index;
+    vram_addr_new = vram_addr + (scroll_index * (LINE_WIDTH + 1) * 2);
+    vram_addr = vram_addr_new;
+    for(y = 0; y<LINE_COUNT; y++){
+        for(x = 0; x<LINE_WIDTH; x++){
+            con_putc(' ');
+        }
+    }
+    vram_addr = vram_addr_new;
+    scroll_index = scroll_index_copy;
+}
+
+void con_gotoxy(uint8_t x, uint8_t y){
+    if(x >= LINE_WIDTH){
+        x = LINE_WIDTH - 1;
+    }
+    
+    if(y >= LINE_COUNT){
+        y = LINE_COUNT - 1;
+    }
+    
+    /*Calculate new vram_addr*/
+    vram_addr = ((y * (LINE_WIDTH + 1)) + (x)) * 2;
+    /*Correct the scroll index*/
+    vram_addr = vram_addr + (scroll_index * (LINE_WIDTH + 1) * 2);
+}
+
 void con_init(){
     uint16_t i;
     /*Shameless ripoff of ZEXALL init code*/
