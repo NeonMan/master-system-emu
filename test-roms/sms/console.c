@@ -57,8 +57,8 @@ static const uint8_t vdp_init_palette[INIT_PALETTE_SIZE] = {
 
 static uint8_t scroll_index;
 static uint16_t vram_addr;
-uint8_t  cursor_x;
-uint8_t  cursor_y;
+static uint8_t  cursor_x;
+static uint8_t  cursor_y;
 
 /* --- Inner functions, shall be made static eventually. --- */
 
@@ -169,6 +169,10 @@ void con_gotoxy(uint8_t x, uint8_t y){
     vram_addr = ((y * (LINE_WIDTH + 1)) + (x)) * 2;
     /*Correct the scroll index*/
     vram_addr = vram_addr + (scroll_index * (LINE_WIDTH + 1) * 2);
+}
+
+void con_relxy(int8_t x, int8_t y){
+    con_gotoxy(cursor_x + x, cursor_y + y);
 }
 
 void con_init(){
