@@ -7,6 +7,7 @@ set(CMAKE_C_FLAGS "-mz80 --std-sdcc89 --xram-size 0x4000 --code-loc 0x0090 --dat
 set(CMAKE_EXE_LINKER_FLAGS "-Wl -w")
 
 ADD_DEFINITIONS(-DCOMPILER_ID="${CMAKE_C_COMPILER_ID}")
+ADD_DEFINITIONS(-DEXTENDED_ASCII)
 
 #Libraries
 ADD_SUBDIRECTORY(sms)
@@ -23,9 +24,13 @@ ADD_EXECUTABLE(ram-test ram-test.c)
 ADD_DEPENDENCIES(ram-test crt0-sms)
 TARGET_LINK_LIBRARIES(ram-test sdsc)
 
-ADD_EXECUTABLE(bootloader bootloader.c)
-ADD_DEPENDENCIES(bootloader crt0-sms)
-TARGET_LINK_LIBRARIES(bootloader sdsc io)
+ADD_EXECUTABLE(simple-bios simple-bios.c)
+ADD_DEPENDENCIES(simple-bios crt0-sms)
+TARGET_LINK_LIBRARIES(simple-bios sdsc io)
+
+ADD_EXECUTABLE(menu-bios menu-bios.c)
+ADD_DEPENDENCIES(menu-bios crt0-sms)
+TARGET_LINK_LIBRARIES(menu-bios sms vdp console io)
 
 ADD_EXECUTABLE(console-test console-test.c)
 ADD_DEPENDENCIES(console-test crt0-sms)
@@ -48,9 +53,13 @@ ADD_CUSTOM_TARGET(ram-test-bin ALL
         COMMAND makebin -s 32768 ram-test.ihx ram-test.sms
 		DEPENDS ram-test
     )
-ADD_CUSTOM_TARGET(bootloader-bin ALL
-        COMMAND makebin -s 32768 bootloader.ihx bootloader.sms
-		DEPENDS bootloader
+ADD_CUSTOM_TARGET(simple-bios-bin ALL
+        COMMAND makebin -s 32768 simple-bios.ihx simple-bios.sms
+		DEPENDS simple-bios
+    )
+ADD_CUSTOM_TARGET(menu-bios-bin ALL
+        COMMAND makebin -s 32768 menu-bios.ihx menu-bios.sms
+		DEPENDS menu-bios
     )
 ADD_CUSTOM_TARGET(console-test-bin ALL
         COMMAND makebin -s 32768 console-test.ihx console-test.sms

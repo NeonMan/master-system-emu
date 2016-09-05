@@ -1,11 +1,6 @@
 /**
- * @file  test-roms/bootloader.c
- * @brief BIOS replacement with bootloader capabilities.
- *
- * This program aims to provide a Master System BIOS replacement
- * that removes region checking and (will ;) provide bootlader 
- * capabilities to load binaries through other means like SDSC port
- * or UART peripheral.
+ * @file  test-roms/simple-bios.c
+ * @brief Most simple BIOS, will switch to cartridge ROM.
  *
  */
 
@@ -107,10 +102,6 @@ void boot_jump(uint16_t address, uint8_t io){
 void main(){
   uint16_t i;
   uint8_t* boot_jump_bytes = (void*) boot_jump;
-  /* --- Configure the SEGA mapper --- */
-  __mapper_bank0 = 0x00;
-  __mapper_bank1 = 0x01;
-  __mapper_bank2 = 0x02;
   
   /* --- Configure IO chip --- */
   io_set(IO_ENABLE_BIOS & IO_ENABLE_RAM & UNDEFINED_BIT_MASK);
