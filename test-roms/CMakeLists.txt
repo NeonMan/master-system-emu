@@ -9,6 +9,9 @@ set(CMAKE_EXE_LINKER_FLAGS "-Wl -w")
 ADD_DEFINITIONS(-DCOMPILER_ID="${CMAKE_C_COMPILER_ID}")
 ADD_DEFINITIONS(-DEXTENDED_ASCII)
 
+#Make includes available everywhere
+include_directories(${PROJECT_SOURCE_DIR})
+
 #Libraries
 ADD_SUBDIRECTORY(sms)
 
@@ -28,10 +31,6 @@ ADD_EXECUTABLE(simple-bios simple-bios.c)
 ADD_DEPENDENCIES(simple-bios crt0-sms)
 TARGET_LINK_LIBRARIES(simple-bios sdsc io)
 
-ADD_EXECUTABLE(menu-bios menu-bios.c)
-ADD_DEPENDENCIES(menu-bios crt0-sms)
-TARGET_LINK_LIBRARIES(menu-bios sms vdp console io)
-
 ADD_EXECUTABLE(console-test console-test.c)
 ADD_DEPENDENCIES(console-test crt0-sms)
 TARGET_LINK_LIBRARIES(console-test vdp console)
@@ -39,6 +38,10 @@ TARGET_LINK_LIBRARIES(console-test vdp console)
 ADD_EXECUTABLE(sys-info sys-info.c)
 ADD_DEPENDENCIES(sys-info crt0-sms)
 TARGET_LINK_LIBRARIES(sys-info sms vdp console)
+
+ADD_EXECUTABLE(bios-menu bios-menu/bios-menu.c bios-menu/bm-state.c)
+ADD_DEPENDENCIES(bios-menu crt0-sms)
+TARGET_LINK_LIBRARIES(bios-menu sms vdp console io)
 
 #Make .bin ROMs from the .ihx files
 ADD_CUSTOM_TARGET(sample-bin ALL
@@ -57,10 +60,6 @@ ADD_CUSTOM_TARGET(simple-bios-bin ALL
         COMMAND makebin -s 32768 simple-bios.ihx simple-bios.sms
 		DEPENDS simple-bios
     )
-ADD_CUSTOM_TARGET(menu-bios-bin ALL
-        COMMAND makebin -s 32768 menu-bios.ihx menu-bios.sms
-		DEPENDS menu-bios
-    )
 ADD_CUSTOM_TARGET(console-test-bin ALL
         COMMAND makebin -s 32768 console-test.ihx console-test.sms
 		DEPENDS console-test
@@ -68,4 +67,8 @@ ADD_CUSTOM_TARGET(console-test-bin ALL
 ADD_CUSTOM_TARGET(sys-info-bin ALL
         COMMAND makebin -s 32768 sys-info.ihx sys-info.sms
 		DEPENDS sys-info
+    )
+ADD_CUSTOM_TARGET(bios-menu-bin ALL
+        COMMAND makebin -s 32768 bios-menu.ihx bios-menu.sms
+		DEPENDS bios-menu
     )
