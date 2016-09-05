@@ -51,8 +51,6 @@ static const uint8_t vdp_init_palette[INIT_PALETTE_SIZE] = {
     0x00,0x30,0x0c,0x03,0x3c,0x33,0x0f,0x16,0x19,0x06,0x35,0x21,0x0d,0x37,0x23,0x07
 };
 
-#define LINE_WIDTH 31 /* <-- VDP can show 31 8x8 sprites per line. */
-#define LINE_COUNT 24 /* <-- And 24 lines on screen. */
 #define SCROLL_WRAP 28 /* <-- Memory line Wrap-around count*/
 
 static uint8_t scroll_index;
@@ -96,8 +94,8 @@ static void draw_char(char c){
 /**Pretares for a newline; Scrolls up all text by one line if needed.*/
 static void new_line(){
     /* Update the vram_addr to point to the next line.*/
-    vram_addr = vram_addr + (2 * (LINE_WIDTH - cursor_x + 1));
-    if(vram_addr > (2 * (SCROLL_WRAP - 1) * (LINE_WIDTH + 1))){
+    vram_addr = vram_addr + (2 * (CON_LINE_WIDTH - cursor_x + 1));
+    if(vram_addr > (2 * (SCROLL_WRAP - 1) * (CON_LINE_WIDTH + 1))){
         vram_addr = 0;
     }
     
@@ -105,14 +103,14 @@ static void new_line(){
     cursor_x = 0;
     cursor_y = cursor_y + 1;
     
-    /* If cursor_y equals LINE_COUNT, decrement, scroll the whole screen up */
+    /* If cursor_y equals CON_LINE_COUNT, decrement, scroll the whole screen up */
     /* And update vram_addr accordingly. */
-    if(cursor_y == LINE_COUNT){
+    if(cursor_y == CON_LINE_COUNT){
         uint8_t i;
         uint16_t new_vram_addr;
         /*Clear the next line with spaces*/
         new_vram_addr = vram_addr;
-        for(i=0; i<LINE_WIDTH; i++){
+        for(i=0; i<CON_LINE_WIDTH; i++){
             /*
             uint16_t vram_l = (vram_addr   ) & 0x00FF;
             uint16_t vram_h = (vram_addr>>8) & 0x00FF;
@@ -145,10 +143,10 @@ void con_clear(){
     uint8_t  scroll_index_copy;
     /*Reset everything, fill screen with spaces*/
     scroll_index_copy = scroll_index;
-    vram_addr_new = vram_addr + (scroll_index * (LINE_WIDTH + 1) * 2);
+    vram_addr_new = vram_addr + (scroll_index * (CON_LINE_WIDTH + 1) * 2);
     vram_addr = vram_addr_new;
-    for(y = 0; y<LINE_COUNT; y++){
-        for(x = 0; x<LINE_WIDTH; x++){
+    for(y = 0; y<CON_LINE_COUNT; y++){
+        for(x = 0; x<CON_LINE_WIDTH; x++){
             con_putc(' ');
         }
     }
@@ -157,18 +155,20 @@ void con_clear(){
 }
 
 void con_gotoxy(uint8_t x, uint8_t y){
-    if(x >= LINE_WIDTH){
-        x = LINE_WIDTH - 1;
+    if(x >= CON_LINE_WIDTH){
+        x = CON_LINE_WIDTH - 1;
     }
     
-    if(y >= LINE_COUNT){
-        y = LINE_COUNT - 1;
+    if(y >= CON_LINE_COUNT){
+        y = CON_LINE_COUNT - 1;
     }
+    cursor_x = x;
+    cursor_y = y;
     
     /*Calculate new vram_addr*/
-    vram_addr = ((y * (LINE_WIDTH + 1)) + (x)) * 2;
+    vram_addr = ((y * (CON_LINE_WIDTH + 1)) + (x)) * 2;
     /*Correct the scroll index*/
-    vram_addr = vram_addr + (scroll_index * (LINE_WIDTH + 1) * 2);
+    vram_addr = vram_addr + (scroll_index * (CON_LINE_WIDTH + 1) * 2);
 }
 
 void con_relxy(int8_t x, int8_t y){
@@ -240,7 +240,7 @@ void con_putc(char c){
         new_line();
     }
     else{
-        if(cursor_x == LINE_WIDTH){
+        if(cursor_x == CON_LINE_WIDTH){
             new_line();
         }
         /* Draw the character*/
