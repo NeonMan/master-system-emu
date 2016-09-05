@@ -31,7 +31,7 @@ TARGET_LINK_LIBRARIES(console-test vdp console)
 
 ADD_EXECUTABLE(sys-info sys-info.c)
 ADD_DEPENDENCIES(sys-info crt0-sms)
-TARGET_LINK_LIBRARIES(sys-info vdp console)
+TARGET_LINK_LIBRARIES(sys-info sms vdp console)
 
 #Make .bin ROMs from the .ihx files
 ADD_CUSTOM_TARGET(sample-bin ALL

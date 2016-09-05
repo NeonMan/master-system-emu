@@ -3,6 +3,7 @@
  * @brief BIOS program showing SMS information.
  */
 
+#include "sms/sms.h"
 #include "sms/console.h"
 #include "sms/intv-dummy.h" /*<-- Ignore interrupts*/
 #include <stdint.h>
@@ -32,8 +33,22 @@ static void build_info(){
     con_put("\n");
 }
 
+static void region(){
+    con_put("Region: ");
+    if(sms_region() == SMS_REGION_JAPAN){
+        con_put("Japan");
+    }
+    else{
+        con_put("Export");
+    }
+    con_put("\n");
+}
+
 static void dump_info(){
+    con_put(" -- Build info --\n");
     build_info();
+    con_put("\n -- Hardware info --\n");
+    region();
     /*Do more stuff~ (ToDo)*/
 }
 
