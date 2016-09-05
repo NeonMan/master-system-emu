@@ -31,5 +31,15 @@ void main(){
             con_putc(i & 0x7F);
             delay_loop();
         }
+#ifdef EXTENDED_ASCII
+        for(i=0; i<16; i++){
+            /*Every 16th char print a newline and a bunch of spaces*/
+            if((i%16) == 0){
+                con_put("\n       ");
+            }
+            con_putc((i % 16) + 0x80);
+            delay_loop();
+        }
+#endif
     }
 }
