@@ -9,23 +9,31 @@
 #include <stdint.h>
 
 #define READ_BUFFER_SIZE 1024
-
+#define CRT_SIGNATURE_ADDRESS 0x0050
 
 static uint8_t read_buffer[READ_BUFFER_SIZE];
 
 static void build_info(){
     /*Compiler*/
     con_put("Compiler: ");
-#ifdef __SDCC
-    con_put("SDCC\n");
+#ifdef COMPILER_ID 
+    con_put(COMPILER_ID "\n");
 #else
     con_put("Unknown\n");
 #endif
 
     /*Crt0 version*/
-    con_put("Crt0: ");
-    con_put((void*)0x0050);
-    con_put("\n");
+    {
+        char crt_string[17];
+        uint8_t i;
+        for(i=0; i<16; i++){
+            crt_string[i] = ((char*)CRT_SIGNATURE_ADDRESS)[i];
+        }
+        crt_string[16] = '\0';
+        con_put("Crt0: ");
+        con_put(crt_string);
+        con_put("\n");
+    }
     
     /*Date & Time*/
     con_put("Date: ");
