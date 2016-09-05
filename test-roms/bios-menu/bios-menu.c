@@ -1,8 +1,10 @@
 
-#include "sms/sms.h"
-#include "sms/console.h"
-#include "sms/intv-dummy.h" /*<-- Ignore interrupts*/
+#include <sms/sms.h>
+#include <sms/console.h>
+#include <sms/intv-dummy.h> /*<-- Ignore interrupts*/
 #include <stdint.h>
+
+#include "bios-menu.h"
 
 void delay_loop(){
     volatile uint16_t i;
@@ -33,6 +35,7 @@ static int8_t  cursor_max;
 static uint8_t last_key;
 
 static void init(){
+    bm_state_init();
     con_init();
     cursor_position = 0;
     cursor_min = 0;
