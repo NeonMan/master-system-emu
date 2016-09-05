@@ -13,18 +13,6 @@ void delay_loop(){
     }
 }
 
-#define LEFT_MARGIN 2
-#define TOP_MARGIN 2
-#define MAX_OPTION_COUNT 20
-
-#define KEY_NONE 0
-#define KEY_UP   1
-#define KEY_DOWN 2
-#define KEY_LEFT 3
-#define KEY_RIGH 4
-#define KEY_1    5
-#define KEY_2    6
-
 static __sfr __at  (SMS_IO_AB_PORT)     io_ab;
 static __sfr __at  (SMS_IO_B_MISC_PORT) io_bm;
 
@@ -140,28 +128,13 @@ static uint8_t update_input(){
     }
 }
 
+/* --- Exported functions --- */
+void redraw_cursor(){
+    draw_cursor(cursor_position);
+}
+
 void main(){
-    uint8_t i;
     init();
-    
-    /* Draw main menu */
-    con_gotoxy(1, TOP_MARGIN + 0);
-    con_put("Menu BIOS for Master System");
-    for(i = 0; i<MAX_OPTION_COUNT; i++){
-        con_gotoxy(LEFT_MARGIN + 2, TOP_MARGIN + 2 + i);
-        switch(i){
-            case 0:
-            con_put("Boot cartridge"); break;
-            case 1:
-            con_put("Boot card slot"); break;
-            case 2:
-            con_put("Boot expansion port"); break;
-            case 3:
-            con_put("System info"); break;
-            default:
-            break;
-        }
-    }
     
     /*Draw cursor*/
     cursor_min = 0;
@@ -169,7 +142,9 @@ void main(){
     cursor_position = 0;
     draw_cursor(cursor_position);
     while(1){
+        bm_state_tick();
         dump_input();
+        
         switch(update_input()){
             case KEY_UP:
             draw_cursor(cursor_position - 1); break;
@@ -178,6 +153,7 @@ void main(){
             default:
             break;
         }
+        
         delay_loop();
     }
 }
