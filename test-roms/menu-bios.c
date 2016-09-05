@@ -27,20 +27,30 @@ static __sfr __at  (SMS_IO_AB_PORT)     io_ab;
 static __sfr __at  (SMS_IO_B_MISC_PORT) io_bm;
 
 static int8_t  cursor_position;
+static int8_t  cursor_min;
+static int8_t  cursor_max;
+
 static uint8_t last_key;
 
 static void init(){
     con_init();
     cursor_position = 0;
+    cursor_min = 0;
+    cursor_max = MAX_OPTION_COUNT - 1;
     last_key    = KEY_NONE;
 }
 
 static void draw_cursor(int8_t index){
     uint8_t i;
-    if(index < 0){
-        index = index + MAX_OPTION_COUNT;
+    /*Fix index value to stay within limits*/
+    if(index > cursor_max){
+        index = cursor_min;
     }
-    cursor_position = index % MAX_OPTION_COUNT;
+    
+    if(index < cursor_min){
+        index = cursor_max;
+    }
+    cursor_position = index;
     
     /*Clear the cursor column*/
     for(i=0; i<MAX_OPTION_COUNT; i++){
@@ -146,12 +156,14 @@ void main(){
             case 3:
             con_put("System info"); break;
             default:
-            con_put("     *   *   *     ");
+            break;
         }
     }
     
-    
-    
+    /*Draw cursor*/
+    cursor_min = 0;
+    cursor_max = 3;
+    cursor_position = 0;
     draw_cursor(cursor_position);
     while(1){
         dump_input();
