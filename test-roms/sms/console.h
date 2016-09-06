@@ -9,6 +9,7 @@
 void con_init();
 void con_put(const char* str);
 void con_putc(char c);
+void con_puth(uint8_t b);
 void con_gotoxy(uint8_t x, uint8_t y);
 void con_relxy(int8_t x, int8_t y);
 void con_clear();

@@ -272,6 +272,20 @@ void con_putc(char c){
     }
 }
 
+void con_puth(uint8_t b){
+    uint8_t h;
+    uint8_t l;
+    
+    l = b & 0x0F;
+    h = (b>>4) & 0x0F;
+    
+    if(h>9) con_putc(h - 10 + 'A');
+    else    con_putc(h + '0');
+    
+    if(l>9) con_putc(l - 10 + 'A');
+    else    con_putc(l + '0');
+}
+
 void con_put(const char* str){
     while(*str){
         con_putc(*str);
