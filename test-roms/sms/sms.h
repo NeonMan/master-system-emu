@@ -12,6 +12,18 @@
 #define SMS_RAM_BASE_ADDRESS   0xc000
 #define SMS_RAM_MIRROR_ADDRESS 0xe000
 #define SMS_RAM_SIZE           0x2000
+#define SMS_SLOT0_BASE_ADDRESS 0x0000
+#define SMS_SLOT1_BASE_ADDRESS 0x4000
+#define SMS_SLOT2_BASE_ADDRESS 0x8000
+
+#define SMS_SLOT0_CONTROL_ADDRESS 0xFFFD
+#define SMS_SLOT1_CONTROL_ADDRESS 0xFFFE
+#define SMS_SLOT2_CONTROL_ADDRESS 0xFFFF
+
+/* --- SEGA mammer pointers --- */
+static uint8_t* sms_mapper_slot0 = (uint8_t*) SMS_SLOT0_CONTROL_ADDRESS;
+static uint8_t* sms_mapper_slot1 = (uint8_t*) SMS_SLOT1_CONTROL_ADDRESS;
+static uint8_t* sms_mapper_slot2 = (uint8_t*) SMS_SLOT2_CONTROL_ADDRESS;
 
 /* --- Port address declarations --- */
 #define SMS_ENABLE_PORT      0x3E

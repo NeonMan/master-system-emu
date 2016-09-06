@@ -31,7 +31,7 @@ void show_sysinfo();
 
 /* --- rom-tools.c --- */
 #define ROM_BUFFER_SIZE      1024
-#define ROM_CODE_BUFFER_SIZE 128
+#define ROM_CODE_BUFFER_SIZE 256
 
 #define ROM_CARTRIDGE 0b10101000
 #define ROM_CARD_SLOT 0b11001000
