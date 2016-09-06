@@ -134,6 +134,21 @@ static void new_line(){
     }
 }
 
+static void wait_vblank(){
+    /*
+    uint8_t v_old;
+    uint8_t v_new;
+    
+    do{
+        v_old = vdp_get_v();
+        do{
+            v_new = vdp_get_v();
+            
+        }while(v_new != v_old);
+    }while(v_new != 0xc0);
+    */
+}
+
 /* --- Exported functions --- */
 
 void con_clear(){
@@ -141,6 +156,9 @@ void con_clear(){
     uint8_t y;
     uint16_t vram_addr_new;
     uint8_t  scroll_index_copy;
+    /*Wait for vblank*/
+    wait_vblank();
+    
     /*Reset everything, fill screen with spaces*/
     scroll_index_copy = scroll_index;
     vram_addr_new = vram_addr + (scroll_index * (CON_LINE_WIDTH + 1) * 2);
@@ -152,6 +170,10 @@ void con_clear(){
     }
     vram_addr = vram_addr_new;
     scroll_index = scroll_index_copy;
+    
+    /*send old scroll index to the VDP*/
+    vdp_set_control(scroll_index << 3);
+    vdp_set_control(0x89);
 }
 
 void con_gotoxy(uint8_t x, uint8_t y){
