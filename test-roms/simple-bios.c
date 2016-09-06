@@ -46,11 +46,14 @@ void print(const char* str){
   io_enable(IO_ENABLE_PERIPHERAL);
 }
 
-/** Makes jumps to the memory copy of boot_jump.
+/** Makes a jump to the chainload code.
  *
  *  This function takes the same parameters as boot_jump and exists only
  *  to receive the stack parameters for boot_jump and immediatly jump to
  *  its memory copy .
+ *
+ *  @param address reset verctor address, 0x0000 for regular ROMS
+ *  @param io      value of the media selector register.
  */
 void boot_call(uint16_t address, uint8_t io){
   (void) address; /*                                   */
@@ -75,8 +78,7 @@ void boot_call(uint16_t address, uint8_t io){
  *  @param io      Value of the IO chip register.
  */
 void boot_jump(uint16_t address, uint8_t io){
-  (void) address; /*                                 */
-  (void) io;      /* <-- Remove unused param warning */
+  (void) address; /* <-- Remove unused param warning */
   
   /*Set the IO chip register*/
   __io_chip = io;

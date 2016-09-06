@@ -50,7 +50,8 @@ TARGET_LINK_LIBRARIES(sys-info sms vdp console)
 ADD_EXECUTABLE(bios-menu 
         bios-menu/bios-menu.c
         bios-menu/bm-state.c
-        bios-menu/sysinfo.c
+        bios-menu/system-info.c
+        bios-menu/rom-tools.c
         )
 ADD_DEPENDENCIES(bios-menu crt0-sms)
 TARGET_LINK_LIBRARIES(bios-menu sms vdp console io)
