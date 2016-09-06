@@ -31,29 +31,6 @@ static void init(){
     last_key    = KEY_NONE;
 }
 
-static void draw_cursor(int8_t index){
-    uint8_t i;
-    /*Fix index value to stay within limits*/
-    if(index > cursor_max){
-        index = cursor_min;
-    }
-    
-    if(index < cursor_min){
-        index = cursor_max;
-    }
-    cursor_position = index;
-    
-    /*Clear the cursor column*/
-    for(i=0; i<MAX_OPTION_COUNT; i++){
-        con_gotoxy(LEFT_MARGIN, TOP_MARGIN + i + 2);
-        con_putc(' ');
-    }
-    
-    /*Draw cursor*/
-    con_gotoxy(LEFT_MARGIN, TOP_MARGIN + cursor_position + 2);
-    con_putc('>');
-}
-
 static void increment_cursor(){
     draw_cursor(cursor_position + 1);
 }
@@ -93,8 +70,12 @@ static void dump_input(){
     (bm & (1<<7)) ? con_putc('-') : con_putc('B');
 }
 
+/* -------------------------- */
+/* --- Exported functions --- */
+/* -------------------------- */
+
 /*Returns the recently pressed key on change*/
-static uint8_t update_input(){
+uint8_t update_input(){
     /*Scan pad 1 for input changes*/
     uint8_t ab;
     uint8_t current_key;
@@ -128,9 +109,40 @@ static uint8_t update_input(){
     }
 }
 
-/* --- Exported functions --- */
+void draw_cursor(int8_t index){
+    uint8_t i;
+    /*Fix index value to stay within limits*/
+    if(index > cursor_max){
+        index = cursor_min;
+    }
+    
+    if(index < cursor_min){
+        index = cursor_max;
+    }
+    cursor_position = index;
+    
+    /*Clear the cursor column*/
+    for(i=0; i<MAX_OPTION_COUNT; i++){
+        con_gotoxy(LEFT_MARGIN, TOP_MARGIN + i + 2);
+        con_putc(' ');
+    }
+    
+    /*Draw cursor*/
+    con_gotoxy(LEFT_MARGIN, TOP_MARGIN + cursor_position + 2);
+    con_putc('>');
+}
+
 void redraw_cursor(){
     draw_cursor(cursor_position);
+}
+
+uint8_t get_cursor(){
+    return cursor_position;
+}
+
+void set_cursor_limits(uint8_t min, uint8_t max){
+    cursor_min = min;
+    cursor_max = max;
 }
 
 void main(){
@@ -138,22 +150,11 @@ void main(){
     
     /*Draw cursor*/
     cursor_min = 0;
-    cursor_max = 3;
+    cursor_max = MAX_OPTION_COUNT - 1;
     cursor_position = 0;
-    draw_cursor(cursor_position);
     while(1){
-        bm_state_tick();
         dump_input();
-        
-        switch(update_input()){
-            case KEY_UP:
-            draw_cursor(cursor_position - 1); break;
-            case KEY_DOWN:
-            draw_cursor(cursor_position + 1); break;
-            default:
-            break;
-        }
-        
-        delay_loop();
+        bm_state_tick();
+        /*delay_loop();*/
     }
 }
