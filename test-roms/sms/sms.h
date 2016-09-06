@@ -25,6 +25,18 @@
 #define SMS_VDP_V_PORT       0x7E
 #define SMS_VDP_H_PORT       0x7F
 
+/* --- Port sfr variables --- */
+static __sfr __at (SMS_ENABLE_PORT)      sms_enable_port;
+static __sfr __at (SMS_FM_PORT)          sms_fm_port;
+static __sfr __at (SMS_IO_CONTROL_PORT)  sms_io_control_port;
+static __sfr __at (SMS_IO_AB_PORT)       sms_ab_port;
+static __sfr __at (SMS_IO_B_MISC_PORT)   sms_b_misc_port;
+static __sfr __at (SMS_PSG_PORT)         sms_psg_port;
+static __sfr __at (SMS_VDP_DATA_PORT)    sms_vdp_data_port;
+static __sfr __at (SMS_VDP_CONTROL_PORT) sms_vdp_control_port;
+static __sfr __at (SMS_VDP_V_PORT)       sms_vdp_v_port;
+static __sfr __at (SMS_VDP_H_PORT)       sms_vdp_h_port;
+
 /* --- Return values --- */
 #define SMS_REGION_JAPAN  1
 #define SMS_REGION_EXPORT 0

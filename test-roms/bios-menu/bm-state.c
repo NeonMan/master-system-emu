@@ -17,10 +17,12 @@
 
 #define STATE_INITIAL     STATE_MAIN_MENU
 
+/* --- state variables --- */
 static uint8_t state_current;
 static uint8_t state_next;
+static uint8_t boot_media;
 
-/* Helper functions */
+/* --- Helper functions --- */
 static uint8_t update_input_and_cursor(){
     uint8_t rv;
     rv = update_input();
@@ -36,7 +38,7 @@ static uint8_t update_input_and_cursor(){
 }
 
 
-/* State implementations */
+/* --- State implementations --- */
 static uint8_t state_main_menu(int8_t mode){
     if (mode == ON_ENTRY){
         /* Draw main menu */
@@ -108,7 +110,7 @@ static uint8_t state_system_info(int8_t mode){
     else{
         uint8_t key;
         uint8_t cursor;
-        
+
         key = update_input_and_cursor();
         cursor = get_cursor();
         
@@ -128,7 +130,7 @@ static uint8_t state_boot_cartridge(int8_t mode){
         con_put("Boot cartridge");
         
         /*Set BOOT mode to CARTRIDGE SLOT*/
-        /*ToDo*/
+        boot_media = ROM_CARTRIDGE;
     }
     return STATE_BOOT_GENERIC;
 }
@@ -141,7 +143,7 @@ static uint8_t state_boot_card_slot(int8_t mode){
         con_put("Boot card slot");
         
         /*Set BOOT mode to CARD SLOT*/
-        /*ToDo*/
+        boot_media = ROM_CARD_SLOT;
     }
     return STATE_BOOT_GENERIC;
 }
@@ -154,7 +156,7 @@ static uint8_t state_boot_expansion(int8_t mode){
         con_put("Boot expansion port");
         
         /*Set BOOT mode to EXPANSION PORT*/
-        /*ToDo*/
+        boot_media = ROM_EXPANSION;
     }
     return STATE_BOOT_GENERIC;
 }
@@ -165,14 +167,12 @@ static uint8_t state_boot_generic(int8_t mode){
         con_gotoxy(LEFT_MARGIN + 2, TOP_MARGIN + 2 + 0);
         con_put("Boot");
         con_gotoxy(LEFT_MARGIN + 2, TOP_MARGIN + 2 + 1);
-        con_put("Boot (without checks)");
+        con_put("Boot (without tests)");
         con_gotoxy(LEFT_MARGIN + 2, TOP_MARGIN + 2 + 2);
         con_put("ROM info");
         
         set_cursor_limits(0,2);
         draw_cursor(0);
-        /*Set BOOT mode to CARTRIDGE SLOT*/
-        /*ToDo*/
     }
     else if(mode == ON_EXIT){
         
@@ -187,6 +187,15 @@ static uint8_t state_boot_generic(int8_t mode){
         /*If button 2 is pressed, go back to main menu*/
         if(key == KEY_2){
             return STATE_MAIN_MENU;
+        }
+        else if(key == KEY_1){
+            switch(cursor){
+                case 0:
+                case 1:
+                rom_boot(boot_media); break;
+                default:
+                break;
+            }
         }
     }
     return STATE_BOOT_GENERIC;
