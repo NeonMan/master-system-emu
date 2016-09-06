@@ -193,7 +193,7 @@ void rom_info(uint8_t rom_media){
         
         /*Product code*/
         {
-            con_put("   Code: ");
+            con_put("       Code: ");
             con_puth(rom_buffer[0x3f0 + 0x0C]);
             con_puth(rom_buffer[0x3f0 + 0x0D]);
             con_puth(rom_buffer[0x3f0 + 0x0E] & 0xF0);
@@ -202,7 +202,7 @@ void rom_info(uint8_t rom_media){
         
         /*Version*/
         {
-            con_put("   Version: ");
+            con_put("    Version: ");
             con_puth(rom_buffer[0x3f0 + 0x0E] & 0x0F);
             con_put("\n");
         }
@@ -211,7 +211,7 @@ void rom_info(uint8_t rom_media){
         {
             uint8_t region;
             region = (rom_buffer[0x3f0 + 0x0F] >> 4) & 0x0F;
-            con_put("   Region: ");
+            con_put("     Region: ");
             switch(region){
                 case 3:
                 con_put("Japan"); break;
@@ -227,6 +227,36 @@ void rom_info(uint8_t rom_media){
                 con_put("Unknown ");
                 con_puth(region);
                 break;
+            }
+            con_put("\n");
+        }
+        
+        /*ROM size*/
+        {
+            uint8_t r_size;
+            r_size = (rom_buffer[0x3f0 + 0x0F]) & 0x0F;
+            con_put("       Size: ");
+            switch(r_size){
+                case 0x00:
+                con_put("256KB"); break;
+                case 0x01:
+                con_put("512KB"); break;
+                case 0x02:
+                con_put("1MB (!)"); break;
+                case 0x0A:
+                con_put("8K"); break;
+                case 0x0B:
+                con_put("16K"); break;
+                case 0x0C:
+                con_put("32K"); break;
+                case 0x0D:
+                con_put("48K (!)"); break;
+                case 0x0E:
+                con_put("64K"); break;
+                case 0x0F:
+                con_put("128K"); break;
+                default:
+                con_put("Unknown"); break;
             }
             con_put("\n");
         }
@@ -261,7 +291,7 @@ void rom_info(uint8_t rom_media){
         
         /*Date*/
         {
-            con_put("   Date: ");
+            con_put("      Date: ");
             con_puth(rom_buffer[0x3e0 + 0x6]); con_putc('/');
             con_puth(rom_buffer[0x3e0 + 0x7]); con_putc('/');
             con_puth(rom_buffer[0x3e0 + 0x9]);
@@ -270,11 +300,11 @@ void rom_info(uint8_t rom_media){
         }
         
         /*Author*/
-        con_put("   Author: ToDo\n");
+        con_put("    Author: ToDo\n");
         /*Name*/
-        con_put("   Name: ToDo\n");
+        con_put("      Name: ToDo\n");
         /*Description*/
-        con_put("   Desc: ToDo\n");
+        con_put("      Desc: ToDo\n");
         
     }
     else{
