@@ -26,4 +26,7 @@ void redraw_cursor();
 void set_cursor_limits(uint8_t min, uint8_t max);
 uint8_t update_input();
 
+/* --- sysinfo.c --- */
+void show_sysinfo();
+
 #endif

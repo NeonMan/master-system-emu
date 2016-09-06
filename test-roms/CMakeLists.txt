@@ -6,8 +6,15 @@ ENABLE_LANGUAGE(C)
 set(CMAKE_C_FLAGS "-mz80 --std-sdcc89 --xram-size 0x4000 --code-loc 0x0090 --data-loc 0xc000 --no-std-crt0 sms/crt0-sms.rel")
 set(CMAKE_EXE_LINKER_FLAGS "-Wl -w")
 
+#get current revision ID
+execute_process(COMMAND hg identify OUTPUT_VARIABLE COMMIT_ID)
+string(STRIP "${COMMIT_ID}" COMMIT_ID)
+#string(SUBSTRING "${COMMIT_ID}" 1, -1 COMMIT_ID)
+
+#Make some definitions available
 ADD_DEFINITIONS(-DCOMPILER_ID="${CMAKE_C_COMPILER_ID}")
 ADD_DEFINITIONS(-DEXTENDED_ASCII)
+ADD_DEFINITIONS(-DCOMMIT_ID=\"${COMMIT_ID}\")
 
 #Make includes available everywhere
 include_directories(${PROJECT_SOURCE_DIR})
@@ -39,9 +46,16 @@ ADD_EXECUTABLE(sys-info sys-info.c)
 ADD_DEPENDENCIES(sys-info crt0-sms)
 TARGET_LINK_LIBRARIES(sys-info sms vdp console)
 
-ADD_EXECUTABLE(bios-menu bios-menu/bios-menu.c bios-menu/bm-state.c)
+# BIOS menu ROM
+ADD_EXECUTABLE(bios-menu 
+        bios-menu/bios-menu.c
+        bios-menu/bm-state.c
+        bios-menu/sysinfo.c
+        )
 ADD_DEPENDENCIES(bios-menu crt0-sms)
 TARGET_LINK_LIBRARIES(bios-menu sms vdp console io)
+
+
 
 #Make .bin ROMs from the .ihx files
 ADD_CUSTOM_TARGET(sample-bin ALL
