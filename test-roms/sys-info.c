@@ -35,6 +35,15 @@ static void build_info(){
         con_put("\n");
     }
     
+    /*Last Commit ID*/
+    con_put("Rev: ");
+#ifdef COMMIT_ID
+    con_put(COMMIT_ID);
+#else
+    con_put("Unknown");
+#endif
+    con_put("\n");
+
     /*Date & Time*/
     con_put("Date: ");
     con_put(__DATE__ " " __TIME__);

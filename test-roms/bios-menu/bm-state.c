@@ -54,7 +54,11 @@ static uint8_t state_main_menu(int8_t mode){
         con_put("System info");
         
         con_gotoxy(3, 23);
+#ifdef COMMIT_ID
+        con_put("Rev: " COMMIT_ID);
+#else
         con_put("Rev: " __DATE__ " " __TIME__);
+#endif
         
         set_cursor_limits(0,3);
         draw_cursor(0);
@@ -93,10 +97,10 @@ static uint8_t state_system_info(int8_t mode){
         /* Draw header */
         con_clear();
         con_gotoxy(1, TOP_MARGIN + 0);
-        con_put("System info");
+        con_put("System info\n\n");
         
         /*Dump info*/
-        /*ToDo*/
+        show_sysinfo();
     }
     else if(mode == ON_EXIT){
         
