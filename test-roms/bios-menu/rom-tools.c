@@ -1,4 +1,5 @@
 #include "bios-menu.h"
+#include "rom-tools.h"
 #include <sms/sms.h>
 #include <crc/crc16-ccitt.h>
 
