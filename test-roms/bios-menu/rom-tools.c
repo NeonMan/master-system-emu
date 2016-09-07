@@ -1,6 +1,7 @@
 #include "bios-menu.h"
 #include <sms/console.h>
 #include <sms/sms.h>
+#include <crc/crc16-ccitt.h>
 
 uint8_t rom_buffer [ROM_BUFFER_SIZE];
 uint8_t code_buffer[ROM_CODE_BUFFER_SIZE];
@@ -328,6 +329,92 @@ uint16_t rom_checksum(uint8_t rom_media){
     return rv;
 }
 
+/*Returns the checksum of the currently stored rom_buffer.*/
+static uint16_t line_sum(){
+    uint16_t rv;
+    rv = crc16_ccitt_init();
+    rv = crc16_ccitt_update(rv, rom_buffer, 1024);
+    rv = crc16_ccitt_finalize(rv);
+    return rv;
+}
+
+/*Detect the _REAL_ rom size*/
+#define ROM_SIZE_TEST_DEPTH 4 /*<-- How many mirror locations shall we test for each test.*/
+#define ROM_SIZE_UNK  (0   )
+#define ROM_SIZE_1K   (1<<0)
+#define ROM_SIZE_2K   (1<<1)
+#define ROM_SIZE_4K   (1<<2)
+#define ROM_SIZE_8K   (1<<3)
+#define ROM_SIZE_16K  (1<<4)
+#define ROM_SIZE_32K  (1<<5)
+#define ROM_SIZE_64K  (1<<6)
+#define ROM_SIZE_128K (1<<7)
+#define ROM_SIZE_256K (1<<8)
+#define ROM_SIZE_512K (1<<9)
+#define ROM_SIZE_1M   (1<<10)
+#define ROM_SIZE_2M   (1<<11)
+#define ROM_SIZE_4M   (1<<12)
+#define ROM_SIZE_8M   (1<<13) /*<-- Max size with SEGA mapper */
+#define ROM_SIZE_RES1 (1<<14)
+#define ROM_SIZE_RES2 (1<<15)
+static uint16_t rom_size(uint8_t rom_media){
+    /* To detect the REAL rom size we must check for data mirrors.
+     * for a 4K ROM the data will be mirrored every 4K bytes
+     */
+    
+    /*Current size rom being tested.           */
+    /*Shifting left this value will give us the*/
+    /*next 'common' rom increment.             */
+    uint16_t size_increment = ROM_SIZE_1K;
+    
+    /*Test common sizes. 1K*(2^n)*/
+    {
+        for( ; size_increment <= ROM_SIZE_8M; size_increment = size_increment << 1){
+            uint16_t sum;
+            uint16_t current_line;
+            uint8_t  hits;
+            uint8_t  test_depth;
+            media_read(0, rom_media); /*<-- Read the first 1K line */
+            sum = line_sum();         /*<-- Store its checksum     */
+            current_line = size_increment;
+            hits = 1;                 /*<-- How many mirror 'hits' we got, inc ourselves.*/
+            test_depth = 1;
+            /*Find mirrors*/
+            while ((current_line < ROM_SIZE_8M) && (test_depth < ROM_SIZE_TEST_DEPTH)){
+                media_read(current_line, rom_media);
+                if(line_sum() == sum){
+                    hits++;
+                }
+                current_line = current_line + size_increment;
+                test_depth++;
+            }
+            
+            /*Test wether we found the correct size*/
+            {
+                uint8_t max_hits;
+                /*The maximum ammount of hits is the minor of: */
+                /*  - ROM_SIZE_TEST_DEPTH                      */
+                /*  - ROM_SIZE_8M / size_increment             */
+                max_hits = (ROM_SIZE_TEST_DEPTH < (ROM_SIZE_8M / size_increment)) ?
+                    ROM_SIZE_TEST_DEPTH :
+                    (ROM_SIZE_8M / size_increment)
+                    ;
+                /*If we get a full hit strike, we (most likely) found the ROM size*/
+                if(max_hits == hits){
+                    break;
+                }
+            }
+        }
+    }
+    
+    /*Test for uncommon sizes.*/
+    {
+        /*ToDo*/
+    }
+    
+    return size_increment;
+}
+
 /*Dump information*/
 void rom_info(uint8_t rom_media){
     uint8_t i;
@@ -511,9 +598,48 @@ void rom_info(uint8_t rom_media){
         con_put("No\n");
     }
     con_put("\n");
+    
+    /*Calculate real ROM size*/
+    con_put("   Real size: ***");
+    {
+        uint16_t r_size;
+        r_size = rom_size(rom_media);
+        con_relxy(-3,0);
+        switch(r_size){
+            case ROM_SIZE_1K:
+            con_put("1K "); break;
+            case ROM_SIZE_2K:
+            con_put("2K "); break;
+            case ROM_SIZE_4K:
+            con_put("4K "); break;
+            case ROM_SIZE_8K:
+            con_put("8K "); break;
+            case ROM_SIZE_16K:
+            con_put("16K"); break;
+            case ROM_SIZE_32K:
+            con_put("32K"); break;
+            case ROM_SIZE_64K:
+            con_put("64K"); break;
+            case ROM_SIZE_128K:
+            con_put("128K"); break;
+            case ROM_SIZE_256K:
+            con_put("256K"); break;
+            case ROM_SIZE_512K:
+            con_put("512K"); break;
+            case ROM_SIZE_1M:
+            con_put("1M "); break;
+            case ROM_SIZE_2M:
+            con_put("2M "); break;
+            case ROM_SIZE_4M:
+            con_put("4M "); break;
+            case ROM_SIZE_8M:
+            con_put("8M "); break;
+            default:
+            con_put("Unknown"); break;
+        }
+        con_putc('\n');
+    }
 }
-
-/*test-checksum*/
 
 uint8_t* rom_get_buffer(){
     return rom_buffer;
