@@ -2,29 +2,6 @@
 #include <sms/console.h>
 #include <sms/sms.h>
 
-struct sega_header_s {
-    char     tmr_sega[8];
-    uint16_t checksum;
-    uint8_t  code[3];
-    uint8_t  version;
-    uint8_t  region;
-    uint8_t  size_type;
-};
-typedef struct sega_header_s sega_header_t;
-
-struct sdsc_header_s {
-    char     sdsc[4];
-    uint8_t  version_h;
-    uint8_t  version_l;
-    uint8_t  date_day;
-    uint8_t  date_month;
-    uint8_t  date_year[2];
-    char**   author;
-    char**   name;
-    char**   description;
-};
-typedef struct sdsc_header_s sdsc_header_t;
-
 uint8_t rom_buffer [ROM_BUFFER_SIZE];
 uint8_t code_buffer[ROM_CODE_BUFFER_SIZE];
  
@@ -176,7 +153,7 @@ void media_read(uint16_t block_index, uint8_t media){
 /*Extract SEGA header info*/
 static const char tmr_sega[8+1] = "TMR SEGA";
 static sega_header_t tmp_sega_header;
-static sega_header_t* get_sega_header(uint8_t rom_media){
+sega_header_t* get_sega_header(uint8_t rom_media){
     
     uint8_t i;
     /*Read ROM header*/
@@ -215,7 +192,7 @@ static sega_header_t* get_sega_header(uint8_t rom_media){
 #define SDSC_HEADER_OFFSET 0x3e0
 static const char sdsc[4+1] = "SDSC";
 static sdsc_header_t tmp_sdsc_header;
-static sdsc_header_t* get_sdsc_header(uint8_t rom_media){
+sdsc_header_t* get_sdsc_header(uint8_t rom_media){
     uint8_t* rp_p;
     uint8_t i;
     media_read(31, rom_media);
