@@ -203,7 +203,7 @@ static sega_header_t* get_sega_header(uint8_t rom_media){
     tmp_sega_header.version = (rom_buffer[SH_VERSION_OFFSET] >> 4) & 0x0F;
     
     /*Region*/
-    tmp_sega_header.region = rom_buffer[SH_REGION_OFFSET] & 0x0F;
+    tmp_sega_header.region = (rom_buffer[SH_REGION_OFFSET] >> 4) & 0x0F;
     
     /*Rom size*/
     tmp_sega_header.size_type = (rom_buffer[SH_SIZE_OFFSET]) & 0x0F;
