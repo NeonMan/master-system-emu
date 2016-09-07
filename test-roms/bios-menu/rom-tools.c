@@ -171,6 +171,7 @@ void media_read(uint16_t block_index, uint8_t media){
 #define SH_SIZE_8K  0x0A
 #define SH_SIZE_16K 0x0B
 #define SH_SIZE_32K 0x0C
+#define SH_SIZE_48K 0x0D
 #define SH_SIZE_64K 0x0E
 #define SH_SIZE_128K 0x0f
 #define SH_SIZE_256K 0x00
@@ -202,10 +203,10 @@ static sega_header_t* get_sega_header(uint8_t rom_media){
     tmp_sega_header.code[2] = rom_buffer[SH_PRODUCT_CODE_OFFSET + 2] & 0xF0;
     
     /*Version*/
-    tmp_sega_header.version = rom_buffer[SH_VERSION_OFFSET];
+    tmp_sega_header.version = (rom_buffer[SH_VERSION_OFFSET] >> 4) & 0x0F;
     
     /*Region*/
-    tmp_sega_header.region = (rom_buffer[SH_REGION_OFFSET] >> 4) & 0x0F;
+    tmp_sega_header.region = rom_buffer[SH_REGION_OFFSET] & 0x0F;
     
     /*Rom size*/
     tmp_sega_header.size_type = (rom_buffer[SH_SIZE_OFFSET]) & 0x0F;
@@ -280,6 +281,24 @@ uint16_t rom_checksum(uint8_t rom_media){
         }
         /*If it is exactly 32K, return*/
         if(header->size_type == SH_SIZE_32K){
+            return rv;
+        }
+        
+        /*Special case. 48K ROMs*/
+        if(header->size_type == SH_SIZE_48K){
+            /*If ROM is 48K sum from line 31 to 46 (47K)*/
+            for(line_index = 31; line_index < 47; line_index++){
+                media_read(line_index, rom_media);
+                for(i=0; i<1024; i++){
+                    rv = rv + rom_buffer[i];
+                }
+            }
+            /*Add the line 47 except its last 16B*/
+            media_read(47, rom_media);
+            for(i=0; i<(1024 - 16); i++){
+                rv = rv + rom_buffer[i];
+            }
+            /*And return*/
             return rv;
         }
     }
