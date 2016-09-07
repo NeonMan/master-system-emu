@@ -52,11 +52,11 @@ static uint8_t state_main_menu(int8_t mode){
         con_put("BIOS menu for Master System");
         
         con_gotoxy(LEFT_MARGIN + 2, TOP_MARGIN + 2 + 0);
-        con_put("Boot cartridge");
+        con_put("Cartridge");
         con_gotoxy(LEFT_MARGIN + 2, TOP_MARGIN + 2 + 1);
-        con_put("Boot card slot");
+        con_put("Card slot");
         con_gotoxy(LEFT_MARGIN + 2, TOP_MARGIN + 2 + 2);
-        con_put("Boot expansion port");
+        con_put("Expansion port");
         con_gotoxy(LEFT_MARGIN + 2, TOP_MARGIN + 2 + 3);
         con_put("System info");
         
@@ -132,7 +132,7 @@ static uint8_t state_boot_cartridge(int8_t mode){
         /* Draw boot header */
         con_clear();
         con_gotoxy(1, TOP_MARGIN + 0);
-        con_put("Boot cartridge");
+        con_put("Cartridge");
         
         /*Set BOOT mode to CARTRIDGE SLOT*/
         boot_media = ROM_CARTRIDGE;
@@ -145,7 +145,7 @@ static uint8_t state_boot_card_slot(int8_t mode){
         /* Draw card boot header */
         con_clear();
         con_gotoxy(1, TOP_MARGIN + 0);
-        con_put("Boot card slot");
+        con_put("Card slot");
         
         /*Set BOOT mode to CARD SLOT*/
         boot_media = ROM_CARD_SLOT;
@@ -158,7 +158,7 @@ static uint8_t state_boot_expansion(int8_t mode){
         /* Draw card boot header */
         con_clear();
         con_gotoxy(1, TOP_MARGIN + 0);
-        con_put("Boot expansion port");
+        con_put("Expansion port");
         
         /*Set BOOT mode to EXPANSION PORT*/
         boot_media = ROM_EXPANSION;
