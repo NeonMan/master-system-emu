@@ -39,6 +39,23 @@ void show_sysinfo();
 #define ROM_BIOS      0b11100000
 #define ROM_RAM       0b00000000 /*<-- No, is not a joke u_u */
 
+/*SEGA header constants*/
+#define SEGA_HEADER_OFFSET 0x3f0
+#define SH_CHECKSUM_OFFSET (SEGA_HEADER_OFFSET + 0x0A)
+#define SH_PRODUCT_CODE_OFFSET (SEGA_HEADER_OFFSET + 0x0C)
+#define SH_VERSION_OFFSET (SEGA_HEADER_OFFSET + 0x0E)
+#define SH_REGION_OFFSET (SEGA_HEADER_OFFSET + 0x0F)
+#define SH_SIZE_OFFSET (SEGA_HEADER_OFFSET + 0x0F)
+#define SH_SIZE_8K  0x0A
+#define SH_SIZE_16K 0x0B
+#define SH_SIZE_32K 0x0C
+#define SH_SIZE_48K 0x0D
+#define SH_SIZE_64K 0x0E
+#define SH_SIZE_128K 0x0f
+#define SH_SIZE_256K 0x00
+#define SH_SIZE_512K 0x01
+#define SH_SIZE_1M   0x02
+
 void     rom_info(uint8_t rom_media);
 void     rom_boot(uint8_t rom_media);
 uint8_t* rom_get_buffer();

@@ -12,6 +12,19 @@ struct sega_header_s {
 };
 typedef struct sega_header_s sega_header_t;
 
+struct sdsc_header_s {
+    char     sdsc[4];
+    uint8_t  version_h;
+    uint8_t  version_l;
+    uint8_t  date_day;
+    uint8_t  date_month;
+    uint8_t  date_year[2];
+    char**   author;
+    char**   name;
+    char**   description;
+};
+typedef struct sdsc_header_s sdsc_header_t;
+
 uint8_t rom_buffer [ROM_BUFFER_SIZE];
 uint8_t code_buffer[ROM_CODE_BUFFER_SIZE];
  
@@ -161,22 +174,6 @@ void media_read(uint16_t block_index, uint8_t media){
 }
 
 /*Extract SEGA header info*/
-#define SEGA_HEADER_OFFSET 0x3f0
-#define SH_CHECKSUM_OFFSET (SEGA_HEADER_OFFSET + 0x0A)
-#define SH_PRODUCT_CODE_OFFSET (SEGA_HEADER_OFFSET + 0x0C)
-#define SH_VERSION_OFFSET (SEGA_HEADER_OFFSET + 0x0E)
-#define SH_REGION_OFFSET (SEGA_HEADER_OFFSET + 0x0F)
-#define SH_SIZE_OFFSET (SEGA_HEADER_OFFSET + 0x0F)
-
-#define SH_SIZE_8K  0x0A
-#define SH_SIZE_16K 0x0B
-#define SH_SIZE_32K 0x0C
-#define SH_SIZE_48K 0x0D
-#define SH_SIZE_64K 0x0E
-#define SH_SIZE_128K 0x0f
-#define SH_SIZE_256K 0x00
-#define SH_SIZE_512K 0x01
-#define SH_SIZE_1M   0x02
 static const char tmr_sega[8+1] = "TMR SEGA";
 static sega_header_t tmp_sega_header;
 static sega_header_t* get_sega_header(uint8_t rom_media){
@@ -212,6 +209,21 @@ static sega_header_t* get_sega_header(uint8_t rom_media){
     tmp_sega_header.size_type = (rom_buffer[SH_SIZE_OFFSET]) & 0x0F;
     
     return &tmp_sega_header;
+}
+
+/*Extract SDSC header*/
+#define SDSC_HEADER_OFFSET 0x3e0
+static const char sdsc[4+1] = "SDSC";
+static sdsc_header_t tmp_sdsc_header;
+static sdsc_header_t* get_sdsc_header(uint8_t rom_media){
+    uint8_t* rp_p;
+    uint8_t i;
+    media_read(31, rom_media);
+    rp_p = (uint8_t*) &tmp_sdsc_header;
+    for(i=0; i<16; i++){
+        rp_p[i] = rom_buffer[SDSC_HEADER_OFFSET + i];
+    }
+    return &tmp_sdsc_header;
 }
 
 /*Calculate SEGA checksum*/
@@ -340,12 +352,12 @@ uint16_t rom_checksum(uint8_t rom_media){
 }
 
 /*Dump information*/
-static const char sdsc[4+1] = "SDSC";
 void rom_info(uint8_t rom_media){
     uint8_t i;
     uint8_t is_sega;
     uint8_t is_sdsc;
     sega_header_t* header;
+    sdsc_header_t* s_header;
     
     con_gotoxy(0, 4);
     
@@ -464,12 +476,16 @@ void rom_info(uint8_t rom_media){
     con_put("\n");
     
     /*Check for SDSC*/
-    is_sdsc = 1;
-    for(i = 0; i<4; i++){
-        if(rom_buffer[0x3e0 + i] != sdsc[i]){
-            is_sdsc = 0;
+    {
+        s_header = get_sdsc_header(rom_media);
+        is_sdsc = 1;
+        for(i = 0; i<4; i++){
+            if(s_header->sdsc[i] != sdsc[i]){
+                is_sdsc = 0;
+            }
         }
     }
+
     
     /*Show SDSC header info*/
     con_put(" SDSC header: ");
@@ -479,26 +495,37 @@ void rom_info(uint8_t rom_media){
         /*Version*/
         {
             con_put("   Version: ");
-            con_puth(rom_buffer[0x3e0 + 0x4]);
+            con_puth(s_header->version_h);
             con_putc('.');
-            con_puth(rom_buffer[0x3e0 + 0x5]);
+            con_puth(s_header->version_l);
             con_put("\n");
         }
         
         /*Date*/
         {
             con_put("      Date: ");
-            con_puth(rom_buffer[0x3e0 + 0x6]); con_putc('/');
-            con_puth(rom_buffer[0x3e0 + 0x7]); con_putc('/');
-            con_puth(rom_buffer[0x3e0 + 0x9]);
-            con_puth(rom_buffer[0x3e0 + 0x8]);
+            con_puth(s_header->date_day); con_putc('/');
+            con_puth(s_header->date_month); con_putc('/');
+            con_puth(s_header->date_year[1]);
+            con_puth(s_header->date_year[0]);
             con_put("\n");
         }
         
         /*Author*/
         con_put("    Author: ToDo\n");
         /*Name*/
-        con_put("      Name: ToDo\n");
+        con_put("      Name: ");
+        /*
+        if((s_header->name != (void*)0xFFFF) && (s_header->name != (void*)0x0000)){
+            con_put("\n ");
+            con_put((char*)(s_header->name));
+            con_put("\n");
+        }
+        else{
+            con_put("      Name: *None*\n");
+        }
+        */
+        con_put("ToDo\n");
         /*Description*/
         con_put("      Desc: ToDo\n");
         
