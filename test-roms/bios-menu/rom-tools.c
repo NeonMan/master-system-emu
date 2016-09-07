@@ -167,6 +167,15 @@ void media_read(uint16_t block_index, uint8_t media){
 #define SH_VERSION_OFFSET (SEGA_HEADER_OFFSET + 0x0E)
 #define SH_REGION_OFFSET (SEGA_HEADER_OFFSET + 0x0F)
 #define SH_SIZE_OFFSET (SEGA_HEADER_OFFSET + 0x0F)
+
+#define SH_SIZE_8K  0x0A
+#define SH_SIZE_16K 0x0B
+#define SH_SIZE_32K 0x0C
+#define SH_SIZE_64K 0x0E
+#define SH_SIZE_128K 0x0f
+#define SH_SIZE_256K 0x00
+#define SH_SIZE_512K 0x01
+#define SH_SIZE_1M   0x02
 static const char tmr_sega[8+1] = "TMR SEGA";
 static sega_header_t tmp_sega_header;
 static sega_header_t* get_sega_header(uint8_t rom_media){
@@ -202,6 +211,113 @@ static sega_header_t* get_sega_header(uint8_t rom_media){
     tmp_sega_header.size_type = (rom_buffer[SH_SIZE_OFFSET]) & 0x0F;
     
     return &tmp_sega_header;
+}
+
+/*Calculate SEGA checksum*/
+uint8_t rom_checksum(uint8_t rom_media){
+    sega_header_t* header;
+    uint16_t rv;
+    uint16_t line_index;
+    uint16_t i;
+    rv = 0;
+    
+    /*Read header*/
+    header = get_sega_header(rom_media);
+    
+    /*Calculate lower region sum*/
+    {
+        /*First 7 1K 'lines' are summed up*/
+        {
+            for(line_index = 0; line_index < 7; line_index++){
+                media_read(line_index, rom_media);
+                for(i=0; i<1024; i++){
+                    rv = rv + rom_buffer[i];
+                }
+            }
+        }
+        
+        /*If ROM is 8K sum all 7 bytes except the last 16B and return*/
+        if(header->size_type == SH_SIZE_8K){
+            media_read(7, rom_media);
+            for(i=0; i<(1024 - 16); i++){
+                rv = rv + rom_buffer[i];
+            }
+            /*Return the sum*/
+            return rv;
+        }
+        /*Otherwise sum all lines and continue until line 14 (15K)*/
+        else{
+            for(line_index = 7; line_index < 15; line_index++){
+                media_read(line_index, rom_media);
+                for(i=0; i<1024; i++){
+                    rv = rv + rom_buffer[i];
+                }
+            }
+        }
+        
+        /*If ROM is 16K sum line 15 bytes except the last 16B and return*/
+        if(header->size_type == SH_SIZE_16K){
+            media_read(15, rom_media);
+            for(i=0; i<(1024 - 16); i++){
+                rv = rv + rom_buffer[i];
+            }
+            return rv;
+        }
+        /*Otherwise sum all lines from 15 to 30 (31K)*/
+        else{
+            for(line_index = 15; line_index < 31; line_index++){
+                media_read(line_index, rom_media);
+                for(i=0; i<1024; i++){
+                    rv = rv + rom_buffer[i];
+                }
+            }
+        }
+        
+        /*If ROM is 32K (or more) sum line 31 bytes except the last 16B and return */
+        media_read(31, rom_media);
+        for(i=0; i<(1024 - 16); i++){
+            rv = rv + rom_buffer[i];
+        }
+        /*If it is exactly 32K, return*/
+        if(header->size_type == SH_SIZE_32K){
+            return rv;
+        }
+    }
+    
+    /*Upper region checksum*/
+    {
+        /*We need to sum a number of lines past the 0x7FFF mark (32K, line 31)*/
+        /*In essence, rom size in KB minus 32 yields the number of additional */
+        /*lines that will have to be summed.*/
+        uint16_t upper_line_count;
+        switch(header->size_type){
+            case SH_SIZE_64K:
+            upper_line_count = 64 - 32;
+            break;
+            case SH_SIZE_128K:
+            upper_line_count = 128 - 32;
+            break;
+            case SH_SIZE_256K:
+            upper_line_count = 256 - 32;
+            break;
+            case SH_SIZE_512K:
+            upper_line_count = 512 - 32;
+            break;
+            case SH_SIZE_1M:
+            upper_line_count = 1024 - 32;
+            break;
+            default:
+            upper_line_count = 0;
+        }
+        for(line_index = 31; line < (upper_line_coount + 32); line_index ++){
+            media_read(line_index, rom_media);
+            for(i=0; i<1024; i++){
+                rv = rv + rom_buffer[i];
+            }
+        }
+    }
+    /*Return the result*/
+    return rv;
 }
 
 /*Dump information*/
