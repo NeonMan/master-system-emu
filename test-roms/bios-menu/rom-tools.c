@@ -214,7 +214,7 @@ static sega_header_t* get_sega_header(uint8_t rom_media){
 }
 
 /*Calculate SEGA checksum*/
-uint8_t rom_checksum(uint8_t rom_media){
+uint16_t rom_checksum(uint8_t rom_media){
     sega_header_t* header;
     uint16_t rv;
     uint16_t line_index;
@@ -309,7 +309,7 @@ uint8_t rom_checksum(uint8_t rom_media){
             default:
             upper_line_count = 0;
         }
-        for(line_index = 31; line < (upper_line_coount + 32); line_index ++){
+        for(line_index = 31; line_index < (upper_line_count + 32); line_index ++){
             media_read(line_index, rom_media);
             for(i=0; i<1024; i++){
                 rv = rv + rom_buffer[i];
@@ -350,8 +350,10 @@ void rom_info(uint8_t rom_media){
         {
             uint16_t checksum;
             con_put("   Checksum: ");
+            con_put(" ****");
             /*Calculate sum*/
             checksum = rom_checksum(rom_media);
+            con_relxy(-5,0);
             if(checksum == header->checksum){
                 con_puth(checksum>>8);
                 con_puth(checksum   );
