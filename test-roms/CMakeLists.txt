@@ -21,6 +21,7 @@ include_directories(${PROJECT_SOURCE_DIR})
 
 #Libraries
 ADD_SUBDIRECTORY(sms)
+ADD_SUBDIRECTORY(crc)
 
 #ROM "executables" ;)
 ADD_EXECUTABLE(empty empty.c)
@@ -54,7 +55,7 @@ ADD_EXECUTABLE(bios-menu
         bios-menu/rom-tools.c
         )
 ADD_DEPENDENCIES(bios-menu crt0-sms)
-TARGET_LINK_LIBRARIES(bios-menu sms vdp console io)
+TARGET_LINK_LIBRARIES(bios-menu crc16-ccitt sms vdp console io)
 
 
 
