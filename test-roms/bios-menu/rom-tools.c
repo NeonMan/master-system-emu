@@ -348,10 +348,24 @@ void rom_info(uint8_t rom_media){
         
         /*Checksum*/
         {
+            uint16_t checksum;
             con_put("   Checksum: ");
-            con_puth(header->checksum>>8);
-            con_puth(header->checksum   );
-            con_put(" (OK?)\n");
+            /*Calculate sum*/
+            checksum = rom_checksum(rom_media);
+            if(checksum == header->checksum){
+                con_puth(checksum>>8);
+                con_puth(checksum   );
+                con_put(" OK");
+            }
+            else{
+                con_puth(checksum>>8);
+                con_puth(checksum   );
+                con_put(" ERROR!\n");
+                con_put("   Expected: ");
+                con_puth(header->checksum>>8);
+                con_puth(header->checksum   );
+            }
+            con_put("\n");
         }
         
         /*Product code*/
