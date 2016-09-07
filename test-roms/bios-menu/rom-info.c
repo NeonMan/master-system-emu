@@ -2,6 +2,7 @@
  *
  */
 #include "bios-menu.h"
+#include "rom-tools.h"
 #include <sms/console.h>
 
 /*Dump information*/

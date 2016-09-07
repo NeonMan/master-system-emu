@@ -1,6 +1,7 @@
 #include <stdint.h>
 #include <sms/console.h>
 #include "bios-menu.h"
+#include "rom-tools.h"
 
 #define ON_ENTRY -1
 #define ON_EXEC  0
