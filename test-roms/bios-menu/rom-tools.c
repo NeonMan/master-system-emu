@@ -2,11 +2,15 @@
 #include <sms/console.h>
 #include <sms/sms.h>
 
-/*
- * Most boot code lifted from simple-bios.c
- * Read that file for a better explanation on how
- * ROMs are chainloaded.
- */
+struct sega_header_s {
+    char     tmr_sega[8];
+    uint16_t checksum;
+    uint8_t  code[3];
+    uint8_t  version;
+    uint8_t  region;
+    uint8_t  size_type;
+};
+typedef struct sega_header_s sega_header_t;
 
 uint8_t rom_buffer [ROM_BUFFER_SIZE];
 uint8_t code_buffer[ROM_CODE_BUFFER_SIZE];
@@ -156,24 +160,67 @@ void media_read(uint16_t block_index, uint8_t media){
     bootcode_call(block_index, media);
 }
 
-/*Dump information*/
+/*Extract SEGA header info*/
+#define SEGA_HEADER_OFFSET 0x3f0
+#define SH_CHECKSUM_OFFSET (SEGA_HEADER_OFFSET + 0x0A)
+#define SH_PRODUCT_CODE_OFFSET (SEGA_HEADER_OFFSET + 0x0C)
+#define SH_VERSION_OFFSET (SEGA_HEADER_OFFSET + 0x0E)
+#define SH_REGION_OFFSET (SEGA_HEADER_OFFSET + 0x0F)
+#define SH_SIZE_OFFSET (SEGA_HEADER_OFFSET + 0x0F)
 static const char tmr_sega[8+1] = "TMR SEGA";
+static sega_header_t tmp_sega_header;
+static sega_header_t* get_sega_header(uint8_t rom_media){
+    
+    uint8_t i;
+    /*Read ROM header*/
+    /*It is located at the (1K) line number 31*/
+    media_read(31, rom_media);
+    
+    /*Copy TMR SEGA (8B)*/
+    for(i=0;i<8;i++){
+        tmp_sega_header.tmr_sega[i] = rom_buffer[SEGA_HEADER_OFFSET + i];
+    }
+    
+    /*Copy checksum (2B)*/
+    tmp_sega_header.checksum = 
+            rom_buffer[SH_CHECKSUM_OFFSET] +
+            (((uint16_t)rom_buffer[SH_CHECKSUM_OFFSET + 1]) << 8)
+            ;
+    
+    /*Copy product code (3B, 20bit)*/
+    tmp_sega_header.code[0] = rom_buffer[SH_PRODUCT_CODE_OFFSET];
+    tmp_sega_header.code[1] = rom_buffer[SH_PRODUCT_CODE_OFFSET + 1];
+    tmp_sega_header.code[2] = rom_buffer[SH_PRODUCT_CODE_OFFSET + 2] & 0xF0;
+    
+    /*Version*/
+    tmp_sega_header.version = rom_buffer[SH_VERSION_OFFSET];
+    
+    /*Region*/
+    tmp_sega_header.region = (rom_buffer[SH_REGION_OFFSET] >> 4) & 0x0F;
+    
+    /*Rom size*/
+    tmp_sega_header.size_type = (rom_buffer[SH_SIZE_OFFSET]) & 0x0F;
+    
+    return &tmp_sega_header;
+}
+
+/*Dump information*/
 static const char sdsc[4+1] = "SDSC";
 void rom_info(uint8_t rom_media){
     uint8_t i;
     uint8_t is_sega;
     uint8_t is_sdsc;
+    sega_header_t* header;
     
     con_gotoxy(0, 4);
     
     /*Read ROM header*/
-    /*It is located at the (1K) line number 31*/
-    media_read(31, rom_media);
+    header = get_sega_header(rom_media);
     
     /*Check for TMR SEGA*/
     is_sega = 1;
     for(i = 0; i<8; i++){
-        if(rom_buffer[0x3f0 + i] != tmr_sega[i]){
+        if(header->tmr_sega[i] != tmr_sega[i]){
             is_sega = 0;
         }
     }
@@ -186,33 +233,31 @@ void rom_info(uint8_t rom_media){
         /*Checksum*/
         {
             con_put("   Checksum: ");
-            con_puth(rom_buffer[0x3f0 + 0x0B]);
-            con_puth(rom_buffer[0x3f0 + 0x0A]);
+            con_puth(header->checksum>>8);
+            con_puth(header->checksum   );
             con_put(" (OK?)\n");
         }
         
         /*Product code*/
         {
             con_put("       Code: ");
-            con_puth(rom_buffer[0x3f0 + 0x0C]);
-            con_puth(rom_buffer[0x3f0 + 0x0D]);
-            con_puth(rom_buffer[0x3f0 + 0x0E] & 0xF0);
+            con_puth(header->code[0]);
+            con_puth(header->code[1]);
+            con_puth(header->code[2]);
             con_put("\n");
         }
         
         /*Version*/
         {
             con_put("    Version: ");
-            con_puth(rom_buffer[0x3f0 + 0x0E] & 0x0F);
+            con_puth(header->version);
             con_put("\n");
         }
         
         /*Region*/
         {
-            uint8_t region;
-            region = (rom_buffer[0x3f0 + 0x0F] >> 4) & 0x0F;
             con_put("     Region: ");
-            switch(region){
+            switch(header->region){
                 case 3:
                 con_put("Japan"); break;
                 case 4:
@@ -225,7 +270,7 @@ void rom_info(uint8_t rom_media){
                 con_put("Intl. (GG)"); break;
                 default:
                 con_put("Unknown ");
-                con_puth(region);
+                con_puth(header->region);
                 break;
             }
             con_put("\n");
@@ -233,10 +278,8 @@ void rom_info(uint8_t rom_media){
         
         /*ROM size*/
         {
-            uint8_t r_size;
-            r_size = (rom_buffer[0x3f0 + 0x0F]) & 0x0F;
             con_put("       Size: ");
-            switch(r_size){
+            switch(header->size_type){
                 case 0x00:
                 con_put("256KB"); break;
                 case 0x01:
@@ -256,7 +299,9 @@ void rom_info(uint8_t rom_media){
                 case 0x0F:
                 con_put("128K"); break;
                 default:
-                con_put("Unknown"); break;
+                con_put("Unknown ");
+                con_puth(header->size_type);
+                break;
             }
             con_put("\n");
         }
@@ -312,6 +357,8 @@ void rom_info(uint8_t rom_media){
     }
     con_put("\n");
 }
+
+/*test-checksum*/
 
 uint8_t* rom_get_buffer(){
     return rom_buffer;
