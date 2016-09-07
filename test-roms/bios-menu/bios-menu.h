@@ -30,6 +30,29 @@ uint8_t update_input();
 void show_sysinfo();
 
 /* --- rom-tools.c --- */
+struct sega_header_s {
+    char     tmr_sega[8];
+    uint16_t checksum;
+    uint8_t  code[3];
+    uint8_t  version;
+    uint8_t  region;
+    uint8_t  size_type;
+};
+typedef struct sega_header_s sega_header_t;
+
+struct sdsc_header_s {
+    char     sdsc[4];
+    uint8_t  version_h;
+    uint8_t  version_l;
+    uint8_t  date_day;
+    uint8_t  date_month;
+    uint8_t  date_year[2];
+    char*    author;
+    char*    name;
+    char*    description;
+};
+typedef struct sdsc_header_s sdsc_header_t;
+
 #define ROM_BUFFER_SIZE      1024
 #define ROM_CODE_BUFFER_SIZE 256
 
@@ -59,5 +82,8 @@ void show_sysinfo();
 void     rom_info(uint8_t rom_media);
 void     rom_boot(uint8_t rom_media);
 uint8_t* rom_get_buffer();
+uint16_t rom_checksum(uint8_t rom_media);
 
+sdsc_header_t* get_sdsc_header(uint8_t rom_media);
+sega_header_t* get_sega_header(uint8_t rom_media);
 #endif

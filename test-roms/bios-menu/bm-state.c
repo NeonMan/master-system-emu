@@ -17,6 +17,7 @@
 #define STATE_CARD_ROM_INFO      8
 #define STATE_EXPANSION_ROM_INFO 9
 #define STATE_GENERIC_ROM_INFO   10
+#define STATE_BOOT_GENERIC_CHECK 11
 
 
 #define STATE_INITIAL     STATE_MAIN_MENU
@@ -195,6 +196,7 @@ static uint8_t state_boot_generic(int8_t mode){
         else if(key == KEY_1){
             switch(cursor){
                 case 0:
+                return STATE_BOOT_GENERIC_CHECK;
                 case 1:
                 rom_boot(boot_media); break;
                 case 2:
@@ -207,6 +209,41 @@ static uint8_t state_boot_generic(int8_t mode){
                 break;
             }
         }
+    }
+    return STATE_BOOT_GENERIC;
+}
+
+uint8_t state_boot_generic_check(int8_t mode){
+    if (mode == ON_ENTRY){
+        sega_header_t* header;
+        volatile uint16_t vi;
+        uint16_t checksum;
+        
+        header = get_sega_header(boot_media);
+        /* Draw boot process */
+        con_gotoxy(LEFT_MARGIN + 2, TOP_MARGIN + 2 + 4);
+        con_put("Checksum: ");
+        con_put("****");
+        checksum = rom_checksum(boot_media);
+        con_relxy(-4,0);
+        if(checksum == header->checksum){
+            con_put("OK! ");
+            /*Boot*/
+            rom_boot(boot_media);
+        }
+        else{
+            con_put("Failed!");
+        }
+        /*Add a small delay*/
+        for(vi=0; vi<3000; vi++){
+            vi = vi;
+        }
+    }
+    else if(mode == ON_EXIT){
+        
+    }
+    else{
+        
     }
     return STATE_BOOT_GENERIC;
 }
@@ -298,6 +335,8 @@ static uint8_t call_state(uint8_t state_id, int8_t mode){
         return state_expansion_rom_info(mode);
         case STATE_GENERIC_ROM_INFO:
         return state_generic_rom_info(mode);
+        case STATE_BOOT_GENERIC_CHECK:
+        return state_boot_generic_check(mode);
         
         default:
         return state_id;
