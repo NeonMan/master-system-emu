@@ -53,6 +53,7 @@ ADD_EXECUTABLE(bios-menu
         bios-menu/bm-state.c
         bios-menu/system-info.c
         bios-menu/rom-tools.c
+        bios-menu/rom-info.c
         )
 ADD_DEPENDENCIES(bios-menu crt0-sms)
 TARGET_LINK_LIBRARIES(bios-menu crc16-ccitt sms vdp console io)

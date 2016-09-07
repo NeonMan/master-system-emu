@@ -79,10 +79,33 @@ typedef struct sdsc_header_s sdsc_header_t;
 #define SH_SIZE_512K 0x01
 #define SH_SIZE_1M   0x02
 
+/*Rom size detection constants*/
+#define ROM_SIZE_TEST_DEPTH 4 /*<-- How many mirror locations shall we test for each test.*/
+#define ROM_SIZE_UNK  (0   )
+#define ROM_SIZE_1K   (1<<0)
+#define ROM_SIZE_2K   (1<<1)
+#define ROM_SIZE_4K   (1<<2)
+#define ROM_SIZE_8K   (1<<3)
+#define ROM_SIZE_16K  (1<<4)
+#define ROM_SIZE_32K  (1<<5)
+#define ROM_SIZE_64K  (1<<6)
+#define ROM_SIZE_128K (1<<7)
+#define ROM_SIZE_256K (1<<8)
+#define ROM_SIZE_512K (1<<9)
+#define ROM_SIZE_1M   (1<<10)
+#define ROM_SIZE_2M   (1<<11)
+#define ROM_SIZE_4M   (1<<12)
+#define ROM_SIZE_8M   (1<<13) /*<-- Max size with SEGA mapper */
+#define ROM_SIZE_RES1 (1<<14)
+#define ROM_SIZE_RES2 (1<<15)
+static const char str_tmr_sega[8+1] = "TMR SEGA";
+static const char str_sdsc[4+1] = "SDSC";
+
 void     rom_info(uint8_t rom_media);
 void     rom_boot(uint8_t rom_media);
 uint8_t* rom_get_buffer();
 uint16_t rom_checksum(uint8_t rom_media);
+uint16_t rom_size(uint8_t rom_media);
 
 sdsc_header_t* get_sdsc_header(uint8_t rom_media);
 sega_header_t* get_sega_header(uint8_t rom_media);
