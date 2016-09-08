@@ -11,6 +11,7 @@ TARGET_LINK_LIBRARIES(rel-sample console vdp)
 
 #Make .bin ROMs from the .ihx files
 ADD_CUSTOM_TARGET(rel-sample-bin ALL
-        COMMAND makebin -s 53248 rel-sample.ihx rel-sample.sms
+        COMMAND makebin -s 53248 rel-sample.ihx rel-sample-raw.sms
+        COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/../scripts/trim.py rel-sample-raw.sms rel-sample.sms 49152
 		DEPENDS rel-sample
     )
