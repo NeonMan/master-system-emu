@@ -26,27 +26,16 @@
 ;   might be covered by the GNU General Public License.
 ;--------------------------------------------------------------------------
 
+;--------------------------------------------------------------------------
+;  Based off the SDCC z80 Crt0. 
+;
+;  Modifications made so it can relocate into RAM and run from there
+;--------------------------------------------------------------------------
+
 	.module crt0
 	.globl	_main
 
 	.area	_HEADER (ABS)
-    
-    ;; SDSC ROM header
-    .org 0x7fe0
-    .ascii "SDSC"
-    .db 0xff,0xff           ; Version (BCD)
-    .db 0xff,0xff,0xff,0xff ; Date DD/MM/YYYY (BCD)
-    .db 0xff,0xff           ; Author pointer
-    .db 0xff,0xff           ; Name pointer
-    .db 0xff,0xff           ; Description pointer
-    
-    ;; SEGA ROM header
-    .org 0x7FF0
-    .ascii "TMR SEGA"     ; SEGA string
-    .db 0xff,0xff         ; Reserved
-    .db 0xff,0xff         ; Checksum
-    .db 0xff,0xff,0xff    ; Product ID and version
-    .db 0xff              ; Region and size
     
 	;; Reset vector
 	.org 	0
@@ -97,7 +86,7 @@ nmi_hook:
 	reti
 	
 	.org	0x50
-	.ascii "SMS crt0 V0.1  "
+	.ascii "SMS RAM Crt 0.1"
 	.db 0x00
 	
 	;.org	0x100
