@@ -30,24 +30,24 @@
 	.globl	_main
 
 	.area	_HEADER (ABS)
-    
-    ;; SDSC ROM header
-    .org 0x7fe0
-    .ascii "SDSC"
-    .db 0xff,0xff           ; Version (BCD)
-    .db 0xff,0xff,0xff,0xff ; Date DD/MM/YYYY (BCD)
-    .db 0xff,0xff           ; Author pointer
-    .db 0xff,0xff           ; Name pointer
-    .db 0xff,0xff           ; Description pointer
-    
-    ;; SEGA ROM header
-    .org 0x7FF0
-    .ascii "TMR SEGA"     ; SEGA string
-    .db 0xff,0xff         ; Reserved
-    .db 0xff,0xff         ; Checksum
-    .db 0xff,0xff,0xff    ; Product ID and version
-    .db 0xff              ; Region and size
-    
+	
+	;; SDSC ROM header
+	.org 0x7fe0
+	.ascii "SDSC"
+	.db 0xff,0xff           ; Version (BCD)
+	.db 0xff,0xff,0xff,0xff ; Date DD/MM/YYYY (BCD)
+	.db 0xff,0xff           ; Author pointer
+	.db 0xff,0xff           ; Name pointer
+	.db 0xff,0xff           ; Description pointer
+	
+	;; SEGA ROM header
+	.org 0x7FF0
+	.ascii "TMR SEGA"     ; SEGA string
+	.db 0xff,0xff         ; Reserved
+	.db 0xff,0xff         ; Checksum
+	.db 0xff,0xff,0xff    ; Product ID and version
+	.db 0xff              ; Region and size
+	
 	;; Reset vector
 	.org 	0
 	di
@@ -105,13 +105,13 @@ nmi_hook:
 init:
 	;; Set stack pointer directly above top of memory.
 	ld	sp,#0xE000
-    ;; Set SEGA mapper to the default 0,1,2 slots
-    ld  hl,#0xFFFD
-    ld  (hl),#0x00
-    inc hl
-    ld  (hl),#0x01
-    inc hl
-    ld  (hl),#0x02
+	;; Set SEGA mapper to the default 0,1,2 slots
+	ld  hl,#0xFFFD
+	ld  (hl),#0x00
+	inc hl
+	ld  (hl),#0x01
+	inc hl
+	ld  (hl),#0x02
 
 	;; Initialise global variables
 gsinit::
