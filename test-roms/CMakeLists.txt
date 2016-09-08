@@ -3,7 +3,7 @@ project(test-roms C)
 ENABLE_LANGUAGE(C)
 
 #Configure SDCC to make z80 binaries
-set(CMAKE_C_FLAGS "-mz80 --std-sdcc89 --xram-size 0x4000 --code-loc 0x0090 --data-loc 0xc000 --no-std-crt0 sms/crt0-sms.rel")
+set(CMAKE_C_FLAGS "-mz80 --std-sdcc89 --xram-size 0x4000 --code-loc 0x0090 --data-loc 0xc000 --no-std-crt0 \"${CMAKE_BINARY_DIR}/sms/crt0-sms.rel\"")
 set(CMAKE_EXE_LINKER_FLAGS "-Wl -w")
 
 #get current revision ID
@@ -22,6 +22,7 @@ include_directories(${PROJECT_SOURCE_DIR})
 #Libraries
 ADD_SUBDIRECTORY(sms)
 ADD_SUBDIRECTORY(crc)
+ADD_SUBDIRECTORY(bios-menu)
 
 #ROM "executables" ;)
 ADD_EXECUTABLE(empty empty.c)
@@ -46,19 +47,6 @@ TARGET_LINK_LIBRARIES(console-test vdp console)
 ADD_EXECUTABLE(sys-info sys-info.c)
 ADD_DEPENDENCIES(sys-info crt0-sms)
 TARGET_LINK_LIBRARIES(sys-info sms vdp console)
-
-# BIOS menu ROM
-ADD_EXECUTABLE(bios-menu 
-        bios-menu/bios-menu.c
-        bios-menu/bm-state.c
-        bios-menu/system-info.c
-        bios-menu/rom-tools.c
-        bios-menu/rom-info.c
-        )
-ADD_DEPENDENCIES(bios-menu crt0-sms)
-TARGET_LINK_LIBRARIES(bios-menu crc16-ccitt sms vdp console io)
-
-
 
 #Make .bin ROMs from the .ihx files
 ADD_CUSTOM_TARGET(sample-bin ALL
