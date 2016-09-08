@@ -5,6 +5,8 @@
  * https://github.com/dhepper/font8x8
  * 
  **/
+#ifndef __FONT8X8_H
+#define __FONT8X8_H
 
 #define FONT8x8_BASE      0x20
 #define FONT8x8_ASCII_SIZE      0x60
@@ -137,3 +139,4 @@ static const char font8x8_basic[FONT8x8_EXTENDED_SIZE + FONT8x8_ASCII_SIZE][FONT
 #endif
 };
 
+#endif

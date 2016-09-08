@@ -38,7 +38,7 @@ TARGET_LINK_LIBRARIES(test-ram sdsc)
 
 ADD_EXECUTABLE(test-crt-ram test-crt-ram.c)
 ADD_DEPENDENCIES(test-crt-ram crt0-sms-ram)
-#TARGET_LINK_LIBRARIES(test-crt-ram sdsc)
+TARGET_LINK_LIBRARIES(test-crt-ram sdsc)
 
 
 ADD_EXECUTABLE(simple-bios simple-bios.c)
@@ -81,8 +81,4 @@ ADD_CUSTOM_TARGET(console-test-bin ALL
 ADD_CUSTOM_TARGET(sys-info-bin ALL
         COMMAND makebin -s 32768 sys-info.ihx sys-info.sms
 		DEPENDS sys-info
-    )
-ADD_CUSTOM_TARGET(bios-menu-bin ALL
-        COMMAND makebin -s 32768 bios-menu.ihx bios-menu.sms
-		DEPENDS bios-menu
     )
