@@ -17,7 +17,7 @@ add_custom_command(OUTPUT crt0-sms-ram.rel
         COMMAND sdasz80 ARGS -g -l -o -s crt0-sms-ram.rel ${PROJECT_SOURCE_DIR}/crt0-sms-ram.s
 		COMMENT "Building crt0 (RAM)..."
     )
-add_custom_target(crt0-sms-ram DEPENDS crt0-sms.rel)
+add_custom_target(crt0-sms-ram DEPENDS crt0-sms-ram.rel)
 
 #Libraries
 ADD_LIBRARY(sdsc sdsc.c sdsc.h)
