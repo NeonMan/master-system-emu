@@ -23,6 +23,7 @@ include_directories(${PROJECT_SOURCE_DIR})
 ADD_SUBDIRECTORY(sms)
 ADD_SUBDIRECTORY(crc)
 ADD_SUBDIRECTORY(bios-menu)
+ADD_SUBDIRECTORY(relocatable)
 
 #ROM "executables" ;)
 ADD_EXECUTABLE(empty empty.c)
@@ -35,11 +36,6 @@ TARGET_LINK_LIBRARIES(sample sdsc emu-hooks )
 ADD_EXECUTABLE(test-ram test-ram.c)
 ADD_DEPENDENCIES(test-ram crt0-sms)
 TARGET_LINK_LIBRARIES(test-ram sdsc)
-
-ADD_EXECUTABLE(test-crt-ram test-crt-ram.c)
-ADD_DEPENDENCIES(test-crt-ram crt0-sms-ram)
-TARGET_LINK_LIBRARIES(test-crt-ram sdsc)
-
 
 ADD_EXECUTABLE(simple-bios simple-bios.c)
 ADD_DEPENDENCIES(simple-bios crt0-sms)
@@ -65,10 +61,6 @@ ADD_CUSTOM_TARGET(empty-bin ALL
 ADD_CUSTOM_TARGET(test-ram-bin ALL
         COMMAND makebin -s 32768 test-ram.ihx test-ram.sms
 		DEPENDS test-ram
-    )
-ADD_CUSTOM_TARGET(test-crt-ram-bin ALL
-        COMMAND makebin -s 32768 test-crt-ram.ihx test-crt-ram.sms
-		DEPENDS test-crt-ram
     )
 ADD_CUSTOM_TARGET(simple-bios-bin ALL
         COMMAND makebin -s 32768 simple-bios.ihx simple-bios.sms
