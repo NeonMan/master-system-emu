@@ -32,9 +32,14 @@ ADD_EXECUTABLE(sample sample.c)
 ADD_DEPENDENCIES(sample crt0-sms)
 TARGET_LINK_LIBRARIES(sample sdsc emu-hooks )
 
-ADD_EXECUTABLE(ram-test ram-test.c)
-ADD_DEPENDENCIES(ram-test crt0-sms)
-TARGET_LINK_LIBRARIES(ram-test sdsc)
+ADD_EXECUTABLE(test-ram test-ram.c)
+ADD_DEPENDENCIES(test-ram crt0-sms)
+TARGET_LINK_LIBRARIES(test-ram sdsc)
+
+ADD_EXECUTABLE(test-crt-ram test-crt-ram.c)
+ADD_DEPENDENCIES(test-crt-ram crt0-sms-ram)
+#TARGET_LINK_LIBRARIES(test-crt-ram sdsc)
+
 
 ADD_EXECUTABLE(simple-bios simple-bios.c)
 ADD_DEPENDENCIES(simple-bios crt0-sms)
@@ -57,9 +62,13 @@ ADD_CUSTOM_TARGET(empty-bin ALL
         COMMAND makebin -s 32768 empty.ihx empty.sms
 		DEPENDS empty
     )
-ADD_CUSTOM_TARGET(ram-test-bin ALL
-        COMMAND makebin -s 32768 ram-test.ihx ram-test.sms
-		DEPENDS ram-test
+ADD_CUSTOM_TARGET(test-ram-bin ALL
+        COMMAND makebin -s 32768 test-ram.ihx test-ram.sms
+		DEPENDS test-ram
+    )
+ADD_CUSTOM_TARGET(test-crt-ram-bin ALL
+        COMMAND makebin -s 32768 test-crt-ram.ihx test-crt-ram.sms
+		DEPENDS test-crt-ram
     )
 ADD_CUSTOM_TARGET(simple-bios-bin ALL
         COMMAND makebin -s 32768 simple-bios.ihx simple-bios.sms
