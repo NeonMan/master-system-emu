@@ -11,6 +11,16 @@ execute_process(COMMAND hg identify OUTPUT_VARIABLE COMMIT_ID)
 string(STRIP "${COMMIT_ID}" COMMIT_ID)
 #string(SUBSTRING "${COMMIT_ID}" 1, -1 COMMIT_ID)
 
+# --- Find python3 ---
+# (trim script, not really an issue if not found)
+find_package(PythonInterp 3)
+if(PYTHONINTERP_FOUND)
+  #MESSAGE("Python 3 found")
+else()
+  MESSAGE("Python 3 not found! ROM trimming disabled.")
+  set(PYTHON_EXECUTABLE "rem")
+endif()
+
 #Make some definitions available
 ADD_DEFINITIONS(-DCOMPILER_ID="${CMAKE_C_COMPILER_ID}")
 ADD_DEFINITIONS(-DEXTENDED_ASCII)
