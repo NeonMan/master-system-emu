@@ -33,6 +33,22 @@ static uint8_t per_control = 0xFF; ///<-- Port configuration. All input by defau
 static uint8_t per_port_ab = 0xFF; ///<-- Port AB register
 static uint8_t per_port_bm = 0xFF; ///<-- Port B+Misc register
 
+//UART port emulation
+#define RX_TICKS_PER_SAMPLE 100
+static uint8_t  rx_char;
+static uint8_t  rx_is_sampling = 0;
+static uint32_t rx_tick_count;
+static uint8_t  rx_sample_count;
+static void(*uart_rx_callback)(uint8_t) = 0;
+
+void per_register_uart_rx(void(*callback)(uint8_t)) {
+    uart_rx_callback = callback;
+}
+
+void per_uart_tx(char c) {
+    /*ToDo*/
+}
+
 uint8_t* perdbg_reg_control(){
     return &per_control;
 }
@@ -73,5 +89,93 @@ void per_tick(){
     //All odd address from 0xC1 to 0xFF
     else if ((z80_n_rd == 0) && (addrl >= 0xC1) && (addrl & 0x01)){ /*&& (addrl <= 0xFF)  <-- always true ;)*/
         z80_data = per_port_bm;
+    }
+
+    //UART port emulation
+    if (rx_is_sampling) {
+        /*We are sampling~*/
+        rx_tick_count++;
+        if      (rx_tick_count > (RX_TICKS_PER_SAMPLE * 10)) {
+            /*Stop bit*/
+            /*Framing error if Zero*/
+            if (rx_sample_count == 9) {
+
+                rx_sample_count++;
+                if (uart_rx_callback) {
+                    uart_rx_callback(rx_char);
+                }
+            }
+            rx_is_sampling = 0;
+        }
+        else if (rx_tick_count > (RX_TICKS_PER_SAMPLE * 9)) {
+            /*Data bit 7*/
+            if (rx_sample_count == 8) {
+                rx_char = (rx_char >> 1) | ((per_control & PER_PORTB_TH_OUT) ? (1 << 7) : 0);
+                rx_sample_count++;
+            }
+        }
+        else if (rx_tick_count > (RX_TICKS_PER_SAMPLE * 8)) {
+            /*Data bit 6*/
+            if (rx_sample_count == 7) {
+                rx_char = (rx_char >> 1) | ((per_control & PER_PORTB_TH_OUT) ? (1 << 7) : 0);
+                rx_sample_count++;
+            }
+        }
+        else if (rx_tick_count > (RX_TICKS_PER_SAMPLE * 7)) {
+            /*Data bit 5*/
+            if (rx_sample_count == 6) {
+                rx_char = (rx_char >> 1) | ((per_control & PER_PORTB_TH_OUT) ? (1 << 7) : 0);
+                rx_sample_count++;
+            }
+        }
+        else if (rx_tick_count > (RX_TICKS_PER_SAMPLE * 6)) {
+            /*Data bit 4*/
+            if (rx_sample_count == 5) {
+                rx_char = (rx_char >> 1) | ((per_control & PER_PORTB_TH_OUT) ? (1 << 7) : 0);
+                rx_sample_count++;
+            }
+        }
+        else if (rx_tick_count > (RX_TICKS_PER_SAMPLE * 5)) {
+            /*Data bit 3*/
+            if (rx_sample_count == 4) {
+                rx_char = (rx_char >> 1) | ((per_control & PER_PORTB_TH_OUT) ? (1 << 7) : 0);
+                rx_sample_count++;
+            }
+        }
+        else if (rx_tick_count > (RX_TICKS_PER_SAMPLE * 4)) {
+            /*Data bit 2*/
+            if (rx_sample_count == 3) {
+                rx_char = (rx_char >> 1) | ((per_control & PER_PORTB_TH_OUT) ? (1 << 7) : 0);
+                rx_sample_count++;
+            }
+        }
+        else if (rx_tick_count > (RX_TICKS_PER_SAMPLE * 3)) {
+            /*Data bit 1*/
+            if (rx_sample_count == 2) {
+                rx_char = (rx_char >> 1) | ((per_control & PER_PORTB_TH_OUT) ? (1 << 7) : 0);
+                rx_sample_count++;
+            }
+        }
+        else if (rx_tick_count > (RX_TICKS_PER_SAMPLE * 2)) {
+            /*Data bit 0*/
+            if (rx_sample_count == 1) {
+                rx_char = (rx_char >> 1) | ((per_control & PER_PORTB_TH_OUT) ? (1 << 7) : 0);
+                rx_sample_count++;
+            }
+        }
+        else if (rx_tick_count > (RX_TICKS_PER_SAMPLE * 1)) {
+            /*Start bit*/
+            /*Framing error if one*/
+            rx_sample_count = 1;
+        }
+    }
+    else {
+        /*If RX line is down, start sampling*/
+        if(!(per_control & PER_PORTB_TH_OUT)){
+            rx_sample_count = 0;
+            rx_tick_count = 0;
+            rx_char = 0;
+            rx_is_sampling = 1;
+        }
     }
 }
