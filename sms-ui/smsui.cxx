@@ -74,10 +74,10 @@ static void load_rom(const char* f_path) {
     const char* f_default = "zexdoc_sdsc.sms";
     FILE* in_f = 0;
     if (f_path) {
-        in_f = fopen(f_path, "rb");
+        in_f = fl_fopen(f_path, "rb");
     }
     else {
-        in_f = fopen("zexdoc.sms", "rb");
+        in_f = fl_fopen("zexdoc.sms", "rb");
     }
     if (!in_f) {
         emu_log("Unable to open ROM:", EMU_LOG_CRITICAL);
@@ -104,7 +104,7 @@ static void load_rom(const char* f_path) {
 }
 
 static void restore_state(const char* f_path) {
-    FILE* in_f = fopen(f_path, "rb");
+    FILE* in_f = fl_fopen(f_path, "rb");
     if (ss_restore(in_f) == 0) {
         //All ok
     }
@@ -117,8 +117,8 @@ static void restore_state(const char* f_path) {
 int emu_init(){
     emu_log("Hello!", EMU_LOG_INFO);
     //Redirect stderr/stdout
-    //*stderr = *fopen("err.txt", "wb");
-    //*stdout = *fopen("out.txt", "wb");
+    //*stderr = *fl_fopen("err.txt", "wb");
+    //*stdout = *fl_fopen("out.txt", "wb");
 
     //Init emulator modules
     vdp_init();
@@ -130,7 +130,12 @@ int emu_init(){
 
     //Load ROM
     const char* f_path = NULL;
-	Fl_File_Chooser fnfc(".", "", Fl_File_Chooser::SINGLE, "");
+	Fl_File_Chooser fnfc(
+        ".", 
+        "Supported files (*.{sms,bin,sav})\tROM files (*.{sms,bin})\tSavestates (*.{sav})",
+        Fl_File_Chooser::SINGLE,
+        "Open ROM"
+    );
 	Fl::wait(0.5);
 	fnfc.show();
 	while (fnfc.shown()) {
