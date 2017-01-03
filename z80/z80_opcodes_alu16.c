@@ -23,7 +23,7 @@ extern struct z80_s z80; //<-- Access to z80 internals
 int ADC_HL_rp() {
     assert(z80.opcode_index == 2);
     Z80_OPCODE_SUBDIV;
-    const uint16_t result = (Z80_F & Z80_FLAG_CARRY) ? (Z80_HL + *(z80_rp[p[1]])) : ((Z80_HL + *(z80_rp[p[1]])) + 1);
+    const uint16_t result = (Z80_F & Z80_FLAG_CARRY) ? ((Z80_HL + *(z80_rp[p[1]])) + 1) : (Z80_HL + *(z80_rp[p[1]]));
     Z80_F = 0;
     Z80_F |= Z80_SETFLAG_SIGN_16(result);
     Z80_F |= Z80_SETFLAG_ZERO_16(result);
@@ -69,7 +69,7 @@ int SBC_HL_rp() {
     assert(z80.opcode_index == 2);
     Z80_OPCODE_SUBDIV;
     const uint16_t old_hl = Z80_HL;
-    const uint16_t result = (Z80_F & Z80_FLAG_CARRY) ? Z80_HL - *(z80_rp[p[1]]) : Z80_HL - *(z80_rp[p[1]]) - 1;
+    const uint16_t result = (Z80_F & Z80_FLAG_CARRY) ? Z80_HL - *(z80_rp[p[1]]) - 1 : Z80_HL - *(z80_rp[p[1]]);
     Z80_F = Z80_FLAG_SUBTRACT
         | Z80_SETFLAG_BORROW_16(old_hl, Z80_HL)
         | Z80_SETFLAG_SIGN_16(Z80_HL)
