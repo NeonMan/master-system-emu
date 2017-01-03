@@ -130,18 +130,13 @@ int emu_init(){
 
     //Load ROM
     const char* f_path = NULL;
-    Fl_Native_File_Chooser fnfc;
-    fnfc.title("Open ROM");
-    fnfc.type(Fl_Native_File_Chooser::BROWSE_FILE);
-    fnfc.filter("Supported formats\t*.{bin,sg,sms,sav}\nMastersystem ROM\t*.{sms,bin}\nSG 1000 ROM\t*.{sg,bin}\nSave states\t*.sav");
-    fnfc.directory(".");
-    switch (fnfc.show()){
-    case -1:
-    case 1:
-        break;
-    default:
-        f_path = fnfc.filename();
-    }
+	Fl_File_Chooser fnfc(".", "", Fl_File_Chooser::SINGLE, "");
+	Fl::wait(0.5);
+	fnfc.show();
+	while (fnfc.shown()) {
+		Fl::wait(0.1);
+	}
+    f_path = fnfc.value();
     if (f_path) {
         size_t path_len = strlen(f_path);
         const char* ext = f_path + path_len - 3;
