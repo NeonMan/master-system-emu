@@ -56,7 +56,7 @@ alu_result_t alu8_op(uint8_t operation, int8_t op1, int8_t op2, uint8_t flags) {
         /*Flags*/
         rv.flags |= Z80_SETFLAG_BORROW(op1, rv.result);   /* Carry                     */
         rv.flags |= Z80_FLAG_SUBTRACT;                    /* Negative (set)            */
-        rv.flags |= Z80_SETFLAG_OVERFLOW(op1, -((int8_t)op2), rv.result); /* Overflow                  */
+        rv.flags |= Z80_SETFLAG_OVERFLOW(op1, -((int8_t)op2), rv.result); /* Overflow  */
         rv.flags |= Z80_SETFLAG_UNK3(rv.result);          /* Undoc 3 (bit 3 of result) */
         rv.flags |= Z80_SETFLAG_HALF_BORROW(op1, op2);    /* Half carry                */
         rv.flags |= Z80_SETFLAG_UNK5(rv.result);          /* Undoc 5 (bit 5 of result) */
@@ -65,11 +65,11 @@ alu_result_t alu8_op(uint8_t operation, int8_t op1, int8_t op2, uint8_t flags) {
         break;
     /* --- SBC --- */
     case Z80_ALUOP_SBC:
-        rv.result = (flags & Z80_FLAG_CARRY) ? (op1 - op2 + 1) : (op1 - op2);
+        rv.result = (flags & Z80_FLAG_CARRY) ? (op1 - op2 - 1) : (op1 - op2);
         /*Flags*/
         rv.flags |= Z80_SETFLAG_BORROW(op1, rv.result);   /* Carry                     */
         rv.flags |= Z80_FLAG_SUBTRACT;                    /* Negative (set)            */
-        rv.flags |= Z80_SETFLAG_OVERFLOW(op1, -((int8_t)op2), rv.result); /* Overflow                  */
+        rv.flags |= Z80_SETFLAG_OVERFLOW(op1, -((int8_t)op2), rv.result); /* Overflow  */
         rv.flags |= Z80_SETFLAG_UNK3(rv.result);          /* Undoc 3 (bit 3 of result) */
         rv.flags |= Z80_SETFLAG_HALF_BORROW(op1, op2);    /* Half carry                */
         rv.flags |= Z80_SETFLAG_UNK5(rv.result);          /* Undoc 5 (bit 5 of result) */
@@ -120,7 +120,7 @@ alu_result_t alu8_op(uint8_t operation, int8_t op1, int8_t op2, uint8_t flags) {
         /*Flags*/
         rv.flags |= Z80_SETFLAG_BORROW(op1, op1 - op2);   /* Carry                     */
         rv.flags |= Z80_FLAG_SUBTRACT;                    /* Negative (set)            */
-        rv.flags |= Z80_SETFLAG_OVERFLOW(op1, -((int8_t)op2), op1 - op2); /* Overflow                  */
+        rv.flags |= Z80_SETFLAG_OVERFLOW(op1, -((int8_t)op2), op1 - op2); /* Overflow  */
         rv.flags |= Z80_SETFLAG_UNK3(op2);                /* Undoc 3 (bit 3 of result) */
         rv.flags |= Z80_SETFLAG_HALF_BORROW(op1, op2);    /* Half carry                */
         rv.flags |= Z80_SETFLAG_UNK5(op2);                /* Undoc 5 (bit 5 of result) */

@@ -443,49 +443,51 @@ int z80_stage_m2(uint8_t noexec){
 
 ///Executes the M1 stage (Instruction fetch)
 int z80_stage_m1(){
-    switch (z80.m1_tick_count){
+    switch (z80.m1_tick_count) {
     case 0:
         //Dump predicted opcode
 #ifndef NDEBUG
         /**/
-        char opcode_str[100];
-        uint8_t opcode_size;
-        opcode_str[0] = 0;
-        uint8_t tmp_opcode[4];
-        /*Disasm only on the first fetch*/
-        if(z80.opcode_index == 0){
-            //There must be something to feed the disasm
-            //Read 4 bytes from memory
-            if (Z80_PC < 0xC000) {
-                tmp_opcode[0] = ((uint8_t*)romdbg_get_rom())[Z80_PC];
-                tmp_opcode[1] = ((uint8_t*)romdbg_get_rom())[Z80_PC + 1];
-                tmp_opcode[2] = ((uint8_t*)romdbg_get_rom())[Z80_PC + 2];
-                tmp_opcode[3] = ((uint8_t*)romdbg_get_rom())[Z80_PC + 3];
-            }
-            else {
-                uint16_t ram_addr;
-                ram_addr = (Z80_PC < 0xE000) ? (Z80_PC - 0xC000) : (Z80_PC - 0xE000);
-                tmp_opcode[0] = ((uint8_t*)ramdbg_get_mem())[ram_addr];
-                tmp_opcode[1] = ((uint8_t*)ramdbg_get_mem())[ram_addr + 1];
-                tmp_opcode[2] = ((uint8_t*)ramdbg_get_mem())[ram_addr + 2];
-                tmp_opcode[3] = ((uint8_t*)ramdbg_get_mem())[ram_addr + 3];
-            }
+        {
+            char opcode_str[100];
+            uint8_t opcode_size;
+            opcode_str[0] = 0;
+            uint8_t tmp_opcode[4];
+            /*Disasm only on the first fetch*/
+            if (z80.opcode_index == 0) {
+                //There must be something to feed the disasm
+                //Read 4 bytes from memory
+                if (Z80_PC < 0xC000) {
+                    tmp_opcode[0] = ((uint8_t*)romdbg_get_rom())[Z80_PC];
+                    tmp_opcode[1] = ((uint8_t*)romdbg_get_rom())[Z80_PC + 1];
+                    tmp_opcode[2] = ((uint8_t*)romdbg_get_rom())[Z80_PC + 2];
+                    tmp_opcode[3] = ((uint8_t*)romdbg_get_rom())[Z80_PC + 3];
+                }
+                else {
+                    uint16_t ram_addr;
+                    ram_addr = (Z80_PC < 0xE000) ? (Z80_PC - 0xC000) : (Z80_PC - 0xE000);
+                    tmp_opcode[0] = ((uint8_t*)ramdbg_get_mem())[ram_addr];
+                    tmp_opcode[1] = ((uint8_t*)ramdbg_get_mem())[ram_addr + 1];
+                    tmp_opcode[2] = ((uint8_t*)ramdbg_get_mem())[ram_addr + 2];
+                    tmp_opcode[3] = ((uint8_t*)ramdbg_get_mem())[ram_addr + 3];
+                }
 
-            opcode_size = z80d_decode(tmp_opcode, 100, opcode_str);
-            //Dump stack if changed
-            if (Z80_SP != dbg_last_sp) {
-                z80_dump_stack(ramdbg_get_mem(), Z80_SP, RAM_BASE_ADDRESS, 12, 4);
-                dbg_last_sp = Z80_SP;
+                opcode_size = z80d_decode(tmp_opcode, 100, opcode_str);
+                //Dump stack if changed
+                if (Z80_SP != dbg_last_sp) {
+                    z80_dump_stack(ramdbg_get_mem(), Z80_SP, RAM_BASE_ADDRESS, 12, 4);
+                    dbg_last_sp = Z80_SP;
+                }
+                //Print disassembly
+                fprintf(stderr, "(0x%04X) %- 20s; 0x", (uint16_t)(Z80_PC), opcode_str);
+                for (int i = 0; i < 4; i++)
+                    if (i < opcode_size)
+                        fprintf(stderr, "%02X", tmp_opcode[i]);
+                    else
+                        fprintf(stderr, "..");
+                fprintf(stderr, "\n");
+                fflush(stderr);
             }
-            //Print disassembly
-            fprintf(stderr, "(0x%04X) %- 20s; 0x", (uint16_t)(Z80_PC), opcode_str);
-            for (int i = 0; i < 4; i++)
-                if (i < opcode_size)
-                    fprintf(stderr, "%02X", tmp_opcode[i]);
-                else
-                    fprintf(stderr, "..");
-            fprintf(stderr, "\n");
-            fflush(stderr);
         }
         /**/
 #endif

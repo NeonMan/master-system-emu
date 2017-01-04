@@ -5,9 +5,9 @@ set(HFILES z80.h z80_debug.h z80_decoder.h z80_externs.h z80_macros.h z80_opcode
 
 add_library(z80 ${CFILES} ${HFILES})
 
-#Some debug stuff requires access to memory
+#Some debug stuff requires access to memory and ROM
 #release z80 requires no additional libraries
-target_link_libraries(z80 smsram smsio z80dasm)
+target_link_libraries(z80 smsram smsrom smsio z80dasm)
 
 #Decoder LUTs
 add_custom_command(OUTPUT  ${PROJECT_SOURCE_DIR}/z80_decoder_tables.h
