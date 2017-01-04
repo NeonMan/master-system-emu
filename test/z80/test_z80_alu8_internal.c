@@ -30,7 +30,7 @@ TEST_TEAR_DOWN(alu8_internal) {
 
 TEST(alu8_internal, add) {
     alu_result_t r;
-    //Exhaust the ALU8 AND test space, F=0x00
+    //Exhaust the ALU8 ADD test space, F=0x00
     for (int a = 0; a < 256; a++) {
         for (int b = 0; b < 256; b++) {
             uint16_t expected_af = alu8_add_dataset[(a * 256) + b];
@@ -46,7 +46,7 @@ TEST(alu8_internal, add) {
         }
     }
 
-    //Exhaust the ALU8 AND test space, F=0xFF
+    //Exhaust the ALU8 ADD test space, F=0xFF
     for (int a = 0; a < 256; a++) {
         for (int b = 0; b < 256; b++) {
             uint16_t expected_af = alu8_add_dataset[(a * 256) + b + (256 * 256)];
@@ -96,9 +96,9 @@ TEST(alu8_internal, and) {
     }
 }
 
-TEST(alu8_internal, or) {
+TEST(alu8_internal, or ) {
     alu_result_t r;
-    //Exhaust the ALU8 AND test space, F=0x00
+    //Exhaust the ALU8 OR test space, F=0x00
     for (int a = 0; a < 256; a++) {
         for (int b = 0; b < 256; b++) {
             uint16_t expected_af = alu8_or_dataset[(a * 256) + b];
@@ -114,7 +114,7 @@ TEST(alu8_internal, or) {
         }
     }
 
-    //Exhaust the ALU8 AND test space, F=0xFF
+    //Exhaust the ALU8 OR test space, F=0xFF
     for (int a = 0; a < 256; a++) {
         for (int b = 0; b < 256; b++) {
             uint16_t expected_af = alu8_or_dataset[(a * 256) + b + (256 * 256)];
@@ -130,11 +130,95 @@ TEST(alu8_internal, or) {
     }
 }
 
+TEST(alu8_internal, sub) {
+    alu_result_t r;
+    //Exhaust the ALU8 SUB test space, F=0x00
+    for (int a = 0; a < 256; a++) {
+        for (int b = 0; b < 256; b++) {
+            uint16_t expected_af = alu8_sub_dataset[(a * 256) + b];
+            uint8_t expected_a = (expected_af >> 8) & 0x00FF;
+            uint8_t expected_f = (expected_af) & 0x00FF;
+            r = alu8_op(Z80_ALUOP_SUB, a, b, 0x00);
+
+            char test_str[100];
+            sprintf(test_str, "In A:%02X B:%02X; Out AF:%02X%02X; Expected:%04X.", a, b, r.result, r.flags, expected_af);
+            TEST_ASSERT_EQUAL_HEX8_MESSAGE(expected_a, r.result, test_str);
+            TEST_ASSERT_EQUAL_HEX8_MESSAGE(expected_f, r.flags, test_str);
+
+        }
+    }
+
+    //Exhaust the ALU8 SUB test space, F=0xFF
+    for (int a = 0; a < 256; a++) {
+        for (int b = 0; b < 256; b++) {
+            uint16_t expected_af = alu8_sub_dataset[(a * 256) + b + (256 * 256)];
+            uint8_t expected_a = (expected_af >> 8) & 0x00FF;
+            uint8_t expected_f = (expected_af) & 0x00FF;
+            r = alu8_op(Z80_ALUOP_SUB, a, b, 0xFF);
+
+            char test_str[100];
+            sprintf(test_str, "In A:%02X B:%02X; Out AF:%02X%02X; Expected:%04X.", a, b, r.result, r.flags, expected_af);
+            TEST_ASSERT_EQUAL_HEX8_MESSAGE(expected_a, r.result, test_str);
+            TEST_ASSERT_EQUAL_HEX8_MESSAGE(expected_f, r.flags, test_str);
+        }
+    }
+}
+
+TEST(alu8_internal, xor) {
+    alu_result_t r;
+    //Exhaust the ALU8 XOR test space, F=0x00
+    for (int a = 0; a < 256; a++) {
+        for (int b = 0; b < 256; b++) {
+            uint16_t expected_af = alu8_xor_dataset[(a * 256) + b];
+            uint8_t expected_a = (expected_af >> 8) & 0x00FF;
+            uint8_t expected_f = (expected_af) & 0x00FF;
+            r = alu8_op(Z80_ALUOP_XOR, a, b, 0x00);
+
+            char test_str[100];
+            sprintf(test_str, "In A:%02X B:%02X; Out AF:%02X%02X; Expected:%04X.", a, b, r.result, r.flags, expected_af);
+            TEST_ASSERT_EQUAL_HEX8_MESSAGE(expected_a, r.result, test_str);
+            TEST_ASSERT_EQUAL_HEX8_MESSAGE(expected_f, r.flags, test_str);
+
+        }
+    }
+
+    //Exhaust the ALU8 XOR test space, F=0xFF
+    for (int a = 0; a < 256; a++) {
+        for (int b = 0; b < 256; b++) {
+            uint16_t expected_af = alu8_xor_dataset[(a * 256) + b + (256 * 256)];
+            uint8_t expected_a = (expected_af >> 8) & 0x00FF;
+            uint8_t expected_f = (expected_af) & 0x00FF;
+            r = alu8_op(Z80_ALUOP_XOR, a, b, 0xFF);
+
+            char test_str[100];
+            sprintf(test_str, "In A:%02X B:%02X; Out AF:%02X%02X; Expected:%04X.", a, b, r.result, r.flags, expected_af);
+            TEST_ASSERT_EQUAL_HEX8_MESSAGE(expected_a, r.result, test_str);
+            TEST_ASSERT_EQUAL_HEX8_MESSAGE(expected_f, r.flags, test_str);
+        }
+    }
+}
+
+IGNORE_TEST(alu8_internal, adc) {
+    TEST_FAIL_MESSAGE("Dataset unavailable");
+}
+
+IGNORE_TEST(alu8_internal, sbc) {
+    TEST_FAIL_MESSAGE("Dataset unavailable");
+}
+
+IGNORE_TEST(alu8_internal, cp) {
+    TEST_FAIL_MESSAGE("Dataset unavailable");
+}
 
 TEST_GROUP_RUNNER(alu8_internal) {
     RUN_TEST_CASE(alu8_internal, add);
     RUN_TEST_CASE(alu8_internal, and);
-    RUN_TEST_CASE(alu8_internal, or);
+    RUN_TEST_CASE(alu8_internal, or );
+    RUN_TEST_CASE(alu8_internal, sub);
+    RUN_TEST_CASE(alu8_internal, xor);
+    RUN_TEST_CASE(alu8_internal, adc);
+    RUN_TEST_CASE(alu8_internal, sbc);
+    RUN_TEST_CASE(alu8_internal, cp );
 }
 
 // ----------------------
@@ -150,5 +234,3 @@ int main(int argc, const char** argv) {
     int rv = UnityMain(argc, argv, RunAllTests);
     return rv;
 }
-
-
