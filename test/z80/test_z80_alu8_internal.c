@@ -39,7 +39,7 @@ TEST(alu8_internal, add) {
             r = alu8_op(Z80_ALUOP_ADD, a, b, 0x00);
 
             char test_str[100];
-            sprintf(test_str, "In A:%02X B:%02X; Out AF:%02X%02X; Expected:%04X.", a, b, r.result, r.flags, expected_af);
+            sprintf(test_str, "In A:%02X B:%02X; Out AF:%02X%02X; Expected:%04X.", a, b, (uint8_t)r.result, r.flags, expected_af);
             TEST_ASSERT_EQUAL_HEX8_MESSAGE(expected_a, r.result, test_str);
             TEST_ASSERT_EQUAL_HEX8_MESSAGE(expected_f, r.flags, test_str);
 
@@ -55,7 +55,7 @@ TEST(alu8_internal, add) {
             r = alu8_op(Z80_ALUOP_ADD, a, b, 0xFF);
 
             char test_str[100];
-            sprintf(test_str, "In A:%02X B:%02X; Out AF:%02X%02X; Expected:%04X.", a, b, r.result, r.flags, expected_af);
+            sprintf(test_str, "In A:%02X B:%02X; Out AF:%02X%02X; Expected:%04X.", a, b, (uint8_t)r.result, r.flags, expected_af);
             TEST_ASSERT_EQUAL_HEX8_MESSAGE(expected_a, r.result, test_str);
             TEST_ASSERT_EQUAL_HEX8_MESSAGE(expected_f, r.flags, test_str);
         }
@@ -73,7 +73,7 @@ TEST(alu8_internal, and) {
             r = alu8_op(Z80_ALUOP_AND, a, b, 0x00);
 
             char test_str[100];
-            sprintf(test_str, "In A:%02X B:%02X; Out AF:%02X%02X; Expected:%04X.", a, b, r.result, r.flags, expected_af);
+            sprintf(test_str, "In A:%02X B:%02X; Out AF:%02X%02X; Expected:%04X.", a, b, (uint8_t)r.result, r.flags, expected_af);
             TEST_ASSERT_EQUAL_HEX8_MESSAGE(expected_a, r.result, test_str);
             TEST_ASSERT_EQUAL_HEX8_MESSAGE(expected_f, r.flags, test_str);
 
@@ -89,7 +89,7 @@ TEST(alu8_internal, and) {
             r = alu8_op(Z80_ALUOP_AND, a, b, 0xFF);
 
             char test_str[100];
-            sprintf(test_str, "In A:%02X B:%02X; Out AF:%02X%02X; Expected:%04X.", a, b, r.result, r.flags, expected_af);
+            sprintf(test_str, "In A:%02X B:%02X; Out AF:%02X%02X; Expected:%04X.", a, b, (uint8_t)r.result, r.flags, expected_af);
             TEST_ASSERT_EQUAL_HEX8_MESSAGE(expected_a, r.result, test_str);
             TEST_ASSERT_EQUAL_HEX8_MESSAGE(expected_f, r.flags, test_str);
         }
@@ -107,7 +107,7 @@ TEST(alu8_internal, or ) {
             r = alu8_op(Z80_ALUOP_OR, a, b, 0x00);
 
             char test_str[100];
-            sprintf(test_str, "In A:%02X B:%02X; Out AF:%02X%02X; Expected:%04X.", a, b, r.result, r.flags, expected_af);
+            sprintf(test_str, "In A:%02X B:%02X; Out AF:%02X%02X; Expected:%04X.", a, b, (uint8_t)r.result, r.flags, expected_af);
             TEST_ASSERT_EQUAL_HEX8_MESSAGE(expected_a, r.result, test_str);
             TEST_ASSERT_EQUAL_HEX8_MESSAGE(expected_f, r.flags, test_str);
 
@@ -123,7 +123,7 @@ TEST(alu8_internal, or ) {
             r = alu8_op(Z80_ALUOP_OR, a, b, 0xFF);
 
             char test_str[100];
-            sprintf(test_str, "In A:%02X B:%02X; Out AF:%02X%02X; Expected:%04X.", a, b, r.result, r.flags, expected_af);
+            sprintf(test_str, "In A:%02X B:%02X; Out AF:%02X%02X; Expected:%04X.", a, b, (uint8_t)r.result, r.flags, expected_af);
             TEST_ASSERT_EQUAL_HEX8_MESSAGE(expected_a, r.result, test_str);
             TEST_ASSERT_EQUAL_HEX8_MESSAGE(expected_f, r.flags, test_str);
         }
@@ -141,7 +141,7 @@ TEST(alu8_internal, sub) {
             r = alu8_op(Z80_ALUOP_SUB, a, b, 0x00);
 
             char test_str[100];
-            sprintf(test_str, "In A:%02X B:%02X; Out AF:%02X%02X; Expected:%04X.", a, b, r.result, r.flags, expected_af);
+            sprintf(test_str, "In A:%02X B:%02X; Out AF:%02X%02X; Expected:%04X.", a, b, (uint8_t)r.result, r.flags, expected_af);
             TEST_ASSERT_EQUAL_HEX8_MESSAGE(expected_a, r.result, test_str);
             TEST_ASSERT_EQUAL_HEX8_MESSAGE(expected_f, r.flags, test_str);
 
@@ -157,7 +157,7 @@ TEST(alu8_internal, sub) {
             r = alu8_op(Z80_ALUOP_SUB, a, b, 0xFF);
 
             char test_str[100];
-            sprintf(test_str, "In A:%02X B:%02X; Out AF:%02X%02X; Expected:%04X.", a, b, r.result, r.flags, expected_af);
+            sprintf(test_str, "In A:%02X B:%02X; Out AF:%02X%02X; Expected:%04X.", a, b, (uint8_t)r.result, r.flags, expected_af);
             TEST_ASSERT_EQUAL_HEX8_MESSAGE(expected_a, r.result, test_str);
             TEST_ASSERT_EQUAL_HEX8_MESSAGE(expected_f, r.flags, test_str);
         }
@@ -175,7 +175,7 @@ TEST(alu8_internal, xor) {
             r = alu8_op(Z80_ALUOP_XOR, a, b, 0x00);
 
             char test_str[100];
-            sprintf(test_str, "In A:%02X B:%02X; Out AF:%02X%02X; Expected:%04X.", a, b, r.result, r.flags, expected_af);
+            sprintf(test_str, "In A:%02X B:%02X; Out AF:%02X%02X; Expected:%04X.", a, b, (uint8_t)r.result, r.flags, expected_af);
             TEST_ASSERT_EQUAL_HEX8_MESSAGE(expected_a, r.result, test_str);
             TEST_ASSERT_EQUAL_HEX8_MESSAGE(expected_f, r.flags, test_str);
 
@@ -191,7 +191,7 @@ TEST(alu8_internal, xor) {
             r = alu8_op(Z80_ALUOP_XOR, a, b, 0xFF);
 
             char test_str[100];
-            sprintf(test_str, "In A:%02X B:%02X; Out AF:%02X%02X; Expected:%04X.", a, b, r.result, r.flags, expected_af);
+            sprintf(test_str, "In A:%02X B:%02X; Out AF:%02X%02X; Expected:%04X.", a, b, (uint8_t)r.result, r.flags, expected_af);
             TEST_ASSERT_EQUAL_HEX8_MESSAGE(expected_a, r.result, test_str);
             TEST_ASSERT_EQUAL_HEX8_MESSAGE(expected_f, r.flags, test_str);
         }

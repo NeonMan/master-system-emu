@@ -198,6 +198,11 @@ const uint8_t q[4] = { z80.opcode[0] & (1 << 3), z80.opcode[1] & (1 << 3), z80.o
         ( (((int8_t)(OP1))>=0) &&  (((int8_t)(OP2))>=0) && (((int8_t)(RES))<0) ) ? (Z80_FLAG_OVERFLOW) : (\
         ( (((int8_t)(OP1))<0) &&  (((int8_t)(OP2))<0) && (((int8_t)(RES))>=0) ) ? (Z80_FLAG_OVERFLOW) : 0 )\
     )
+#define Z80_SETFLAG_UNDERFLOW(OP1,OP2,RES) \
+    ( \
+        ( (((int8_t)(OP1))>=0) &&  (((int8_t)(OP2))<0) && (((int8_t)(RES))<0) ) ? (Z80_FLAG_OVERFLOW) : (\
+        ( (((int8_t)(OP1))<0) &&  (((int8_t)(OP2))>=0) && (((int8_t)(RES))>=0) ) ? (Z80_FLAG_OVERFLOW) : 0 )\
+    )
 #define Z80_SETFLAG_OVERFLOW_16(OP1, OP2, RES) \
     ( \
         ( (((int16_t)(OP1))>=0) &&  (((int16_t)(OP2))>=0) && (((int16_t)(RES))<0) ) ? (Z80_FLAG_OVERFLOW) : (\
