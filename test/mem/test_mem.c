@@ -132,10 +132,12 @@ int main(int argc, char**argv){
         ram_ok = ram_ok & (read_byte(i + 0xE000 - 0xC000) == full_rom[i]);
     }
 
-    if (ram_ok)
+    if (ram_ok){
         printf("--- RAM R/W OK ---\n");
-    else
+    }
+    else{
         printf("--- RAM R/W Error ---\n");
+    }
 
 	//Test RAM (Read/write, mirrored write)
 	for (int i = 0xC000; i < 0xE000; i++) {
@@ -148,10 +150,12 @@ int main(int argc, char**argv){
 		ram_ok = ram_ok & (read_byte(i + 0xE000 - 0xC000) == (full_rom[i]));
 	}
 
-	if (ram_ok)
+	if (ram_ok){
 		printf("--- RAM R/W OK (Mirrored write) ---\n");
-	else
+    }
+	else{
 		printf("--- RAM R/W Error (Mirrored write) ---\n");
+    }
 
 	//Cleanup and exit
     free(full_rom);
