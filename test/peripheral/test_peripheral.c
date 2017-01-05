@@ -36,7 +36,7 @@ TEST_SETUP(grp_peripheral_write){
     z80_n_rd = 1;
     z80_n_mreq = 1;
     z80_n_ioreq = 0;
-    sprintf(message, "");
+    message[0] = '\0';
 }
 
 TEST_TEAR_DOWN(grp_peripheral_write){
@@ -53,7 +53,7 @@ TEST_SETUP(grp_peripheral_read){
     z80_n_rd = 0;
     z80_n_mreq = 1;
     z80_n_ioreq = 0;
-    sprintf(message, "");
+    message[0] = '\0';
 
     *perdbg_reg_ab() = VALUE_AB;
     *perdbg_reg_bm() = VALUE_BM;
