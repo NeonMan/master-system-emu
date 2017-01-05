@@ -9,7 +9,9 @@ pipelines:
   default:
     - step:
         script: # Modify the commands below to build your repository.
+          - apt-get update
           - apt-get install cmake python3
+          - apt-get install libfltk1.3-dev
           - cmake .
           - make
           - make test
