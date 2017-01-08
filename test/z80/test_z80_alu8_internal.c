@@ -15,7 +15,15 @@
 #include <stdint.h>
 
 /* --- Datasets as extracted from a real Z80 --- */
-#include "z80_datasets.h"
+#include "dataset-add.h"
+#include "dataset-adc.h"
+#include "dataset-sub.h"
+#include "dataset-sbc.h"
+#include "dataset-neg.h"
+#include "dataset-cp.h"
+#include "dataset-and.h"
+#include "dataset-or.h"
+#include "dataset-xor.h"
 
 #include "test_z80.h"
 #include "z80/z80_opcodes.h"
@@ -33,7 +41,7 @@ TEST(alu8_internal, add) {
     //Exhaust the ALU8 ADD test space, F=0x00
     for (int a = 0; a < 256; a++) {
         for (int b = 0; b < 256; b++) {
-            uint16_t expected_af = alu8_add_dataset[(a * 256) + b];
+            uint16_t expected_af = z80_dataset_add[(a * 256) + b];
             uint8_t expected_a = (expected_af >> 8) & 0x00FF;
             uint8_t expected_f = (expected_af) & 0x00FF;
             r = alu8_op(Z80_ALUOP_ADD, a, b, 0x00);
@@ -49,7 +57,7 @@ TEST(alu8_internal, add) {
     //Exhaust the ALU8 ADD test space, F=0xFF
     for (int a = 0; a < 256; a++) {
         for (int b = 0; b < 256; b++) {
-            uint16_t expected_af = alu8_add_dataset[(a * 256) + b + (256 * 256)];
+            uint16_t expected_af = z80_dataset_add[(a * 256) + b + (256 * 256)];
             uint8_t expected_a = (expected_af >> 8) & 0x00FF;
             uint8_t expected_f = (expected_af) & 0x00FF;
             r = alu8_op(Z80_ALUOP_ADD, a, b, 0xFF);
@@ -67,7 +75,7 @@ TEST(alu8_internal, and) {
     //Exhaust the ALU8 AND test space, F=0x00
     for (int a = 0; a < 256; a++) {
         for (int b = 0; b < 256; b++) {
-            uint16_t expected_af = alu8_and_dataset[(a * 256) + b];
+            uint16_t expected_af = z80_dataset_and[(a * 256) + b];
             uint8_t expected_a = (expected_af >> 8) & 0x00FF;
             uint8_t expected_f = (expected_af) & 0x00FF;
             r = alu8_op(Z80_ALUOP_AND, a, b, 0x00);
@@ -83,7 +91,7 @@ TEST(alu8_internal, and) {
     //Exhaust the ALU8 AND test space, F=0xFF
     for (int a = 0; a < 256; a++) {
         for (int b = 0; b < 256; b++) {
-            uint16_t expected_af = alu8_and_dataset[(a * 256) + b + (256 * 256)];
+            uint16_t expected_af = z80_dataset_and[(a * 256) + b + (256 * 256)];
             uint8_t expected_a = (expected_af >> 8) & 0x00FF;
             uint8_t expected_f = (expected_af) & 0x00FF;
             r = alu8_op(Z80_ALUOP_AND, a, b, 0xFF);
@@ -101,7 +109,7 @@ TEST(alu8_internal, or ) {
     //Exhaust the ALU8 OR test space, F=0x00
     for (int a = 0; a < 256; a++) {
         for (int b = 0; b < 256; b++) {
-            uint16_t expected_af = alu8_or_dataset[(a * 256) + b];
+            uint16_t expected_af = z80_dataset_or[(a * 256) + b];
             uint8_t expected_a = (expected_af >> 8) & 0x00FF;
             uint8_t expected_f = (expected_af) & 0x00FF;
             r = alu8_op(Z80_ALUOP_OR, a, b, 0x00);
@@ -117,7 +125,7 @@ TEST(alu8_internal, or ) {
     //Exhaust the ALU8 OR test space, F=0xFF
     for (int a = 0; a < 256; a++) {
         for (int b = 0; b < 256; b++) {
-            uint16_t expected_af = alu8_or_dataset[(a * 256) + b + (256 * 256)];
+            uint16_t expected_af = z80_dataset_or[(a * 256) + b + (256 * 256)];
             uint8_t expected_a = (expected_af >> 8) & 0x00FF;
             uint8_t expected_f = (expected_af) & 0x00FF;
             r = alu8_op(Z80_ALUOP_OR, a, b, 0xFF);
@@ -135,7 +143,7 @@ TEST(alu8_internal, sub) {
     //Exhaust the ALU8 SUB test space, F=0x00
     for (int a = 0; a < 256; a++) {
         for (int b = 0; b < 256; b++) {
-            uint16_t expected_af = alu8_sub_dataset[(a * 256) + b];
+            uint16_t expected_af = z80_dataset_sub[(a * 256) + b];
             uint8_t expected_a = (expected_af >> 8) & 0x00FF;
             uint8_t expected_f = (expected_af) & 0x00FF;
             r = alu8_op(Z80_ALUOP_SUB, a, b, 0x00);
@@ -151,7 +159,7 @@ TEST(alu8_internal, sub) {
     //Exhaust the ALU8 SUB test space, F=0xFF
     for (int a = 0; a < 256; a++) {
         for (int b = 0; b < 256; b++) {
-            uint16_t expected_af = alu8_sub_dataset[(a * 256) + b + (256 * 256)];
+            uint16_t expected_af = z80_dataset_sub[(a * 256) + b + (256 * 256)];
             uint8_t expected_a = (expected_af >> 8) & 0x00FF;
             uint8_t expected_f = (expected_af) & 0x00FF;
             r = alu8_op(Z80_ALUOP_SUB, a, b, 0xFF);
@@ -169,7 +177,7 @@ TEST(alu8_internal, xor) {
     //Exhaust the ALU8 XOR test space, F=0x00
     for (int a = 0; a < 256; a++) {
         for (int b = 0; b < 256; b++) {
-            uint16_t expected_af = alu8_xor_dataset[(a * 256) + b];
+            uint16_t expected_af = z80_dataset_xor[(a * 256) + b];
             uint8_t expected_a = (expected_af >> 8) & 0x00FF;
             uint8_t expected_f = (expected_af) & 0x00FF;
             r = alu8_op(Z80_ALUOP_XOR, a, b, 0x00);
@@ -185,7 +193,7 @@ TEST(alu8_internal, xor) {
     //Exhaust the ALU8 XOR test space, F=0xFF
     for (int a = 0; a < 256; a++) {
         for (int b = 0; b < 256; b++) {
-            uint16_t expected_af = alu8_xor_dataset[(a * 256) + b + (256 * 256)];
+            uint16_t expected_af = z80_dataset_xor[(a * 256) + b + (256 * 256)];
             uint8_t expected_a = (expected_af >> 8) & 0x00FF;
             uint8_t expected_f = (expected_af) & 0x00FF;
             r = alu8_op(Z80_ALUOP_XOR, a, b, 0xFF);
@@ -210,6 +218,10 @@ IGNORE_TEST(alu8_internal, cp) {
     TEST_FAIL_MESSAGE("Dataset unavailable");
 }
 
+IGNORE_TEST(alu8_internal, neg) {
+    TEST_FAIL_MESSAGE("Dataset unavailable");
+}
+
 TEST_GROUP_RUNNER(alu8_internal) {
     RUN_TEST_CASE(alu8_internal, add);
     RUN_TEST_CASE(alu8_internal, and);
@@ -219,6 +231,7 @@ TEST_GROUP_RUNNER(alu8_internal) {
     RUN_TEST_CASE(alu8_internal, adc);
     RUN_TEST_CASE(alu8_internal, sbc);
     RUN_TEST_CASE(alu8_internal, cp );
+	RUN_TEST_CASE(alu8_internal, neg);
 }
 
 // ----------------------
