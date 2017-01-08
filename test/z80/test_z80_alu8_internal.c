@@ -206,15 +206,45 @@ TEST(alu8_internal, xor) {
     }
 }
 
+TEST(alu8_internal, cp) {
+    alu_result_t r;
+    //Exhaust the ALU8 XOR test space, F=0x00
+    for (int a = 0; a < 256; a++) {
+        for (int b = 0; b < 256; b++) {
+            uint16_t expected_af = z80_dataset_cp[(a * 256) + b];
+            uint8_t expected_a = (expected_af >> 8) & 0x00FF;
+            uint8_t expected_f = (expected_af) & 0x00FF;
+            r = alu8_op(Z80_ALUOP_CP, a, b, 0x00);
+
+            char test_str[100];
+            sprintf(test_str, "In A:%02X B:%02X; Out AF:%02X%02X; Expected:%04X.", a, b, (uint8_t)r.result, r.flags, expected_af);
+            TEST_ASSERT_EQUAL_HEX8_MESSAGE(expected_a, r.result, test_str);
+            TEST_ASSERT_EQUAL_HEX8_MESSAGE(expected_f, r.flags, test_str);
+
+        }
+    }
+
+    //Exhaust the ALU8 XOR test space, F=0xFF
+    for (int a = 0; a < 256; a++) {
+        for (int b = 0; b < 256; b++) {
+            uint16_t expected_af = z80_dataset_cp[(a * 256) + b + (256 * 256)];
+            uint8_t expected_a = (expected_af >> 8) & 0x00FF;
+            uint8_t expected_f = (expected_af) & 0x00FF;
+            r = alu8_op(Z80_ALUOP_CP, a, b, 0xFF);
+
+            char test_str[100];
+            sprintf(test_str, "In A:%02X B:%02X; Out AF:%02X%02X; Expected:%04X.", a, b, (uint8_t)r.result, r.flags, expected_af);
+            TEST_ASSERT_EQUAL_HEX8_MESSAGE(expected_a, r.result, test_str);
+            TEST_ASSERT_EQUAL_HEX8_MESSAGE(expected_f, r.flags, test_str);
+        }
+    }
+}
+
 IGNORE_TEST(alu8_internal, adc) {
     TEST_FAIL_MESSAGE("Dataset unavailable");
 }
 
 IGNORE_TEST(alu8_internal, sbc) {
-    TEST_FAIL_MESSAGE("Dataset unavailable");
-}
-
-IGNORE_TEST(alu8_internal, cp) {
     TEST_FAIL_MESSAGE("Dataset unavailable");
 }
 
