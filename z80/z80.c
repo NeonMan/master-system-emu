@@ -174,7 +174,7 @@ void z80_dump_reg(){
  * @param count_below number of bytes to read below SP. Always even, last bit ignored.
  */
 void z80_dump_stack(void* ram, uint16_t sp, uint16_t base_addr, uint16_t count, uint16_t count_below){
-    /**/
+    /*
     if(!ram)
         return;
     count = count & 0xFFFE;
@@ -453,7 +453,7 @@ int z80_stage_m1(){
             uint8_t opcode_size;
             opcode_str[0] = 0;
             uint8_t tmp_opcode[4];
-            /*Disasm only on the first fetch*/
+            //Disasm only on the first fetch
             if (z80.opcode_index == 0) {
                 //There must be something to feed the disasm
                 //Read 4 bytes from memory
