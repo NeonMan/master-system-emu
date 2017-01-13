@@ -41,14 +41,15 @@ alu_result_t alu8_op(uint8_t operation, int8_t op1, int8_t op2, uint8_t flags) {
     case Z80_ALUOP_ADC:
         rv.result = (flags & Z80_FLAG_CARRY) ? (op1 + op2 + 1) : (op1 + op2);
         /*Flags*/
-        rv.flags |= Z80_SETFLAG_CARRY(op1, rv.result);    /* Carry                     */
         /*rv.flags |= 0*/                                 /* Negative (cleared)        */
         rv.flags |= Z80_SETFLAG_OVERFLOW(op1, op2, rv.result); /* Overflow             */
         rv.flags |= Z80_SETFLAG_UNK3(rv.result);          /* Undoc 3 (bit 3 of result) */
         if (flags & Z80_FLAG_CARRY) {
+            rv.flags |= Z80_SETFLAG_CARRY(op1 + 1, rv.result);    /* Carry                     */
             rv.flags |= Z80_SETFLAG_HALF_CARRY(((uint8_t)op1) + 1, ((uint8_t)op2));     /* Half carry                */
         }
         else {
+            rv.flags |= Z80_SETFLAG_CARRY(op1, rv.result);    /* Carry                     */
             rv.flags |= Z80_SETFLAG_HALF_CARRY(op1, op2);     /* Half carry                */
         }
         rv.flags |= Z80_SETFLAG_UNK5(rv.result);          /* Undoc 5 (bit 5 of result) */
@@ -131,11 +132,11 @@ alu_result_t alu8_op(uint8_t operation, int8_t op1, int8_t op2, uint8_t flags) {
         int8_t tmp_result = op1 - op2;
         /*Flags*/
         rv.flags |= Z80_SETFLAG_BORROW(op1, tmp_result);   /* Carry                     */
-        rv.flags |= Z80_FLAG_SUBTRACT;                    /* Negative (set)            */
+        rv.flags |= Z80_FLAG_SUBTRACT;                     /* Negative (set)            */
         rv.flags |= Z80_SETFLAG_UNDERFLOW(op1, op2, tmp_result); /* Overflow            */
-        rv.flags |= Z80_SETFLAG_UNK3(op2);          /* Undoc 3 (bit 3 of result) */
-        rv.flags |= Z80_SETFLAG_HALF_BORROW(op1, op2);    /* Half carry                */
-        rv.flags |= Z80_SETFLAG_UNK5(op2);          /* Undoc 5 (bit 5 of result) */
+        rv.flags |= Z80_SETFLAG_UNK3(op2);                 /* Undoc 3 (bit 3 of result) */
+        rv.flags |= Z80_SETFLAG_HALF_BORROW(op1, op2);     /* Half carry                */
+        rv.flags |= Z80_SETFLAG_UNK5(op2);                 /* Undoc 5 (bit 5 of result) */
         rv.flags |= Z80_SETFLAG_ZERO(tmp_result);          /* Zero                      */
         rv.flags |= Z80_SETFLAG_SIGN(tmp_result);          /* Sign                      */
         break;
