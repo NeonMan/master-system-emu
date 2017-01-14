@@ -146,13 +146,13 @@ alu_result_t alu8_op(uint8_t operation, int8_t op1, int8_t op2, uint8_t flags) {
     return rv;
 }
 
-static alu_result_t op_inc(uint8_t op, uint8_t flags) {
+alu_result_t alu8_inc(uint8_t op, uint8_t flags) {
     alu_result_t rv = { 0,0 };
-    rv.result = op++;
+    rv.result = op + 1;
     rv.flags |= Z80_SETFLAG_SIGN(rv.result);
     rv.flags |= Z80_SETFLAG_ZERO(rv.result);
     rv.flags |= Z80_SETFLAG_UNK3(rv.result);
-    rv.flags |= Z80_SETFLAG_HALF_CARRY(op, rv.result); ///<-- @bug This is probably wrong AF.
+    rv.flags |= Z80_SETFLAG_HALF_CARRY(op, 1);
     rv.flags |= Z80_SETFLAG_UNK5(rv.result);
     rv.flags |= (op == 0x7f) ? Z80_FLAG_OVERFLOW : 0;
     //N is reset
@@ -160,13 +160,13 @@ static alu_result_t op_inc(uint8_t op, uint8_t flags) {
     return rv;
 }
 
-static alu_result_t op_dec(uint8_t op, uint8_t flags) {
+alu_result_t alu8_dec(uint8_t op, uint8_t flags) {
     alu_result_t rv = { 0,0 };
-    rv.result = op++;
+    rv.result = op - 1;
     rv.flags |= Z80_SETFLAG_SIGN(rv.result);
     rv.flags |= Z80_SETFLAG_ZERO(rv.result);
     rv.flags |= Z80_SETFLAG_UNK3(rv.result);
-    rv.flags |= Z80_SETFLAG_HALF_BORROW(op, rv.result); ///<-- @bug This is probably wrong AF.
+    rv.flags |= Z80_SETFLAG_HALF_BORROW(op, 1);
     rv.flags |= Z80_SETFLAG_UNK5(rv.result);
     rv.flags |= (op == 0x80) ? Z80_FLAG_OVERFLOW : 0;
     rv.flags |= Z80_FLAG_SUBTRACT;
@@ -250,7 +250,7 @@ int DEC_r() {
     assert(z80.opcode_index == 1);
     Z80_OPCODE_SUBDIV;
     const uint8_t old_r = *z80_r[y[0]];
-    const alu_result_t r = op_dec(old_r, Z80_F);
+    const alu_result_t r = alu8_dec(old_r, Z80_F);
     *z80_r[y[0]] = r.result;
     Z80_F = r.flags;
     return Z80_STAGE_RESET;
@@ -262,12 +262,12 @@ int DEC_rIXY() {
     alu_result_t r;
     if (z80.opcode[0] == 0xDD) {
         assert(z80_r_ix[y[1]]);
-        r = op_dec(*(z80_r_ix[y[1]]), Z80_F);
+        r = alu8_dec(*(z80_r_ix[y[1]]), Z80_F);
         *(z80_r_ix[y[1]]) = r.result;
     }
     else {
         assert(z80_r_iy[y[1]]);
-        r = op_dec(*(z80_r_iy[y[1]]), Z80_F);
+        r = alu8_dec(*(z80_r_iy[y[1]]), Z80_F);
         *(z80_r_iy[y[1]]) = r.result;
     }
     Z80_F = r.flags;
@@ -278,7 +278,7 @@ int DEC_rIXY() {
 int DEC_HLp() {
     assert(z80.opcode_index == 1);
     Z80_8BIT_READ(Z80_HL, 0);
-    alu_result_t r = op_dec(z80.read_buffer[0], Z80_F);
+    alu_result_t r = alu8_dec(z80.read_buffer[0], Z80_F);
     Z80_8BIT_WRITE(Z80_HL, 0, r.result);
     Z80_F = r.flags;
     return Z80_STAGE_RESET;
@@ -290,7 +290,7 @@ int INC_r() {
     Z80_OPCODE_SUBDIV;
 
     const uint8_t old_r = *z80_r[y[0]];
-    const alu_result_t r = op_inc(old_r, Z80_F);
+    const alu_result_t r = alu8_inc(old_r, Z80_F);
     *z80_r[y[0]] = r.result;
     Z80_F = r.flags;
     return Z80_STAGE_RESET;
@@ -302,12 +302,12 @@ int INC_rIXY() {
     alu_result_t r;
     if (z80.opcode[0] == 0xDD) {
         assert(z80_r_ix[y[1]]);
-        r = op_inc(*(z80_r_ix[y[1]]), Z80_F);
+        r = alu8_inc(*(z80_r_ix[y[1]]), Z80_F);
         *(z80_r_ix[y[1]]) = r.result;
     }
     else {
         assert(z80_r_iy[y[1]]);
-        r = op_inc(*(z80_r_iy[y[1]]), Z80_F);
+        r = alu8_inc(*(z80_r_iy[y[1]]), Z80_F);
         *(z80_r_iy[y[1]]) = r.result;
     }
     Z80_F = r.flags;
@@ -323,7 +323,7 @@ int INC_HLp() {
     Z80_8BIT_WRITE(Z80_HL, 0, z80.read_buffer[0] + 1);
 
     const uint8_t old_r = z80.read_buffer[0];
-    const alu_result_t r = op_inc(old_r, Z80_F);
+    const alu_result_t r = alu8_inc(old_r, Z80_F);
     Z80_F = r.flags;
     return Z80_STAGE_RESET;
 }
@@ -354,12 +354,12 @@ int INC_IXYp() {
     const int8_t d = (int8_t) z80.opcode[2];
     if (z80.opcode[0] == 0xDD) {
         Z80_8BIT_READ(Z80_IX + d, 0);
-        r = op_inc(z80.read_buffer[0], Z80_F);
+        r = alu8_inc(z80.read_buffer[0], Z80_F);
         Z80_8BIT_WRITE(Z80_IX + d, 0, r.result);
     }
     else {
         Z80_8BIT_READ(Z80_IY + d, 0);
-        r = op_inc(z80.read_buffer[0], Z80_F);
+        r = alu8_inc(z80.read_buffer[0], Z80_F);
         Z80_8BIT_WRITE(Z80_IY + d, 0, r.result);
     }
     Z80_F = r.flags;
@@ -373,12 +373,12 @@ int DEC_IXYp() {
     const int8_t d = (int8_t)z80.opcode[2];
     if (z80.opcode[0] == 0xDD) {
         Z80_8BIT_READ(Z80_IX + d, 0);
-        r = op_dec(z80.read_buffer[0], Z80_F);
+        r = alu8_dec(z80.read_buffer[0], Z80_F);
         Z80_8BIT_WRITE(Z80_IX + d, 0, r.result);
     }
     else {
         Z80_8BIT_READ(Z80_IY + d, 0);
-        r = op_dec(z80.read_buffer[0], Z80_F);
+        r = alu8_dec(z80.read_buffer[0], Z80_F);
         Z80_8BIT_WRITE(Z80_IY + d, 0, r.result);
     }
     Z80_F = r.flags;
