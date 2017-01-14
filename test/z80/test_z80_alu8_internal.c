@@ -27,6 +27,8 @@
 #include "dataset-inc.h"
 #include "dataset-dec.h"
 
+#include "dataset-neg.h"
+
 #include "test_z80.h"
 #include "z80/z80_opcodes.h"
 
@@ -36,6 +38,42 @@ TEST_SETUP(alu8_internal) {
 }
 
 TEST_TEAR_DOWN(alu8_internal) {
+}
+
+TEST(alu8_internal, neg) {
+    //Exhaust de ALU8 NEG test space
+    for (int a = 0; a < 256; a++) {
+        uint16_t expected_af = z80_dataset_neg[a + (256 * 0)];
+        uint8_t expected_a = (expected_af >> 8) & 0x00FF;
+        uint8_t expected_f = (expected_af) & 0x00FF;
+
+        z80.opcode_index = 2;
+        Z80_A = (uint8_t)a;
+        Z80_F = 0xFF;
+        NEG();
+
+        char test_str[100];
+        sprintf(test_str, "In A:%02X; Out AF:%02X%02X; Expected:%04X.", a, Z80_A, Z80_F, expected_af);
+        TEST_ASSERT_EQUAL_HEX8_MESSAGE(expected_a, Z80_A, test_str);
+        TEST_ASSERT_EQUAL_HEX8_MESSAGE(expected_f, Z80_F, test_str);
+    }
+
+    //Same, with F=0xFF initially.
+    for (int a = 0; a < 256; a++) {
+        uint16_t expected_af = z80_dataset_neg[a + (256 * 1)];
+        uint8_t expected_a = (expected_af >> 8) & 0x00FF;
+        uint8_t expected_f = (expected_af) & 0x00FF;
+
+        z80.opcode_index = 2;
+        Z80_A = (uint8_t)a;
+        Z80_F = 0xFF;
+        NEG();
+
+        char test_str[100];
+        sprintf(test_str, "In A:%02X; Out AF:%02X%02X; Expected:%04X.", a, Z80_A, Z80_F, expected_af);
+        TEST_ASSERT_EQUAL_HEX8_MESSAGE(expected_a, Z80_A, test_str);
+        TEST_ASSERT_EQUAL_HEX8_MESSAGE(expected_f, Z80_F, test_str);
+    }
 }
 
 TEST(alu8_internal, inc) {
@@ -429,6 +467,9 @@ TEST(alu8_internal, sbc) {
 }
 
 TEST_GROUP_RUNNER(alu8_internal) {
+    RUN_TEST_CASE(alu8_internal, neg);
+    RUN_TEST_CASE(alu8_internal, inc);
+    RUN_TEST_CASE(alu8_internal, dec);
     RUN_TEST_CASE(alu8_internal, add);
     RUN_TEST_CASE(alu8_internal, and);
     RUN_TEST_CASE(alu8_internal, or );
@@ -437,9 +478,6 @@ TEST_GROUP_RUNNER(alu8_internal) {
     RUN_TEST_CASE(alu8_internal, adc);
     RUN_TEST_CASE(alu8_internal, sbc);
     RUN_TEST_CASE(alu8_internal, cp );
-
-    RUN_TEST_CASE(alu8_internal, inc);
-    RUN_TEST_CASE(alu8_internal, dec);
 }
 
 // ----------------------
