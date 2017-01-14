@@ -303,7 +303,7 @@ TEST(alu8_internal, adc) {
 	}
 }
 
-IGNORE_TEST(alu8_internal, sbc) {
+TEST(alu8_internal, sbc) {
 	alu_result_t r;
 	//Exhaust the ALU8 SBC test space, F=0x00
 	for (int a = 0; a < 256; a++) {
