@@ -332,16 +332,9 @@ int INC_HLp() {
 ///NEG; Size: 2; Flags: All
 int NEG() {
     assert(z80.opcode_index == 2);
-    Z80_A = Z80_A ^ 0xFF;
-    Z80_F = 0;
-    Z80_F |= Z80_SETFLAG_SIGN(Z80_A);
-    Z80_F |= Z80_SETFLAG_ZERO(Z80_A);
-    Z80_F |= Z80_SETFLAG_HALF_BORROW(Z80_A ^ 0xFF, Z80_A);
-    Z80_F |= (Z80_A == 0x7F) ? Z80_FLAG_PARITY : 0;
-    Z80_F |= Z80_FLAG_SUBTRACT;
-    Z80_F |= (Z80_A == 0xFF) ? 0 : Z80_FLAG_CARRY;
-    Z80_F |= Z80_SETFLAG_UNK3(Z80_A);
-    Z80_F |= Z80_SETFLAG_UNK5(Z80_A);
+    alu_result_t r = alu8_op(Z80_ALUOP_SUB, 0, Z80_A, Z80_F);
+    Z80_A = r.result;
+    Z80_F = r.flags;
     return Z80_STAGE_RESET;
 }
 
