@@ -24,6 +24,9 @@
 #include "dataset-or.h"
 #include "dataset-xor.h"
 
+#include "dataset-inc.h"
+#include "dataset-dec.h"
+
 #include "test_z80.h"
 #include "z80/z80_opcodes.h"
 
@@ -33,6 +36,64 @@ TEST_SETUP(alu8_internal) {
 }
 
 TEST_TEAR_DOWN(alu8_internal) {
+}
+
+TEST(alu8_internal, inc) {
+    alu_result_t r;
+    //Exhaust de ALU8 INC test space
+    for (int a = 0; a < 256; a++) {
+        uint16_t expected_af = z80_dataset_inc[a + (256 * 0)];
+        uint8_t expected_a = (expected_af >> 8) & 0x00FF;
+        uint8_t expected_f = (expected_af) & 0x00FF;
+        r = alu8_inc(a, 0x00);
+
+        char test_str[100];
+        sprintf(test_str, "In A:%02X; Out AF:%02X%02X; Expected:%04X.", a, (uint8_t)r.result, r.flags, expected_af);
+        TEST_ASSERT_EQUAL_HEX8_MESSAGE(expected_a, r.result, test_str);
+        TEST_ASSERT_EQUAL_HEX8_MESSAGE(expected_f, r.flags, test_str);
+    }
+
+    //Same, with F=0xFF initially.
+    for (int a = 0; a < 256; a++) {
+        uint16_t expected_af = z80_dataset_inc[a + (256 * 1)];
+        uint8_t expected_a = (expected_af >> 8) & 0x00FF;
+        uint8_t expected_f = (expected_af) & 0x00FF;
+        r = alu8_inc(a, 0xFF);
+
+        char test_str[100];
+        sprintf(test_str, "In A:%02X; Out AF:%02X%02X; Expected:%04X.", a, (uint8_t)r.result, r.flags, expected_af);
+        TEST_ASSERT_EQUAL_HEX8_MESSAGE(expected_a, r.result, test_str);
+        TEST_ASSERT_EQUAL_HEX8_MESSAGE(expected_f, r.flags, test_str);
+    }
+}
+
+TEST(alu8_internal, dec) {
+    alu_result_t r;
+    //Exhaust de ALU8 DEC test space
+    for (int a = 0; a < 256; a++) {
+        uint16_t expected_af = z80_dataset_dec[a + (256 * 0)];
+        uint8_t expected_a = (expected_af >> 8) & 0x00FF;
+        uint8_t expected_f = (expected_af) & 0x00FF;
+        r = alu8_dec(a, 0x00);
+
+        char test_str[100];
+        sprintf(test_str, "In A:%02X; Out AF:%02X%02X; Expected:%04X.", a, (uint8_t)r.result, r.flags, expected_af);
+        TEST_ASSERT_EQUAL_HEX8_MESSAGE(expected_a, r.result, test_str);
+        TEST_ASSERT_EQUAL_HEX8_MESSAGE(expected_f, r.flags, test_str);
+    }
+
+    //Same, with F=0xFF initially.
+    for (int a = 0; a < 256; a++) {
+        uint16_t expected_af = z80_dataset_dec[a + (256 * 1)];
+        uint8_t expected_a = (expected_af >> 8) & 0x00FF;
+        uint8_t expected_f = (expected_af) & 0x00FF;
+        r = alu8_dec(a, 0xFF);
+
+        char test_str[100];
+        sprintf(test_str, "In A:%02X; Out AF:%02X%02X; Expected:%04X.", a, (uint8_t)r.result, r.flags, expected_af);
+        TEST_ASSERT_EQUAL_HEX8_MESSAGE(expected_a, r.result, test_str);
+        TEST_ASSERT_EQUAL_HEX8_MESSAGE(expected_f, r.flags, test_str);
+    }
 }
 
 TEST(alu8_internal, add) {
@@ -376,6 +437,9 @@ TEST_GROUP_RUNNER(alu8_internal) {
     RUN_TEST_CASE(alu8_internal, adc);
     RUN_TEST_CASE(alu8_internal, sbc);
     RUN_TEST_CASE(alu8_internal, cp );
+
+    RUN_TEST_CASE(alu8_internal, inc);
+    RUN_TEST_CASE(alu8_internal, dec);
 }
 
 // ----------------------
