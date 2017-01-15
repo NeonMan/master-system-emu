@@ -35,6 +35,11 @@ add_executable(zzz_test_z80_block test_z80_block.c)
 target_link_libraries(zzz_test_z80_block z80 smsram unity glue sms_debug)
 add_test(test_z80_block zzz_test_z80_block)
 
+#Rotation operations
+add_executable(zzz_test_z80_rotate test_z80_rotate.c)
+target_link_libraries(zzz_test_z80_rotate z80 smsram unity glue sms_debug)
+add_test(test_z80_rotate zzz_test_z80_rotate)
+
 #Exchange
 #add_executable(zzz_test_z80_exchange test_z80_exchange.c)
 #target_link_libraries(zzz_test_z80_exchange z80 smsram unity)

@@ -267,5 +267,6 @@ int UNDOC();
 alu_result_t alu8_op(uint8_t operation, int8_t op1, int8_t op2, uint8_t flags);
 alu_result_t alu8_inc(uint8_t op, uint8_t flags);
 alu_result_t alu8_dec(uint8_t op, uint8_t flags);
+alu_result_t op_rotate_shift(uint8_t operation, uint8_t op, uint8_t flags);
 
 #endif
