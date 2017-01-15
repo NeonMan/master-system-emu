@@ -156,38 +156,84 @@ int NOP(){
 ///RLA; Size: 2; Flags: HC,A,C
 int RLA(){
     assert(z80.opcode_index == 1);
-    const uint8_t next_carry = Z80_A & (1 << 7);
-    Z80_A = (Z80_A << 1) | (Z80_F & Z80_FLAG_CARRY ? 1 : 0);
-    Z80_F = (Z80_A & (Z80_CLRFLAG_HC & Z80_CLRFLAG_SUBTRACT & Z80_CLRFLAG_CARRY))
-        | (next_carry ? Z80_FLAG_CARRY : 0);
+    alu_result_t r = op_rotate_shift(Z80_SHIFT_RL, Z80_A, Z80_F);
+    /*It behaves like the underlying rotate operation but keeps S/Z/P flags*/
+    Z80_F = Z80_F & (
+        Z80_CLRFLAG_CARRY & 
+        Z80_CLRFLAG_SUBTRACT &
+        Z80_CLRFLAG_UNK3 &
+        Z80_CLRFLAG_HC &
+        Z80_CLRFLAG_UNK5
+        ); // <-- Clear everything but S/Z/P.
+
+    Z80_F = Z80_F | (
+        r.flags & (Z80_CLRFLAG_SIGN & Z80_CLRFLAG_ZERO & Z80_CLRFLAG_PARITY)
+        ); // <-- Set the bits from the rotate operation.
+
+    Z80_A = r.result;
     return Z80_STAGE_RESET;
 }
 
 ///RLCA; Size: 1; Flags: H,N,C
 int RLCA(){
     assert(z80.opcode_index == 1);
-    Z80_A = (Z80_A << 1) | (Z80_A & (1 << 7) ? 1 : 0);
-    Z80_F = (Z80_F & (Z80_CLRFLAG_HC & Z80_CLRFLAG_SUBTRACT & Z80_CLRFLAG_CARRY))
-        | ((Z80_A & (1)) ? Z80_FLAG_CARRY : 0);
+    alu_result_t r = op_rotate_shift(Z80_SHIFT_RLC, Z80_A, Z80_F);
+    /*It behaves like the underlying rotate operation but keeps S/Z/P flags*/
+    Z80_F = Z80_F & (
+        Z80_CLRFLAG_CARRY &
+        Z80_CLRFLAG_SUBTRACT &
+        Z80_CLRFLAG_UNK3 &
+        Z80_CLRFLAG_HC &
+        Z80_CLRFLAG_UNK5
+        ); // <-- Clear everything but S/Z/P.
+
+    Z80_F = Z80_F | (
+        r.flags & (Z80_CLRFLAG_SIGN & Z80_CLRFLAG_ZERO & Z80_CLRFLAG_PARITY)
+        ); // <-- Set the bits from the rotate operation.
+
+    Z80_A = r.result;
     return Z80_STAGE_RESET;
 }
 
 ///RRA; Size: 1; Flags: H,N,C
 int RRA(){
     assert(z80.opcode_index == 1);
-    const uint8_t next_carry = Z80_A & (1);
-    Z80_A = (Z80_A >> 1) | (Z80_F & Z80_FLAG_CARRY ? (1 << 7) : 0);
-    Z80_F = (Z80_A & (Z80_CLRFLAG_HC & Z80_CLRFLAG_SUBTRACT & Z80_CLRFLAG_CARRY))
-        | (next_carry ? Z80_FLAG_CARRY : 0);
+    alu_result_t r = op_rotate_shift(Z80_SHIFT_RR, Z80_A, Z80_F);
+    /*It behaves like the underlying rotate operation but keeps S/Z/P flags*/
+    Z80_F = Z80_F & (
+        Z80_CLRFLAG_CARRY &
+        Z80_CLRFLAG_SUBTRACT &
+        Z80_CLRFLAG_UNK3 &
+        Z80_CLRFLAG_HC &
+        Z80_CLRFLAG_UNK5
+        ); // <-- Clear everything but S/Z/P.
+
+    Z80_F = Z80_F | (
+        r.flags & (Z80_CLRFLAG_SIGN & Z80_CLRFLAG_ZERO & Z80_CLRFLAG_PARITY)
+        ); // <-- Set the bits from the rotate operation.
+
+    Z80_A = r.result;
     return Z80_STAGE_RESET;
 }
 
 ///RRCA; Size: 1; Flags: H,N,C
 int RRCA(){
     assert(z80.opcode_index == 1);
-    Z80_A = (Z80_A >> 1) | (Z80_A & 1 ? (1 << 7) : 0);
-    Z80_F = (Z80_F & (Z80_CLRFLAG_HC & Z80_CLRFLAG_SUBTRACT & Z80_CLRFLAG_CARRY))
-        | ((Z80_A & (1 << 7)) ? Z80_FLAG_CARRY : 0);
+    alu_result_t r = op_rotate_shift(Z80_SHIFT_RRC, Z80_A, Z80_F);
+    /*It behaves like the underlying rotate operation but keeps S/Z/P flags*/
+    Z80_F = Z80_F & (
+        Z80_CLRFLAG_CARRY &
+        Z80_CLRFLAG_SUBTRACT &
+        Z80_CLRFLAG_UNK3 &
+        Z80_CLRFLAG_HC &
+        Z80_CLRFLAG_UNK5
+        ); // <-- Clear everything but S/Z/P.
+
+    Z80_F = Z80_F | (
+        r.flags & (Z80_CLRFLAG_SIGN & Z80_CLRFLAG_ZERO & Z80_CLRFLAG_PARITY)
+        ); // <-- Set the bits from the rotate operation.
+
+    Z80_A = r.result;
     return Z80_STAGE_RESET;
 }
 
