@@ -382,7 +382,7 @@ TEST(rotate, rrca) {
 
         z80.opcode_index = 1;
         Z80_A = a;
-        Z80_F = 0x00;
+        Z80_F = 0xFF;
         RRCA();
 
         make_msg(a);
@@ -416,7 +416,7 @@ TEST(rotate, rlca) {
 
         z80.opcode_index = 1;
         Z80_A = a;
-        Z80_F = 0x00;
+        Z80_F = 0xFF;
         RLCA();
 
         make_msg(a);
