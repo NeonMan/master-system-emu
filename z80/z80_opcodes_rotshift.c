@@ -20,7 +20,7 @@
 extern struct z80_s z80; //<-- Access to z80 internals
 
 ///Implementation of rotations and shifts. All flags affected.
-static alu_result_t op_rotate_shift(uint8_t operation, uint8_t op, uint8_t flags) {
+alu_result_t op_rotate_shift(uint8_t operation, uint8_t op, uint8_t flags) {
     alu_result_t rv = { 0, 0 };
     uint8_t tmp_bit;
     uint8_t tmp_carry;
@@ -33,6 +33,8 @@ static alu_result_t op_rotate_shift(uint8_t operation, uint8_t op, uint8_t flags
         rv.flags |= Z80_SETFLAG_ZERO(rv.result);
         rv.flags |= Z80_SETFLAG_PARITY(rv.result);
         rv.flags |= (tmp_bit) ? Z80_FLAG_CARRY : 0;
+        rv.flags |= Z80_SETFLAG_UNK3(rv.result);
+        rv.flags |= Z80_SETFLAG_UNK5(rv.result);
         break;
     case Z80_SHIFT_RRC:
         tmp_bit = (op & 1) ? (1<<7) : 0;
@@ -41,6 +43,8 @@ static alu_result_t op_rotate_shift(uint8_t operation, uint8_t op, uint8_t flags
         rv.flags |= Z80_SETFLAG_ZERO(rv.result);
         rv.flags |= Z80_SETFLAG_PARITY(rv.result);
         rv.flags |= (tmp_bit) ? Z80_FLAG_CARRY : 0;
+        rv.flags |= Z80_SETFLAG_UNK3(rv.result);
+        rv.flags |= Z80_SETFLAG_UNK5(rv.result);
         break;
     case Z80_SHIFT_RL:
         tmp_bit = (flags & Z80_FLAG_CARRY) ? 1 : 0;
@@ -50,6 +54,8 @@ static alu_result_t op_rotate_shift(uint8_t operation, uint8_t op, uint8_t flags
         rv.flags |= Z80_SETFLAG_ZERO(rv.result);
         rv.flags |= Z80_SETFLAG_PARITY(rv.result);
         rv.flags |= (tmp_carry) ? Z80_FLAG_CARRY : 0;
+        rv.flags |= Z80_SETFLAG_UNK3(rv.result);
+        rv.flags |= Z80_SETFLAG_UNK5(rv.result);
         break;
     case Z80_SHIFT_RR:
         tmp_bit = (flags & Z80_FLAG_CARRY) ? (1<<7) : 0;
@@ -59,6 +65,8 @@ static alu_result_t op_rotate_shift(uint8_t operation, uint8_t op, uint8_t flags
         rv.flags |= Z80_SETFLAG_ZERO(rv.result);
         rv.flags |= Z80_SETFLAG_PARITY(rv.result);
         rv.flags |= (tmp_carry) ? Z80_FLAG_CARRY : 0;
+        rv.flags |= Z80_SETFLAG_UNK3(rv.result);
+        rv.flags |= Z80_SETFLAG_UNK5(rv.result);
         break;
     case Z80_SHIFT_SLA:
         rv.result = op << 1;
