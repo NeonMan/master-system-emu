@@ -165,12 +165,136 @@ TEST(rotate, rr) {
     }
 }
 
-IGNORE_TEST(rotate, rla) {
+TEST(rotate, rla) {
+    //Test for initial F=0x00
+    for (int a = 0; a < 256; a++) {
+        uint16_t expected_af = z80_dataset_rla[a + (256 * 0)];
+        uint8_t  expected_a = (expected_af >> 8) & 0xFF;
+        uint8_t  expected_f = expected_af & 0xFF;
 
+        z80.opcode_index = 1;
+        Z80_A = a;
+        Z80_F = 0x00;
+        RLA();
+
+        make_msg(a);
+        TEST_ASSERT_EQUAL_HEX8_MESSAGE(expected_a, Z80_A, test_str);
+        TEST_ASSERT_EQUAL_HEX8_MESSAGE(expected_f, Z80_F, test_str);
+    }
+
+    //Test for initial F=0x00 + Carry
+    for (int a = 0; a < 256; a++) {
+        uint16_t expected_af = z80_dataset_rla[a + (256 * 1)];
+        uint8_t  expected_a = (expected_af >> 8) & 0xFF;
+        uint8_t  expected_f = expected_af & 0xFF;
+
+        z80.opcode_index = 1;
+        Z80_A = a;
+        Z80_F = 0x00 | Z80_FLAG_CARRY;
+        RLA();
+
+        make_msg(a);
+        TEST_ASSERT_EQUAL_HEX8_MESSAGE(expected_a, Z80_A, test_str);
+        TEST_ASSERT_EQUAL_HEX8_MESSAGE(expected_f, Z80_F, test_str);
+    }
+
+    //Test for initial F=0xFF
+    for (int a = 0; a < 256; a++) {
+        uint16_t expected_af = z80_dataset_rla[a + (256 * 2)];
+        uint8_t  expected_a = (expected_af >> 8) & 0xFF;
+        uint8_t  expected_f = expected_af & 0xFF;
+
+        z80.opcode_index = 1;
+        Z80_A = a;
+        Z80_F = 0xFF;
+        RLA();
+
+        make_msg(a);
+        TEST_ASSERT_EQUAL_HEX8_MESSAGE(expected_a, Z80_A, test_str);
+        TEST_ASSERT_EQUAL_HEX8_MESSAGE(expected_f, Z80_F, test_str);
+    }
+
+    //Test for initial F=0xFF - Carry
+    for (int a = 0; a < 256; a++) {
+        uint16_t expected_af = z80_dataset_rla[a + (256 * 3)];
+        uint8_t  expected_a = (expected_af >> 8) & 0xFF;
+        uint8_t  expected_f = expected_af & 0xFF;
+
+        z80.opcode_index = 1;
+        Z80_A = a;
+        Z80_F = 0xFF & Z80_CLRFLAG_CARRY;
+        RLA();
+
+        make_msg(a);
+        TEST_ASSERT_EQUAL_HEX8_MESSAGE(expected_a, Z80_A, test_str);
+        TEST_ASSERT_EQUAL_HEX8_MESSAGE(expected_f, Z80_F, test_str);
+    }
 }
 
-IGNORE_TEST(rotate, rra) {
+TEST(rotate, rra) {
+    //Test for initial F=0x00
+    for (int a = 0; a < 256; a++) {
+        uint16_t expected_af = z80_dataset_rra[a + (256 * 0)];
+        uint8_t  expected_a = (expected_af >> 8) & 0xFF;
+        uint8_t  expected_f = expected_af & 0xFF;
 
+        z80.opcode_index = 1;
+        Z80_A = a;
+        Z80_F = 0x00;
+        RRA();
+
+        make_msg(a);
+        TEST_ASSERT_EQUAL_HEX8_MESSAGE(expected_a, Z80_A, test_str);
+        TEST_ASSERT_EQUAL_HEX8_MESSAGE(expected_f, Z80_F, test_str);
+    }
+
+    //Test for initial F=0x00 + Carry
+    for (int a = 0; a < 256; a++) {
+        uint16_t expected_af = z80_dataset_rra[a + (256 * 1)];
+        uint8_t  expected_a = (expected_af >> 8) & 0xFF;
+        uint8_t  expected_f = expected_af & 0xFF;
+
+        z80.opcode_index = 1;
+        Z80_A = a;
+        Z80_F = 0x00 | Z80_FLAG_CARRY;
+        RRA();
+
+        make_msg(a);
+        TEST_ASSERT_EQUAL_HEX8_MESSAGE(expected_a, Z80_A, test_str);
+        TEST_ASSERT_EQUAL_HEX8_MESSAGE(expected_f, Z80_F, test_str);
+    }
+
+    //Test for initial F=0xFF
+    for (int a = 0; a < 256; a++) {
+        uint16_t expected_af = z80_dataset_rra[a + (256 * 2)];
+        uint8_t  expected_a = (expected_af >> 8) & 0xFF;
+        uint8_t  expected_f = expected_af & 0xFF;
+
+        z80.opcode_index = 1;
+        Z80_A = a;
+        Z80_F = 0xFF;
+        RRA();
+
+        make_msg(a);
+        TEST_ASSERT_EQUAL_HEX8_MESSAGE(expected_a, Z80_A, test_str);
+        TEST_ASSERT_EQUAL_HEX8_MESSAGE(expected_f, Z80_F, test_str);
+    }
+
+    //Test for initial F=0xFF - Carry
+    for (int a = 0; a < 256; a++) {
+        uint16_t expected_af = z80_dataset_rra[a + (256 * 3)];
+        uint8_t  expected_a = (expected_af >> 8) & 0xFF;
+        uint8_t  expected_f = expected_af & 0xFF;
+
+        z80.opcode_index = 1;
+        Z80_A = a;
+        Z80_F = 0xFF & Z80_CLRFLAG_CARRY;
+        RRA();
+
+        make_msg(a);
+        TEST_ASSERT_EQUAL_HEX8_MESSAGE(expected_a, Z80_A, test_str);
+        TEST_ASSERT_EQUAL_HEX8_MESSAGE(expected_f, Z80_F, test_str);
+    }
 }
 
 TEST(rotate, rrc) {
@@ -233,12 +357,72 @@ TEST(rotate, rlc) {
     }
 }
 
-IGNORE_TEST(rotate, rrca) {
+TEST(rotate, rrca) {
+    //Test for initial F=0x00
+    for (int a = 0; a < 256; a++) {
+        uint16_t expected_af = z80_dataset_rrca[a + (256 * 0)];
+        uint8_t  expected_a = (expected_af >> 8) & 0xFF;
+        uint8_t  expected_f = expected_af & 0xFF;
 
+        z80.opcode_index = 1;
+        Z80_A = a;
+        Z80_F = 0x00;
+        RRCA();
+
+        make_msg(a);
+        TEST_ASSERT_EQUAL_HEX8_MESSAGE(expected_a, Z80_A, test_str);
+        TEST_ASSERT_EQUAL_HEX8_MESSAGE(expected_f, Z80_F, test_str);
+    }
+
+    //Test for initial F=0xFF
+    for (int a = 0; a < 256; a++) {
+        uint16_t expected_af = z80_dataset_rrca[a + (256 * 1)];
+        uint8_t  expected_a = (expected_af >> 8) & 0xFF;
+        uint8_t  expected_f = expected_af & 0xFF;
+
+        z80.opcode_index = 1;
+        Z80_A = a;
+        Z80_F = 0x00;
+        RRCA();
+
+        make_msg(a);
+        TEST_ASSERT_EQUAL_HEX8_MESSAGE(expected_a, Z80_A, test_str);
+        TEST_ASSERT_EQUAL_HEX8_MESSAGE(expected_f, Z80_F, test_str);
+    }
 }
 
-IGNORE_TEST(rotate, rlca) {
+TEST(rotate, rlca) {
+    //Test for initial F=0x00
+    for (int a = 0; a < 256; a++) {
+        uint16_t expected_af = z80_dataset_rlca[a + (256 * 0)];
+        uint8_t  expected_a = (expected_af >> 8) & 0xFF;
+        uint8_t  expected_f = expected_af & 0xFF;
 
+        z80.opcode_index = 1;
+        Z80_A = a;
+        Z80_F = 0x00;
+        RLCA();
+
+        make_msg(a);
+        TEST_ASSERT_EQUAL_HEX8_MESSAGE(expected_a, Z80_A, test_str);
+        TEST_ASSERT_EQUAL_HEX8_MESSAGE(expected_f, Z80_F, test_str);
+    }
+
+    //Test for initial F=0xFF
+    for (int a = 0; a < 256; a++) {
+        uint16_t expected_af = z80_dataset_rlca[a + (256 * 1)];
+        uint8_t  expected_a = (expected_af >> 8) & 0xFF;
+        uint8_t  expected_f = expected_af & 0xFF;
+
+        z80.opcode_index = 1;
+        Z80_A = a;
+        Z80_F = 0x00;
+        RLCA();
+
+        make_msg(a);
+        TEST_ASSERT_EQUAL_HEX8_MESSAGE(expected_a, Z80_A, test_str);
+        TEST_ASSERT_EQUAL_HEX8_MESSAGE(expected_f, Z80_F, test_str);
+    }
 }
 
 TEST_GROUP_RUNNER(rotate){
