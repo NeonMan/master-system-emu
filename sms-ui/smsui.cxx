@@ -209,7 +209,7 @@ int main(int argc, char** argv){
     z80dbg_set_pc_breakpoint_cb(emu_pc_breakpoint_cb);
 
     //Provide the UI with relevant variables
-    dlg_z80->set_running_ptr((uint64_t*) &is_clocked);
+    dlg_z80->set_running_ptr(&is_clocked);
     dlg_z80->set_z80_ptr(z80dbg_get_z80());
     dlg_brk->set_breakpoint_table(z80dbg_get_breakpoints());
 
