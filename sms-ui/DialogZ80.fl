@@ -1,6 +1,6 @@
 # data file for the Fltk User Interface Designer (fluid)
-version 1.0303 
-header_name {.h} 
+version 1.0304
+header_name {.h}
 code_name {.cxx}
 comment {Copyright 2015 Juan Luis Álvarez Martínez
 
@@ -17,7 +17,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 } {in_source in_header
-} 
+}
 
 declblock {\#if 1} {open public after {\#endif}
 } {
@@ -33,7 +33,7 @@ declblock {\#if 1} {open public after {\#endif}
   }
   decl {\#include <z80dasm/z80_dasm.h>} {public global
   }
-} 
+}
 
 class DialogZ80 {
   comment {Shows the z80 internal state} open
@@ -41,13 +41,13 @@ class DialogZ80 {
   decl {struct z80_s* z80_ptr = 0;} {
     comment {Pointer to z80 internals.} private local
   }
-  decl {uint32_t* running_ptr = 0;} {
+  decl {uint64_t* running_ptr = 0;} {
     comment {A pointer to the z80 clock on/off variable.} private local
   }
   Function {DialogZ80()} {open
   } {
     Fl_Window windowDialog {
-      label z80
+      label z80 open
       xywh {364 178 668 299} type Double align 80 visible
     } {
       Fl_Group {} {
@@ -207,16 +207,16 @@ class DialogZ80 {
         }
       }
       Fl_Group {} {
-        label Buttons
+        label Buttons open
         private xywh {360 175 295 100} labeltype NO_LABEL
       } {
         Fl_Light_Button buttonRunning {
           label Running
-          callback {uint32_t* volatile rp = running_ptr;
+          callback {uint64_t* volatile rp = running_ptr;
   
   if(this->running_ptr){
     if(o->value())
-      *rp = UINT32_MAX;
+      *rp = UINT64_MAX;
     else
       *rp = 0;
   }}
@@ -224,11 +224,11 @@ class DialogZ80 {
         }
         Fl_Button buttonEdge {
           label Edge
-          callback {uint32_t* volatile rp = running_ptr;
+          callback {uint64_t* volatile rp = running_ptr;
   
   if(this->running_ptr){
-      *rp = (uint32_t) spinEdgecount->value();;
-  }}
+      *rp = (uint64_t) spinEdgecount->value();;
+  }} selected
           private xywh {530 225 75 25}
         }
         Fl_Spinner spinEdgecount {
@@ -303,8 +303,8 @@ this->textStage->value("M1 ?");
 this->buttonRunning->value(1);
 // --- END Initial values ---} {}
   }
-  Function {set_running_ptr(uint32_t* p)} {
-    comment {Sets a pointer to the clock on/of var.} return_type void
+  Function {set_running_ptr(uint64_t* p)} {
+    comment {Sets a pointer to the clock on/of var.} open return_type void
   } {
     code {this->running_ptr = p;} {}
   }
@@ -431,7 +431,6 @@ this->buttonRunning->value(1);
     sprintf(tmp_str, "%s ;(Size: %d)", op.opcode_str, op.size);
     textDasm->value(tmp_str);
     \#undef z80
-  }} {selected
-    }
+  }} {}
   }
-} 
+}
