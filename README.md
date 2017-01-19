@@ -35,7 +35,8 @@ Issues listed here describe inaccurate behaviours and inefficiencies in implemen
 
 ## Licensing ##
 
-This project is licensed under the 
-[Apache License Version 2.0](http://www.apache.org/licenses/LICENSE-2.0). In 
-essence you can use this project, even on proprietary software, with very few
+This project is licensed under the [Apache License] Version 2.0 that in essence allows 
+you to use this project for any purpose, even on proprietary software, with very few
 restrictions.
+
+   [Apache License]:     http://www.apache.org/licenses/LICENSE-2.0
