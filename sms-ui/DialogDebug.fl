@@ -8,7 +8,7 @@ class DialogDebugger {open
   } {
     Fl_Window windowDialog {
       label Debugger open
-      xywh {627 300 1105 421} type Double resizable visible
+      xywh {481 344 1105 420} type Double resizable visible
     } {
       Fl_Input_Choice inputCommand {open
         xywh {260 390 835 20} hotspot
@@ -168,17 +168,31 @@ class DialogDebugger {open
           }
         }
       }
-      Fl_Tabs tabMain {
+      Fl_Tabs tabMain {open
         xywh {260 30 835 355} labeltype NO_LABEL resizable
       } {
         Fl_Group {} {
           label Disasm open
           xywh {260 30 835 330}
-        } {}
+        } {
+          Fl_Text_Editor {} {
+            xywh {265 35 810 320} textfont 4 resizable
+          }
+          Fl_Scrollbar {} {selected
+            xywh {1075 35 15 320} maximum 65535
+          }
+        }
         Fl_Group {} {
           label Dump open
           xywh {260 30 835 330} hide
-        } {}
+        } {
+          Fl_Text_Editor {} {
+            xywh {265 35 810 320} textfont 4 resizable
+          }
+          Fl_Scrollbar {} {
+            xywh {1075 35 15 320} maximum 65535
+          }
+        }
       }
       Fl_Menu_Bar {} {open
         xywh {0 0 1105 25}
@@ -238,7 +252,7 @@ class DialogDebugger {open
             xywh {0 0 100 20} shortcut 0xffbe
           }
           MenuItem {} {
-            label {About...} selected
+            label {About...}
             xywh {0 0 100 20}
           }
         }
