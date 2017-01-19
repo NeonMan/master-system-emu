@@ -2,7 +2,7 @@
 version 1.0304
 header_name {.h}
 code_name {.cxx}
-class DialogDebugger {open
+class _DialogDebugger {open
 } {
   Function {make_window()} {open
   } {
