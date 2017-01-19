@@ -35,16 +35,16 @@ declblock {\#if 1} {open public after {\#endif}
   }
 }
 
-class DialogZ80 {
+class _DialogZ80 {
   comment {Shows the z80 internal state} open
 } {
   decl {struct z80_s* z80_ptr = 0;} {
-    comment {Pointer to z80 internals.} private local
+    comment {Pointer to z80 internals.} protected local
   }
   decl {uint64_t* running_ptr = 0;} {
-    comment {A pointer to the z80 clock on/off variable.} private local
+    comment {A pointer to the z80 clock on/off variable.} protected local
   }
-  Function {DialogZ80()} {open
+  Function {_DialogZ80()} {open
   } {
     Fl_Window windowDialog {
       label z80 open
@@ -52,163 +52,163 @@ class DialogZ80 {
     } {
       Fl_Group {} {
         label Registers
-        private xywh {0 20 165 265}
+        protected xywh {0 20 165 265}
       } {
         Fl_Output textAF {
           label AF
-          private xywh {25 30 50 30} textfont 13
+          protected xywh {25 30 50 30} textfont 13
         }
         Fl_Output textBC {
           label BC
-          private xywh {25 60 50 30} textfont 13
+          protected xywh {25 60 50 30} textfont 13
         }
         Fl_Output textDE {
           label DE
-          private xywh {25 90 50 30} textfont 13
+          protected xywh {25 90 50 30} textfont 13
         }
         Fl_Output textHL {
           label HL
-          private xywh {25 120 50 30} textfont 13
+          protected xywh {25 120 50 30} textfont 13
         }
         Fl_Output textIX {
           label IX
-          private xywh {25 150 50 30} textfont 13
+          protected xywh {25 150 50 30} textfont 13
         }
         Fl_Output textIY {
           label IY
-          private xywh {25 180 50 30} textfont 13
+          protected xywh {25 180 50 30} textfont 13
         }
         Fl_Output textSP {
           label SP
-          private xywh {25 215 50 30} textfont 13
+          protected xywh {25 215 50 30} textfont 13
         }
         Fl_Output textPC {
           label PC
-          private xywh {25 245 50 30} textfont 13
+          protected xywh {25 245 50 30} textfont 13
         }
         Fl_Output textAFp {
           label {AF'}
-          private xywh {110 30 50 30} textfont 13
+          protected xywh {110 30 50 30} textfont 13
         }
         Fl_Output textBCp {
           label {BC'}
-          private xywh {110 60 50 30} textfont 13
+          protected xywh {110 60 50 30} textfont 13
         }
         Fl_Output textDEp {
           label {DE'}
-          private xywh {110 90 50 30} textfont 13
+          protected xywh {110 90 50 30} textfont 13
         }
         Fl_Output textHLp {
           label {HL'}
-          private xywh {110 120 50 30} textfont 13
+          protected xywh {110 120 50 30} textfont 13
         }
         Fl_Output textIR {
           label IR
-          private xywh {110 150 50 30} textfont 13
+          protected xywh {110 150 50 30} textfont 13
         }
       }
       Fl_Group {} {
         label Signals
-        private xywh {190 20 235 165}
+        protected xywh {190 20 235 165}
       } {
         Fl_Check_Button checkM1 {
           label {!M1}
-          private xywh {245 25 25 25} down_box DOWN_BOX align 4
+          protected xywh {245 25 25 25} down_box DOWN_BOX align 4
         }
         Fl_Check_Button checkMreq {
           label {!MREQ}
-          private xywh {245 45 25 25} down_box DOWN_BOX align 4
+          protected xywh {245 45 25 25} down_box DOWN_BOX align 4
         }
         Fl_Check_Button checkIoreq {
           label {!IOREQ}
-          private xywh {245 65 25 25} down_box DOWN_BOX align 4
+          protected xywh {245 65 25 25} down_box DOWN_BOX align 4
         }
         Fl_Check_Button checkRd {
           label {!RD}
-          private xywh {245 85 25 25} down_box DOWN_BOX align 4
+          protected xywh {245 85 25 25} down_box DOWN_BOX align 4
         }
         Fl_Check_Button checkWr {
           label {!WR}
-          private xywh {245 105 25 25} down_box DOWN_BOX align 4
+          protected xywh {245 105 25 25} down_box DOWN_BOX align 4
         }
         Fl_Check_Button checkRfsh {
           label {!RFSH}
-          private xywh {245 125 25 25} down_box DOWN_BOX align 4
+          protected xywh {245 125 25 25} down_box DOWN_BOX align 4
         }
         Fl_Check_Button checkHalt {
           label {!HALT}
-          private xywh {245 145 25 25} down_box DOWN_BOX align 4 deactivate
+          protected xywh {245 145 25 25} down_box DOWN_BOX align 4 deactivate
         }
         Fl_Check_Button checkWait {
           label {!WAIT}
-          private xywh {330 25 25 25} down_box DOWN_BOX align 4
+          protected xywh {330 25 25 25} down_box DOWN_BOX align 4
         }
         Fl_Check_Button checkInt {
           label {!INT}
-          private xywh {330 45 25 25} down_box DOWN_BOX align 4
+          protected xywh {330 45 25 25} down_box DOWN_BOX align 4
         }
         Fl_Check_Button checkNmi {
           label {!NMI}
-          private xywh {330 65 25 25} down_box DOWN_BOX align 4
+          protected xywh {330 65 25 25} down_box DOWN_BOX align 4
         }
         Fl_Check_Button checkReset {
           label {!RESET}
-          private xywh {330 85 25 25} down_box DOWN_BOX align 4
+          protected xywh {330 85 25 25} down_box DOWN_BOX align 4
         }
         Fl_Check_Button checkClk {
           label {!CLK}
-          private xywh {330 105 25 25} down_box DOWN_BOX align 4 deactivate
+          protected xywh {330 105 25 25} down_box DOWN_BOX align 4 deactivate
         }
         Fl_Check_Button checkBusreq {
           label {!BUSRQ}
-          private xywh {330 125 25 25} down_box DOWN_BOX align 4
+          protected xywh {330 125 25 25} down_box DOWN_BOX align 4
         }
         Fl_Check_Button checkBusack {
           label {!BUSACK}
-          private xywh {330 145 25 25} down_box DOWN_BOX align 4
+          protected xywh {330 145 25 25} down_box DOWN_BOX align 4
         }
       }
       Fl_Group {} {
         label Buses
-        private xywh {335 195 170 90}
+        protected xywh {335 195 170 90}
       } {
         Fl_Output textAddress {
           label Address
-          private xywh {390 205 105 25} textfont 13
+          protected xywh {390 205 105 25} textfont 13
         }
         Fl_Output textData {
           label Data
-          private xywh {390 230 105 25} textfont 13
+          protected xywh {390 230 105 25} textfont 13
         }
       }
       Fl_Group {} {
         label {Internal state} open
-        private xywh {360 25 300 140}
+        protected xywh {360 25 300 140}
       } {
         Fl_Output textOpcode {
           label Opcode
-          private xywh {420 30 240 25} textfont 13
+          protected xywh {420 30 240 25} textfont 13
         }
         Fl_Output textStage {
           label Stage
-          private xywh {420 80 45 25} textfont 13
+          protected xywh {420 80 45 25} textfont 13
         }
         Fl_Output textDasm {
           label Disasm
-          private xywh {420 55 240 25} align 7 textfont 13
+          protected xywh {420 55 240 25} align 7 textfont 13
         }
         Fl_Output textRbuffer {
           label {R Buffer}
-          private xywh {420 105 140 25} textfont 13
+          protected xywh {420 105 140 25} textfont 13
         }
         Fl_Output textWbuffer {
           label {W Buffer}
-          private xywh {420 130 140 25} textfont 13
+          protected xywh {420 130 140 25} textfont 13
         }
       }
       Fl_Group {} {
         label Buttons open
-        private xywh {360 175 295 100} labeltype NO_LABEL
+        protected xywh {360 175 295 100} labeltype NO_LABEL
       } {
         Fl_Light_Button buttonRunning {
           label Running
@@ -220,7 +220,7 @@ class DialogZ80 {
     else
       *rp = 0;
   }}
-          private xywh {530 200 125 25}
+          protected xywh {530 200 125 25}
         }
         Fl_Button buttonEdge {
           label Edge
@@ -229,51 +229,51 @@ class DialogZ80 {
   if(this->running_ptr){
       *rp = (uint64_t) spinEdgecount->value();;
   }} selected
-          private xywh {530 225 75 25}
+          protected xywh {530 225 75 25}
         }
         Fl_Spinner spinEdgecount {
-          private xywh {605 225 50 25}
+          protected xywh {605 225 50 25}
         }
         Fl_Button buttonStep {
           label Step
-          private xywh {530 250 125 25} deactivate
+          protected xywh {530 250 125 25} deactivate
         }
       }
       Fl_Group {} {
         label Flags open
-        private xywh {175 195 150 105}
+        protected xywh {175 195 150 105}
       } {
         Fl_Check_Button checkCarry {
           label Carry
-          private xywh {225 195 25 25} down_box DOWN_BOX align 4
+          protected xywh {225 195 25 25} down_box DOWN_BOX align 4
         }
         Fl_Check_Button checkAdd {
           label Subtract
-          private xywh {225 220 25 25} down_box DOWN_BOX align 4
+          protected xywh {225 220 25 25} down_box DOWN_BOX align 4
         }
         Fl_Check_Button checkParity {
           label Parity
-          private xywh {225 245 25 25} down_box DOWN_BOX align 4
+          protected xywh {225 245 25 25} down_box DOWN_BOX align 4
         }
         Fl_Check_Button checkUnk3 {
           label {Unk. (3)}
-          private xywh {225 270 25 25} down_box DOWN_BOX align 4
+          protected xywh {225 270 25 25} down_box DOWN_BOX align 4
         }
         Fl_Check_Button checkHCarry {
           label HCarry
-          private xywh {300 195 25 25} down_box DOWN_BOX align 4
+          protected xywh {300 195 25 25} down_box DOWN_BOX align 4
         }
         Fl_Check_Button checkUnk5 {
           label {Unk. (5)}
-          private xywh {300 220 25 25} down_box DOWN_BOX align 4
+          protected xywh {300 220 25 25} down_box DOWN_BOX align 4
         }
         Fl_Check_Button checkZero {
           label Zero
-          private xywh {300 245 25 25} down_box DOWN_BOX align 4
+          protected xywh {300 245 25 25} down_box DOWN_BOX align 4
         }
         Fl_Check_Button checkSign {
           label Sign
-          private xywh {300 270 25 25} down_box DOWN_BOX align 4
+          protected xywh {300 270 25 25} down_box DOWN_BOX align 4
         }
       }
     }

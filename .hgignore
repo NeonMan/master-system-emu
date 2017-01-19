@@ -45,6 +45,12 @@ test-roms\/
 Makefile$
 err\.txt$
 
+#Generated files
+\_[^\.]*\.cxx
+\_[^\.]*\.hpp
+\_[^\.]*\.c
+\_[^\.]*\.h
+
 syntax: glob
 
 #Individual files
@@ -63,11 +69,3 @@ sms-ui/smsui
 test/test_mem/test_mem
 test/test_z80/test_z80_decoder
 test/test_z80/test_z80_macros
-
-sms-ui/DialogZ80.h
-sms-ui/DialogBreakpoint.h
-sms-ui/DialogDebug.h
-
-sms-ui/DialogZ80.cxx
-sms-ui/DialogBreakpoint.cxx
-sms-ui/DialogDebug.cxx
