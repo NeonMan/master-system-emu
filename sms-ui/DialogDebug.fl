@@ -1,6 +1,6 @@
 # data file for the Fltk User Interface Designer (fluid)
-version 1.0303 
-header_name {.h} 
+version 1.0304
+header_name {.h}
 code_name {.cxx}
 class DialogDebugger {open
 } {
@@ -8,7 +8,7 @@ class DialogDebugger {open
   } {
     Fl_Window windowDialog {
       label Debugger open
-      xywh {481 344 1105 420} type Double resizable visible
+      xywh {481 344 1104 420} type Double resizable visible
     } {
       Fl_Input_Choice inputCommand {open
         xywh {260 390 835 20} hotspot
@@ -173,17 +173,6 @@ class DialogDebugger {open
       } {
         Fl_Group {} {
           label Disasm open
-          xywh {260 30 835 330}
-        } {
-          Fl_Text_Editor {} {
-            xywh {265 35 810 320} textfont 4 resizable
-          }
-          Fl_Scrollbar {} {selected
-            xywh {1075 35 15 320} maximum 65535
-          }
-        }
-        Fl_Group {} {
-          label Dump open
           xywh {260 30 835 330} hide
         } {
           Fl_Text_Editor {} {
@@ -191,6 +180,46 @@ class DialogDebugger {open
           }
           Fl_Scrollbar {} {
             xywh {1075 35 15 320} maximum 65535
+          }
+        }
+        Fl_Group {} {
+          label Dump open
+          xywh {260 30 835 330}
+        } {
+          Fl_Text_Editor {} {
+            xywh {265 35 810 295} textfont 4 resizable
+          }
+          Fl_Scrollbar {} {
+            xywh {1075 35 15 295} maximum 65535
+          }
+          Fl_Input {} {
+            label {Slot 0}
+            xywh {305 330 25 25} textfont 4
+          }
+          Fl_Input {} {
+            label {Slot 1}
+            xywh {375 330 25 25} textfont 4
+          }
+          Fl_Input {} {
+            label {Slot 2}
+            xywh {445 330 25 25} textfont 4
+          }
+          Fl_Group {} {
+            label {Address mode:} open
+            xywh {480 330 260 25} align 20
+          } {
+            Fl_Round_Button {} {
+              label Z80 selected
+              xywh {585 335 15 15} down_box ROUND_DOWN_BOX
+            }
+            Fl_Round_Button {} {
+              label ROM
+              xywh {630 335 15 15} down_box ROUND_DOWN_BOX
+            }
+            Fl_Round_Button {} {
+              label RAM
+              xywh {685 335 15 15} down_box ROUND_DOWN_BOX
+            }
           }
         }
       }
@@ -259,4 +288,4 @@ class DialogDebugger {open
       }
     }
   }
-} 
+}
