@@ -47,8 +47,8 @@ class DialogZ80 {
   Function {DialogZ80()} {open
   } {
     Fl_Window windowDialog {
-      label z80
-      xywh {364 178 668 299} type Double align 80 visible
+      label z80 open selected
+      xywh {380 194 665 296} type Double align 80 resizable visible
     } {
       Fl_Group {} {
         label Registers
@@ -431,7 +431,6 @@ this->buttonRunning->value(1);
     sprintf(tmp_str, "%s ;(Size: %d)", op.opcode_str, op.size);
     textDasm->value(tmp_str);
     \#undef z80
-  }} {selected
-    }
+  }} {}
   }
 } 

@@ -27,6 +27,7 @@
 #include <FL/Fl_Native_File_Chooser.H>
 #include "DialogZ80.h"
 #include "DialogBreakpoint.h"
+#include "DialogDebug.h"
 
 //Emulator includes
 #include <io/io.h>
@@ -195,10 +196,14 @@ int main(int argc, char** argv){
     //Create dialogs
     DialogZ80* dlg_z80         = new DialogZ80;
     DialogBreakpoints* dlg_brk = new DialogBreakpoints;
+    DialogDebugger* dlg_debug  = new DialogDebugger;
 
     //Show dialogs
-    dlg_brk->windowDialog->show();
+    //dlg_brk->windowDialog->show();
     dlg_z80->windowDialog->show();
+
+    dlg_debug->make_window();
+    dlg_debug->windowDialog->show();
 
     //Control variables
     unsigned long last_update = 0;
@@ -261,6 +266,7 @@ int main(int argc, char** argv){
     //Cleanup
     delete dlg_z80;
     delete dlg_brk;
+    delete dlg_debug;
     emu_cleanup();
     return 0;
 }
