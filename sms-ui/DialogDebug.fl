@@ -1,0 +1,248 @@
+# data file for the Fltk User Interface Designer (fluid)
+version 1.0303 
+header_name {.h} 
+code_name {.cxx}
+class DialogDebugger {open
+} {
+  Function {make_window()} {open
+  } {
+    Fl_Window windowDialog {
+      label Debugger open
+      xywh {627 300 1105 421} type Double resizable visible
+    } {
+      Fl_Input_Choice inputCommand {open
+        xywh {260 390 835 20} hotspot
+      } {}
+      Fl_Tabs tabTools {
+        xywh {10 30 240 385} labeltype NO_LABEL
+      } {
+        Fl_Group {} {
+          label Z80
+          xywh {15 30 235 360}
+        } {
+          Fl_Input {} {
+            label AF
+            xywh {65 40 40 25} textfont 4
+          }
+          Fl_Input {} {
+            label {AF'}
+            xywh {155 40 40 25} textfont 4
+          }
+          Fl_Input {} {
+            label BC
+            xywh {65 70 40 25} textfont 4
+          }
+          Fl_Input {} {
+            label {BC'}
+            xywh {155 70 40 25} textfont 4
+          }
+          Fl_Input {} {
+            label DE
+            xywh {65 100 40 25} textfont 4
+          }
+          Fl_Input {} {
+            label {DE'}
+            xywh {155 100 40 25} textfont 4
+          }
+          Fl_Input {} {
+            label HL
+            xywh {65 130 40 25} textfont 4
+          }
+          Fl_Input {} {
+            label {HL'}
+            xywh {155 130 40 25} textfont 4
+          }
+          Fl_Input {} {
+            label IX
+            xywh {65 160 40 25} textfont 4
+          }
+          Fl_Input {} {
+            label IY
+            xywh {155 160 40 25} textfont 4
+          }
+          Fl_Input {} {
+            label SP
+            xywh {65 190 40 25} textfont 4
+          }
+          Fl_Input {} {
+            label PC
+            xywh {155 190 40 25} textfont 4
+          }
+          Fl_Input {} {
+            label IR
+            xywh {65 220 40 25} textfont 4
+          }
+          Fl_Group {} {
+            label Flags open
+            xywh {47 260 170 50}
+          } {
+            Fl_Check_Button {} {
+              label S
+              xywh {52 285 20 25} down_box DOWN_BOX align 1
+            }
+            Fl_Check_Button {} {
+              label Z
+              xywh {72 285 20 25} down_box DOWN_BOX align 1
+            }
+            Fl_Check_Button {} {
+              label 5
+              xywh {92 285 20 25} down_box DOWN_BOX align 1
+            }
+            Fl_Check_Button {} {
+              label H
+              xywh {112 285 20 25} down_box DOWN_BOX align 1
+            }
+            Fl_Check_Button {} {
+              label 3
+              xywh {132 285 20 25} down_box DOWN_BOX align 1
+            }
+            Fl_Check_Button {} {
+              label PV
+              xywh {152 285 20 25} down_box DOWN_BOX align 1
+            }
+            Fl_Check_Button {} {
+              label N
+              xywh {172 285 20 25} down_box DOWN_BOX align 1
+            }
+            Fl_Check_Button {} {
+              label C
+              xywh {192 285 20 25} down_box DOWN_BOX align 1
+            }
+          }
+          Fl_Group {} {
+            label Buses open
+            xywh {40 325 185 35}
+          } {
+            Fl_Output {} {
+              label Data
+              xywh {75 330 40 25}
+            }
+            Fl_Output {} {
+              label Addr
+              xywh {165 330 40 25}
+            }
+          }
+          Fl_Group {} {
+            label {Filler group} open
+            xywh {30 365 205 20} labeltype NO_LABEL resizable
+          } {}
+        }
+        Fl_Group {} {
+          label Jumps
+          xywh {15 30 235 360} hide
+        } {}
+        Fl_Group {} {
+          label Breakpoints
+          xywh {15 30 235 360} hide
+        } {
+          Fl_Check_Browser {} {
+            xywh {15 35 230 290} resizable
+          }
+          Fl_Input {} {
+            label Addr
+            xywh {60 330 50 25} textfont 4
+          }
+          Fl_Check_Button {} {
+            label R
+            xywh {115 330 30 25} down_box DOWN_BOX
+          }
+          Fl_Check_Button {} {
+            label W
+            xywh {145 330 35 25} down_box DOWN_BOX
+          }
+          Fl_Check_Button {} {
+            label X
+            xywh {180 330 30 25} down_box DOWN_BOX
+          }
+          Fl_Check_Button {} {
+            label IO
+            xywh {210 330 30 25} down_box DOWN_BOX
+          }
+          Fl_Input {} {
+            label Desc
+            xywh {60 355 105 25}
+          }
+          Fl_Button {} {
+            label Add
+            xywh {170 355 75 25}
+          }
+        }
+      }
+      Fl_Tabs tabMain {
+        xywh {260 30 835 355} labeltype NO_LABEL resizable
+      } {
+        Fl_Group {} {
+          label Disasm open
+          xywh {260 30 835 330}
+        } {}
+        Fl_Group {} {
+          label Dump open
+          xywh {260 30 835 330} hide
+        } {}
+      }
+      Fl_Menu_Bar {} {open
+        xywh {0 0 1105 25}
+      } {
+        Submenu {} {
+          label Debug open
+          xywh {0 0 100 20}
+        } {
+          MenuItem {} {
+            label New
+            xywh {0 0 100 20} shortcut 0x4006e
+          }
+          MenuItem {} {
+            label {Open...}
+            xywh {0 0 100 20} shortcut 0x4006f
+          }
+          MenuItem {} {
+            label {Save...}
+            xywh {0 0 100 20} shortcut 0x40073
+          }
+          MenuItem {} {
+            label {Save as...}
+            xywh {0 0 100 20}
+          }
+          MenuItem {} {
+            label {Run/Stop}
+            xywh {5 5 100 20} shortcut 0xffc2
+          }
+          MenuItem {} {
+            label Reset
+            xywh {5 5 100 20} shortcut 0x4ffc2
+          }
+          MenuItem {} {
+            label {Step over}
+            xywh {0 0 100 20} shortcut 0xffc7
+          }
+          MenuItem {} {
+            label {Step into}
+            xywh {0 0 100 20} shortcut 0xffc8
+          }
+          MenuItem {} {
+            label {Step out}
+            xywh {5 5 100 20} shortcut 0xffc9
+          }
+          MenuItem {} {
+            label Exit
+            callback {this->windowDialog->hide();}
+            xywh {0 0 100 20} shortcut 0x40071
+          }
+        }
+        Submenu {} {
+          label Help open
+          xywh {0 0 100 20}
+        } {
+          MenuItem {} {
+            label {Debugger reference}
+            xywh {0 0 100 20} shortcut 0xffbe
+          }
+          MenuItem {} {
+            label {About...} selected
+            xywh {0 0 100 20}
+          }
+        }
+      }
+    }
+  }
+} 
