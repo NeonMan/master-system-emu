@@ -1,291 +1,328 @@
 # data file for the Fltk User Interface Designer (fluid)
-version 1.0304
-header_name {.h}
+version 1.0303 
+header_name {.h} 
 code_name {.cxx}
+declblock {\#if 1} {open after {\#endif}
+} {
+  decl {\#include <stdint.h>} {public global
+  }
+} 
+
 class _DialogDebugger {open
 } {
   Function {make_window()} {open
   } {
     Fl_Window windowDialog {
       label Debugger open
-      xywh {481 344 1104 420} type Double resizable visible
+      xywh {582 268 1106 423} type Double resizable visible
     } {
-      Fl_Input_Choice inputCommand {open
-        xywh {260 390 835 20} hotspot
-      } {}
-      Fl_Tabs tabTools {
-        xywh {10 30 240 385} labeltype NO_LABEL
+      Fl_Tabs tabTools {open
+        protected xywh {10 30 240 385} labeltype NO_LABEL
       } {
         Fl_Group {} {
-          label Z80
-          xywh {15 30 235 360}
+          label Z80 selected
+          protected xywh {15 30 235 360}
         } {
-          Fl_Input {} {
+          Fl_Input inputAF {
             label AF
-            xywh {65 40 40 25} textfont 4
+            callback {this->onRegistersChanged();}
+            protected xywh {65 40 40 25} when 10 textfont 4
           }
-          Fl_Input {} {
+          Fl_Input inputAFp {
             label {AF'}
-            xywh {155 40 40 25} textfont 4
+            callback {this->onRegistersChanged();}
+            protected xywh {155 40 40 25} when 10 textfont 4
           }
-          Fl_Input {} {
+          Fl_Input inputBC {
             label BC
-            xywh {65 70 40 25} textfont 4
+            callback {this->onRegistersChanged();}
+            protected xywh {65 70 40 25} when 10 textfont 4
           }
-          Fl_Input {} {
+          Fl_Input inputBCp {
             label {BC'}
-            xywh {155 70 40 25} textfont 4
+            callback {this->onRegistersChanged();}
+            protected xywh {155 70 40 25} when 10 textfont 4
           }
-          Fl_Input {} {
+          Fl_Input inputDE {
             label DE
-            xywh {65 100 40 25} textfont 4
+            callback {this->onRegistersChanged();}
+            protected xywh {65 100 40 25} when 10 textfont 4
           }
-          Fl_Input {} {
+          Fl_Input inputDEp {
             label {DE'}
-            xywh {155 100 40 25} textfont 4
+            callback {this->onRegistersChanged();}
+            protected xywh {155 100 40 25} when 10 textfont 4
           }
-          Fl_Input {} {
+          Fl_Input inputHL {
             label HL
-            xywh {65 130 40 25} textfont 4
+            callback {this->onRegistersChanged();}
+            protected xywh {65 130 40 25} when 10 textfont 4
           }
-          Fl_Input {} {
+          Fl_Input inputHLp {
             label {HL'}
-            xywh {155 130 40 25} textfont 4
+            callback {this->onRegistersChanged();}
+            protected xywh {155 130 40 25} when 10 textfont 4
           }
-          Fl_Input {} {
+          Fl_Input inputIX {
             label IX
-            xywh {65 160 40 25} textfont 4
+            callback {this->onRegistersChanged();}
+            protected xywh {65 160 40 25} when 10 textfont 4
           }
-          Fl_Input {} {
+          Fl_Input inputIY {
             label IY
-            xywh {155 160 40 25} textfont 4
+            callback {this->onRegistersChanged();}
+            protected xywh {155 160 40 25} when 10 textfont 4
           }
-          Fl_Input {} {
+          Fl_Input inputSP {
             label SP
-            xywh {65 190 40 25} textfont 4
+            callback {this->onRegistersChanged();}
+            protected xywh {65 190 40 25} when 10 textfont 4
           }
-          Fl_Input {} {
+          Fl_Input inputPC {
             label PC
-            xywh {155 190 40 25} textfont 4
+            callback {this->onRegistersChanged();}
+            protected xywh {155 190 40 25} when 10 textfont 4
           }
-          Fl_Input {} {
+          Fl_Input inputIR {
             label IR
-            xywh {65 220 40 25} textfont 4
+            callback {this->onRegistersChanged();}
+            protected xywh {65 220 40 25} when 10 textfont 4
           }
           Fl_Group {} {
-            label Flags open
-            xywh {47 260 170 50}
+            label Flags
+            protected xywh {47 260 170 50}
           } {
-            Fl_Check_Button {} {
+            Fl_Check_Button checkSignFlag {
               label S
-              xywh {52 285 20 25} down_box DOWN_BOX align 1
+              callback {this->onFlagsChanged();}
+              protected xywh {52 285 20 25} down_box DOWN_BOX align 1
             }
-            Fl_Check_Button {} {
+            Fl_Check_Button checkZeroFlag {
               label Z
-              xywh {72 285 20 25} down_box DOWN_BOX align 1
+              callback {this->onFlagsChanged();}
+              protected xywh {72 285 20 25} down_box DOWN_BOX align 1
             }
-            Fl_Check_Button {} {
+            Fl_Check_Button checkUnk5Flag {
               label 5
-              xywh {92 285 20 25} down_box DOWN_BOX align 1
+              callback {this->onFlagsChanged();}
+              protected xywh {92 285 20 25} down_box DOWN_BOX align 1
             }
-            Fl_Check_Button {} {
+            Fl_Check_Button checkHalfCarryFlag {
               label H
-              xywh {112 285 20 25} down_box DOWN_BOX align 1
+              callback {this->onFlagsChanged();}
+              protected xywh {112 285 20 25} down_box DOWN_BOX align 1
             }
-            Fl_Check_Button {} {
+            Fl_Check_Button checkUnk3Flag {
               label 3
-              xywh {132 285 20 25} down_box DOWN_BOX align 1
+              callback {this->onFlagsChanged();}
+              protected xywh {132 285 20 25} down_box DOWN_BOX align 1
             }
-            Fl_Check_Button {} {
+            Fl_Check_Button checkParityFlag {
               label PV
-              xywh {152 285 20 25} down_box DOWN_BOX align 1
+              callback {this->onFlagsChanged();}
+              protected xywh {152 285 20 25} down_box DOWN_BOX align 1
             }
-            Fl_Check_Button {} {
+            Fl_Check_Button checkSubtractFlag {
               label N
-              xywh {172 285 20 25} down_box DOWN_BOX align 1
+              callback {this->onFlagsChanged();}
+              protected xywh {172 285 20 25} down_box DOWN_BOX align 1
             }
-            Fl_Check_Button {} {
+            Fl_Check_Button checkCarryFlag {
               label C
-              xywh {192 285 20 25} down_box DOWN_BOX align 1
+              callback {this->onFlagsChanged();}
+              protected xywh {192 285 20 25} down_box DOWN_BOX align 1
             }
           }
           Fl_Group {} {
-            label Buses open
-            xywh {40 325 185 35}
+            label Buses
+            protected xywh {40 325 185 35}
           } {
             Fl_Output {} {
               label Data
-              xywh {75 330 40 25}
+              protected xywh {75 330 40 25}
             }
             Fl_Output {} {
               label Addr
-              xywh {165 330 40 25}
+              protected xywh {165 330 40 25}
             }
           }
           Fl_Group {} {
-            label {Filler group} open
-            xywh {30 365 205 20} labeltype NO_LABEL resizable
+            label {Filler group}
+            protected xywh {30 365 205 20} labeltype NO_LABEL resizable
           } {}
         }
         Fl_Group {} {
           label Jumps
-          xywh {15 30 235 360} hide
+          protected xywh {15 30 235 360} hide
         } {}
         Fl_Group {} {
-          label Breakpoints
-          xywh {15 30 235 360} hide
+          label Breakpoints open
+          protected xywh {15 30 235 360} hide
         } {
-          Fl_Check_Browser {} {
-            xywh {15 35 230 290} resizable
+          Fl_Check_Browser checkBrowserBreak {
+            protected xywh {15 35 230 290} textfont 4 resizable
           }
-          Fl_Input {} {
+          Fl_Input inputBreakAddress {
             label Addr
-            xywh {60 330 50 25} textfont 4
+            protected xywh {60 330 50 25} textfont 4
           }
-          Fl_Check_Button {} {
+          Fl_Check_Button checkRead {
             label R
-            xywh {115 330 30 25} down_box DOWN_BOX
+            protected xywh {115 330 30 25} down_box DOWN_BOX
           }
-          Fl_Check_Button {} {
+          Fl_Check_Button checkWrite {
             label W
-            xywh {145 330 35 25} down_box DOWN_BOX
+            protected xywh {145 330 35 25} down_box DOWN_BOX
           }
-          Fl_Check_Button {} {
+          Fl_Check_Button checkExecute {
             label X
-            xywh {180 330 30 25} down_box DOWN_BOX
+            protected xywh {180 330 30 25} down_box DOWN_BOX
           }
-          Fl_Check_Button {} {
+          Fl_Check_Button checkIO {
             label IO
-            xywh {210 330 30 25} down_box DOWN_BOX
+            protected xywh {210 330 30 25} down_box DOWN_BOX
           }
-          Fl_Input {} {
+          Fl_Input inputBreakDescription {
             label Desc
-            xywh {60 355 105 25}
+            protected xywh {60 355 105 25}
           }
-          Fl_Button {} {
+          Fl_Button buttonAddBreakpoint {
             label Add
-            xywh {170 355 75 25}
+            callback {this->onAddBreakpoint();}
+            protected xywh {170 355 75 25}
           }
         }
       }
-      Fl_Tabs tabMain {open
-        xywh {260 30 835 355} labeltype NO_LABEL resizable
+      Fl_Tabs tabMain {
+        protected xywh {260 30 835 355} labeltype NO_LABEL resizable
       } {
         Fl_Group {} {
           label Disasm open
-          xywh {260 30 835 330} hide
+          protected xywh {260 30 835 330}
         } {
           Fl_Text_Editor {} {
-            xywh {265 35 810 320} textfont 4 resizable
+            protected xywh {265 35 810 320} textfont 4 resizable
           }
           Fl_Scrollbar {} {
-            xywh {1075 35 15 320} maximum 65535
+            protected xywh {1075 35 15 320} maximum 65535
           }
         }
         Fl_Group {} {
           label Dump open
-          xywh {260 30 835 330}
+          protected xywh {260 30 835 330} hide
         } {
           Fl_Text_Editor {} {
-            xywh {265 35 810 295} textfont 4 resizable
+            protected xywh {265 35 810 295} textfont 4 resizable
           }
           Fl_Scrollbar {} {
-            xywh {1075 35 15 295} maximum 65535
+            protected xywh {1075 35 15 295} maximum 65535
           }
           Fl_Input {} {
             label {Slot 0}
-            xywh {305 330 25 25} textfont 4
+            protected xywh {305 330 25 25} textfont 4
           }
           Fl_Input {} {
             label {Slot 1}
-            xywh {375 330 25 25} textfont 4
+            protected xywh {375 330 25 25} textfont 4
           }
           Fl_Input {} {
             label {Slot 2}
-            xywh {445 330 25 25} textfont 4
+            protected xywh {445 330 25 25} textfont 4
           }
           Fl_Group {} {
             label {Address mode:} open
-            xywh {480 330 260 25} align 20
+            protected xywh {480 330 260 25} align 20
           } {
             Fl_Round_Button {} {
-              label Z80 selected
-              xywh {585 335 15 15} down_box ROUND_DOWN_BOX
+              label Z80
+              protected xywh {585 335 15 15} down_box ROUND_DOWN_BOX
             }
             Fl_Round_Button {} {
               label ROM
-              xywh {630 335 15 15} down_box ROUND_DOWN_BOX
+              protected xywh {630 335 15 15} down_box ROUND_DOWN_BOX
             }
             Fl_Round_Button {} {
               label RAM
-              xywh {685 335 15 15} down_box ROUND_DOWN_BOX
+              protected xywh {685 335 15 15} down_box ROUND_DOWN_BOX
             }
           }
         }
       }
-      Fl_Menu_Bar {} {open
-        xywh {0 0 1105 25}
+      Fl_Menu_Bar {} {
+        protected xywh {0 0 1105 25}
       } {
         Submenu {} {
           label Debug open
-          xywh {0 0 100 20}
+          protected xywh {0 0 100 20}
         } {
           MenuItem {} {
             label New
-            xywh {0 0 100 20} shortcut 0x4006e
+            protected xywh {0 0 100 20} shortcut 0x4006e
           }
           MenuItem {} {
             label {Open...}
-            xywh {0 0 100 20} shortcut 0x4006f
+            protected xywh {0 0 100 20} shortcut 0x4006f
           }
           MenuItem {} {
             label {Save...}
-            xywh {0 0 100 20} shortcut 0x40073
+            protected xywh {0 0 100 20} shortcut 0x40073
           }
           MenuItem {} {
             label {Save as...}
-            xywh {0 0 100 20}
+            protected xywh {0 0 100 20}
           }
           MenuItem {} {
             label {Run/Stop}
-            xywh {5 5 100 20} shortcut 0xffc2
+            protected xywh {5 5 100 20} shortcut 0xffc2
           }
           MenuItem {} {
             label Reset
-            xywh {5 5 100 20} shortcut 0x4ffc2
+            protected xywh {5 5 100 20} shortcut 0x4ffc2
           }
           MenuItem {} {
             label {Step over}
-            xywh {0 0 100 20} shortcut 0xffc7
+            protected xywh {0 0 100 20} shortcut 0xffc7
           }
           MenuItem {} {
             label {Step into}
-            xywh {0 0 100 20} shortcut 0xffc8
+            protected xywh {0 0 100 20} shortcut 0xffc8
           }
           MenuItem {} {
             label {Step out}
-            xywh {5 5 100 20} shortcut 0xffc9
+            protected xywh {5 5 100 20} shortcut 0xffc9
           }
           MenuItem {} {
             label Exit
             callback {this->windowDialog->hide();}
-            xywh {0 0 100 20} shortcut 0x40071
+            protected xywh {0 0 100 20} shortcut 0x40071
           }
         }
         Submenu {} {
           label Help open
-          xywh {0 0 100 20}
+          protected xywh {0 0 100 20}
         } {
           MenuItem {} {
             label {Debugger reference}
-            xywh {0 0 100 20} shortcut 0xffbe
+            protected xywh {0 0 100 20} shortcut 0xffbe
           }
           MenuItem {} {
             label {About...}
-            xywh {0 0 100 20}
+            protected xywh {0 0 100 20}
           }
         }
       }
+      Fl_Input inputCommand {
+        callback {this->onInputCommand(o,v);}
+        protected xywh {265 390 830 25} when 10 hotspot
+      }
     }
   }
-}
+  decl {virtual void onInputCommand (Fl_Input* o, void* v) = 0} {protected local
+  }
+  decl {virtual void onFlagsChanged () = 0} {protected local
+  }
+  decl {virtual void onRegistersChanged() = 0} {protected local
+  }
+  decl {virtual void onAddBreakpoint() = 0} {protected local
+  }
+} 
