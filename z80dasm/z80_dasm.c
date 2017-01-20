@@ -257,6 +257,9 @@ z80d_opcode zd_CALL_cc_nn(const uint8_t* opcode) {
     const uint8_t y = (opcode[0] >> 3) & 0x07;
     const uint16_t addr = opcode[1] + (((uint16_t)opcode[2]) << 8);
     sprintf(rv.opcode_str, "CALL %s 0x%04X", z80d_cc[y], addr);
+
+    rv.flags = Z80D_TYPE_CONST_JUMP | Z80D_TYPE_NORMAL;
+    rv.address_jump = addr;
     return rv;
 }
 
@@ -266,6 +269,9 @@ z80d_opcode zd_CALL_nn(const uint8_t* opcode) {
 
     const uint16_t addr = opcode[1] + (((uint16_t)opcode[2]) << 8);
     sprintf(rv.opcode_str, "CALL 0x%04X", addr);
+
+    rv.flags = Z80D_TYPE_CONST_JUMP;
+    rv.address_jump = addr;
     return rv;
 }
 
@@ -348,6 +354,9 @@ z80d_opcode zd_DJNZ_d(const uint8_t* opcode) {
 
     int8_t d = (int8_t)opcode[1];
     sprintf(rv.opcode_str, "DJNZ %+d", d);
+
+    rv.flags = Z80D_TYPE_REL_JUMP | Z80D_TYPE_NORMAL;
+    rv.immediate = d;
     return rv; //2;
 }
 
@@ -485,6 +494,9 @@ z80d_opcode zd_JP_cc_nn(const uint8_t* opcode) {
     const uint8_t y = (opcode[0] >> 3) & 0x07;
     const uint16_t addr = opcode[1] + (((uint16_t)opcode[2]) << 8);
     sprintf(rv.opcode_str, "JP %s, 0x%04X", z80d_cc[y], addr);
+
+    rv.flags = Z80D_TYPE_CONST_JUMP | Z80D_TYPE_NORMAL;
+    rv.address_jump = addr;
     return rv; //3;
 }
 
@@ -492,6 +504,7 @@ z80d_opcode zd_JP_HLp(const uint8_t* opcode) {
     z80d_opcode rv = defaultOpcode();
     rv.size = opcode_size(opcode); //1;
 
+    rv.flags = Z80D_TYPE_INDIRECT_JUMP;
     strcpy(rv.opcode_str, "JP HL");
     return rv; //1;
 }
@@ -504,6 +517,8 @@ z80d_opcode zd_JP_IXYp(const uint8_t* opcode) {
         strcpy(rv.opcode_str, ";Check!\nJP IX");
     else
         strcpy(rv.opcode_str, ";Check!\nJP IY");
+
+    rv.flags = Z80D_TYPE_INDIRECT_JUMP;
     return rv; //2;
 }
 
@@ -513,6 +528,9 @@ z80d_opcode zd_JP_nn(const uint8_t* opcode) {
 
     const uint16_t addr = opcode[1] + (((uint16_t)opcode[2]) << 8);
     sprintf(rv.opcode_str, "JP 0x%04X", addr);
+
+    rv.flags = Z80D_TYPE_CONST_JUMP;
+    rv.address_jump = addr;
     return rv; //3;
 }
 
@@ -523,6 +541,9 @@ z80d_opcode zd_JR_cc_d(const uint8_t* opcode) {
     const int8_t d = (int8_t) opcode[1];
     const uint8_t y = (opcode[0] >> 3) & 0x07;
     sprintf(rv.opcode_str, "JR %s, %+d", z80d_cc[y - 4], d);
+
+    rv.flags = Z80D_TYPE_REL_JUMP | Z80D_TYPE_NORMAL;
+    rv.immediate = d;
     return rv; //2;
 }
 
@@ -532,6 +553,9 @@ z80d_opcode zd_JR_d(const uint8_t* opcode) {
 
     const int8_t d = (int8_t)opcode[1];
     sprintf(rv.opcode_str, "JR %+d", d);
+
+    rv.flags = Z80D_TYPE_REL_JUMP;
+    rv.immediate = d;
     return rv; //2;
 }
 
@@ -921,6 +945,7 @@ z80d_opcode zd_RET(const uint8_t* opcode) {
     rv.size = opcode_size(opcode); //1;
 
     strcpy(rv.opcode_str, "RET");
+    rv.flags = Z80D_TYPE_INDIRECT_JUMP;
     return rv; //1;
 }
 
@@ -930,6 +955,7 @@ z80d_opcode zd_RET_cc(const uint8_t* opcode) {
 
     const uint8_t y = (opcode[0] >> 3) & 0x07;
     sprintf(rv.opcode_str, "RET %s", z80d_cc[y]);
+    rv.flags = Z80D_TYPE_INDIRECT_JUMP | Z80D_TYPE_NORMAL;
     return rv; //1;
 }
 
@@ -938,6 +964,7 @@ z80d_opcode zd_RETI(const uint8_t* opcode) {
     rv.size = opcode_size(opcode); //2;
 
     strcpy(rv.opcode_str, "RETI");
+    rv.flags = Z80D_TYPE_INDIRECT_JUMP;
     return rv; //2;
 }
 
@@ -946,6 +973,7 @@ z80d_opcode zd_RETN(const uint8_t* opcode) {
     rv.size = opcode_size(opcode); //2;
 
     strcpy(rv.opcode_str, "RETN");
+    rv.flags = Z80D_TYPE_INDIRECT_JUMP;
     return rv; //2;
 }
 
@@ -1028,6 +1056,8 @@ z80d_opcode zd_RST_y(const uint8_t* opcode) {
 
     const uint8_t y = (opcode[0] >> 3) & 7;
     sprintf(rv.opcode_str, "RST 0x%04X", y * 8);
+    rv.flags = Z80D_TYPE_CONST_JUMP;
+    rv.address_jump = y * 8;
     return rv; //1;
 }
 
