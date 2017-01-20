@@ -1,13 +1,16 @@
 #include "DialogDebug.h"
 #include <string>
 #include <cassert>
+#include <stdexcept>
 
 #include <FL/fl_ask.H>
 
+/*
 static bool startsWith(std::string s1, std::string s2) {
     size_t min_size = (s1.length() > s2.length()) ? s1.length() : s2.length();
     return s1.compare(0, min_size, s2) == 0;
 }
+*/
 
 DialogDebugger::DialogDebugger() : _DialogDebugger() {
     
