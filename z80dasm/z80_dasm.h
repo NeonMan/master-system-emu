@@ -44,7 +44,7 @@ struct z80d_opcode_s{
     //Branch predictions
     uint16_t address_next;   ///<-- Next opcode address if no jump.
     uint16_t address_jump;   ///<-- Next opcode address if jump is effective.
-    uint16_t immediate;      ///<-- Immediate value.
+    int16_t immediate;      ///<-- Immediate value.
     uint8_t  flags;          ///<-- Opcode properties.
 };
 typedef struct z80d_opcode_s z80d_opcode;
