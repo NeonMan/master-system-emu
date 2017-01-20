@@ -2,12 +2,20 @@
 #define __DIALOG_DEBUG_H
 
 #include "_DialogDebug.h"
+#include <string>
 
 class DialogDebugger : public _DialogDebugger {
 
 public:
     DialogDebugger();
     virtual ~DialogDebugger();
+private:
+    std::string last_cmd;
+
+    void onInputCommand(Fl_Input * o, void* v);
+    void onFlagsChanged();
+    void onRegistersChanged();
+    void onAddBreakpoint();
 };
 
 #endif
