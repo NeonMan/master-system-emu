@@ -126,6 +126,13 @@ z80d_opcode z80d_decode_op(const uint8_t* opcode, uint16_t pc_addr) {
     }
 
     rv.address = pc_addr;
+    rv.address_next = rv.size + pc_addr;
+    //Fix all the relative jumps address_jump using the immediate val.
+    if (rv.flags & Z80D_TYPE_REL_JUMP) {
+        rv.address_jump = pc_addr + rv.immediate + rv.size;
+    }
+
+
     return rv;
 }
 
