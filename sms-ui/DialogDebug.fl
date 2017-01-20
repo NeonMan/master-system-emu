@@ -1,12 +1,12 @@
 # data file for the Fltk User Interface Designer (fluid)
-version 1.0303 
-header_name {.h} 
+version 1.0304
+header_name {.h}
 code_name {.cxx}
 declblock {\#if 1} {open after {\#endif}
 } {
   decl {\#include <stdint.h>} {public global
   }
-} 
+}
 
 class _DialogDebugger {open
 } {
@@ -14,7 +14,7 @@ class _DialogDebugger {open
   } {
     Fl_Window windowDialog {
       label Debugger open
-      xywh {586 272 1098 415} type Double resizable visible
+      xywh {189 302 1105 426} type Double resizable visible
     } {
       Fl_Tabs tabTools {open
         protected xywh {10 30 240 385} labeltype NO_LABEL
@@ -180,7 +180,7 @@ class _DialogDebugger {open
           }
           Fl_Check_Button checkIO {
             label IO
-            protected xywh {210 330 30 25} down_box DOWN_BOX
+            protected xywh {210 330 35 25} down_box DOWN_BOX
           }
           Fl_Input inputBreakDescription {
             label Desc
@@ -198,9 +198,9 @@ class _DialogDebugger {open
       } {
         Fl_Group {} {
           label Disasm open
-          protected xywh {260 30 835 330} hide
+          protected xywh {260 30 835 330}
         } {
-          Fl_Text_Editor {} {
+          Fl_Text_Editor {} {selected
             protected xywh {265 35 810 320} textfont 4 resizable
           }
           Fl_Scrollbar {} {
@@ -209,7 +209,7 @@ class _DialogDebugger {open
         }
         Fl_Group {} {
           label Dump open
-          protected xywh {260 30 835 330}
+          protected xywh {260 30 835 330} hide
         } {
           Fl_Text_Editor {} {
             protected xywh {265 35 810 295} textfont 4 resizable
@@ -248,7 +248,7 @@ if(o->value()) radioZ80->value(0);}
             Fl_Round_Button radioRam {
               label RAM
               callback {if(o->value()) radioRom->value(0);
-if(o->value()) radioZ80->value(0);} selected
+if(o->value()) radioZ80->value(0);}
               protected xywh {685 335 15 15} down_box ROUND_DOWN_BOX
             }
           }
@@ -331,4 +331,4 @@ if(o->value()) radioZ80->value(0);} selected
   }
   decl {virtual void onAddBreakpoint() = 0} {protected local
   }
-} 
+}

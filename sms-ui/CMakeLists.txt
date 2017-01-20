@@ -17,6 +17,12 @@ SET(CFILES
     ${PROJECT_SOURCE_DIR}/DialogBreakpoint.h
     ${PROJECT_SOURCE_DIR}/DialogDebug.cxx
     ${PROJECT_SOURCE_DIR}/DialogDebug.h
+	
+	#Maybe make the debugger internals its own project
+	${PROJECT_SOURCE_DIR}/zed/zedeighty.cxx
+	${PROJECT_SOURCE_DIR}/zed/zedeighty.h
+	${PROJECT_SOURCE_DIR}/zed/opcode.cxx
+	${PROJECT_SOURCE_DIR}/zed/opcode.h
 	)
 	
 #If using MSVC, add an icon to the executable.
