@@ -14,14 +14,14 @@ class _DialogDebugger {open
   } {
     Fl_Window windowDialog {
       label Debugger open
-      xywh {582 268 1106 423} type Double resizable visible
+      xywh {586 272 1098 415} type Double resizable visible
     } {
       Fl_Tabs tabTools {open
         protected xywh {10 30 240 385} labeltype NO_LABEL
       } {
         Fl_Group {} {
-          label Z80 selected
-          protected xywh {15 30 235 360}
+          label Z80
+          protected xywh {15 30 235 360} hide
         } {
           Fl_Input inputAF {
             label AF
@@ -156,8 +156,8 @@ class _DialogDebugger {open
           protected xywh {15 30 235 360} hide
         } {}
         Fl_Group {} {
-          label Breakpoints open
-          protected xywh {15 30 235 360} hide
+          label Breakpoints
+          protected xywh {15 30 235 360}
         } {
           Fl_Check_Browser checkBrowserBreak {
             protected xywh {15 35 230 290} textfont 4 resizable
@@ -193,12 +193,12 @@ class _DialogDebugger {open
           }
         }
       }
-      Fl_Tabs tabMain {
+      Fl_Tabs tabMain {open
         protected xywh {260 30 835 355} labeltype NO_LABEL resizable
       } {
         Fl_Group {} {
           label Disasm open
-          protected xywh {260 30 835 330}
+          protected xywh {260 30 835 330} hide
         } {
           Fl_Text_Editor {} {
             protected xywh {265 35 810 320} textfont 4 resizable
@@ -209,7 +209,7 @@ class _DialogDebugger {open
         }
         Fl_Group {} {
           label Dump open
-          protected xywh {260 30 835 330} hide
+          protected xywh {260 30 835 330}
         } {
           Fl_Text_Editor {} {
             protected xywh {265 35 810 295} textfont 4 resizable
@@ -233,16 +233,22 @@ class _DialogDebugger {open
             label {Address mode:} open
             protected xywh {480 330 260 25} align 20
           } {
-            Fl_Round_Button {} {
+            Fl_Round_Button radioZ80 {
               label Z80
+              callback {if(o->value()) radioRam->value(0);
+if(o->value()) radioRom->value(0);}
               protected xywh {585 335 15 15} down_box ROUND_DOWN_BOX
             }
-            Fl_Round_Button {} {
+            Fl_Round_Button radioRom {
               label ROM
+              callback {if(o->value()) radioRam->value(0);
+if(o->value()) radioZ80->value(0);}
               protected xywh {630 335 15 15} down_box ROUND_DOWN_BOX
             }
-            Fl_Round_Button {} {
+            Fl_Round_Button radioRam {
               label RAM
+              callback {if(o->value()) radioRom->value(0);
+if(o->value()) radioZ80->value(0);} selected
               protected xywh {685 335 15 15} down_box ROUND_DOWN_BOX
             }
           }
