@@ -13,11 +13,18 @@ static bool startsWith(std::string s1, std::string s2) {
 */
 
 DialogDebugger::DialogDebugger() : _DialogDebugger() {
-    
+
 }
 
 DialogDebugger::~DialogDebugger() {
 
+}
+
+void DialogDebugger::make_window() {
+    _DialogDebugger::make_window();
+
+    //Set default values
+    radioZ80->value(1);
 }
 
 void DialogDebugger::onInputCommand(Fl_Input* o, void* v) {

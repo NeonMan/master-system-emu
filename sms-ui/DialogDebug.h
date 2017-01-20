@@ -9,6 +9,7 @@ class DialogDebugger : public _DialogDebugger {
 public:
     DialogDebugger();
     virtual ~DialogDebugger();
+    void make_window();
 private:
     std::string last_cmd;
 
