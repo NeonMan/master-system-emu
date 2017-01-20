@@ -42,8 +42,8 @@ char z80d_byte_to_char(uint8_t b){
 }
 
 static int unknown_decode(const uint8_t * opcode, char* result) {
-    sprintf(result, "UNK %02X%02X%02X%02X", opcode[0], opcode[1], opcode[2], opcode[3]);
-    return 0;
+    sprintf(result, ".db %02Xh", opcode[0]);
+    return 1;
 }
 
 int z80d_decode(const uint8_t* opcode, unsigned int size, char* result){
@@ -90,7 +90,6 @@ int z80d_decode(const uint8_t* opcode, unsigned int size, char* result){
 z80d_opcode z80d_decode_op(const uint8_t* opcode, uint16_t pc_addr){
     z80d_opcode rv;
     rv.address = pc_addr;
-    rv.next = 0;
     memcpy(rv.opcode, opcode, 4);
     rv.size = z80d_decode(opcode, sizeof(rv.opcode_str), rv.opcode_str);
     return rv;

@@ -26,15 +26,26 @@
 extern "C" {
 #endif
 
+#define Z80D_TYPE_NORMAL        (1<<0)  /**<-- Opcode may continue execution on the next opcode. */
+#define Z80D_TYPE_CONST_JUMP    (1<<1)  /**<-- Opcode has a constant jump address. */
+#define Z80D_TYPE_REL_JUMP      (1<<2)  /**<-- Opcode can perform a calculated jump. */
+#define Z80D_TYPE_INDIRECT_JUMP (1<<3)  /**<-- Opcode performs a register/stack based jump. */
+#define Z80D_TYPE_CONST_LOAD    (1<<4)  /**<-- Opcode loads an immediate constant (8bit). */
+#define Z80D_TYPE_CONST_LOAD16  (1<<5)  /**<-- Opcode loads an immediate constant (16bit). */
+#define Z80D_TYPE_INDIRECT_LOAD (1<<6)  /**<-- Opcode loads indirectly. */
+
 /// Contains all the info regarding an opcode at a given address.
 struct z80d_opcode_s{
-    char     opcode_str[32]; ///<-- Mnemonic representing the opcode
-    uint8_t  opcode[4];      ///<-- The opcode bytes
-    uint8_t  size;           ///<-- Opcode size
-    uint16_t address;        ///<-- Opcode address
+    char     opcode_str[32]; ///<-- Mnemonic representing the opcode.
+    uint8_t  opcode[4];      ///<-- The opcode bytes.
+    uint8_t  size;           ///<-- Opcode size.
+    uint16_t address;        ///<-- Opcode address.
 
-    ///Pointer to an opcode at the same address (if bank switching is used)
-    struct z80d_opcode_s *next;
+    //Branch predictions
+    uint16_t address_next;   ///<-- Next opcode address if no jump.
+    uint16_t address_jump;   ///<-- Next opcode address if jump is effective.
+    uint16_t immediate;      ///<-- Immediate value.
+    uint8_t  flags;          ///<-- Opcode properties.
 };
 typedef struct z80d_opcode_s z80d_opcode;
 
