@@ -41,6 +41,8 @@
 #include <savestate/savestate.h>
 #include "sms-emu.h" /*<-- Refactor me!*/
 
+#include "zed/zedeighty.h"
+
 #ifdef _WIN32
 #define quick_exit exit
 #endif
@@ -156,6 +158,9 @@ int emu_init(){
     else {
         exit(-1);
     }
+
+    //Analyze the first slot
+    zed::analyze((uint8_t*)romdbg_get_rom(), 0x0000, 1024 * 48 - 1);
 
     //Setup SDL
     ///@note Implement me
