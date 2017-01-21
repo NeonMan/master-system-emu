@@ -277,7 +277,7 @@ z80d_opcode zd_CALL_nn(const uint8_t* opcode) {
     const uint16_t addr = opcode[1] + (((uint16_t)opcode[2]) << 8);
     sprintf(rv.opcode_str, "CALL 0x%04X", addr);
 
-    rv.flags = Z80D_TYPE_CONST_JUMP;
+    rv.flags = Z80D_TYPE_CONST_JUMP | Z80D_TYPE_NORMAL;
     rv.address_jump = addr;
     return rv;
 }
