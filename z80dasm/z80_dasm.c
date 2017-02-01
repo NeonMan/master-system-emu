@@ -265,7 +265,7 @@ z80d_opcode zd_CALL_cc_nn(const uint8_t* opcode) {
     const uint16_t addr = opcode[1] + (((uint16_t)opcode[2]) << 8);
     sprintf(rv.opcode_str, "CALL %s 0x%04X", z80d_cc[y], addr);
 
-    rv.flags = Z80D_TYPE_CONST_JUMP | Z80D_TYPE_NORMAL;
+    rv.flags = Z80D_TYPE_CONST_JUMP | Z80D_TYPE_NORMAL | Z80D_TYPE_CALL;
     rv.address_jump = addr;
     return rv;
 }
@@ -277,7 +277,7 @@ z80d_opcode zd_CALL_nn(const uint8_t* opcode) {
     const uint16_t addr = opcode[1] + (((uint16_t)opcode[2]) << 8);
     sprintf(rv.opcode_str, "CALL 0x%04X", addr);
 
-    rv.flags = Z80D_TYPE_CONST_JUMP | Z80D_TYPE_NORMAL;
+    rv.flags = Z80D_TYPE_CONST_JUMP | Z80D_TYPE_NORMAL | Z80D_TYPE_CALL;
     rv.address_jump = addr;
     return rv;
 }
@@ -952,7 +952,7 @@ z80d_opcode zd_RET(const uint8_t* opcode) {
     rv.size = opcode_size(opcode); //1;
 
     strcpy(rv.opcode_str, "RET");
-    rv.flags = Z80D_TYPE_INDIRECT_JUMP;
+    rv.flags = Z80D_TYPE_INDIRECT_JUMP | Z80D_TYPE_RETURN;
     return rv; //1;
 }
 
@@ -962,7 +962,7 @@ z80d_opcode zd_RET_cc(const uint8_t* opcode) {
 
     const uint8_t y = (opcode[0] >> 3) & 0x07;
     sprintf(rv.opcode_str, "RET %s", z80d_cc[y]);
-    rv.flags = Z80D_TYPE_INDIRECT_JUMP | Z80D_TYPE_NORMAL;
+    rv.flags = Z80D_TYPE_INDIRECT_JUMP | Z80D_TYPE_NORMAL | Z80D_TYPE_RETURN;
     return rv; //1;
 }
 
@@ -971,7 +971,7 @@ z80d_opcode zd_RETI(const uint8_t* opcode) {
     rv.size = opcode_size(opcode); //2;
 
     strcpy(rv.opcode_str, "RETI");
-    rv.flags = Z80D_TYPE_INDIRECT_JUMP;
+    rv.flags = Z80D_TYPE_INDIRECT_JUMP | Z80D_TYPE_RETURN;
     return rv; //2;
 }
 
@@ -980,7 +980,7 @@ z80d_opcode zd_RETN(const uint8_t* opcode) {
     rv.size = opcode_size(opcode); //2;
 
     strcpy(rv.opcode_str, "RETN");
-    rv.flags = Z80D_TYPE_INDIRECT_JUMP;
+    rv.flags = Z80D_TYPE_INDIRECT_JUMP | Z80D_TYPE_RETURN;
     return rv; //2;
 }
 
