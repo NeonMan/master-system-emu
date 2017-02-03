@@ -137,4 +137,19 @@ void zed::analyze(const uint8_t * rom, uint16_t start_addr, uint16_t end_addr)
         }
     }
 
+    //Print stuff to STDERR
+    printf("--- Analysis result ---\r\n");
+    printf(" Call entry points:\r\n");
+    for (unsigned int i = 0; i < call_entry.size(); i++) {
+        printf("    %04Xh \r\n", call_entry.front());
+        call_entry.pop_front();
+    }
+
+    printf(" Return points:\r\n");
+    for (unsigned int i = 0; i < call_return.size(); i++) {
+        printf("    %04Xh \r\n", call_return.front());
+        call_return.pop_front();
+    }
+
+    printf("-----------------------\r\n");
 }
