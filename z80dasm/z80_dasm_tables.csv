@@ -172,7 +172,7 @@ NONI/NOP	zd_NOP	0b11101101????????	#Longer version of NOP (Unsafe)
 !PREFIX	#include <stdint.h>			
 !PREFIX				
 !PREFIX	struct opcode_dasm_s{			
-!PREFIX	  int (*f)(const uint8_t *, char*);			
+!PREFIX	  z80d_opcode (*f)(const uint8_t *);			
 !PREFIX	  signed char size;			
 !PREFIX	};			
 !PREFIX	typedef struct opcode_dasm_s opcode_dasm_t;			
