@@ -71,7 +71,8 @@ if(NOT MINGW)
 endif(NOT MINGW)
 
 # --- Find python3 (code generation) ---
-find_package(PythonInterp 3 REQUIRED)
+#find_package(PythonInterp 3 REQUIRED)
+set(PYTHON_EXECUTABLE "C:\\Python31\\python.exe")
 
 # --- Dependencies ---
 include_directories(${PROJECT_SOURCE_DIR})
