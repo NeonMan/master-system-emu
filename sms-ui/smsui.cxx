@@ -60,6 +60,7 @@ uint64_t is_clocked = 0; //<-- When this becames false, the execution is paused.
     if ((ticks - last_update) > 100){ \
       Fl::check();  /*Refresh FLTK every .1 seconds*/ \
       dlg_z80->update_values(); \
+      dlg_debug->update_values();\
       last_update = ticks; \
     } \
     if (!dlg_z80->windowDialog->shown()) \

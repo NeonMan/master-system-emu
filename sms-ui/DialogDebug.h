@@ -10,6 +10,8 @@ public:
     DialogDebugger();
     virtual ~DialogDebugger();
     void make_window();
+    void update_values();
+
 private:
     std::string last_cmd;
 

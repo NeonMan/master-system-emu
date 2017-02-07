@@ -1,12 +1,12 @@
 # data file for the Fltk User Interface Designer (fluid)
-version 1.0304
-header_name {.h}
+version 1.0303 
+header_name {.h} 
 code_name {.cxx}
 declblock {\#if 1} {open after {\#endif}
 } {
   decl {\#include <stdint.h>} {public global
   }
-}
+} 
 
 class _DialogDebugger {open
 } {
@@ -14,14 +14,14 @@ class _DialogDebugger {open
   } {
     Fl_Window windowDialog {
       label Debugger open
-      xywh {189 302 1105 426} type Double resizable visible
+      xywh {197 310 1105 424} type Double resizable visible
     } {
       Fl_Tabs tabTools {open
         protected xywh {10 30 240 385} labeltype NO_LABEL
       } {
         Fl_Group {} {
-          label Z80
-          protected xywh {15 30 235 360} hide
+          label Z80 open
+          protected xywh {15 30 235 360}
         } {
           Fl_Input inputAF {
             label AF
@@ -134,16 +134,16 @@ class _DialogDebugger {open
             }
           }
           Fl_Group {} {
-            label Buses
+            label Buses open
             protected xywh {40 325 185 35}
           } {
-            Fl_Output {} {
+            Fl_Output inputBusData {
               label Data
-              protected xywh {75 330 40 25}
+              protected xywh {75 330 40 25} textfont 4
             }
-            Fl_Output {} {
-              label Addr
-              protected xywh {165 330 40 25}
+            Fl_Output inputBusAddress {
+              label Addr selected
+              protected xywh {165 330 40 25} textfont 4
             }
           }
           Fl_Group {} {
@@ -157,7 +157,7 @@ class _DialogDebugger {open
         } {}
         Fl_Group {} {
           label Breakpoints
-          protected xywh {15 30 235 360}
+          protected xywh {15 30 235 360} hide
         } {
           Fl_Check_Browser checkBrowserBreak {
             protected xywh {15 35 230 290} textfont 4 resizable
@@ -200,7 +200,7 @@ class _DialogDebugger {open
           label Disasm open
           protected xywh {260 30 835 330}
         } {
-          Fl_Text_Editor {} {selected
+          Fl_Text_Editor {} {
             protected xywh {265 35 810 320} textfont 4 resizable
           }
           Fl_Scrollbar {} {
@@ -331,4 +331,4 @@ if(o->value()) radioZ80->value(0);}
   }
   decl {virtual void onAddBreakpoint() = 0} {protected local
   }
-}
+} 

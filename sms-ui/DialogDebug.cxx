@@ -5,12 +5,14 @@
 
 #include <FL/fl_ask.H>
 
-/*
-static bool startsWith(std::string s1, std::string s2) {
-    size_t min_size = (s1.length() > s2.length()) ? s1.length() : s2.length();
-    return s1.compare(0, min_size, s2) == 0;
+//--- Use z80 internals ---
+#include <z80/z80_externs.h>
+#include <z80/z80_macros.h>
+#include <z80/z80.h>
+extern "C" {
+    extern struct z80_s z80;
 }
-*/
+//-------------------------
 
 DialogDebugger::DialogDebugger() : _DialogDebugger() {
 
@@ -25,6 +27,8 @@ void DialogDebugger::make_window() {
 
     //Set default values
     radioZ80->value(1);
+
+    inputCommand->set_visible_focus();
 }
 
 void DialogDebugger::onInputCommand(Fl_Input* o, void* v) {
@@ -133,4 +137,55 @@ void DialogDebugger::onAddBreakpoint() {
     catch (std::invalid_argument e) { 
         fl_alert("Invalid address [ %s ]", inputBreakAddress->value());
     }
+}
+
+void DialogDebugger::update_values() {
+
+    //Small buffer for integer strings
+    char hex_val[6];
+
+    //Set textbox values
+    sprintf(hex_val, "%04X", (Z80_A << 8 ) | (Z80_F));
+    inputAF->value(hex_val);
+    sprintf(hex_val, "%04X", (Z80_Ap << 8) | (Z80_Fp));
+    inputAFp->value(hex_val);
+    sprintf(hex_val, "%04X", (Z80_B << 8)  | (Z80_C));
+    inputBC->value(hex_val);
+    sprintf(hex_val, "%04X", (Z80_Bp << 8) | (Z80_Cp));
+    inputBCp->value(hex_val);
+    sprintf(hex_val, "%04X", (Z80_D << 8)  | (Z80_D));
+    inputDE->value(hex_val);
+    sprintf(hex_val, "%04X", (Z80_Dp << 8) | (Z80_Dp));
+    inputDEp->value(hex_val);
+    sprintf(hex_val, "%04X", (Z80_H << 8)  | (Z80_L));
+    inputHL->value(hex_val);
+    sprintf(hex_val, "%04X", (Z80_Hp << 8) | (Z80_Lp));
+    inputHLp->value(hex_val);
+
+    sprintf(hex_val, "%04X", Z80_PC);
+    inputPC->value(hex_val);
+    sprintf(hex_val, "%04X", Z80_SP);
+    inputSP->value(hex_val);
+    sprintf(hex_val, "%04X", Z80_IX);
+    inputIX->value(hex_val);
+    sprintf(hex_val, "%04X", Z80_IY);
+    inputIY->value(hex_val);
+    sprintf(hex_val, "%04X", (Z80_I << 8) | (Z80_R));
+    inputIR->value(hex_val);
+
+    sprintf(hex_val, "%02X", z80_data);
+    inputBusData->value(hex_val);
+    sprintf(hex_val, "%04X", z80_address);
+    inputBusAddress->value(hex_val);
+
+    //Set flag checkboxes
+    checkCarryFlag->value(Z80_F & Z80_FLAG_CARRY);
+    checkSubtractFlag->value(Z80_F & Z80_FLAG_SUBTRACT);
+    checkParityFlag->value(Z80_F & Z80_FLAG_PARITY);
+    checkUnk3Flag->value(Z80_F & Z80_FLAG_UNK3);
+
+    checkHalfCarryFlag->value(Z80_F & Z80_FLAG_HC);
+    checkUnk5Flag->value(Z80_F & Z80_FLAG_UNK5);
+    checkZeroFlag->value(Z80_F & Z80_FLAG_ZERO);
+    checkSignFlag->value(Z80_F & Z80_FLAG_SIGN);
 }
