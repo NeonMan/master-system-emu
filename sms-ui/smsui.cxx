@@ -26,7 +26,6 @@
 #include <FL/Fl_File_Chooser.H>
 #include <FL/Fl_Native_File_Chooser.H>
 #include "DialogZ80.h"
-#include "DialogBreakpoint.h"
 #include "DialogDebug.h"
 
 //Emulator includes
@@ -201,7 +200,6 @@ int main(int argc, char** argv){
     emu_init();
     //Create dialogs
     DialogZ80* dlg_z80         = new DialogZ80;
-    DialogBreakpoints* dlg_brk = new DialogBreakpoints;
     DialogDebugger* dlg_debug  = new DialogDebugger;
 
     //Show dialogs
@@ -222,7 +220,6 @@ int main(int argc, char** argv){
     //Provide the UI with relevant variables
     dlg_z80->set_running_ptr(&is_clocked);
     dlg_z80->set_z80_ptr(z80dbg_get_z80());
-    dlg_brk->set_breakpoint_table(z80dbg_get_breakpoints());
 
     unsigned long edge_count = 0;
     while (is_running){
@@ -271,7 +268,6 @@ int main(int argc, char** argv){
     }
     //Cleanup
     delete dlg_z80;
-    delete dlg_brk;
     delete dlg_debug;
     emu_cleanup();
     return 0;
