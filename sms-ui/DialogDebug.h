@@ -5,7 +5,7 @@
 #include <string>
 #include <cstdint>
 
-class DialogDebug : public _DialogDebugger {
+class DialogDebug : public _DialogDebug {
 
 public:
     DialogDebug();

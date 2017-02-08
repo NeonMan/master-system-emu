@@ -8,18 +8,14 @@ declblock {\#if 1} {open after {\#endif}
   }
 } 
 
-class _DialogDebugger {open
+class _DialogDebug {open selected
 } {
   Function {make_window()} {open
   } {
     Fl_Window windowDialog {
       label Debugger open
-      xywh {610 367 1105 424} type Double resizable visible
+      xywh {606 363 1105 423} type Double resizable visible
     } {
-      Fl_Input inputCommand {
-        callback {this->onInputCommand(o,v);} selected
-        protected xywh {265 390 830 25} when 10 hotspot
-      }
       Fl_Tabs tabTools {open
         protected xywh {10 30 240 385} labeltype NO_LABEL
       } {
@@ -143,7 +139,7 @@ class _DialogDebugger {open
           } {
             Fl_Output inputBusData {
               label Data
-              protected xywh {75 330 25 25} textfont 4
+              protected xywh {75 330 40 25} textfont 4
             }
             Fl_Output inputBusAddress {
               label Addr
@@ -323,13 +319,17 @@ if(o->value()) radioZ80->value(0);}
         } {
           MenuItem {} {
             label {Debugger reference}
-            protected xywh {0 0 100 20} shortcut 0xffbe deactivate
+            protected xywh {0 0 100 20} shortcut 0xffbe
           }
           MenuItem {} {
             label {About...}
-            protected xywh {0 0 100 20} deactivate
+            protected xywh {0 0 100 20}
           }
         }
+      }
+      Fl_Input inputCommand {
+        callback {this->onInputCommand(o,v);}
+        protected xywh {265 390 830 25} when 10 hotspot
       }
     }
   }
