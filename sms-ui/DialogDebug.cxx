@@ -14,15 +14,15 @@ extern "C" {
 }
 //-------------------------
 
-DialogDebugger::DialogDebugger() : _DialogDebugger() {
+DialogDebug::DialogDebug() : _DialogDebugger() {
+    this->clock_counter_p = nullptr;
+}
+
+DialogDebug::~DialogDebug() {
 
 }
 
-DialogDebugger::~DialogDebugger() {
-
-}
-
-void DialogDebugger::make_window() {
+void DialogDebug::make_window() {
     _DialogDebugger::make_window();
 
     //Set default values
@@ -31,8 +31,21 @@ void DialogDebugger::make_window() {
     inputCommand->set_visible_focus();
 }
 
-void DialogDebugger::onInputCommand(Fl_Input* o, void* v) {
+void DialogDebug::onInputCommand(Fl_Input* o, void* v) {
     std::string cmd = std::string(o->value());
+
+    //Repeat last command
+    if ((cmd == "!")) {
+        cmd = last_cmd;
+    }
+
+
+    //Command: Start/Stop
+    if ((cmd == "S") || (cmd == "s")) {
+        this->onDebugStart();
+    }
+
+    //Save last CMD if something has been input
     if (cmd != "") {
         this->last_cmd = cmd;
     }
@@ -43,7 +56,7 @@ void DialogDebugger::onInputCommand(Fl_Input* o, void* v) {
 }
 
 ///Flag checkboxes changed.
-void DialogDebugger::onFlagsChanged() {
+void DialogDebug::onFlagsChanged() {
     uint8_t f = 0;
 
     //Calculate the new F register
@@ -60,7 +73,7 @@ void DialogDebugger::onFlagsChanged() {
     ///@todo do something with the data
 }
 
-void DialogDebugger::onRegistersChanged() {
+void DialogDebug::onRegistersChanged() {
     uint16_t af, afp;
     uint16_t bc, bcp;
     uint16_t de, dep;
@@ -70,19 +83,19 @@ void DialogDebugger::onRegistersChanged() {
     uint16_t ir;
 
     //Read the input values
-    try { af = std::stoi(inputAF->value(), 0, 16); } catch(std::invalid_argument e) { af = 0; }
+    try { af = std::stoi(inputAF->value(), 0, 16); }   catch(std::invalid_argument e) { af = 0; }
     try { afp = std::stoi(inputAFp->value(), 0, 16); } catch(std::invalid_argument e) { afp = 0; }
-    try { bc = std::stoi(inputBC->value(), 0, 16); } catch(std::invalid_argument e) { bc = 0; }
+    try { bc = std::stoi(inputBC->value(), 0, 16); }   catch(std::invalid_argument e) { bc = 0; }
     try { bcp = std::stoi(inputBCp->value(), 0, 16); } catch(std::invalid_argument e) { bcp = 0; }
-    try { de = std::stoi(inputDE->value(), 0, 16); } catch(std::invalid_argument e) { de = 0; }
+    try { de = std::stoi(inputDE->value(), 0, 16); }   catch(std::invalid_argument e) { de = 0; }
     try { dep = std::stoi(inputDEp->value(), 0, 16); } catch(std::invalid_argument e) { dep = 0; }
-    try { hl = std::stoi(inputHL->value(), 0, 16); } catch(std::invalid_argument e) { hl = 0; }
+    try { hl = std::stoi(inputHL->value(), 0, 16); }   catch(std::invalid_argument e) { hl = 0; }
     try { hlp = std::stoi(inputHLp->value(), 0, 16); } catch(std::invalid_argument e) { hlp = 0; }
-    try { ix = std::stoi(inputIX->value(), 0, 16); } catch(std::invalid_argument e) { ix = 0; }
-    try { iy = std::stoi(inputIY->value(), 0, 16); } catch(std::invalid_argument e) { iy = 0; }
-    try { sp = std::stoi(inputSP->value(), 0, 16); } catch(std::invalid_argument e) { sp = 0; }
-    try { pc = std::stoi(inputPC->value(), 0, 16); } catch(std::invalid_argument e) { pc = 0; }
-    try { ir = std::stoi(inputIR->value(), 0, 16); } catch(std::invalid_argument e) { ir = 0; }
+    try { ix = std::stoi(inputIX->value(), 0, 16); }   catch(std::invalid_argument e) { ix = 0; }
+    try { iy = std::stoi(inputIY->value(), 0, 16); }   catch(std::invalid_argument e) { iy = 0; }
+    try { sp = std::stoi(inputSP->value(), 0, 16); }   catch(std::invalid_argument e) { sp = 0; }
+    try { pc = std::stoi(inputPC->value(), 0, 16); }   catch(std::invalid_argument e) { pc = 0; }
+    try { ir = std::stoi(inputIR->value(), 0, 16); }   catch(std::invalid_argument e) { ir = 0; }
 
     //Write back with proper formatting
     char num_str[6];
@@ -103,7 +116,7 @@ void DialogDebugger::onRegistersChanged() {
     ///@todo do something with the data
 }
 
-void DialogDebugger::onAddBreakpoint() {
+void DialogDebug::onAddBreakpoint() {
     bool r, w, x, io;
     uint16_t address;
     std::string description;
@@ -125,6 +138,7 @@ void DialogDebugger::onAddBreakpoint() {
         mode_str = mode_str.append(w ? "W" : "-");
         mode_str = mode_str.append(x ? "X" : "-");
         mode_str = mode_str.append(io ? "I" : "-");
+        mode_str = mode_str.append(io ? "O" : "-"); /*<-- Maybe separate IO reads from IO writes*/
 
         ///@todo Add breakpoint to list and z80
         checkBrowserBreak->add(addr_str.append(" ").append(mode_str).append(": ").append(description).c_str(), 1);
@@ -139,10 +153,26 @@ void DialogDebugger::onAddBreakpoint() {
     }
 }
 
-void DialogDebugger::update_values() {
+void DialogDebug::onDebugStart() {
+    if (clock_counter_p) {
+        if (*clock_counter_p) {
+            *clock_counter_p = 0;
+        }
+        else {
+            *clock_counter_p = UINT64_MAX;
+        }
+    }
+}
+
+void DialogDebug::update_values() {
 
     //Small buffer for integer strings
     char hex_val[6];
+
+    //If we are not visible, is pointless to update anything
+    if (!this->windowDialog->shown()) {
+        return;
+    }
 
     //Set textbox values
     sprintf(hex_val, "%04X", (Z80_A << 8 ) | (Z80_F));
@@ -188,4 +218,9 @@ void DialogDebugger::update_values() {
     checkUnk5Flag->value(Z80_F & Z80_FLAG_UNK5);
     checkZeroFlag->value(Z80_F & Z80_FLAG_ZERO);
     checkSignFlag->value(Z80_F & Z80_FLAG_SIGN);
+}
+
+void DialogDebug::setClockCounter(uint64_t * p)
+{
+    this->clock_counter_p = p;
 }

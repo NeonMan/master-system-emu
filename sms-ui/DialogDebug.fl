@@ -14,7 +14,7 @@ class _DialogDebugger {open
   } {
     Fl_Window windowDialog {
       label Debugger open
-      xywh {197 310 1105 424} type Double resizable visible
+      xywh {201 314 1105 427} type Double resizable visible
     } {
       Fl_Tabs tabTools {open
         protected xywh {10 30 240 385} labeltype NO_LABEL
@@ -142,7 +142,7 @@ class _DialogDebugger {open
               protected xywh {75 330 40 25} textfont 4
             }
             Fl_Output inputBusAddress {
-              label Addr selected
+              label Addr
               protected xywh {165 330 40 25} textfont 4
             }
           }
@@ -198,7 +198,7 @@ class _DialogDebugger {open
       } {
         Fl_Group {} {
           label Disasm open
-          protected xywh {260 30 835 330}
+          protected xywh {260 30 835 330} hide
         } {
           Fl_Text_Editor {} {
             protected xywh {265 35 810 320} textfont 4 resizable
@@ -209,7 +209,7 @@ class _DialogDebugger {open
         }
         Fl_Group {} {
           label Dump open
-          protected xywh {260 30 835 330} hide
+          protected xywh {260 30 835 330}
         } {
           Fl_Text_Editor {} {
             protected xywh {265 35 810 295} textfont 4 resizable
@@ -254,7 +254,7 @@ if(o->value()) radioZ80->value(0);}
           }
         }
       }
-      Fl_Menu_Bar {} {
+      Fl_Menu_Bar {} {open
         protected xywh {0 0 1105 25}
       } {
         Submenu {} {
@@ -263,41 +263,42 @@ if(o->value()) radioZ80->value(0);}
         } {
           MenuItem {} {
             label New
-            protected xywh {0 0 100 20} shortcut 0x4006e
+            protected xywh {0 0 100 20} shortcut 0x4006e deactivate
           }
           MenuItem {} {
             label {Open...}
-            protected xywh {0 0 100 20} shortcut 0x4006f
+            protected xywh {0 0 100 20} shortcut 0x4006f deactivate
           }
           MenuItem {} {
             label {Save...}
-            protected xywh {0 0 100 20} shortcut 0x40073
+            protected xywh {0 0 100 20} shortcut 0x40073 deactivate
           }
           MenuItem {} {
             label {Save as...}
-            protected xywh {0 0 100 20}
+            protected xywh {0 0 100 20} deactivate
           }
-          MenuItem {} {
+          MenuItem menuDebugStart {
             label {Run/Stop}
+            callback {onDebugStart();} selected
             protected xywh {5 5 100 20} shortcut 0xffc2
           }
           MenuItem {} {
             label Reset
-            protected xywh {5 5 100 20} shortcut 0x4ffc2
+            protected xywh {5 5 100 20} shortcut 0x4ffc2 deactivate
           }
           MenuItem {} {
             label {Step over}
-            protected xywh {0 0 100 20} shortcut 0xffc7
+            protected xywh {0 0 100 20} shortcut 0xffc7 deactivate
           }
           MenuItem {} {
             label {Step into}
-            protected xywh {0 0 100 20} shortcut 0xffc8
+            protected xywh {0 0 100 20} shortcut 0xffc8 deactivate
           }
           MenuItem {} {
             label {Step out}
-            protected xywh {5 5 100 20} shortcut 0xffc9
+            protected xywh {5 5 100 20} shortcut 0xffc9 deactivate
           }
-          MenuItem {} {
+          MenuItem menuDebugExit {
             label Exit
             callback {this->windowDialog->hide();}
             protected xywh {0 0 100 20} shortcut 0x40071
@@ -330,5 +331,7 @@ if(o->value()) radioZ80->value(0);}
   decl {virtual void onRegistersChanged() = 0} {protected local
   }
   decl {virtual void onAddBreakpoint() = 0} {protected local
+  }
+  decl {virtual void onDebugStart() = 0} {protected local
   }
 } 
