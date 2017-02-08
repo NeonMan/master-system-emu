@@ -14,7 +14,7 @@ class _DialogDebugger {open
   } {
     Fl_Window windowDialog {
       label Debugger open
-      xywh {201 314 1105 427} type Double resizable visible
+      xywh {602 359 1105 427} type Double resizable visible
     } {
       Fl_Tabs tabTools {open
         protected xywh {10 30 240 385} labeltype NO_LABEL
@@ -279,12 +279,13 @@ if(o->value()) radioZ80->value(0);}
           }
           MenuItem menuDebugStart {
             label {Run/Stop}
-            callback {onDebugStart();} selected
+            callback {onDebugStart();}
             protected xywh {5 5 100 20} shortcut 0xffc2
           }
-          MenuItem {} {
+          MenuItem menuDebugReset {
             label Reset
-            protected xywh {5 5 100 20} shortcut 0x4ffc2 deactivate
+            callback {this->onDebugReset();} selected
+            protected xywh {5 5 100 20} shortcut 0x4ffc2
           }
           MenuItem {} {
             label {Step over}
@@ -333,5 +334,7 @@ if(o->value()) radioZ80->value(0);}
   decl {virtual void onAddBreakpoint() = 0} {protected local
   }
   decl {virtual void onDebugStart() = 0} {protected local
+  }
+  decl {virtual void onDebugReset() = 0} {protected local
   }
 } 
