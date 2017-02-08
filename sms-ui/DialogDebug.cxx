@@ -15,7 +15,7 @@ extern "C" {
 }
 //-------------------------
 
-DialogDebug::DialogDebug() : _DialogDebugger() {
+DialogDebug::DialogDebug() : _DialogDebug() {
     this->clock_counter_p = nullptr;
 }
 
@@ -23,7 +23,7 @@ DialogDebug::~DialogDebug() {
 }
 
 void DialogDebug::make_window() {
-    _DialogDebugger::make_window();
+    _DialogDebug::make_window();
 
     //Set default values
     radioZ80->value(1);
