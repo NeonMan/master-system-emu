@@ -14,13 +14,13 @@ class _DialogDebugger {open
   } {
     Fl_Window windowDialog {
       label Debugger open
-      xywh {602 359 1105 427} type Double resizable visible
+      xywh {606 363 1105 423} type Double resizable visible
     } {
       Fl_Tabs tabTools {open
         protected xywh {10 30 240 385} labeltype NO_LABEL
       } {
         Fl_Group {} {
-          label Z80 open
+          label Z80 selected
           protected xywh {15 30 235 360}
         } {
           Fl_Input inputAF {
@@ -192,6 +192,14 @@ class _DialogDebugger {open
             protected xywh {170 355 75 25}
           }
         }
+        Fl_Group {} {
+          label Log
+          protected xywh {15 30 235 360} hide
+        } {
+          Fl_Text_Display textLog {
+            protected xywh {15 35 230 350} resizable
+          }
+        }
       }
       Fl_Tabs tabMain {open
         protected xywh {260 30 835 355} labeltype NO_LABEL resizable
@@ -284,7 +292,7 @@ if(o->value()) radioZ80->value(0);}
           }
           MenuItem menuDebugReset {
             label Reset
-            callback {this->onDebugReset();} selected
+            callback {this->onDebugReset();}
             protected xywh {5 5 100 20} shortcut 0x4ffc2
           }
           MenuItem {} {

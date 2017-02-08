@@ -2,6 +2,7 @@
 #include <string>
 #include <cassert>
 #include <stdexcept>
+#include <iostream>
 
 #include <FL/fl_ask.H>
 
@@ -19,7 +20,6 @@ DialogDebug::DialogDebug() : _DialogDebugger() {
 }
 
 DialogDebug::~DialogDebug() {
-
 }
 
 void DialogDebug::make_window() {
@@ -29,6 +29,10 @@ void DialogDebug::make_window() {
     radioZ80->value(1);
 
     inputCommand->set_visible_focus();
+}
+
+void DialogDebug::log(std::string msg) {
+    std::cerr << msg << std::endl;
 }
 
 void DialogDebug::onInputCommand(Fl_Input* o, void* v) {
@@ -157,9 +161,11 @@ void DialogDebug::onDebugStart() {
     if (clock_counter_p) {
         if (*clock_counter_p) {
             *clock_counter_p = 0;
+            this->log("Emulation stopped");
         }
         else {
             *clock_counter_p = UINT64_MAX;
+            this->log("Emulation started");
         }
     }
 }
@@ -167,6 +173,8 @@ void DialogDebug::onDebugStart() {
 void DialogDebug::onDebugReset() {
     //Zero-out the z80 struct
     memset(&z80, 0, sizeof(z80));
+
+    log("Z80 Reset");
 }
 
 void DialogDebug::update_values() {
