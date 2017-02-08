@@ -58,11 +58,10 @@ uint64_t is_clocked = 0; //<-- When this becames false, the execution is paused.
     const unsigned long ticks = SDL_GetTicks(); \
     if ((ticks - last_update) > 100){ \
       Fl::check();  /*Refresh FLTK every .1 seconds*/ \
-      dlg_z80->update_values(); \
       dlg_debug->update_values();\
       last_update = ticks; \
     } \
-    if (!dlg_z80->windowDialog->shown()) \
+    if (!dlg_debug->windowDialog->shown()) \
         is_running = 0; \
 }
 
@@ -199,13 +198,9 @@ void emu_pc_breakpoint_cb(uint16_t address){
 int main(int argc, char** argv){
     emu_init();
     //Create dialogs
-    DialogZ80* dlg_z80         = new DialogZ80;
-    DialogDebugger* dlg_debug  = new DialogDebugger;
+    DialogDebug* dlg_debug  = new DialogDebug;
 
     //Show dialogs
-    //dlg_brk->windowDialog->show();
-    dlg_z80->windowDialog->show();
-
     dlg_debug->make_window();
     dlg_debug->windowDialog->show();
 
@@ -217,11 +212,10 @@ int main(int argc, char** argv){
     z80dbg_set_mem_breakpoint_cb(emu_mem_breakpoint_cb);
     z80dbg_set_pc_breakpoint_cb(emu_pc_breakpoint_cb);
 
-    //Provide the UI with relevant variables
-    dlg_z80->set_running_ptr(&is_clocked);
-    dlg_z80->set_z80_ptr(z80dbg_get_z80());
+    //Provide Debug UI with relevant variables
+    dlg_debug->setClockCounter(&is_clocked);
 
-    unsigned long edge_count = 0;
+    uint_fast8_t edge_count = 0;
     while (is_running){
         while (is_clocked && is_running){
             //
@@ -267,7 +261,6 @@ int main(int argc, char** argv){
         }
     }
     //Cleanup
-    delete dlg_z80;
     delete dlg_debug;
     emu_cleanup();
     return 0;
