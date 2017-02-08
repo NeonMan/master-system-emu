@@ -93,7 +93,7 @@ int JP_cc_nn() {
 ///JP HL; Size: 1; Flags: None
 int JP_HLp() {
 	assert(z80.opcode_index == 1);
-	assert(0); ///<-- Unimplemented
+    z80.rPC = Z80_HL;
 	return Z80_STAGE_RESET;
 }
 
