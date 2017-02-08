@@ -23,6 +23,7 @@ private:
     void onRegistersChanged();
     void onAddBreakpoint();
     void onDebugStart();
+    void onDebugReset();
 };
 
 #endif

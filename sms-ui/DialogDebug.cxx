@@ -164,6 +164,11 @@ void DialogDebug::onDebugStart() {
     }
 }
 
+void DialogDebug::onDebugReset() {
+    //Zero-out the z80 struct
+    memset(&z80, 0, sizeof(z80));
+}
+
 void DialogDebug::update_values() {
 
     //Small buffer for integer strings
