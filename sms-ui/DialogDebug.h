@@ -18,6 +18,8 @@ private:
     std::string last_cmd;
     uint64_t* volatile clock_counter_p;
 
+    void log(std::string msg);
+
     void onInputCommand(Fl_Input * o, void* v);
     void onFlagsChanged();
     void onRegistersChanged();
