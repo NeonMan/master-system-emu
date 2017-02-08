@@ -48,6 +48,9 @@ void DialogDebug::onInputCommand(Fl_Input* o, void* v) {
     if ((cmd == "S") || (cmd == "s")) {
         this->onDebugStart();
     }
+    else if ((cmd == "R") || (cmd == "r") || (cmd == "reset")) {
+        this->onDebugReset();
+    }
 
     //Save last CMD if something has been input
     if (cmd != "") {
