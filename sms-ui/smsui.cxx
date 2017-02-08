@@ -25,7 +25,6 @@
 #include <FL/Fl.H>
 #include <FL/Fl_File_Chooser.H>
 #include <FL/Fl_Native_File_Chooser.H>
-#include "DialogZ80.h"
 #include "DialogDebug.h"
 
 //Emulator includes

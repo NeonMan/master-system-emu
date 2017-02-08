@@ -2,15 +2,11 @@
 project(sms-ui)
 
 SET(FLTK_DIALOGS 
-    ${PROJECT_SOURCE_DIR}/_DialogZ80.cxx
-    ${PROJECT_SOURCE_DIR}/_DialogZ80.h
     ${PROJECT_SOURCE_DIR}/_DialogDebug.cxx
     ${PROJECT_SOURCE_DIR}/_DialogDebug.h
     )
 
 SET(CFILES
-    ${PROJECT_SOURCE_DIR}/DialogZ80.cxx
-    ${PROJECT_SOURCE_DIR}/DialogZ80.h
     ${PROJECT_SOURCE_DIR}/DialogDebug.cxx
     ${PROJECT_SOURCE_DIR}/DialogDebug.h
 	
@@ -34,17 +30,6 @@ add_executable(smsui smsui.cxx sms-emu.h ${VC_RESOURCE_FILES} ${CFILES} ${FLTK_D
 target_link_libraries(smsui glue sms_debug_dump fltk smsrom smsio smsram psg z80 peripheral vdp sdsc sms_debug_dump savestate SDL2 SDL2main)
 
 #Compile FL files
-add_custom_command(OUTPUT 
-                   ${PROJECT_SOURCE_DIR}/_DialogZ80.h
-                   ${PROJECT_SOURCE_DIR}/_DialogZ80.cxx
-                   COMMAND fluid ARGS
-                   -c
-                   -o ${PROJECT_SOURCE_DIR}/_DialogZ80.cxx
-                   -h ${PROJECT_SOURCE_DIR}/_DialogZ80.h
-                   ${PROJECT_SOURCE_DIR}/DialogZ80.fl
-                   MAIN_DEPENDENCY "DialogZ80.fl"
-                   COMMENT "Generating Z80 Dialog"
-                   VERBATIM)
                    
 add_custom_command(OUTPUT 
                    ${PROJECT_SOURCE_DIR}/_DialogDebug.h
