@@ -52,8 +52,12 @@ struct z80_s {
     uint8_t data_latch; ///<-- When data bus is sampled, it is stored here.
     uint8_t iff[2]; ///<-- Interrupt flip/flops
 
+    //Opcode storage
     uint8_t opcode[4]; ///<-- Opcode bytes, an opcode is at most 4 bytes long.
     uint8_t opcode_index; ///<-- Current read opcode size.
+
+    //Interrupt mode
+    uint8_t int_mode; ///<-- Uinterrupt mode.
 
     //Current stage
     uint8_t stage; ///<-- Current Z80 stage. Either M1, M2, M3 or RESET (first M1).

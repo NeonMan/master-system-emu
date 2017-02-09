@@ -646,8 +646,26 @@ int z80_stage_refresh() {
 void z80_tick(){
     switch (z80.stage){
     case Z80_STAGE_RESET:
+        //Reset pipeline state
         z80_reset_pipeline();
         ++(z80.stage);
+
+        //Sample interrupt lines.
+        if (!z80_n_nmi) {
+            ///@ToDo Prepare for NMI.
+            //If INT/NMI happen at the same time, I guess NMI will go first.
+            z80.stage = Z80_STAGE_M1_INT;
+            z80_tick(); //<-- Call z80tick again and return.
+            return;
+        }
+
+        if (!z80_n_int) {
+            ///@ToDo Prepare for INT.
+            z80.stage = Z80_STAGE_M1_INT;
+            z80_tick(); //<-- Call z80tick again and return.
+            return;
+        }
+
         //Fall-through
     case Z80_STAGE_M1:
         z80.stage = z80_stage_m1();
@@ -660,6 +678,15 @@ void z80_tick(){
         break;
     case Z80_STAGE_REFRESH:
         z80.stage = z80_stage_refresh();
+        break;
+    case Z80_STAGE_M1_INT:
+        assert(0); //<-- Unimplemented.
+        break;
+    case Z80_STAGE_M2_INT:
+        assert(0); //<-- Unimplemented.
+        break;
+    case Z80_STAGE_M3_INT:
+        assert(0); //<-- Unimplemented.
         break;
     default:
         assert(0); //<-- Should never get here
