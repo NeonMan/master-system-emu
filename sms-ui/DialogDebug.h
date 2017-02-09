@@ -26,6 +26,8 @@ private:
     void onAddBreakpoint();
     void onDebugStart();
     void onDebugReset();
+    void onFileSaveState();
+    void onFileLoadState();
 };
 
 #endif

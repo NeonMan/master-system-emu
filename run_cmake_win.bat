@@ -15,6 +15,3 @@ echo (E) Exit
 set /p choice=Option: 
 if '%choice%'=='R' goto start
 if '%choice%'=='r' goto start
-
-
-pause
