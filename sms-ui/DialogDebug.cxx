@@ -3,13 +3,16 @@
 #include <cassert>
 #include <stdexcept>
 #include <iostream>
-
 #include <FL/fl_ask.H>
+#include <FL/Fl_File_Chooser.H>
 
 //--- Use z80 internals ---
 #include <z80/z80_externs.h>
 #include <z80/z80_macros.h>
 #include <z80/z80.h>
+
+#include <savestate/savestate.h>
+
 extern "C" {
     extern struct z80_s z80;
 }
@@ -178,6 +181,40 @@ void DialogDebug::onDebugReset() {
     memset(&z80, 0, sizeof(z80));
 
     log("Z80 Reset");
+}
+
+void DialogDebug::onFileSaveState() {
+    Fl_File_Chooser fc(NULL, "SAV files (*.sav)", Fl_File_Chooser::CREATE, "Save state...");
+    const char* path;
+    
+    fc.show();
+    while (fc.visible()) {
+        Fl::wait(0.1);
+    }
+    path = fc.value();
+
+    if (path) {
+        FILE* out_f = fl_fopen(path, "wb");
+        ss_save(out_f, NULL);
+        fclose(out_f);
+    }
+}
+
+void DialogDebug::onFileLoadState() {
+    Fl_File_Chooser fc(NULL, "SAV files (*.sav)", Fl_File_Chooser::SINGLE, "Load state...");
+    const char* path;
+
+    fc.show();
+    while (fc.visible()) {
+        Fl::wait(0.1);
+    }
+    path = fc.value();
+
+    if (path) {
+        FILE* out_f = fl_fopen(path, "rb");
+        ss_restore(out_f);
+        fclose(out_f);
+    }
 }
 
 void DialogDebug::update_values() {

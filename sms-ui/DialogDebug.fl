@@ -1,22 +1,26 @@
 # data file for the Fltk User Interface Designer (fluid)
-version 1.0303 
-header_name {.h} 
+version 1.0304
+header_name {.h}
 code_name {.cxx}
 declblock {\#if 1} {open after {\#endif}
 } {
   decl {\#include <stdint.h>} {public global
   }
-} 
+}
 
-class _DialogDebug {open selected
+class _DialogDebug {open
 } {
   Function {make_window()} {open
   } {
     Fl_Window windowDialog {
       label Debugger open
-      xywh {606 363 1105 423} type Double resizable visible
+      xywh {224 244 1105 423} type Double resizable visible
     } {
-      Fl_Tabs tabTools {open
+      Fl_Input inputCommand {
+        callback {this->onInputCommand(o,v);}
+        protected xywh {265 390 830 25} when 10 hotspot
+      }
+      Fl_Tabs tabTools {
         protected xywh {10 30 240 385} labeltype NO_LABEL
       } {
         Fl_Group {} {
@@ -139,7 +143,7 @@ class _DialogDebug {open selected
           } {
             Fl_Output inputBusData {
               label Data
-              protected xywh {75 330 40 25} textfont 4
+              protected xywh {75 330 25 25} textfont 4
             }
             Fl_Output inputBusAddress {
               label Addr
@@ -201,7 +205,7 @@ class _DialogDebug {open selected
           }
         }
       }
-      Fl_Tabs tabMain {open
+      Fl_Tabs tabMain {
         protected xywh {260 30 835 355} labeltype NO_LABEL resizable
       } {
         Fl_Group {} {
@@ -266,25 +270,45 @@ if(o->value()) radioZ80->value(0);}
         protected xywh {0 0 1105 25}
       } {
         Submenu {} {
-          label Debug open
-          protected xywh {0 0 100 20}
+          label File open
+          xywh {0 0 100 20}
         } {
           MenuItem {} {
             label New
-            protected xywh {0 0 100 20} shortcut 0x4006e deactivate
+            protected xywh {5 5 100 20} shortcut 0x4006e deactivate
           }
           MenuItem {} {
             label {Open...}
-            protected xywh {0 0 100 20} shortcut 0x4006f deactivate
+            protected xywh {5 5 100 20} shortcut 0x4006f deactivate
           }
           MenuItem {} {
             label {Save...}
-            protected xywh {0 0 100 20} shortcut 0x40073 deactivate
+            protected xywh {5 5 100 20} shortcut 0x40073 deactivate
           }
           MenuItem {} {
             label {Save as...}
-            protected xywh {0 0 100 20} deactivate
+            protected xywh {5 5 100 20} deactivate divider
           }
+          MenuItem menuFileSaveState {
+            label {Save State...}
+            callback {onFileSaveState();}
+            protected xywh {0 0 100 20} shortcut 0x50073
+          }
+          MenuItem menuFileLoadState {
+            label {Load State...}
+            callback {onFileLoadState();} selected
+            protected xywh {0 0 100 20} shortcut 0x5006f divider
+          }
+          MenuItem menuDebugExit {
+            label Exit
+            callback {this->windowDialog->hide();}
+            protected xywh {5 5 100 20} shortcut 0x40071
+          }
+        }
+        Submenu {} {
+          label Debug open
+          protected xywh {0 0 100 20}
+        } {
           MenuItem menuDebugStart {
             label {Run/Stop}
             callback {onDebugStart();}
@@ -307,11 +331,6 @@ if(o->value()) radioZ80->value(0);}
             label {Step out}
             protected xywh {5 5 100 20} shortcut 0xffc9 deactivate
           }
-          MenuItem menuDebugExit {
-            label Exit
-            callback {this->windowDialog->hide();}
-            protected xywh {0 0 100 20} shortcut 0x40071
-          }
         }
         Submenu {} {
           label Help open
@@ -327,10 +346,6 @@ if(o->value()) radioZ80->value(0);}
           }
         }
       }
-      Fl_Input inputCommand {
-        callback {this->onInputCommand(o,v);}
-        protected xywh {265 390 830 25} when 10 hotspot
-      }
     }
   }
   decl {virtual void onInputCommand (Fl_Input* o, void* v) = 0} {protected local
@@ -345,4 +360,8 @@ if(o->value()) radioZ80->value(0);}
   }
   decl {virtual void onDebugReset() = 0} {protected local
   }
-} 
+  decl {virtual void onFileSaveState() = 0} {protected local
+  }
+  decl {virtual void onFileLoadState() = 0} {protected local
+  }
+}
