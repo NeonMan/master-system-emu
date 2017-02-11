@@ -269,10 +269,10 @@ if(o->value()) radioZ80->value(0);}
         }
         Fl_Group {} {
           label VDP open
-          xywh {260 30 835 330}
+          protected xywh {260 30 835 330}
         } {
           Fl_Box boxVdpView {selected
-            xywh {265 35 825 320} resizable
+            protected xywh {265 35 825 320} resizable
             class WidgetVdp
           }
         }
