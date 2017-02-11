@@ -9,6 +9,8 @@ SET(FLTK_DIALOGS
 SET(CFILES
     ${PROJECT_SOURCE_DIR}/DialogDebug.cxx
     ${PROJECT_SOURCE_DIR}/DialogDebug.h
+	${PROJECT_SOURCE_DIR}/WidgetVdp.cxx
+	${PROJECT_SOURCE_DIR}/WidgetVdp.h
 	
 	#Maybe make the debugger internals its own project
 	${PROJECT_SOURCE_DIR}/zed/zedeighty.cxx

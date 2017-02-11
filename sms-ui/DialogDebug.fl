@@ -6,6 +6,8 @@ declblock {\#if 1} {open after {\#endif}
 } {
   decl {\#include <stdint.h>} {public global
   }
+  decl {\#include "WidgetVdp.h"} {public global
+  }
 }
 
 class _DialogDebug {open
@@ -14,7 +16,7 @@ class _DialogDebug {open
   } {
     Fl_Window windowDialog {
       label Debugger open
-      xywh {34 50 1105 423} type Double resizable visible
+      xywh {34 50 1105 423} type Double hide resizable
     } {
       Fl_Input inputCommand {
         callback {this->onInputCommand(o,v);}
@@ -266,11 +268,12 @@ if(o->value()) radioZ80->value(0);}
           }
         }
         Fl_Group {} {
-          label VDP open selected
+          label VDP open
           xywh {260 30 835 330}
         } {
-          Fl_Box {} {
+          Fl_Box boxVdpView {selected
             xywh {265 35 825 320} resizable
+            class WidgetVdp
           }
         }
       }

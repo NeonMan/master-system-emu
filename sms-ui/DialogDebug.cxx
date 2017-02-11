@@ -12,6 +12,7 @@
 #include <z80/z80.h>
 
 #include <savestate/savestate.h>
+#include "WidgetVdp.h"
 
 extern "C" {
     extern struct z80_s z80;
@@ -271,6 +272,9 @@ void DialogDebug::update_values() {
     checkUnk5Flag->value(Z80_F & Z80_FLAG_UNK5);
     checkZeroFlag->value(Z80_F & Z80_FLAG_ZERO);
     checkSignFlag->value(Z80_F & Z80_FLAG_SIGN);
+
+    //Redraw VDP dialog
+    this->boxVdpView->redraw();
 }
 
 void DialogDebug::setClockCounter(uint64_t * p)
