@@ -435,7 +435,9 @@ int OUT_Cp_0() {
 ///OUT (C), r; Size: 2; Flags: None
 int OUT_Cp_r() {
 	assert(z80.opcode_index == 2);
-	assert(0); ///<-- Unimplemented
+    Z80_OPCODE_SUBDIV;
+    const uint16_t port_addr = z80.opcode[1] + (((uint16_t)Z80_C) << 8);
+    Z80_8BIT_WRITE(port_addr, 1, *z80_r[y[1]]);
 	return Z80_STAGE_RESET;
 }
 

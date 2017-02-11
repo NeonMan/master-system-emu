@@ -14,7 +14,7 @@ class _DialogDebug {open
   } {
     Fl_Window windowDialog {
       label Debugger open
-      xywh {224 244 1105 423} type Double resizable visible
+      xywh {34 50 1105 423} type Double resizable visible
     } {
       Fl_Input inputCommand {
         callback {this->onInputCommand(o,v);}
@@ -205,12 +205,12 @@ class _DialogDebug {open
           }
         }
       }
-      Fl_Tabs tabMain {
+      Fl_Tabs tabMain {open
         protected xywh {260 30 835 355} labeltype NO_LABEL resizable
       } {
         Fl_Group {} {
           label Disasm open
-          protected xywh {260 30 835 330}
+          protected xywh {260 30 835 330} hide
         } {
           Fl_Text_Editor {} {
             protected xywh {265 35 810 320} textfont 4 resizable
@@ -220,7 +220,7 @@ class _DialogDebug {open
           }
         }
         Fl_Group {} {
-          label Dump open
+          label Dump
           protected xywh {260 30 835 330} hide
         } {
           Fl_Text_Editor {} {
@@ -242,7 +242,7 @@ class _DialogDebug {open
             protected xywh {445 330 25 25} textfont 4
           }
           Fl_Group {} {
-            label {Address mode:} open
+            label {Address mode:}
             protected xywh {480 330 260 25} align 20
           } {
             Fl_Round_Button radioZ80 {
@@ -265,8 +265,16 @@ if(o->value()) radioZ80->value(0);}
             }
           }
         }
+        Fl_Group {} {
+          label VDP open selected
+          xywh {260 30 835 330}
+        } {
+          Fl_Box {} {
+            xywh {265 35 825 320} resizable
+          }
+        }
       }
-      Fl_Menu_Bar {} {open
+      Fl_Menu_Bar {} {
         protected xywh {0 0 1105 25}
       } {
         Submenu {} {
@@ -296,7 +304,7 @@ if(o->value()) radioZ80->value(0);}
           }
           MenuItem menuFileLoadState {
             label {Load State...}
-            callback {onFileLoadState();} selected
+            callback {onFileLoadState();}
             protected xywh {0 0 100 20} shortcut 0x5006f divider
           }
           MenuItem menuDebugExit {

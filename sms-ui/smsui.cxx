@@ -163,6 +163,7 @@ int emu_init(){
     //Setup SDL
     ///@note Implement me
     SDL_Init(SDL_INIT_EVERYTHING);
+    SDL_CreateWindow("sms-ui", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 480, 320, 0);
     return 1;
 }
 
