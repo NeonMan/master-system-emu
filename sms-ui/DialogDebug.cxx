@@ -246,9 +246,9 @@ void DialogDebug::update_values() {
     inputBC->value(hex_val);
     sprintf(hex_val, "%04X", (Z80_Bp << 8) | (Z80_Cp));
     inputBCp->value(hex_val);
-    sprintf(hex_val, "%04X", (Z80_D << 8)  | (Z80_D));
+    sprintf(hex_val, "%04X", (Z80_D << 8)  | (Z80_E));
     inputDE->value(hex_val);
-    sprintf(hex_val, "%04X", (Z80_Dp << 8) | (Z80_Dp));
+    sprintf(hex_val, "%04X", (Z80_Dp << 8) | (Z80_Ep));
     inputDEp->value(hex_val);
     sprintf(hex_val, "%04X", (Z80_H << 8)  | (Z80_L));
     inputHL->value(hex_val);
