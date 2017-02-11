@@ -1,0 +1,6 @@
+
+Things to check for correctness:
+
+Higher address byte of `OUT (C), r` and `OUT (C), 0` may come from `B` instead
+of `A`.
+

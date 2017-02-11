@@ -81,7 +81,6 @@ int CPIR() {
 ///IN A, (n); Size: 2; Flags: None
 int IN_A_np() {
     assert(z80.opcode_index == 2);
-
     Z80_8BIT_READ((z80.opcode[1] | (((uint16_t)Z80_A) << 8)), 1);
     Z80_A = z80.read_buffer[0];
     return Z80_STAGE_RESET;

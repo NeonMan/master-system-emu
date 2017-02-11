@@ -140,13 +140,13 @@ void vdp_io(){
     //Test bits 7,6 and 0
     switch (z80_address & ((3 << 6) | 1)){
     // --- If Address' bit 6 is set and 7 is not. Address is in range [0x40-0x7F]
-    case ((1 << 6) | 1) : //Odd address H counter (read)
+    case ((1 << 6) | 1) : //Odd address H counter (read) [0x7F]
         if (z80_n_rd) //Only allow reads
             return;
         vdp.ioreq_done = 1; //<-- Set internal IO to prevent spurious IO
         z80_data = (vdp.h>>1) & 0xFF;
         return;
-    case ((1 << 6) | 0) : //Even address V counter (read)
+    case ((1 << 6) | 0) : //Even address V counter (read) [0x7E]
         if (z80_n_rd) //Only allow reads
             return;
         vdp.ioreq_done = 1; //<-- Set internal IO to prevent spurious IO
