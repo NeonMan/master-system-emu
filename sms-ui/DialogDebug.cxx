@@ -187,7 +187,10 @@ void DialogDebug::onDebugReset() {
 void DialogDebug::onFileSaveState() {
     Fl_File_Chooser fc(NULL, "SAV files (*.sav)", Fl_File_Chooser::CREATE, "Save state...");
     const char* path;
+    std::string old_label;
     
+    old_label = std::string(this->windowDialog->label());
+
     fc.show();
     while (fc.visible()) {
         Fl::wait(0.1);
@@ -195,15 +198,19 @@ void DialogDebug::onFileSaveState() {
     path = fc.value();
 
     if (path) {
+        this->windowDialog->label("Saving...");
         FILE* out_f = fl_fopen(path, "wb");
         ss_save(out_f, NULL);
         fclose(out_f);
     }
+    this->windowDialog->label(old_label.c_str());
 }
 
 void DialogDebug::onFileLoadState() {
     Fl_File_Chooser fc(NULL, "SAV files (*.sav)", Fl_File_Chooser::SINGLE, "Load state...");
     const char* path;
+    std::string old_label;
+    old_label = std::string(this->windowDialog->label());
 
     fc.show();
     while (fc.visible()) {
@@ -212,10 +219,12 @@ void DialogDebug::onFileLoadState() {
     path = fc.value();
 
     if (path) {
+        this->windowDialog->label("Loading...");
         FILE* out_f = fl_fopen(path, "rb");
         ss_restore(out_f);
         fclose(out_f);
     }
+    this->windowDialog->label(old_label.c_str());
 }
 
 void DialogDebug::update_values() {
