@@ -90,7 +90,7 @@ void zed::analyze(const uint8_t * rom, uint16_t start_addr, uint16_t end_addr)
     call_return.sort();
 
     //Get all unique call entries.
-    {
+    if(call_entry.size() > 0) {
         std::list<uint16_t> tmp_list;
         uint16_t last_addr;
 
@@ -114,7 +114,7 @@ void zed::analyze(const uint8_t * rom, uint16_t start_addr, uint16_t end_addr)
     }
 
     //Get all unique call exits.
-    {
+    if (call_return.size() > 0) {
         std::list<uint16_t> tmp_list;
         uint16_t last_addr;
 
