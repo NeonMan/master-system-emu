@@ -22,6 +22,8 @@ extern "C" {
 
 DialogDebug::DialogDebug() : _DialogDebug() {
     this->clock_counter_p = nullptr;
+    this->log_text_buffer = nullptr;
+    this->dump_text_buffer = nullptr;
 }
 
 DialogDebug::~DialogDebug() {
@@ -30,14 +32,21 @@ DialogDebug::~DialogDebug() {
 void DialogDebug::make_window() {
     _DialogDebug::make_window();
 
+    //Give text editors text buffers
+    dump_text_buffer = new Fl_Text_Buffer();
+    this->textDump->buffer(dump_text_buffer);
+    log_text_buffer = new Fl_Text_Buffer();
+    this->textLog->buffer(log_text_buffer);
+
     //Set default values
     radioZ80->value(1);
-
     inputCommand->set_visible_focus();
 }
 
 void DialogDebug::log(std::string msg) {
-    std::cerr << msg << std::endl;
+    /*std::cerr << msg << std::endl;*/
+    log_text_buffer->append(msg.c_str());
+    log_text_buffer->append("\r\n");
 }
 
 void DialogDebug::onInputCommand(Fl_Input* o, void* v) {
@@ -241,8 +250,8 @@ static void dump_str(uint8_t* buff, uint16_t addr, char* result) {
     }
     sprintf(result, "%04X - %02X %02X %02X %02X %02X %02X %02X %02X    %02X %02X %02X %02X %02X %02X %02X %02X    %s",
         addr,
-        buff[0], buff[1], buff[2], buff[3], buff[4], buff[5], buff[6], buff[7],
-        buff[8], buff[9], buff[10], buff[11], buff[12], buff[13], buff[14], buff[15],
+        buff[ 0], buff[ 1], buff[ 2], buff[ 3], buff[ 4], buff[ 5], buff[ 6], buff[ 7],
+        buff[ 8], buff[ 9], buff[10], buff[11], buff[12], buff[13], buff[14], buff[15],
         ascii_dump
         );
 }
@@ -254,13 +263,24 @@ void DialogDebug::update_vdp_dump() {
     /*We also want to align offsets to 16 byte boundaries so we mask off the lower 4bits*/
     vram_offset = vram_offset & 0xFFF0;
 
+    /*Get the ammount of lines that can be drawn*/
+    Fl_Fontsize s = this->textDump->textsize();
+    int lines = this->textDump->h() / (s*2);
+
     /*Write some lines to the dump textbox*/
     /*Format: [ADDR] - 00 01 02 03 04 05 06 07    08 09 0A 0B 0C 0D 0E 0F    xxxxxxxxxxxxxxxx*/
     char out_line[80];
-    dump_str((uint8_t*)vdp_get_vram()+vram_offset, vram_offset, out_line);
-
-    //this->textDump->clear();
-    //this->textDump->insert(out_line);
+    this->dump_text_buffer->remove(0, INT_MAX);
+    for (int i = 0; i < lines; i++) {
+        uint16_t line_offset = (vram_offset + (i * 16)) & 0x3FFF;
+        if (line_offset < vram_offset) {
+            break;
+        }
+        dump_str((uint8_t*)vdp_get_vram() + line_offset, line_offset, out_line);
+        this->dump_text_buffer->append(out_line);
+        this->dump_text_buffer->append("\r\n");
+    }
+    this->textDump->redraw();
 }
 
 void DialogDebug::update_values() {
