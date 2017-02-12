@@ -12,6 +12,7 @@
 #include <z80/z80.h>
 
 #include <savestate/savestate.h>
+#include <vdp/vdp.h>
 #include "WidgetVdp.h"
 
 extern "C" {
@@ -227,6 +228,41 @@ void DialogDebug::onFileLoadState() {
     this->windowDialog->label(old_label.c_str());
 }
 
+static void dump_str(uint8_t* buff, uint16_t addr, char* result) {
+    char ascii_dump[17];
+    ascii_dump[16] = '\0';
+    for (int i = 0; i < 16; i++) {
+        if ((buff[i] < 0x20) || (buff[i] > 0x7E)) {
+            ascii_dump[i] = '.';
+        }
+        else {
+            ascii_dump[i] = buff[i];
+        }
+    }
+    sprintf(result, "%04X - %02X %02X %02X %02X %02X %02X %02X %02X    %02X %02X %02X %02X %02X %02X %02X %02X    %s",
+        addr,
+        buff[0], buff[1], buff[2], buff[3], buff[4], buff[5], buff[6], buff[7],
+        buff[8], buff[9], buff[10], buff[11], buff[12], buff[13], buff[14], buff[15],
+        ascii_dump
+        );
+}
+
+void DialogDebug::update_vdp_dump() {
+    /*The scrollbar goe from 0 to 64K, VDP memory goes from 0 to 16K*/
+    /*VDP base offset is then scrollbar/4*/
+    uint16_t vram_offset = (this->scrollDump->value() & 0xFFFF) / 4;
+    /*We also want to align offsets to 16 byte boundaries so we mask off the lower 4bits*/
+    vram_offset = vram_offset & 0xFFF0;
+
+    /*Write some lines to the dump textbox*/
+    /*Format: [ADDR] - 00 01 02 03 04 05 06 07    08 09 0A 0B 0C 0D 0E 0F    xxxxxxxxxxxxxxxx*/
+    char out_line[80];
+    dump_str((uint8_t*)vdp_get_vram()+vram_offset, vram_offset, out_line);
+
+    //this->textDump->clear();
+    //this->textDump->insert(out_line);
+}
+
 void DialogDebug::update_values() {
 
     //Small buffer for integer strings
@@ -284,6 +320,22 @@ void DialogDebug::update_values() {
 
     //Redraw VDP dialog
     this->boxVdpView->redraw();
+
+    //Redraw dump (only if clocked or forced)
+    /*if(*(this->clock_counter_p))*/ {
+        if (this->radioRam->value()) {
+
+        }
+        else if (this->radioRom->value()) {
+
+        }
+        else if (this->radioVdp->value()) {
+            update_vdp_dump();
+        }
+        else if (this->radioZ80->value()) {
+
+        }
+    }
 }
 
 void DialogDebug::setClockCounter(uint64_t * p)

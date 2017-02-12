@@ -16,7 +16,7 @@ class _DialogDebug {open
   } {
     Fl_Window windowDialog {
       label Debugger open
-      xywh {34 50 1105 423} type Double hide resizable
+      xywh {179 195 1105 423} type Double resizable visible
     } {
       Fl_Input inputCommand {
         callback {this->onInputCommand(o,v);}
@@ -145,7 +145,7 @@ class _DialogDebug {open
           } {
             Fl_Output inputBusData {
               label Data
-              protected xywh {75 330 25 25} textfont 4
+              protected xywh {90 330 25 25} textfont 4
             }
             Fl_Output inputBusAddress {
               label Addr
@@ -222,56 +222,66 @@ class _DialogDebug {open
           }
         }
         Fl_Group {} {
-          label Dump
-          protected xywh {260 30 835 330} hide
+          label Dump open
+          protected xywh {260 30 835 330}
         } {
-          Fl_Text_Editor {} {
+          Fl_Text_Editor textDump {
             protected xywh {265 35 810 295} textfont 4 resizable
           }
-          Fl_Scrollbar {} {
-            protected xywh {1075 35 15 295} maximum 65535
+          Fl_Scrollbar scrollDump {selected
+            protected xywh {1075 35 15 295} maximum 65535 step 16
           }
-          Fl_Input {} {
+          Fl_Input textSlot0 {
             label {Slot 0}
             protected xywh {305 330 25 25} textfont 4
           }
-          Fl_Input {} {
+          Fl_Input textSlot1 {
             label {Slot 1}
             protected xywh {375 330 25 25} textfont 4
           }
-          Fl_Input {} {
+          Fl_Input textSlot2 {
             label {Slot 2}
             protected xywh {445 330 25 25} textfont 4
           }
           Fl_Group {} {
-            label {Address mode:}
-            protected xywh {480 330 260 25} align 20
+            label {Address mode:} open
+            protected xywh {480 330 270 25} align 20
           } {
             Fl_Round_Button radioZ80 {
               label Z80
               callback {if(o->value()) radioRam->value(0);
-if(o->value()) radioRom->value(0);}
+if(o->value()) radioRom->value(0);
+if(o->value()) radioVdp->value(0);}
               protected xywh {585 335 15 15} down_box ROUND_DOWN_BOX
             }
             Fl_Round_Button radioRom {
               label ROM
               callback {if(o->value()) radioRam->value(0);
-if(o->value()) radioZ80->value(0);}
+if(o->value()) radioZ80->value(0);
+if(o->value()) radioVdp->value(0);}
               protected xywh {630 335 15 15} down_box ROUND_DOWN_BOX
             }
             Fl_Round_Button radioRam {
               label RAM
               callback {if(o->value()) radioRom->value(0);
-if(o->value()) radioZ80->value(0);}
+if(o->value()) radioZ80->value(0);
+if(o->value()) radioVdp->value(0);}
               protected xywh {685 335 15 15} down_box ROUND_DOWN_BOX
+            }
+            Fl_Round_Button radioVdp {
+              label VDP
+              callback {if(o->value()) radioRom->value(0);
+if(o->value()) radioZ80->value(0);
+if(o->value()) radioRam->value(0);}
+              protected xywh {735 335 15 15} down_box ROUND_DOWN_BOX
             }
           }
         }
         Fl_Group {} {
           label VDP open
-          protected xywh {260 30 835 330}
+          protected xywh {260 30 835 330} hide
         } {
-          Fl_Box boxVdpView {selected
+          Fl_Box boxVdpView {
             protected xywh {265 35 825 320} resizable
             class WidgetVdp
           }
