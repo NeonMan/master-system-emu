@@ -17,6 +17,8 @@ public:
 private:
     std::string last_cmd;
     uint64_t* volatile clock_counter_p;
+    Fl_Text_Buffer* dump_text_buffer;
+    Fl_Text_Buffer* log_text_buffer;
 
     void log(std::string msg);
     void update_vdp_dump();
