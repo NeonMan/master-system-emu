@@ -19,6 +19,7 @@ private:
     uint64_t* volatile clock_counter_p;
 
     void log(std::string msg);
+    void update_vdp_dump();
 
     void onInputCommand(Fl_Input * o, void* v);
     void onFlagsChanged();

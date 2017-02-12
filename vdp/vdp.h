@@ -109,6 +109,18 @@ void vdp_get_pixels(void* fb);
  */
 void* vdp_get_cram();
 
+/**
+ * @brief Provides access to the VDP VRAM.
+ * @returns A pointer to the VRAM array.
+ */
+void* vdp_get_vram();
+
+/**
+ * @brief Provides access to the VDP state struct.
+ * @returns A pointer to the VDP internal struct.
+ */
+struct vdp_s* vdp_get_state();
+
 #ifdef __cplusplus
 }
 #endif

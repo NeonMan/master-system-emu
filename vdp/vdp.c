@@ -56,6 +56,16 @@ void* vdp_get_cram(){
     return (void*)vdp.cram;
 }
 
+void * vdp_get_vram()
+{
+    return (void*)vdp.vram;
+}
+
+struct vdp_s * vdp_get_state()
+{
+    return &vdp;
+}
+
 void vdp_control_write(){
 	//First control word byte
 	if (vdp.control_index == 0){

@@ -7,8 +7,8 @@
 WidgetVdp::WidgetVdp(int x, int y, int w, int h, const char* label) : Fl_Box(x, y, w, h, label)
 {
     this->vdp_cram = (uint8_t*) vdp_get_cram();
-    this->vdp_vram = 0;
-    this->vdp = 0;
+    this->vdp_vram = (uint8_t*) vdp_get_vram();
+    this->vdp = vdp_get_state();
 }
 
 WidgetVdp::~WidgetVdp()
