@@ -38,7 +38,7 @@
 #include "dataset-rrca.h"
 
 static char test_str[100];
-static make_msg(uint8_t a) {
+static void make_msg(uint8_t a) {
     sprintf(test_str, "[ In A:%02X ]", a);
 }
 
