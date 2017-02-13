@@ -4,6 +4,7 @@
 #include <stdexcept>
 #include <iostream>
 #include <cstdint>
+#include <limits.h>
 #include <FL/fl_ask.H>
 #include <FL/Fl_File_Chooser.H>
 
