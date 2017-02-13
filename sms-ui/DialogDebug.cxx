@@ -3,6 +3,7 @@
 #include <cassert>
 #include <stdexcept>
 #include <iostream>
+#include <cstdint>
 #include <FL/fl_ask.H>
 #include <FL/Fl_File_Chooser.H>
 
