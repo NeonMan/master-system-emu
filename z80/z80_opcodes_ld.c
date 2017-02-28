@@ -391,8 +391,14 @@ int LDIR() {
 ///OTDR; Size: 2; Flags: ???
 int OTDR() {
 	assert(z80.opcode_index == 2);
-	assert(0); ///<-- Unimplemented
-	return Z80_STAGE_RESET;
+    int rv;
+    rv = OUTD();
+    if (rv == Z80_STAGE_RESET) {
+        return Z80_STAGE_REFRESH;
+    }
+    else {
+        return rv;
+    }
 }
 
 ///OTIR; Size: 2; Flags: Z,N
@@ -402,7 +408,7 @@ int OTIR() {
 	//Perform read
 	Z80_8BIT_READ(Z80_HL, 0);
 	//Perform write
-	Z80_8BIT_WRITE(Z80_C | (((uint16_t)Z80_A) << 8), 1, z80.read_buffer[0]);
+	Z80_8BIT_WRITE(Z80_C | ((((uint16_t)Z80_B) - 1) << 8), 1, z80.read_buffer[0]);
 	//Update state and flags
 	++Z80_HL;
 	--Z80_B;
@@ -443,16 +449,50 @@ int OUT_Cp_r() {
 
 ///OUTD; Size: 2; Flags: ???
 int OUTD() {
-	assert(z80.opcode_index == 2);
-	assert(0); ///<-- Unimplemented
-	return Z80_STAGE_RESET;
+    assert(z80.opcode_index == 2);
+    //Copy a byte.
+    Z80_8BIT_READ(Z80_HL, 0);
+    Z80_8BIT_WRITE(Z80_C | ((((uint16_t)Z80_B) - 1) << 8), 1, z80.read_buffer[0]);
+    //Update registers
+    --(Z80_HL);
+    --(Z80_B);
+    //Update flags
+    Z80_F &= Z80_CLRFLAG_ZERO;
+    Z80_F |= Z80_FLAG_SUBTRACT;
+    Z80_F |= ((Z80_B == 0) ? 0 : Z80_FLAG_ZERO);
+    //Undoc flags
+    Z80_F = Z80_F | (((z80.read_buffer[0] + Z80_A) & (1 << 3)) ? Z80_FLAG_UNK3 : 0);
+    Z80_F = Z80_F | (((z80.read_buffer[0] + Z80_A) & (1 << 1)) ? Z80_FLAG_UNK5 : 0);
+    //Shall we continue copying?
+    if (Z80_B) {
+        //Execute this opcode again
+        Z80_PC -= 2;
+    }
+    return Z80_STAGE_RESET;
 }
 
 ///OUTI; Size: 2; Flags: ???
 int OUTI() {
-	assert(z80.opcode_index == 2);
-	assert(0); ///<-- Unimplemented
-	return Z80_STAGE_RESET;
+    assert(z80.opcode_index == 2);
+    //Copy a byte.
+    Z80_8BIT_READ(Z80_HL, 0);
+    Z80_8BIT_WRITE(Z80_C | ((((uint16_t)Z80_B) - 1) << 8), 1, z80.read_buffer[0]);
+    //Update registers
+    ++(Z80_HL);
+    --(Z80_B);
+    //Update flags
+    Z80_F &= Z80_CLRFLAG_ZERO;
+    Z80_F |= Z80_FLAG_SUBTRACT;
+    Z80_F |= ((Z80_B == 0) ? 0 : Z80_FLAG_ZERO);
+    //Undoc flags
+    Z80_F = Z80_F | (((z80.read_buffer[0] + Z80_A) & (1 << 3)) ? Z80_FLAG_UNK3 : 0);
+    Z80_F = Z80_F | (((z80.read_buffer[0] + Z80_A) & (1 << 1)) ? Z80_FLAG_UNK5 : 0);
+    //Shall we continue copying?
+    if (Z80_B) {
+        //Execute this opcode again
+        Z80_PC -= 2;
+    }
+    return Z80_STAGE_RESET;
 }
 
 ///POP rp2[p]; Size: 1; Flags: None
