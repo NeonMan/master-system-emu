@@ -680,6 +680,11 @@ void z80_tick(){
         z80.stage = z80_stage_refresh();
         break;
     case Z80_STAGE_M1_INT:
+        //Check interrrupt mode
+        assert(z80.int_mode != 0); //<-- Unimplemented
+        assert(z80.int_mode != 1); //<-- Unimplemented
+        assert(z80.int_mode != 2); //<-- Unimplemented
+        assert(z80.int_mode < 3);  //<-- Bad interrupt mode
         assert(0); //<-- Unimplemented.
         break;
     case Z80_STAGE_M2_INT:
