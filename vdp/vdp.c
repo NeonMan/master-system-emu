@@ -194,6 +194,19 @@ void vdp_update(){
     if (!(vdp.h)){
         ++(vdp.regs[VDP_REG_LINE_COUNTER]);
     }
+    
+    ///@bug For debug purposes! bring the INT line down during the V counter zero line.
+    if (vdp.regs[VDP_REG_LINE_COUNTER] == 0) {
+
+    }
+    else {
+        z80_n_int = 0;
+    }
+
+    ///@bug For debug purposes! bring the INT line up during the V counter one line.
+    if (vdp.regs[VDP_REG_LINE_COUNTER] == 1) {
+        z80_n_int = 1;
+    }
 }
 
 void vdp_tick(){

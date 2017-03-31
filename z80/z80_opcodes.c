@@ -142,8 +142,7 @@ int HALT(){
 int IM(){
     assert(z80.opcode_index == 2);
     Z80_OPCODE_SUBDIV;
-    z80.iff[0] = z80_im[y[1]][0];
-    z80.iff[1] = z80_im[y[1]][1];
+    z80.int_mode = z80_im[y[1]][0];
     return Z80_STAGE_RESET;
 }
 
