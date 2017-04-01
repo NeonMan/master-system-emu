@@ -63,10 +63,12 @@ const uint8_t q[4] = { z80.opcode[0] & (1 << 3), z80.opcode[1] & (1 << 3), z80.o
 //After LDDR LDIR an additional refresh cycle is needed
 #define Z80_STAGE_REFRESH 4
 
-//Interrupt stages
+//Interrupt
 #define Z80_STAGE_M1_INT 5
 #define Z80_STAGE_M2_INT 6
 #define Z80_STAGE_M3_INT 7
+#define Z80_IFF1 z80.iff[0]
+#define Z80_IFF2 z80.iff[1]
 
 //ALU operations
 #define Z80_ALUOP_ADD 0
