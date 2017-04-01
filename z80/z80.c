@@ -22,16 +22,19 @@
  *  @note instruction decode/execute.
  */
 
-#include "z80.h"
-#include "z80_macros.h"
-#include <z80dasm/z80_dasm.h>
-#include "z80_register_lut.h"
-#include "z80_decoder.h"
 #include <stdint.h>
 #include <string.h>
 #include <stdlib.h>
-#include "debug/sms_debug.h"
 #include <stdio.h>
+
+#include "z80.h"
+#include "z80_macros.h"
+#include "z80_register_lut.h"
+#include "z80_decoder.h"
+#include "z80_interrupt.h"
+
+#include <z80dasm/z80_dasm.h>
+#include <debug/sms_debug.h>
 
 // #### For debug purposes only ####
 #include "ram/ram.h"
@@ -200,6 +203,8 @@ void z80_init(void(*data_f) (uint8_t), void(*ctrl_f) (uint8_t)){
     memset(z80_breakpoints, 0x00, Z80_ADDRESS_SIZE);
     //Set anything non-zero here
     z80.rSP = 0xFFFF; //<-- Stack pointer starts at 0xFFFF
+    Z80_IFF1 = 1; //
+    Z80_IFF2 = 1; //<-- Interrupt flipflops start at 1.
 
     //Setup SDSC
     z80_sdsc_data = data_f;
@@ -680,18 +685,13 @@ void z80_tick(){
         z80.stage = z80_stage_refresh();
         break;
     case Z80_STAGE_M1_INT:
-        //Check interrrupt mode
-        assert(z80.int_mode != 0); //<-- Unimplemented
-        assert(z80.int_mode != 1); //<-- Unimplemented
-        assert(z80.int_mode != 2); //<-- Unimplemented
-        assert(z80.int_mode < 3);  //<-- Bad interrupt mode
-        assert(0); //<-- Unimplemented.
+        z80.stage = z80_stage_int_m1();
         break;
     case Z80_STAGE_M2_INT:
-        assert(0); //<-- Unimplemented.
+        z80.stage = z80_stage_int_m2();
         break;
     case Z80_STAGE_M3_INT:
-        assert(0); //<-- Unimplemented.
+        z80.stage = z80_stage_int_m3();
         break;
     default:
         assert(0); //<-- Should never get here
