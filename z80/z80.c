@@ -656,16 +656,20 @@ void z80_tick(){
         ++(z80.stage);
 
         //Sample interrupt lines.
-        if (Z80_IFF1 && (!z80_n_int)) {
+        //NMI gets always acknowledged.
+        //Which can screw the CPU state. WTH!?
+        if (!z80_n_nmi) {
+            Z80_IFF2 = Z80_IFF1;
+            Z80_IFF1 = 0;
+            z80.stage = Z80_STAGE_M1_NMI;
+            z80_tick(); //<-- Call z80tick again and return.
+            return;
+        }
+        //INT gets acknowledged if IFF1=1
+        if (!z80_n_int && Z80_IFF1) {
             Z80_IFF1 = 0;
             Z80_IFF2 = 0;
             z80.stage = Z80_STAGE_M1_INT;
-        }
-        if (Z80_IFF1 && (!z80_n_nmi)) {
-            Z80_IFF1 = 0;
-            z80.stage = Z80_STAGE_M1_INT;
-        }
-        if (!Z80_IFF1) {
             z80_tick(); //<-- Call z80tick again and return.
             return;
         }
@@ -691,6 +695,11 @@ void z80_tick(){
         break;
     case Z80_STAGE_M3_INT:
         z80.stage = z80_stage_int_m3();
+        break;
+    case Z80_STAGE_M1_NMI:
+    case Z80_STAGE_M2_NMI:
+    case Z80_STAGE_M3_NMI:
+        assert(0); //<-- Unimplemented.
         break;
     default:
         assert(0); //<-- Should never get here

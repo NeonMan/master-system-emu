@@ -67,6 +67,9 @@ const uint8_t q[4] = { z80.opcode[0] & (1 << 3), z80.opcode[1] & (1 << 3), z80.o
 #define Z80_STAGE_M1_INT 5
 #define Z80_STAGE_M2_INT 6
 #define Z80_STAGE_M3_INT 7
+#define Z80_STAGE_M1_NMI 8
+#define Z80_STAGE_M2_NMI 9
+#define Z80_STAGE_M3_NMI 10
 #define Z80_IFF1 z80.iff[0]
 #define Z80_IFF2 z80.iff[1]
 

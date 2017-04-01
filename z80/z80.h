@@ -58,9 +58,6 @@ struct z80_s {
 
     //Interrupts
     uint8_t int_mode;      ///<-- Uinterrupt mode.
-    uint8_t int_enabled;   ///<-- INT enabled.
-    uint8_t int_triggered; ///<-- INT is being executed.
-    uint8_t nmi_triggered; ///<-- NMI is being executed.
 
     //Current stage
     uint8_t stage; ///<-- Current Z80 stage. Either M1, M2, M3 or RESET (first M1).
