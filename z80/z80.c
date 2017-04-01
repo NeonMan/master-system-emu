@@ -656,17 +656,16 @@ void z80_tick(){
         ++(z80.stage);
 
         //Sample interrupt lines.
-        if (!z80_n_nmi) {
-            ///@ToDo Prepare for NMI.
-            //If INT/NMI happen at the same time, I guess NMI will go first.
+        if (Z80_IFF1 && (!z80_n_int)) {
+            Z80_IFF1 = 0;
+            Z80_IFF2 = 0;
             z80.stage = Z80_STAGE_M1_INT;
-            z80_tick(); //<-- Call z80tick again and return.
-            return;
         }
-
-        if (!z80_n_int) {
-            ///@ToDo Prepare for INT.
+        if (Z80_IFF1 && (!z80_n_nmi)) {
+            Z80_IFF1 = 0;
             z80.stage = Z80_STAGE_M1_INT;
+        }
+        if (!Z80_IFF1) {
             z80_tick(); //<-- Call z80tick again and return.
             return;
         }

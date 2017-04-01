@@ -30,6 +30,7 @@ extern struct z80_s  z80;
 static int mode1_m1() {
     //M1 Stage. 7 ticks
     //Decrement SP
+    assert(0); //<-- Unimplemented
     return Z80_STAGE_RESET;
 }
 
@@ -37,6 +38,7 @@ static int mode1_m2() {
     //M2 Stage. 3 ticks
     //Write PCh to SP
     //Decrement SP
+    assert(0); //<-- Unimplemented
     return Z80_STAGE_RESET;
 }
 
@@ -44,6 +46,7 @@ static int mode1_m3() {
     //M3 Stage. 3 ticks
     //Write PCl to SP
     //Set PC to 0x0038
+    assert(0); //<-- Unimplemented
     return Z80_STAGE_RESET;
 }
 
@@ -53,18 +56,20 @@ static int mode1_m3() {
 // ----------------------------------
 
 int z80_stage_int_m1() {
+#ifndef NDEBUG
     /**/
     if(z80.m1_tick_count == 0){
-        if (Z80_IFF1) {
-            fprintf(stderr, "NMI triggered!\r\n");
+        if (Z80_IFF1 && Z80_IFF2) {
+            fprintf(stderr, "INT triggered!  Mode %d.\r\n", z80.int_mode);
             fflush(stderr);
         }
-        else if (Z80_IFF2) {
-            fprintf(stderr, "INT triggered!  Mode %d.\r\n", z80.int_mode);
+        else if (Z80_IFF2 && (!Z80_IFF2)) {
+            fprintf(stderr, "NMI triggered!\r\n");
             fflush(stderr);
         }
     }
     /**/
+#endif
     switch (z80.int_mode) {
     case 0:
         assert(0); //<-- Unimplemented
