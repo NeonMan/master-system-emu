@@ -21,4 +21,8 @@ int z80_stage_int_m1();
 int z80_stage_int_m2();
 int z80_stage_int_m3();
 
+int z80_stage_nmi_m1();
+int z80_stage_nmi_m2();
+int z80_stage_nmi_m3();
+
 #endif

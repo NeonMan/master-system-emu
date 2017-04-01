@@ -697,9 +697,13 @@ void z80_tick(){
         z80.stage = z80_stage_int_m3();
         break;
     case Z80_STAGE_M1_NMI:
+        z80.stage = z80_stage_nmi_m1();
+        break;
     case Z80_STAGE_M2_NMI:
+        z80.stage = z80_stage_nmi_m2();
+        break;
     case Z80_STAGE_M3_NMI:
-        assert(0); //<-- Unimplemented.
+        z80.stage = z80_stage_nmi_m3();
         break;
     default:
         assert(0); //<-- Should never get here
