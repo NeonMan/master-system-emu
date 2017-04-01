@@ -51,22 +51,16 @@ static int mode1_m3() {
 }
 
 
-// ----------------------------------
-// --- Select interrupt mode path ---
-// ----------------------------------
+// ------------------------------------
+// --- INT interrupts. Select mode. ---
+// ------------------------------------
 
 int z80_stage_int_m1() {
 #ifndef NDEBUG
     /**/
     if(z80.m1_tick_count == 0){
-        if (Z80_IFF1 && Z80_IFF2) {
-            fprintf(stderr, "INT triggered!  Mode %d.\r\n", z80.int_mode);
-            fflush(stderr);
-        }
-        else if (Z80_IFF2 && (!Z80_IFF2)) {
-            fprintf(stderr, "NMI triggered!\r\n");
-            fflush(stderr);
-        }
+        fprintf(stderr, "INT triggered!  Mode %d.\r\n", z80.int_mode);
+        fflush(stderr);
     }
     /**/
 #endif
@@ -114,5 +108,32 @@ int z80_stage_int_m3(uint8_t noexec) {
     default:
         assert(z80.int_mode < 3);  //<-- Bad interrupt mode
     }
+    return Z80_STAGE_RESET;
+}
+
+// ---------------------
+// --- NMI interrupt ---
+// ---------------------
+
+int z80_stage_nmi_m1() {
+#ifndef NDEBUG
+    /**/
+    if (z80.m1_tick_count == 0) {
+        fprintf(stderr, "NMI triggered!\r\n");
+        fflush(stderr);
+    }
+    /**/
+#endif
+    assert(0); //<-- Unimplemented
+    return Z80_STAGE_RESET;
+}
+
+int z80_stage_nmi_m2() {
+    assert(0); //<-- Unimplemented
+    return Z80_STAGE_RESET;
+}
+
+int z80_stage_nmi_m3() {
+    assert(0); //<-- Unimplemented
     return Z80_STAGE_RESET;
 }
