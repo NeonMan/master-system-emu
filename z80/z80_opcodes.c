@@ -68,14 +68,14 @@ int DAA(){
 ///DI; Size: 1; Flags: None
 int DI(){
     assert(z80.opcode_index == 1);
-    z80.int_enabled = 0;
+    Z80_IFF1 = 0;
     return Z80_STAGE_RESET;
 }
 
 ///EI; Size: 1; Flags: None
 int EI(){
     assert(z80.opcode_index == 1);
-    z80.int_enabled = 1;
+    Z80_IFF1 = 1;
     return Z80_STAGE_RESET;
 }
 
