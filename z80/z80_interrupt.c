@@ -30,6 +30,21 @@ extern struct z80_s  z80;
 static int mode1_m1() {
     //M1 Stage. 7 ticks
     //Decrement SP
+    ///@bug pin accuracy ignored, probe the real Z80 and read what happens.
+    switch (z80.m1_tick_count) {
+    case 0:
+    case 1:
+    case 2:
+    case 3:
+    case 4:
+    case 5:
+    case 6:
+        z80.m1_tick_count++;
+        return Z80_STAGE_M1_INT;
+    case 7:
+        Z80_SP--;
+        return Z80_STAGE_M2_INT;
+    }
     assert(0); //<-- Unimplemented
     return Z80_STAGE_RESET;
 }
@@ -38,6 +53,27 @@ static int mode1_m2() {
     //M2 Stage. 3 ticks
     //Write PCh to SP
     //Decrement SP
+    switch (z80.m2_tick_count) {
+    case 0:
+        z80_address = Z80_SP;
+        z80_data = (uint8_t)(Z80_PC >> 8);
+        z80_n_mreq = 0;
+        z80.m2_tick_count++;
+        return Z80_STAGE_M2_INT;
+    case 1:
+        z80_n_wr = 0;
+        z80.m2_tick_count++;
+        return Z80_STAGE_M2_INT;
+    case 2:
+        z80_n_wr = 1;
+        z80_n_mreq = 1;
+        z80.m2_tick_count++;
+        return Z80_STAGE_M2_INT;
+    case 3:
+        Z80_SP--;
+        z80.m2_tick_count++;
+        return Z80_STAGE_M3_INT;
+    }
     assert(0); //<-- Unimplemented
     return Z80_STAGE_RESET;
 }
@@ -46,6 +82,26 @@ static int mode1_m3() {
     //M3 Stage. 3 ticks
     //Write PCl to SP
     //Set PC to 0x0038
+    switch (z80.m3_tick_count) {
+    case 0:
+        z80_address = Z80_SP;
+        z80_data = (uint8_t)(Z80_PC);
+        z80_n_mreq = 0;
+        z80.m3_tick_count++;
+        return Z80_STAGE_M3_INT;
+    case 1:
+        z80_n_wr = 0;
+        z80.m3_tick_count++;
+        return Z80_STAGE_M3_INT;
+    case 2:
+        z80_n_wr = 1;
+        z80_n_mreq = 1;
+        z80.m3_tick_count++;
+        return Z80_STAGE_M3_INT;
+    case 3:
+        Z80_PC = 0x0038;
+        return Z80_STAGE_RESET;
+    }
     assert(0); //<-- Unimplemented
     return Z80_STAGE_RESET;
 }
