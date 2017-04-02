@@ -244,31 +244,31 @@ int z80_stage_nmi_m3() {
     //3T-States
     //Write PCl to (SP), PC <= 0x0066
     ///@bug NMI M3 pin accuracy ignored, probe the real Z80 and read what happens.
-    switch (z80.m2_tick_count) {
+    switch (z80.m3_tick_count) {
     case 0:
         z80_address = Z80_SP;
         z80_data = (uint8_t)(Z80_PC);
-        z80.m2_tick_count++;
-        return Z80_STAGE_M2_NMI;
+        z80.m3_tick_count++;
+        return Z80_STAGE_M3_NMI;
     case 1:
         z80_n_mreq = 0;
-        z80.m2_tick_count++;
-        return Z80_STAGE_M2_NMI;
+        z80.m3_tick_count++;
+        return Z80_STAGE_M3_NMI;
     case 2:
         z80_n_wr = 0;
-        z80.m2_tick_count++;
-        return Z80_STAGE_M2_NMI;
+        z80.m3_tick_count++;
+        return Z80_STAGE_M3_NMI;
     case 3:
         z80_n_wr = 1;
         z80_n_mreq = 1;
-        z80.m2_tick_count++;
-        return Z80_STAGE_M2_NMI;
+        z80.m3_tick_count++;
+        return Z80_STAGE_M3_NMI;
     case 4:
         Z80_PC = 0x0066;
-        z80.m2_tick_count++;
-        return Z80_STAGE_M2_NMI;
-    case 5:
+        z80.m3_tick_count++;
         return Z80_STAGE_M3_NMI;
+    case 5:
+        return Z80_STAGE_RESET;
     }
     assert(0); //<-- Unimplemented
     return Z80_STAGE_RESET;
