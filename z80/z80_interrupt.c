@@ -137,7 +137,7 @@ int z80_stage_int_m1() {
     return Z80_STAGE_RESET;
 }
 
-int z80_stage_int_m2(uint8_t noexec) {
+int z80_stage_int_m2() {
     switch (z80.int_mode) {
     case 0:
         assert(0); //<-- Unimplemented
@@ -153,7 +153,7 @@ int z80_stage_int_m2(uint8_t noexec) {
     return Z80_STAGE_RESET;
 }
 
-int z80_stage_int_m3(uint8_t noexec) {
+int z80_stage_int_m3() {
     switch (z80.int_mode) {
     case 0:
         assert(0); //<-- Unimplemented
