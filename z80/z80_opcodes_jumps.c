@@ -124,7 +124,7 @@ int RET() {
 	assert(z80.opcode_index == 1);
 	//Read stack
 	Z80_16BIT_READ(Z80_SP, 0);
-
+    //Restore PC and increment SP.
 	Z80_SP += 2;
 	Z80_PC = z80.read_buffer[0] | (((uint16_t)(z80.read_buffer[1])) << 8);
 	return Z80_STAGE_RESET;
@@ -148,12 +148,12 @@ int RET_cc() {
 }
 
 ///RETI; Size: 2; Flags: None
-///@note essentially identical to RET(?)
+///Identical to RET, only it signals peripherals of an interrupt.
 int RETI() {
 	assert(z80.opcode_index == 2);
 	//Read stack
 	Z80_16BIT_READ(Z80_SP, 0);
-
+    //Restore PC and increment SP
 	Z80_SP += 2;
 	Z80_PC = z80.read_buffer[0] | (((uint16_t)(z80.read_buffer[1])) << 8);
 	return Z80_STAGE_RESET;
@@ -162,7 +162,14 @@ int RETI() {
 ///RETN; Size: 2; Flags: None
 int RETN() {
 	assert(z80.opcode_index == 2);
-	assert(0); ///<-- Unimplemented
+    //Read stack
+    Z80_16BIT_READ(Z80_SP, 0);
+    //Restore PC and increment SP
+    Z80_SP += 2;
+    Z80_PC = z80.read_buffer[0] | (((uint16_t)(z80.read_buffer[1])) << 8);
+
+    //Restore IFF bits
+    Z80_IFF1 = Z80_IFF2;
 	return Z80_STAGE_RESET;
 }
 
