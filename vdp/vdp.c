@@ -196,15 +196,14 @@ void vdp_update(){
     }
     
     ///@bug For debug purposes! bring the INT line down during the V counter zero line.
-    if (vdp.regs[VDP_REG_LINE_COUNTER] == 0) {
-
+    if ((vdp.regs[VDP_REG_LINE_COUNTER] == 0) && (vdp.h==0)) {
+        z80_n_int = 0;
     }
     else {
-        z80_n_int = 0;
     }
 
     ///@bug For debug purposes! bring the INT line up during the V counter one line.
-    if (vdp.regs[VDP_REG_LINE_COUNTER] == 1) {
+    if (vdp.h == 32) {
         z80_n_int = 1;
     }
 }
