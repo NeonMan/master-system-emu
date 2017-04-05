@@ -94,8 +94,7 @@ add_subdirectory (sms-ui)
 add_subdirectory (savestate)
 add_subdirectory (debug)
 
-#Uncomment to make "fat source" binaries.
-#add_subdirectory (fat-sources)
+add_subdirectory (fat-sources)
 
 # --- The project executables ---
 
