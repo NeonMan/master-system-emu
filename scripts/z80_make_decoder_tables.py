@@ -19,7 +19,7 @@ import csv
 
 IN_NAME       = 'z80_decoder_tables.csv'
 OUT_NAME      = 'z80_decoder_tables.h'
-OUT_DASM_NAME = None
+TABLE_PREFIX  = 'op'
 
 LICENSE = '''
 // Copyright 2015 Juan Luis Álvarez Martínez
@@ -168,26 +168,26 @@ def make_tables(f_out):
     f_out.write(bytes(PREFIX, 'utf-8'))
     #--- Unprefixed opcodes ---
     #Unprefixed
-    v = "static const %s op_unpref[256] = %s;\n" % (ARRAY_TYPE, array_to_c(gen_opcode_1(ops)))
+    v = "static const %s %s_unpref[256] = %s;\n" % (ARRAY_TYPE, TABLE_PREFIX, array_to_c(gen_opcode_1(ops)))
     f_out.write(bytes(v, 'utf-8'))
     #CB prefix
-    v = "static const %s op_cb[256] = %s;\n" % (ARRAY_TYPE, array_to_c(gen_opcode_xx(ops, 0xCB)))
+    v = "static const %s %s_cb[256] = %s;\n" % (ARRAY_TYPE, TABLE_PREFIX, array_to_c(gen_opcode_xx(ops, 0xCB)))
     f_out.write(bytes(v, 'utf-8'))
     #ED prefix
-    v = "static const %s op_ed[256] = %s;\n" % (ARRAY_TYPE, array_to_c(gen_opcode_xx(ops, 0xed)))
+    v = "static const %s %s_ed[256] = %s;\n" % (ARRAY_TYPE, TABLE_PREFIX, array_to_c(gen_opcode_xx(ops, 0xed)))
     f_out.write(bytes(v, 'utf-8'))
     #DD prefix
-    v = "static const %s op_dd[256] = %s;\n" % (ARRAY_TYPE, array_to_c(gen_opcode_xx(ops, 0xdd)))
+    v = "static const %s %s_dd[256] = %s;\n" % (ARRAY_TYPE, TABLE_PREFIX, array_to_c(gen_opcode_xx(ops, 0xdd)))
     f_out.write(bytes(v, 'utf-8'))
     #FD prefix
-    v = "static const %s op_fd[256] = %s;\n" % (ARRAY_TYPE, array_to_c(gen_opcode_xx(ops, 0xfd)))
+    v = "static const %s %s_fd[256] = %s;\n" % (ARRAY_TYPE, TABLE_PREFIX, array_to_c(gen_opcode_xx(ops, 0xfd)))
     f_out.write(bytes(v, 'utf-8'))
 
     #DDCB prefix
-    v = "static const %s op_ddcb[256] = %s;\n" % (ARRAY_TYPE, array_to_c(gen_opcode_xxcb(ops, 0xdd)))
+    v = "static const %s %s_ddcb[256] = %s;\n" % (ARRAY_TYPE, TABLE_PREFIX, array_to_c(gen_opcode_xxcb(ops, 0xdd)))
     f_out.write(bytes(v, 'utf-8'))
     #FDCB prefix
-    v = "static const %s op_fdcb[256] = %s;\n" % (ARRAY_TYPE, array_to_c(gen_opcode_xxcb(ops, 0xfd)))
+    v = "static const %s %s_fdcb[256] = %s;\n" % (ARRAY_TYPE, TABLE_PREFIX, array_to_c(gen_opcode_xxcb(ops, 0xfd)))
     f_out.write(bytes(v, 'utf-8'))
     f_out.write(bytes(POSTFIX, 'utf-8'))
     
@@ -201,7 +201,7 @@ def make_tables(f_out):
 # --- Main ---
 # ------------
 #
-#Usage: make_tables.py [INPUT_CSV [OUT_HEADER [OUT_DISASM_HEADER]]]
+#Usage: make_tables.py [INPUT_CSV [OUT_HEADER [OUT_DISASM_HEADER [TABLE_PREFIX]]]]
 if __name__ == '__main__':
   rv = 0
   if len(sys.argv) >= 2:
@@ -209,7 +209,8 @@ if __name__ == '__main__':
   if len(sys.argv) >= 3:
     OUT_NAME = sys.argv[2]
   if len(sys.argv) >= 4:
-    OUT_DASM_NAME = sys.argv[3]
+    TABLE_PREFIX = sys.argv[3]
+  print("Arg count:", str(len(sys.argv)))
   f_in  = open(IN_NAME, 'r')
   ops = []
   #Parse CSV file
@@ -257,18 +258,5 @@ if __name__ == '__main__':
   #Make header
   f_out = open(OUT_NAME, 'wb')
   make_tables(f_out)
-  
-  if(OUT_DASM_NAME != None):
-    #Rename function names
-    for i in range(len(ops)):
-      op = ops[i]
-      if(op.function[0] != '0'):
-        op.function = 'zd_' + op.function
-      ops[i] = op
-    #Make disasm header
-    f_out = open(OUT_DASM_NAME, 'wb')
-    make_tables(f_out)
-  else:
-    pass
   sys.exit(rv)
 

@@ -58,7 +58,7 @@ static uint8_t opcode_size(const uint8_t* opcode) {
     }
 
     if ((opcode[0] == 0xFD) || (opcode[0] == 0xDD)) {
-        return op_dd[opcode[1]].size;
+        return od_dd[opcode[1]].size;
     }
 
     if (opcode[0] == 0xED) {
@@ -69,7 +69,7 @@ static uint8_t opcode_size(const uint8_t* opcode) {
         return 2;
     }
 
-    return op_unpref[opcode[0]].size;
+    return od_unpref[opcode[0]].size;
 }
 
 char z80d_byte_to_char(uint8_t b){
@@ -90,39 +90,39 @@ z80d_opcode z80d_decode_op(const uint8_t* opcode, uint16_t pc_addr) {
 
     if (opcode[0] == 0xDD) {
         if (opcode[1] == 0xCB) {
-            assert(op_ddcb[opcode[3]].f);
-            rv = op_ddcb[opcode[3]].f(opcode);
+            assert(od_ddcb[opcode[3]].f);
+            rv = od_ddcb[opcode[3]].f(opcode);
         }
         else {
-            if (op_dd[opcode[1]].f)
-                rv =  op_dd[opcode[1]].f(opcode);
+            if (od_dd[opcode[1]].f)
+                rv =  od_dd[opcode[1]].f(opcode);
             else
                 rv =  unknown_decode(opcode);
         }
     }
     else if (opcode[0] == 0xFD) {
         if (opcode[1] == 0xCB) {
-            assert(op_fdcb[opcode[3]].f);
-            rv =  op_fdcb[opcode[3]].f(opcode);
+            assert(od_fdcb[opcode[3]].f);
+            rv =  od_fdcb[opcode[3]].f(opcode);
         }
         else {
-            if (op_fd[opcode[1]].f)
-                rv =  op_fd[opcode[1]].f(opcode);
+            if (od_fd[opcode[1]].f)
+                rv =  od_fd[opcode[1]].f(opcode);
             else
                 rv =  unknown_decode(opcode);
         }
     }
     else if (opcode[0] == 0xCB) {
-        assert(op_cb[opcode[1]].f);
-        rv =  op_cb[opcode[1]].f(opcode);
+        assert(od_cb[opcode[1]].f);
+        rv =  od_cb[opcode[1]].f(opcode);
     }
     else if (opcode[0] == 0xED) {
-        assert(op_ed[opcode[1]].f);
-        rv =  op_ed[opcode[1]].f(opcode);
+        assert(od_ed[opcode[1]].f);
+        rv =  od_ed[opcode[1]].f(opcode);
     }
     else {
-        assert(op_unpref[opcode[0]].f);
-        rv =  op_unpref[opcode[0]].f(opcode);
+        assert(od_unpref[opcode[0]].f);
+        rv =  od_unpref[opcode[0]].f(opcode);
     }
 
     rv.address = pc_addr;
