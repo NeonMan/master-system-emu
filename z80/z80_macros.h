@@ -200,11 +200,11 @@ const uint8_t q[4] = { (uint8_t)(z80.opcode[0] & (1 << 3)),   (uint8_t)(z80.opco
 #define Z80_SETFLAG_ZERO_16(X) (Z80_SETFLAG_ZERO(X))
 //#define Z80_SETFLAG_HC(O,N) (((O & (1 << 3)) == 0) && ((N) & (1 << 3)) ? Z80_FLAG_HC : 0) /**<-- [H] Set Half-carry flag (bit 4)*/
 
-#define Z80_SETFLAG_HALF_CARRY(OP1,OP2)     ((((((uint8_t)(OP1))&0x0F) + (((uint8_t)(OP2))&0x0F)) > 0x0FU) ? Z80_FLAG_HC : 0)
-#define Z80_SETFLAG_HALF_BORROW(OP1,OP2)    (((uint8_t)((((uint8_t)(OP1))&0x0F) - (((uint8_t)(OP2))&0x0F)) > 0x0FU) ? Z80_FLAG_HC : 0)
+#define Z80_SETFLAG_HALF_CARRY(OP1,OP2)     ((((((uint8_t)(OP1))&0x0F) + (((uint8_t)(OP2))&0x0F)) > 0x0F) ? Z80_FLAG_HC : 0)
+#define Z80_SETFLAG_HALF_BORROW(OP1,OP2)    (((uint8_t)((((uint8_t)(OP1))&0x0F) - (((uint8_t)(OP2))&0x0F)) > 0x0F) ? Z80_FLAG_HC : 0)
 
-#define Z80_SETFLAG_HALF_CARRY_WITH_CARRY(OP1,OP2)     ((((((uint8_t)(OP1))&0x0F) + (((uint8_t)(OP2))&0x0F) + 1) > 0x0FU) ? Z80_FLAG_HC : 0)
-#define Z80_SETFLAG_HALF_BORROW_WITH_CARRY(OP1,OP2)    (((uint8_t)((((uint8_t)(OP1))&0x0F) - (((uint8_t)(OP2))&0x0F) - 1) > 0x0FU) ? Z80_FLAG_HC : 0)
+#define Z80_SETFLAG_HALF_CARRY_WITH_CARRY(OP1,OP2)     ((((((uint8_t)(OP1))&0x0F) + (((uint8_t)(OP2))&0x0F) + 1) > 0x0F) ? Z80_FLAG_HC : 0)
+#define Z80_SETFLAG_HALF_BORROW_WITH_CARRY(OP1,OP2)    (((uint8_t)((((uint8_t)(OP1))&0x0F) - (((uint8_t)(OP2))&0x0F) - 1) > 0x0F) ? Z80_FLAG_HC : 0)
 
 #define Z80_SETFLAG_HALF_CARRY_16(OP1,OP2)  (((((OP1)&0x0F00) + ((OP2)&0x0F00)) > 0x0F00) ? Z80_FLAG_HC : 0)
 #define Z80_SETFLAG_HALF_BORROW_16(OP1,OP2) ((((((OP1)&0xF000) - ((OP2)&0xF000)))&0xF000) > (((OP1)&0xF000)) ? Z80_FLAG_HC : 0)
