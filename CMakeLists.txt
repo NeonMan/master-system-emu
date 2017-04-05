@@ -93,6 +93,7 @@ add_subdirectory (test)
 add_subdirectory (sms-ui)
 add_subdirectory (savestate)
 add_subdirectory (debug)
+add_subdirectory (fat-sources)
 
 # --- The project executables ---
 

@@ -210,7 +210,8 @@ z80d_opcode zd_SET_b_IXYp(const uint8_t* opcode);
 z80d_opcode zd_SET_b_IXYp(const uint8_t* opcode);
 z80d_opcode zd_SET_b_r(const uint8_t* opcode);
 
-
+/*Used for empty disasm spots on the decoder table*/
+z80d_opcode zd_NULL(const uint8_t* opcode);
 
 #ifdef __cplusplus
 }

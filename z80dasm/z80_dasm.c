@@ -1149,3 +1149,9 @@ z80d_opcode zd_LD_SET(const uint8_t* opcode) {
         sprintf(rv.opcode_str, "LD %s, SET %d, (IY%+d)", z80d_r[z], y, d);
     return rv; //4;
 }
+
+z80d_opcode zd_NULL(const uint8_t* opcode) {
+    (void)opcode;
+    z80d_opcode rv = defaultOpcode();
+    return rv;
+}

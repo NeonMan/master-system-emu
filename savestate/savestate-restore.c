@@ -102,7 +102,9 @@
 #define TOKEN_OPCODE_INDEX "OPCODE_INDEX:"
 #define TOKEN_STAGE "STAGE:"
 #define TOKEN_TICKS "TICKS:"
+#undef  TOKEN_READ /**<-- @note Weird redef warning from MSVC...*/
 #define TOKEN_READ "READ:"
+#undef  TOKEN_WRITE /**<-- @note Weird redef warning from MSVC...*/
 #define TOKEN_WRITE "WRITE:"
 #define TOKEN_ADDRESS "ADDRESS:"
 #define TOKEN_BUFFER "BUFFER:"
@@ -204,7 +206,7 @@ static const char* parse_ram_tail(const char* line){
     substr = parse_byte_array(substr, bytes);
 
     //Poke Z80 ram
-    uint8_t* ram_bytes = ramdbg_get_mem();
+    uint8_t* ram_bytes = (uint8_t*) ramdbg_get_mem();
     for (uint32_t i = 0; i < count; ++i){
         if ((address + i) < RAM_SIZE){
             ram_bytes[address + i] = bytes[i];
@@ -305,7 +307,7 @@ static const char* parse_rom_data(const char* line){
     substr = parse_byte_array(substr, bytes);
 
     //Poke ROM bytes
-    uint8_t* rom_bytes = romdbg_get_rom();
+    uint8_t* rom_bytes = (uint8_t*) romdbg_get_rom();
     for (uint32_t i = 0; i < count; ++i){
         if ((address + i) < ROM_MAX_SIZE){
             rom_bytes[address + i] = bytes[i];
