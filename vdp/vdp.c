@@ -28,7 +28,7 @@ void vdp_get_pixels(void* fb){
             assert(0); //Invalid mode
         }
         else
-            vdp_mode4_pixels(fb);
+            vdp_mode4_pixels((uint8_t*)fb);
     }
     else{
         //Original TMS modes

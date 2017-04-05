@@ -24,6 +24,8 @@
 extern "C" {
 #endif
 
+#include <stdint.h>
+
 //Data needed for macros
 ///Parity LUT.
 static const uint8_t z80_parity_lut[256] = {
@@ -46,11 +48,12 @@ static const uint8_t z80_parity_lut[256] = {
 };
 
 //Opcode subdivision macro
-#define Z80_OPCODE_SUBDIV     const uint8_t x[4] = { z80.opcode[0] >> 6, z80.opcode[1] >> 6, z80.opcode[2] >> 6, z80.opcode[3] >> 6 };\
-const uint8_t y[4] = { (z80.opcode[0] >> 3) & 0x7, (z80.opcode[1] >> 3) & 0x7, (z80.opcode[2] >> 3) & 0x7, (z80.opcode[3] >> 3) & 0x7 };\
-const uint8_t z[4] = { z80.opcode[0] & 0x7, z80.opcode[1] & 0x7, z80.opcode[2] & 0x7, z80.opcode[3] & 0x7 };\
-const uint8_t p[4] = { (z80.opcode[0] >> 4) & 0x3, (z80.opcode[1] >> 4) & 0x3, (z80.opcode[2] >> 4) & 0x3, (z80.opcode[3] >> 4) & 0x3 };\
-const uint8_t q[4] = { z80.opcode[0] & (1 << 3), z80.opcode[1] & (1 << 3), z80.opcode[2] & (1 << 3), z80.opcode[3] & (1 << 3) };
+#define Z80_OPCODE_SUBDIV     \
+const uint8_t x[4] = { (uint8_t)(z80.opcode[0] >> 6),         (uint8_t)(z80.opcode[1] >> 6),         (uint8_t)(z80.opcode[2] >> 6),         (uint8_t)(z80.opcode[3] >> 6) };\
+const uint8_t y[4] = { (uint8_t)((z80.opcode[0] >> 3) & 0x7), (uint8_t)((z80.opcode[1] >> 3) & 0x7), (uint8_t)((z80.opcode[2] >> 3) & 0x7), (uint8_t)((z80.opcode[3] >> 3) & 0x7) };\
+const uint8_t z[4] = { (uint8_t)(z80.opcode[0] & 0x7),        (uint8_t)(z80.opcode[1] & 0x7),        (uint8_t)(z80.opcode[2] & 0x7),        (uint8_t)(z80.opcode[3] & 0x7) };\
+const uint8_t p[4] = { (uint8_t)((z80.opcode[0] >> 4) & 0x3), (uint8_t)((z80.opcode[1] >> 4) & 0x3), (uint8_t)((z80.opcode[2] >> 4) & 0x3), (uint8_t)((z80.opcode[3] >> 4) & 0x3) };\
+const uint8_t q[4] = { (uint8_t)(z80.opcode[0] & (1 << 3)),   (uint8_t)(z80.opcode[1] & (1 << 3)),   (uint8_t)(z80.opcode[2] & (1 << 3)),   (uint8_t)(z80.opcode[3] & (1 << 3)) };
 //------------------------
 
 //Stage enumerations
