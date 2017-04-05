@@ -39,5 +39,6 @@
 #include "savestate-restore.c" 
 //z80dasm
 #include "z80_dasm.c"
+//sms-debug
+#include "sms_debug_dump.c"
 /**/
-
