@@ -5,5 +5,5 @@ include_directories(../debug ../glue ../io ../peripheral ../psg ../ram ../rom ..
 
 
 add_executable(fat-smsui fat-sms-ui.cxx)
-target_link_libraries(fat-smsui sdl2 sdl2main fltk)
+target_link_libraries(fat-smsui SDL2 SDL2main fltk)
 add_dependencies(fat-smsui smsui)
