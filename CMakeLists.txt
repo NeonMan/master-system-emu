@@ -49,7 +49,8 @@ endif (CMAKE_COMPILER_IS_GNUCC)
 
 # --- Setup C++
 if (CMAKE_COMPILER_IS_GNUCXX)
-    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-unused-variable -Werror -std=c++11")
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11" )
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-unused-variable")
 endif (CMAKE_COMPILER_IS_GNUCXX)
 
 # --- MSVC configs
