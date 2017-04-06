@@ -49,6 +49,10 @@
 uint8_t is_running = 1; //<-- When this becomes false, the app exits
 uint64_t is_clocked = 0; //<-- When this becames false, the execution is paused.
 
+//Global stuff
+static SDL_Window *ui_window = 0;
+static SDL_Renderer *ui_renderer = 0;
+
 // --- Helper functions & macros ---
 
 //Update UI
@@ -163,11 +167,28 @@ int emu_init(){
     //Setup SDL
     ///@note Implement me
     SDL_Init(SDL_INIT_EVERYTHING);
-    SDL_CreateWindow("sms-ui", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 480, 320, 0);
+    ui_window = SDL_CreateWindow("sms-ui", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 480, 320, 0);
+    if (ui_window == nullptr) {
+        std::cerr << "FSDL_CreateWindow error: " << SDL_GetError() << std::endl;
+        return -2;
+    }
+
+    //Setup SDL Renderer
+    //ui_renderer = SDL_CreateRenderer(ui_window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+    ui_renderer = SDL_CreateRenderer(ui_window, -1, SDL_RENDERER_SOFTWARE);
+    if (ui_window == nullptr) {
+        std::cerr << "SDL_CreateRenderer error: " << SDL_GetError() << std::endl;
+        return -3;
+    }
+
     return 1;
 }
 
 void emu_cleanup(){
+    if (ui_renderer)
+        SDL_DestroyRenderer(ui_renderer);
+    if(ui_window)
+        SDL_DestroyWindow(ui_window);
     SDL_Quit();
     emu_log("Bye!", EMU_LOG_INFO);
 
@@ -194,7 +215,16 @@ void emu_pc_breakpoint_cb(uint16_t address){
     is_clocked = 1;
 }
 
+// ----------------
 // --- Emulator ---
+// ----------------
+
+static void ui_render() {
+    SDL_SetRenderDrawColor(ui_renderer, 0, 0, 168, SDL_ALPHA_OPAQUE);
+    SDL_RenderClear(ui_renderer);
+    SDL_RenderPresent(ui_renderer);
+}
+
 int main(int argc, char** argv){
     emu_init();
     //Create dialogs
@@ -252,6 +282,7 @@ int main(int argc, char** argv){
             ++edge_count;
             --is_clocked;
             __UPDATE_FLTK;
+            ui_render();
         }
         // --- Just update the UI if not clocked ---
         {
