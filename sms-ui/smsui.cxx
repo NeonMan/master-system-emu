@@ -174,7 +174,7 @@ int emu_init(){
     }
 
     //Setup SDL Renderer
-    //ui_renderer = SDL_CreateRenderer(ui_window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+    //ui_renderer = SDL_CreateRenderer(ui_window, -1, SDL_RENDERER_ACCELERATED);
     ui_renderer = SDL_CreateRenderer(ui_window, -1, SDL_RENDERER_SOFTWARE);
     if (ui_window == nullptr) {
         std::cerr << "SDL_CreateRenderer error: " << SDL_GetError() << std::endl;
