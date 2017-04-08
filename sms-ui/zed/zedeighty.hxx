@@ -1,7 +1,7 @@
 #ifndef __ZEDEIGHTY_H
 #define __ZEDEIGHTY_H
 
-#include "opcode.h"
+#include "opcode.hxx"
 #include <cstdint>
 
 namespace zed {

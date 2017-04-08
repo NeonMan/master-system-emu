@@ -1,4 +1,4 @@
-#include "DialogDebug.h"
+#include "DialogDebug.hxx"
 #include <string>
 #include <cassert>
 #include <stdexcept>
@@ -15,7 +15,7 @@
 
 #include <savestate/savestate.h>
 #include <vdp/vdp.h>
-#include "WidgetVdp.h"
+#include "WidgetVdp.hxx"
 
 extern "C" {
     extern struct z80_s z80;

@@ -1,5 +1,5 @@
-#include "zedeighty.h"
-#include "opcode.h"
+#include "zedeighty.hxx"
+#include "opcode.hxx"
 
 #include <z80dasm/z80_dasm.h>
 

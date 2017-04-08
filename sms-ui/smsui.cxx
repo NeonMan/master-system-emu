@@ -25,7 +25,7 @@
 #include <FL/Fl.H>
 #include <FL/Fl_File_Chooser.H>
 #include <FL/Fl_Native_File_Chooser.H>
-#include "DialogDebug.h"
+#include "DialogDebug.hxx"
 
 //Emulator includes
 #include <io/io.h>
@@ -39,7 +39,7 @@
 #include <savestate/savestate.h>
 #include "sms-emu.h" /*<-- Refactor me!*/
 
-#include "zed/zedeighty.h"
+#include "zed/zedeighty.hxx"
 
 #ifdef _WIN32
 #define quick_exit exit

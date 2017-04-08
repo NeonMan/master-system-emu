@@ -6,7 +6,7 @@ declblock {\#if 1} {open after {\#endif}
 } {
   decl {\#include <stdint.h>} {public global
   }
-  decl {\#include "WidgetVdp.h"} {public global
+  decl {\#include "WidgetVdp.hxx"} {public global
   }
 }
 
