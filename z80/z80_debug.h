@@ -17,7 +17,15 @@
 
 #include "z80.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 void z80dbg_hook_entry();
 void z80dbg_register_hooh(void(*callback)(void));
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

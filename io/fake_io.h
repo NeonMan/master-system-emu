@@ -23,6 +23,14 @@
 #ifndef __FAKE_IO_H
 #define __FAKE_IO_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 uint8_t io_stat = 0xFF;
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

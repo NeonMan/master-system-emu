@@ -22,6 +22,10 @@
 
 #include <stdint.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 // --- TMS modes ---
 ///Renders picture to framebuffer assuming Mode0
 void vdp_mode0_pixels(uint8_t* fb);
@@ -45,5 +49,9 @@ void vdp_mode13_pixels(uint8_t* fb);
 void vdp_mode23_pixels(uint8_t* fb);
 ///Renders picture to framebuffer assuming mode 1+2+3
 void vdp_mode123_pixels(uint8_t* fb);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
