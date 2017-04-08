@@ -1,7 +1,7 @@
 #ifndef __DIALOG_DEBUG_H
 #define __DIALOG_DEBUG_H
 
-#include "_DialogDebug.h"
+#include "_DialogDebug.hxx"
 #include <string>
 #include <cstdint>
 

@@ -1,6 +1,6 @@
 # data file for the Fltk User Interface Designer (fluid)
 version 1.0304
-header_name {.h}
+header_name {.hxx}
 code_name {.cxx}
 declblock {\#if 1} {open after {\#endif}
 } {
