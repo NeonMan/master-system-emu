@@ -22,7 +22,7 @@
 
 extern z80_t z80;
 
-static int trim_path(const char* path) {
+static size_t trim_path(const char* path) {
     //Search, right to left, the second slash.
     size_t len = strlen(path);
     int slash_count = 0;

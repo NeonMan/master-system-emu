@@ -77,8 +77,8 @@ find_package(PythonInterp 3 REQUIRED)
 
 # --- Dependencies ---
 include_directories(${PROJECT_SOURCE_DIR})
-link_directories(${PROJECT_SOURCE_DIR}/lib)        # These two ease building on
-include_directories(${PROJECT_SOURCE_DIR}/include) # a locked-down PC.
+link_directories(${PROJECT_SOURCE_DIR}/lib64)        # These two ease building on
+include_directories(${PROJECT_SOURCE_DIR}/include64) # a locked-down PC.
 
 add_subdirectory (glue)
 add_subdirectory (psg)

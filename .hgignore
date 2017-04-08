@@ -4,7 +4,9 @@ syntax: regexp
 ^Build
 ^build
 ^lib
+^lib64
 ^include
+^include64
 Debug\/
 Release\/
 CMakeFiles\/
