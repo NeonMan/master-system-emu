@@ -9,6 +9,7 @@
 //vdp
 #include "vdp.c"
 #include "vdp_render.c"
+#include "vdp_mode4.c"
 //io
 #include "io.c"
 //peripheral
