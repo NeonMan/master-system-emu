@@ -72,11 +72,11 @@ void WidgetVdp::draw_cram() {
 ///@param pix_buff bitmap buffer; 64Bytes.
 ///
 ///vram must contain at least 8 bytes and pix_buff must be at least 64bytes in size.
-static void vram_to_dump_pixmap(const uint8_t* vram, uint8_t* pix_buff) {
+static void vram_to_dump_pixmap(const uint8_t* vram, uint8_t* pix_buff, uint8_t c_one, uint8_t c_zero) {
     for (int i = 0; i < 8; i++) { //For each byte
         uint8_t b = vram[i];
         for (int j = 0; j < 8; j++) { //For each bit in the byte
-            pix_buff[(i * 8) + j] = (b & (1 << 7)) ? 0xFF : 0x00;
+            pix_buff[(i * 8) + j] = (b & (1 << 7)) ? c_one : c_zero;
             b = b << 1;
         }
     }
@@ -94,14 +94,10 @@ void WidgetVdp::draw_vram() {
     //VRAM bit dump 
     {
         int vram_index;
-        uint8_t vram_bitmap[8 * 8 * 32 * 64];
+        static uint8_t vram_bitmap[8 * 8 * 32 * 64]; //<-- Static to free some stack space.
         
         //#pragma omp parallel for private(vram_index)
         for (vram_index = 0; vram_index < (1024 * 16); vram_index += 8) { //For each 8-byte block
-            //Convert VRAM bytes into pixels
-            uint8_t block_bitmap[8 * 8]; //<-- Buffer for the 8x8 bitmap
-            vram_to_dump_pixmap(this->vdp_vram + vram_index, block_bitmap);
-
             //Draw those pixels int the vdp dialog
             int block_row;
             int block_col;
@@ -111,6 +107,10 @@ void WidgetVdp::draw_vram() {
 
             //One row per every 8 * 64 bytes. 32 columns.
             block_row = (vram_index / 8) / 64;
+
+            //Convert VRAM bytes into pixels
+            uint8_t block_bitmap[8 * 8]; //<-- Buffer for the 8x8 bitmap
+            vram_to_dump_pixmap(this->vdp_vram + vram_index, block_bitmap, 0xFF, (block_row&1) ? 0 : (1<<4));
 
             //Copy bytes to the full bitmap
             for (int block_line = 0; block_line < 8; block_line++) {

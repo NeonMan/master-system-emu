@@ -282,7 +282,9 @@ int main(int argc, char** argv){
             ++edge_count;
             --is_clocked;
             __UPDATE_FLTK;
-            ui_render();
+            if (vdp_frame_ready()) {
+                ui_render();
+            }
         }
         // --- Just update the UI if not clocked ---
         {
