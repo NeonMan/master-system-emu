@@ -3,7 +3,7 @@ project(sms-ui)
 
 SET(FLTK_DIALOGS 
     ${PROJECT_SOURCE_DIR}/_DialogDebug.cxx
-    ${PROJECT_SOURCE_DIR}/_DialogDebug.h
+    ${PROJECT_SOURCE_DIR}/_DialogDebug.hxx
     )
 
 SET(CFILES
@@ -34,12 +34,12 @@ target_link_libraries(smsui glue sms_debug_dump fltk smsrom smsio smsram psg z80
 #Compile FL files
                    
 add_custom_command(OUTPUT 
-                   ${PROJECT_SOURCE_DIR}/_DialogDebug.h
+                   ${PROJECT_SOURCE_DIR}/_DialogDebug.hxx
                    ${PROJECT_SOURCE_DIR}/_DialogDebug.cxx
                    COMMAND fluid ARGS
                    -c
                    -o ${PROJECT_SOURCE_DIR}/_DialogDebug.cxx
-                   -h ${PROJECT_SOURCE_DIR}/_DialogDebug.h
+                   -h ${PROJECT_SOURCE_DIR}/_DialogDebug.hxx
                    ${PROJECT_SOURCE_DIR}/DialogDebug.fl
                    MAIN_DEPENDENCY "DialogDebug.fl"
                    COMMENT "Generating Debugger Dialog"
