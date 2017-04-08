@@ -20,18 +20,16 @@ emulated independently.
 | ROM (SEGA)    | Working         | SEGA mapper roms.                                   |
 | ROM (other)   | Unimplemented   | Other mappers (Codemasters, unlicensed, custom).    |
 | SDSC          | Working         | Simple SDSC console callbacks provided.             |
-| VDP           | Working/WIP     | Missing interrupts, counters, mode 4, sprite system.|
-| z80           | Working/WIP     | All documented opcodes, most undoc; No interrupts.  |
+| VDP           | WIP             | Missing interrupts, counters, mode 4, sprite system.|
+| z80           | Working/WIP     | Missing: minor LD/IO ops; INT modes 0 and 2.        |
 | GUI           | WIP             | Implements a basic z80 Debugger.                    |
 
 ## Known issues ##
 
 Issues listed here describe inaccurate behaviours and inefficiencies in implemented code.
 
-- Most opcodes that modify flags, fail the ZEXALL/ZEXDOC tests.
 - Read-modify-writeback instructions like RLC (IX + d) redo all the work multiple times.
-- ALU16 flags are internally using ALU8 macros which might or might not work.
-- ROM and BIOS share mapper.
+- ROM and BIOS share mapper, might be expected?
 
 ## Licensing ##
 
