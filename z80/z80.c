@@ -452,7 +452,7 @@ int z80_stage_m1(){
     case 0:
         //Dump predicted opcode
 #ifndef NDEBUG
-        /**/
+        /*
         {
             char opcode_str[100];
             uint8_t opcode_size;

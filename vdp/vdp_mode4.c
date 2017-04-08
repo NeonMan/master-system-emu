@@ -1,4 +1,4 @@
-// Copyright 2015 Juan Luis Álvarez Martínez
+// Copyright 2017 Juan Luis Álvarez Martínez
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,25 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/** @file fake_io.h
- *  @brief Provides just the variables of IO module.
- * 
- *  fake_io provides the variables needed by code using the
- *  IO module without having any implementation.
- *
- */
+#include "vdp_mode4.h"
 
-#ifndef __FAKE_IO_H
-#define __FAKE_IO_H
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-uint8_t io_stat = 0xFF;
-
-#ifdef __cplusplus
-}
-#endif
-
-#endif
+int mode4_dummy; //<-- Deleteme when something is implemented.
