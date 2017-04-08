@@ -96,6 +96,9 @@ void vdp_tick();
 ///Sets up all the VDP state and stuff. Call once.
 void vdp_init();
 
+///True if VDP has a new frame ready to be rendered.
+uint8_t vdp_frame_ready();
+
 /**
  * @brief generates the current VDP picture.
  * Written framebuffer will be in --rrggbb format.

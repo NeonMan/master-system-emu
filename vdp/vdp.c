@@ -212,3 +212,7 @@ void vdp_tick(){
     vdp_io(); //Perform read/writes if needed
     vdp_update();
 }
+
+uint8_t vdp_frame_ready() {
+    return 0;
+}
