@@ -16,6 +16,12 @@ provided.
 * [Python 3]
 * FLUID ([FLTK] User Interface Designer)
 
+The following libraries and their header files should be also available for
+the compiler.
+
+* FLTK
+* Simple DirectMedia Layer 2 ([SDL2])
+
 Additionally, for coverage tests on a debug build (only on GCC) the following
 tools should be available.
 
@@ -79,3 +85,4 @@ As with the emulator build, a separate build tree can be used.
    [Python 3]: https://www.python.org
    [FLTK]:     http://www.fltk.org/index.php
    [SDCC]:     http://sdcc.sourceforge.net/
+   [SDL2]:     https://www.libsdl.org/

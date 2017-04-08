@@ -13,6 +13,9 @@ private:
     uint8_t* vdp_cram;
     struct vdp_s* vdp;
 
+    void draw_cram();
+    void draw_vram();
+
 public:
     WidgetVdp(int x, int y, int w, int h, const char* label = 0L);
     virtual ~WidgetVdp();
