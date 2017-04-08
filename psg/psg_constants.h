@@ -1,4 +1,4 @@
-// Copyright 2015 Juan Luis ¡lvarez MartÌnez
+// Copyright 2015 Juan Luis √Ålvarez Mart√≠nez
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,6 +19,10 @@
 #ifndef __PSG_CONSTANTS_H
 #define __PSG_CONSTANTS_H
 #include <stdint.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
     #define PSG_CLOCK_NTSC  (3579545 / 16) /*<-- PSG clock (pal NTSC version)*/
     #define PSG_CLOCK_PAL (3546893 / 16) /*<-- PSG clock (pal PAL version)*/
@@ -5502,4 +5506,8 @@
         1, 1, 1, 1, 1, 1, 1
     };
 
+#ifdef __cplusplus
+}
+#endif
+	
 #endif

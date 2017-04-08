@@ -17,6 +17,10 @@
 
 #include <stdint.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 int z80_stage_int_m1();
 int z80_stage_int_m2();
 int z80_stage_int_m3();
@@ -24,5 +28,9 @@ int z80_stage_int_m3();
 int z80_stage_nmi_m1();
 int z80_stage_nmi_m2();
 int z80_stage_nmi_m3();
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

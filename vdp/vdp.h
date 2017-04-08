@@ -25,6 +25,10 @@
 #include "vdp_constants.h"
 #include <stdint.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 //Values for the upper 2-bits from a control word (bits 14,15).
 #define VDP_CTRL_VRAM_READ  (0 << 6)
 #define VDP_CTRL_VRAM_WRITE (1 << 6)
@@ -64,10 +68,6 @@
 #define VDP_FLAG_SI (vdp.regs[1] & (1<<1))
 #define VDP_FLAG_MAG (vdp.regs[1] & (1<<0)0)
 #define VDP_FLAG_M4 (vdp.regs[0] & (1<<2))
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 //Types
 struct vdp_s {

@@ -22,6 +22,11 @@
 #define __FAKE_Z80_H
 
 #include <stdint.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 // Z80 Buses
 uint8_t  z80_data;     ///<-- Data bus, 8 bit wide (Input/Output)
 uint16_t z80_address;  ///<-- Address bus   (Output)
@@ -43,5 +48,9 @@ uint8_t  z80_n_wait = 1;  ///<-- !Wait (Input)
 // Z80 to-be-documented signals
 uint8_t  z80_n_busreq = 1; ///<-- !Bus request (???)
 uint8_t  z80_n_busack = 1; ///<-- !Bus-acknowledge (???)
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
