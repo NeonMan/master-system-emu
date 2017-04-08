@@ -1,4 +1,4 @@
-#include "WidgetVdp.h"
+#include "WidgetVdp.hxx"
 #include <FL/fl_draw.H>
 #include <assert.h>
 

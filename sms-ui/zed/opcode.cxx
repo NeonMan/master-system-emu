@@ -1,4 +1,4 @@
-#include "opcode.h"
+#include "opcode.hxx"
 
 using namespace zed;
 

@@ -8,15 +8,15 @@ SET(FLTK_DIALOGS
 
 SET(CFILES
     ${PROJECT_SOURCE_DIR}/DialogDebug.cxx
-    ${PROJECT_SOURCE_DIR}/DialogDebug.h
+    ${PROJECT_SOURCE_DIR}/DialogDebug.hxx
 	${PROJECT_SOURCE_DIR}/WidgetVdp.cxx
-	${PROJECT_SOURCE_DIR}/WidgetVdp.h
+	${PROJECT_SOURCE_DIR}/WidgetVdp.hxx
 	
 	#Maybe make the debugger internals its own project
 	${PROJECT_SOURCE_DIR}/zed/zedeighty.cxx
-	${PROJECT_SOURCE_DIR}/zed/zedeighty.h
+	${PROJECT_SOURCE_DIR}/zed/zedeighty.hxx
 	${PROJECT_SOURCE_DIR}/zed/opcode.cxx
-	${PROJECT_SOURCE_DIR}/zed/opcode.h
+	${PROJECT_SOURCE_DIR}/zed/opcode.hxx
 	)
 	
 #If using MSVC, add an icon to the executable.
