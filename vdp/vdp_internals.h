@@ -12,9 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "vdp.h"
-#include "vdp_internals.h"
-#include "vdp_constants.h"
-#include "vdp_mode4.h"
+#ifndef __VDP_INTERNALS_H
+#define __VDP_INTERNALS_H
 
-int vdp_mode4_dummy; //<-- Deleteme when something is implemented.
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#include "vdp.h"
+
+//Provide access to the VDP externs.
+extern struct vdp_s vdp;
+
+extern uint8_t vdp_fb_index;
+extern uint8_t vdp_fb[VDP_BUFFER_COUNT][VDP_FRAMEBUFFER_SIZE];
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif

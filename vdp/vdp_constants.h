@@ -25,9 +25,15 @@
 // --- Sizes ---
 #define VDP_VRAM_SIZE (16 * 1024)
 #define VDP_CRAM_SIZE 32
-#define VDP_WIDTH_PIXELS  256
-#define VDP_HEIGHT_PIXELS 192
-#define VDP_FRAMEBUFFER_SIZE 49152
+//VDP framebuffer constants
+#define VDP_RESOLUTION_H_MAX 256
+#define VDP_RESOLUTION_V_MAX 240
+
+///Use 2 or three for bouble/triple buffer.
+#define VDP_BUFFER_COUNT 2
+#define VDP_BUFFER_BYTES_PIXEL 4
+
+#define VDP_FRAMEBUFFER_SIZE (VDP_RESOLUTION_H_MAX * VDP_RESOLUTION_V_MAX * VDP_BUFFER_BYTES_PIXEL)
 
 // --- Mode 0 constants ---
 #define VDP_MODE0_ROWS 24

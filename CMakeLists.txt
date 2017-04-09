@@ -107,11 +107,3 @@ endif()
 # --- psg-play
 add_executable (psg-play psg-play.c)
 target_link_libraries (psg-play psg ${EXT_LIBS})
-
-# --- test-vdp (SDL2 is presumed to be available)
-add_executable (test-vdp test-vdp.c)
-target_link_libraries (test-vdp vdp glue sms_debug ${EXT_LIBS})
-
-# --- sms-emu
-add_executable (emu sms-emu.c)
-target_link_libraries (emu glue sms_debug smsrom smsio smsram psg z80 peripheral vdp sdsc sms_debug ${EXT_LIBS})

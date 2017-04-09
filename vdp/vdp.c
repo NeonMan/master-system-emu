@@ -20,43 +20,15 @@
 
 struct vdp_s vdp;
 
-//Select which renderer to use.
-void vdp_get_pixels(void* fb){
-    if (VDP_FLAG_M4){
-        //Mode 4 'modes'
-        if ((VDP_FLAG_M1) && (!VDP_FLAG_M2)){
-            assert(0); //Invalid mode
-        }
-        else
-            vdp_mode4_pixels((uint8_t*)fb);
-    }
-    else{
-        //Original TMS modes
-        if      ((!VDP_FLAG_M1) && (!VDP_FLAG_M2) && (!VDP_FLAG_M3)) /*Mode 0*/
-            vdp_mode0_pixels((uint8_t*)fb);
-        else if ((VDP_FLAG_M1) && (!VDP_FLAG_M2) && (!VDP_FLAG_M3))  /*Mode 1 (TEXT)*/
-            vdp_mode1_pixels((uint8_t*)fb);
-        else if ((!VDP_FLAG_M1) && (VDP_FLAG_M2) && (!VDP_FLAG_M3))  /*Mode 2 (GRAPHIC 2)*/
-            vdp_mode2_pixels((uint8_t*)fb);
-        else if ((!VDP_FLAG_M1) && (!VDP_FLAG_M2) && (VDP_FLAG_M3))  /*Mode 3 (MULTICOLOR)*/
-            vdp_mode3_pixels((uint8_t*)fb);
-        //Undocumented modes
-        else if ((!VDP_FLAG_M1) && (VDP_FLAG_M2) && (!VDP_FLAG_M3))  /*Mode 1+2*/
-            vdp_mode12_pixels((uint8_t*)fb);
-        else if ((VDP_FLAG_M1) && (!VDP_FLAG_M2) && (VDP_FLAG_M3))   /*Mode 1+3*/
-            vdp_mode13_pixels((uint8_t*)fb);
-        else if ((!VDP_FLAG_M1) && (VDP_FLAG_M2) && (VDP_FLAG_M3))   /*Mode 2+3*/
-            vdp_mode23_pixels((uint8_t*)fb);
-        else if ((VDP_FLAG_M1) && (VDP_FLAG_M2) && (VDP_FLAG_M3))    /*Mode 1+2+3*/
-            vdp_mode123_pixels((uint8_t*)fb);
-    }
-}
+//Frame buffers
+uint8_t vdp_fb_index;
+uint8_t vdp_fb[VDP_BUFFER_COUNT][VDP_FRAMEBUFFER_SIZE];
 
 void* vdp_get_cram(){
     return (void*)vdp.cram;
 }
 
-void * vdp_get_vram()
+void* vdp_get_vram()
 {
     return (void*)vdp.vram;
 }
@@ -128,8 +100,10 @@ void vdp_data_write(){
 
 void vdp_init(){
     //Clear the VDP struct
-    memset(&vdp, 0, sizeof(struct vdp_s));
     ///@bug set the real initial VDP state. If known.
+    memset(&vdp, 0, sizeof(struct vdp_s));
+    memset(vdp_fb, 0, sizeof(vdp_fb));
+    vdp_fb_index = 0;
 }
 
 void vdp_io(){
@@ -194,18 +168,6 @@ void vdp_update(){
     if (!(vdp.h)){
         ++(vdp.regs[VDP_REG_LINE_COUNTER]);
     }
-    /*
-    ///@bug For debug purposes! bring the INT line down during the V counter zero line.
-    if ((vdp.regs[VDP_REG_LINE_COUNTER] == 0) && (vdp.h==0)) {
-        z80_n_int = 0;
-    }
-    else {
-    }
-
-    ///@bug For debug purposes! bring the INT line up during the V counter one line.
-    if (vdp.h == 32) {
-        z80_n_int = 1;
-    }*/
 }
 
 void vdp_tick(){
@@ -213,6 +175,15 @@ void vdp_tick(){
     vdp_update();
 }
 
+struct vdp_mode_s vdp_mode() {
+    struct vdp_mode_s rv = { (uint8_t)256, (uint8_t)240, (uint8_t)4 };
+    return rv;
+}
+
 uint8_t vdp_frame_ready() {
     return 0;
+}
+
+const uint8_t * vdp_framebuffer() {
+    return vdp_fb[(vdp_fb_index + 1) % VDP_BUFFER_COUNT];
 }
