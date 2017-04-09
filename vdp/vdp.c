@@ -18,11 +18,19 @@
 #include <string.h>
 #include "debug/sms_debug.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 struct vdp_s vdp;
 
 //Frame buffers
 uint8_t vdp_fb_index;
 uint8_t vdp_fb[VDP_BUFFER_COUNT][VDP_FRAMEBUFFER_SIZE];
+
+#ifdef __cplusplus
+}
+#endif
 
 void* vdp_get_cram(){
     return (void*)vdp.cram;
