@@ -17,12 +17,11 @@
 
 #include "z80_macros.h"
 #include "z80.h"
+#include "z80_internals.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-extern struct z80_s z80; //<-- Provided by z80.c, must be forward-declared here.
 
 // --- Register lookup tables ---
 // The pointers (all array values) themselves declared here are constant.

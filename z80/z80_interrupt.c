@@ -21,7 +21,7 @@
 #include "z80_externs.h"
 
 //Access z80 internals
-extern struct z80_s  z80;
+#include "z80_internals.h"
 
 // ------------------------
 // --- Interrupt mode 1 ---

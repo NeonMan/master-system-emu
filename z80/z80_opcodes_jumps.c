@@ -16,8 +16,7 @@
 #include "z80_macros.h"
 #include "z80_register_lut.h"
 #include "debug/sms_debug.h"
-
-extern struct z80_s z80; //<-- Access to z80 internals
+#include "z80_internals.h"
 
 ///CALL cc[y] nn; Size: 3; Flags: None
 int CALL_cc_nn() {

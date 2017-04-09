@@ -19,7 +19,7 @@
 /*For hook entry point*/
 #include "z80_debug.h"
 
-extern struct z80_s z80; //<-- Access to z80 internals
+#include "z80_internals.h"
 
 ///CCF; Size: 1; Flags: C
 int CCF(){

@@ -1,4 +1,4 @@
-// Copyright 2015 Juan Luis Álvarez Martínez
+// Copyright 2017 Juan Luis Álvarez Martínez
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,25 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "z80_debug.h"
+/** @file z80_internals.h
+ *  @brief Provides access to the z80 internal state.
+ * 
+ */
+#ifndef __Z80_INTERNALS_H
+#define __Z80_INTERNALS_H
+
 #include "z80.h"
-#include "z80_macros.h"
-#include <assert.h>
 
-#include "z80_internals.h"
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-static void(*_hook_callback)(void) = 0;
+extern struct z80_s z80; //<-- Access to z80 internals
 
-void z80dbg_register_hooh(void(*callback)(void)) {
-	_hook_callback = callback;
+#ifdef __cplusplus
 }
+#endif
 
-void z80dbg_hook_entry() {
-	/* op, arg1 and arg2 are on the stack */
-	if (_hook_callback) {
-		_hook_callback();
-	}
-	else {
-		/**@ToDo Make a default hook handler?*/
-	}
-}
+#endif

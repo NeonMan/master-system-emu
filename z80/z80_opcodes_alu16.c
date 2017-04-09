@@ -17,7 +17,7 @@
 #include "z80_register_lut.h"
 #include "debug/sms_debug.h"
 
-extern struct z80_s z80; //<-- Access to z80 internals
+#include "z80_internals.h"
 
 ///ADC HL, rp; Size: 2; Flags: ???
 int ADC_HL_rp() {

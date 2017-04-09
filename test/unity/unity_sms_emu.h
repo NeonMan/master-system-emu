@@ -11,7 +11,7 @@
 #include "ram/ram.h"
 
 /*Access to z80 internals*/
-extern struct z80_s z80; //<-- Requires access to the z80 internals
+#include <z80/z80_internals.h>
 
 /* --- Helper functions --- */
 static uint8_t _get_ram(uint16_t address, int line){
