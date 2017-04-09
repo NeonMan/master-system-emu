@@ -11,7 +11,7 @@ class WidgetVdp : public Fl_Box {
 private:
     uint8_t* vdp_vram;
     uint8_t* vdp_cram;
-    struct vdp_s* vdp;
+    struct vdp_s* vdp_internal;
 
     void draw_cram();
     void draw_vram();
