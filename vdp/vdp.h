@@ -90,21 +90,32 @@ struct vdp_s {
 	uint8_t control_mode;
 };
 
-///executes the minimum relevant period of time.
+struct vdp_mode_s {
+    uint8_t res_h; ///<-- Horizontal resolution.
+    uint8_t res_v; ///<-- Vertical resolution.
+    uint8_t mode;  ///<-- VDP Mode.
+};
+
+/**
+ * @brief executes the minimum relevant period of time.
+ */
 void vdp_tick();
 
-///Sets up all the VDP state and stuff. Call once.
+/**
+ * @brief Sets up all the VDP state and stuff. Call once.
+ */
 void vdp_init();
 
-///True if VDP has a new frame ready to be rendered.
+/**
+ * @brief True if VDP has a new frame ready to be rendered.
+ */
 uint8_t vdp_frame_ready();
 
 /**
- * @brief generates the current VDP picture.
- * Written framebuffer will be in --rrggbb format.
- * @param fb Pointer to a frame buffer, must hold VDP_FRAMEBUFFER_SIZE bytes.
+ * @brief Returns the currently rendered frame's framebuffer.
+ * @returns Pointer to the frame buffer in RRGGBBAA format.
  */
-void vdp_get_pixels(void* fb);
+const uint8_t * vdp_framebuffer();
 
 /**
  * @brief Provides a pointer to the CRAM.
