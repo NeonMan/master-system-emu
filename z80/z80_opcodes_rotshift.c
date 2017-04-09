@@ -16,8 +16,7 @@
 #include "z80_macros.h"
 #include "z80_register_lut.h"
 #include "debug/sms_debug.h"
-
-extern struct z80_s z80; //<-- Access to z80 internals
+#include "z80_internals.h"
 
 ///Implementation of rotations and shifts. All flags affected.
 alu_result_t op_rotate_shift(uint8_t operation, uint8_t op, uint8_t flags) {

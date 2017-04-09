@@ -17,9 +17,7 @@
 #include <vdp/vdp.h>
 #include "WidgetVdp.hxx"
 
-extern "C" {
-    extern struct z80_s z80;
-}
+#include <z80/z80_internals.h>
 //-------------------------
 
 DialogDebug::DialogDebug() : _DialogDebug() {

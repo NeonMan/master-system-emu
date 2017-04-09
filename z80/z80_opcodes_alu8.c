@@ -16,8 +16,7 @@
 #include "z80_macros.h"
 #include "z80_register_lut.h"
 #include "debug/sms_debug.h"
-
-extern struct z80_s z80; //<-- Access to z80 internals
+#include "z80_internals.h"
 
 alu_result_t alu8_op(uint8_t operation, int8_t op1, int8_t op2, uint8_t flags) {
     assert(operation <= Z80_ALUOP_CP);
