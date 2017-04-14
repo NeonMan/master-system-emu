@@ -43,6 +43,7 @@ test-roms\/
 \.asm$
 \.noi$
 \.log$
+\.aps$
 
 #Other
 Makefile$
