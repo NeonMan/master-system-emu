@@ -17,6 +17,7 @@ extern "C" {
 #endif
 
 void sms_assert(const char* exp, const char* file, unsigned int line);
+void sms_warning(const char* exp, const char* file, unsigned int line);
 
 #undef assert
 
@@ -24,6 +25,12 @@ void sms_assert(const char* exp, const char* file, unsigned int line);
 #define assert(EXPR)
 #else
 #define assert(EXPR) if(!(EXPR))  sms_assert((#EXPR), __FILE__, __LINE__);
+#endif
+
+#ifdef NDEBUG
+#define assert_warning(EXPR)
+#else
+#define assert_warning(EXPR) if(!(EXPR))  sms_warning((#EXPR), __FILE__, __LINE__);
 #endif
 
 #ifdef __cplusplus

@@ -32,3 +32,7 @@ void sms_assert(const char* exp, const char* file, unsigned int line) {
     //Call inner assert
     platform_assert(exp, file, line);
 }
+
+void sms_warning(const char* exp, const char* file, unsigned int line) {
+    fprintf(stderr, "[%s @%d] Assert warning: %s\r\n", file, line, exp);
+}
