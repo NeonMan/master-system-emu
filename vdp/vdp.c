@@ -12,12 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <string.h>
+
 #include "vdp.h"
 #include "vdp_constants.h"
 #include "vdp_render.h"
-#include <string.h>
 #include "debug/sms_debug.h"
 
+//This C extern declaration is required to make the fat-source binaries on GNU
 #ifdef __cplusplus
 extern "C" {
 #endif
