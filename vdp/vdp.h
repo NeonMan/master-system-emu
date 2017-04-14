@@ -29,6 +29,12 @@
 extern "C" {
 #endif
 
+//IO ports
+#define VDP_PORT_V_COUNTER 0x7E
+#define VDP_PORT_H_COUNTER 0x7F
+#define VDP_PORT_DATA      0xBE
+#define VDP_PORT_CONTROL   0xBF
+
 //Values for the upper 2-bits from a control word (bits 14,15).
 #define VDP_CTRL_VRAM_READ  (0 << 6)
 #define VDP_CTRL_VRAM_WRITE (1 << 6)
