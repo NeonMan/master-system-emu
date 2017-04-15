@@ -43,7 +43,7 @@ static void vdp_control_write() {
     //First control word byte
     if (vdp.control_index == 0) {
         vdp.control_word[0] = z80_data;
-        ++(vdp.control_index);
+        vdp.control_index = 1;
         return;
     }
     //Second control word byte
