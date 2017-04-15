@@ -11,7 +11,7 @@ Debug\/
 Release\/
 CMakeFiles\/
 doxygen\/
-test-roms\/
+test\-roms\/
 
 #File types
 \.suo$
@@ -63,13 +63,3 @@ z80/z80_decoder_tables.h
 z80/z80_dasm_decoder_tables.h
 z80dasm/z80_dasm_tables.h
 run_doxygen_win.bat
-
-#Executables
-psg-play
-test-mem
-emu
-test-vdp
-sms-ui/smsui
-test/test_mem/test_mem
-test/test_z80/test_z80_decoder
-test/test_z80/test_z80_macros

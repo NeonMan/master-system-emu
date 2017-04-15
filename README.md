@@ -23,6 +23,7 @@ emulated independently.
 | VDP           | WIP             | Missing interrupts, counters, mode 4, sprite system.|
 | z80           | Working/WIP     | Missing: minor LD/IO ops; INT modes 0 and 2.        |
 | GUI           | WIP             | Implements a basic z80 Debugger.                    |
+| Savestate     | Working/WIP     | Not tested wether all state is stored/retrieved.    |
 
 ## Known issues ##
 
