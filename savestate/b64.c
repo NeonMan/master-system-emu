@@ -234,7 +234,7 @@ static const char cd64[]="|$$$}rstuvwxyz{$$$$$$$>?@ABCDEFGHIJKLMNOPQRSTUVW$$$$$$
 **
 ** encode 3 8-bit binary bytes as 4 '6-bit' characters
 */
-static void encodeblock( unsigned char *in, unsigned char *out, int len )
+static void encodeblock(const unsigned char *in, unsigned char *out, int len )
 {
     out[0] = (unsigned char) cb64[ (int)(in[0] >> 2) ];
     out[1] = (unsigned char) cb64[ (int)(((in[0] & 0x03) << 4) | ((in[1] & 0xf0) >> 4)) ];
@@ -247,7 +247,7 @@ static void encodeblock( unsigned char *in, unsigned char *out, int len )
 **
 ** decode 4 '6-bit' characters into 3 8-bit binary bytes
 */
-static void decodeblock( unsigned char *in, unsigned char *out )
+static void decodeblock(const unsigned char *in, unsigned char *out )
 {   
     out[ 0 ] = (unsigned char ) (in[0] << 2 | in[1] >> 4);
     out[ 1 ] = (unsigned char ) (in[1] << 4 | in[2] >> 2);
@@ -257,10 +257,10 @@ static void decodeblock( unsigned char *in, unsigned char *out )
 
 /*Added publicly exposes functions*/
 
-void b64_decodeblock(unsigned char *in, unsigned char *out) {
+void b64_decodeblock(const unsigned char *in, unsigned char *out) {
     decodeblock(in, out);
 }
 
-void b64_encodeblock(unsigned char *in, unsigned char *out, int len) {
+void b64_encodeblock(const unsigned char *in, unsigned char *out, int len) {
     encodeblock(in, out, len);
 }
