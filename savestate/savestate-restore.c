@@ -282,6 +282,138 @@ static void restore_psg(const jsmntok_t* tokens, const uint8_t* sav) {
     }
 }
 
+static void restore_z80_pins(const jsmntok_t* tokens, const uint8_t* sav) {
+    char num_str[10];
+    int num_str_len;
+    const jsmntok_t* token;
+
+    //!RD
+    token = find_token(tokens, sav, "n_rd");
+    assert(token);
+    memset(num_str, 0, 10);
+    num_str_len = token->end - token->start;
+    num_str_len = (num_str_len > 9) ? 9 : num_str_len;
+    strncpy(num_str, (const char*)(sav + token->start), num_str_len);
+    z80_n_rd = (uint8_t)atoi(num_str);
+
+    //!WR
+    token = find_token(tokens, sav, "n_wr");
+    assert(token);
+    memset(num_str, 0, 10);
+    num_str_len = token->end - token->start;
+    num_str_len = (num_str_len > 9) ? 9 : num_str_len;
+    strncpy(num_str, (const char*)(sav + token->start), num_str_len);
+    z80_n_wr = (uint8_t)atoi(num_str);
+
+    //!MREQ
+    token = find_token(tokens, sav, "n_mreq");
+    assert(token);
+    memset(num_str, 0, 10);
+    num_str_len = token->end - token->start;
+    num_str_len = (num_str_len > 9) ? 9 : num_str_len;
+    strncpy(num_str, (const char*)(sav + token->start), num_str_len);
+    z80_n_mreq = (uint8_t)atoi(num_str);
+
+    //!IOREQ
+    token = find_token(tokens, sav, "n_ioreq");
+    assert(token);
+    memset(num_str, 0, 10);
+    num_str_len = token->end - token->start;
+    num_str_len = (num_str_len > 9) ? 9 : num_str_len;
+    strncpy(num_str, (const char*)(sav + token->start), num_str_len);
+    z80_n_ioreq = (uint8_t)atoi(num_str);
+
+    //!RFSH
+    token = find_token(tokens, sav, "n_rfsh");
+    assert(token);
+    memset(num_str, 0, 10);
+    num_str_len = token->end - token->start;
+    num_str_len = (num_str_len > 9) ? 9 : num_str_len;
+    strncpy(num_str, (const char*)(sav + token->start), num_str_len);
+    z80_n_rfsh = (uint8_t)atoi(num_str);
+
+    //!M1
+    token = find_token(tokens, sav, "n_m1");
+    assert(token);
+    memset(num_str, 0, 10);
+    num_str_len = token->end - token->start;
+    num_str_len = (num_str_len > 9) ? 9 : num_str_len;
+    strncpy(num_str, (const char*)(sav + token->start), num_str_len);
+    z80_n_m1 = (uint8_t)atoi(num_str);
+
+    //!INT
+    token = find_token(tokens, sav, "n_int");
+    assert(token);
+    memset(num_str, 0, 10);
+    num_str_len = token->end - token->start;
+    num_str_len = (num_str_len > 9) ? 9 : num_str_len;
+    strncpy(num_str, (const char*)(sav + token->start), num_str_len);
+    z80_n_int = (uint8_t)atoi(num_str);
+
+    //!NMI
+    token = find_token(tokens, sav, "n_nmi");
+    assert(token);
+    memset(num_str, 0, 10);
+    num_str_len = token->end - token->start;
+    num_str_len = (num_str_len > 9) ? 9 : num_str_len;
+    strncpy(num_str, (const char*)(sav + token->start), num_str_len);
+    z80_n_nmi = (uint8_t)atoi(num_str);
+
+    //!RST
+    token = find_token(tokens, sav, "n_reset");
+    assert(token);
+    memset(num_str, 0, 10);
+    num_str_len = token->end - token->start;
+    num_str_len = (num_str_len > 9) ? 9 : num_str_len;
+    strncpy(num_str, (const char*)(sav + token->start), num_str_len);
+    z80_n_reset = (uint8_t)atoi(num_str);
+
+    //!WAIT
+    token = find_token(tokens, sav, "n_wait");
+    assert(token);
+    memset(num_str, 0, 10);
+    num_str_len = token->end - token->start;
+    num_str_len = (num_str_len > 9) ? 9 : num_str_len;
+    strncpy(num_str, (const char*)(sav + token->start), num_str_len);
+    z80_n_wait = (uint8_t)atoi(num_str);
+
+    //!BUSREQ
+    token = find_token(tokens, sav, "n_busreq");
+    assert(token);
+    memset(num_str, 0, 10);
+    num_str_len = token->end - token->start;
+    num_str_len = (num_str_len > 9) ? 9 : num_str_len;
+    strncpy(num_str, (const char*)(sav + token->start), num_str_len);
+    z80_n_busreq = (uint8_t)atoi(num_str);
+
+    //!BUSACK
+    token = find_token(tokens, sav, "n_busack");
+    assert(token);
+    memset(num_str, 0, 10);
+    num_str_len = token->end - token->start;
+    num_str_len = (num_str_len > 9) ? 9 : num_str_len;
+    strncpy(num_str, (const char*)(sav + token->start), num_str_len);
+    z80_n_busack = (uint8_t)atoi(num_str);
+
+    //ADDRESS
+    token = find_token(tokens, sav, "address");
+    assert(token);
+    memset(num_str, 0, 10);
+    num_str_len = token->end - token->start;
+    num_str_len = (num_str_len > 9) ? 9 : num_str_len;
+    strncpy(num_str, (const char*)(sav + token->start), num_str_len);
+    z80_address = (uint16_t)atoi(num_str);
+
+    //DATA
+    token = find_token(tokens, sav, "data");
+    assert(token);
+    memset(num_str, 0, 10);
+    num_str_len = token->end - token->start;
+    num_str_len = (num_str_len > 9) ? 9 : num_str_len;
+    strncpy(num_str, (const char*)(sav + token->start), num_str_len);
+    z80_data = (uint8_t)atoi(num_str);
+}
+
 int ss_restore(FILE* f){
     //Read file, 8MB should be enough for everyone
     uint8_t* sav_buffer = (uint8_t*) malloc((1024 * 1024 * 8) + 1);
@@ -313,8 +445,8 @@ int ss_restore(FILE* f){
     restore_io(tokens, sav_buffer);
     restore_peripheral(tokens, sav_buffer);
     restore_psg(tokens, sav_buffer);
+    restore_z80_pins(tokens, sav_buffer);
     /*
-    dump_psg(f);
     dump_z80(f);
     dump_vdp(f);
     */
