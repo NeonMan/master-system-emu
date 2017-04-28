@@ -249,9 +249,29 @@ static void encodeblock(const unsigned char *in, unsigned char *out, int len )
 */
 static void decodeblock(const unsigned char *in, unsigned char *out )
 {   
-    out[ 0 ] = (unsigned char ) (in[0] << 2 | in[1] >> 4);
-    out[ 1 ] = (unsigned char ) (in[1] << 4 | in[2] >> 2);
-    out[ 2 ] = (unsigned char ) (((in[2] << 6) & 0xc0) | in[3]);
+    //In sems to require some 'mangling' first.
+    //Scrapped from b64.c 'decode' function
+    int in_p[4];
+    for (int i = 0; i < 4; i++) {
+        if ((in[i] < 43) || (in[i] > 122)) {
+            in_p[i] = 0;
+        }
+        else {
+            in_p[i] = cd64[in[i] - 43];
+        }
+
+        if (in_p[i] != 0) {
+            in_p[i] = ((in_p[i] == (int)'$') ? 0 : in_p[i] - 61);
+        }
+
+        if (in_p[i]) {
+            in_p[i] = (in_p[i] - 1) & 0x00FF;
+        }
+    }
+
+    out[ 0 ] = (unsigned char ) (in_p[0] << 2 | in_p[1] >> 4);
+    out[ 1 ] = (unsigned char ) (in_p[1] << 4 | in_p[2] >> 2);
+    out[ 2 ] = (unsigned char ) (((in_p[2] << 6) & 0xc0) | in_p[3]);
 }
 
 
