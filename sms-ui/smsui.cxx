@@ -246,6 +246,7 @@ int main(int argc, char** argv){
     dlg_debug->setClockCounter(&is_clocked);
 
     uint_fast8_t edge_count = 0;
+    ui_render();
     while (is_running){
         while (is_clocked && is_running){
             //

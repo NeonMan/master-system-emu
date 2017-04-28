@@ -38,6 +38,8 @@
 #include "savestate.c"
 #include "savestate-save.c"
 #include "savestate-restore.c" 
+#include "jsmn.c" 
+#include "b64.c" 
 //z80dasm
 #include "z80_dasm.c"
 //sms-debug
