@@ -200,6 +200,88 @@ static void restore_peripheral(const jsmntok_t* tokens, const uint8_t* sav) {
     *perdbg_reg_bm() = (uint8_t)atoi(num_str);
 }
 
+static void restore_psg(const jsmntok_t* tokens, const uint8_t* sav) {
+    char num_str[10];
+    int num_str_len;
+    const jsmntok_t* token;
+
+    //volume
+    token = find_token(tokens, sav, "volume");
+    assert(token);
+    assert(token->size >= 4);
+    {
+        //[0]
+        token++;
+        memset(num_str, 0, 10);
+        num_str_len = token->end - token->start;
+        num_str_len = (num_str_len > 9) ? 9 : num_str_len;
+        strncpy(num_str, (const char*)(sav + token->start), num_str_len);
+        psgdbg_get_volume()[0] = (uint8_t)atoi(num_str);
+
+        //[1]
+        token++;
+        memset(num_str, 0, 10);
+        num_str_len = token->end - token->start;
+        num_str_len = (num_str_len > 9) ? 9 : num_str_len;
+        strncpy(num_str, (const char*)(sav + token->start), num_str_len);
+        psgdbg_get_volume()[1] = (uint8_t)atoi(num_str);
+
+        //[2]
+        token++;
+        memset(num_str, 0, 10);
+        num_str_len = token->end - token->start;
+        num_str_len = (num_str_len > 9) ? 9 : num_str_len;
+        strncpy(num_str, (const char*)(sav + token->start), num_str_len);
+        psgdbg_get_volume()[2] = (uint8_t)atoi(num_str);
+
+        //[3]
+        token++;
+        memset(num_str, 0, 10);
+        num_str_len = token->end - token->start;
+        num_str_len = (num_str_len > 9) ? 9 : num_str_len;
+        strncpy(num_str, (const char*)(sav + token->start), num_str_len);
+        psgdbg_get_volume()[3] = (uint8_t)atoi(num_str);
+    }
+
+    //Tone
+    token = find_token(tokens, sav, "tone");
+    assert(token);
+    assert(token->size >= 4);
+    {
+        //[0]
+        token++;
+        memset(num_str, 0, 10);
+        num_str_len = token->end - token->start;
+        num_str_len = (num_str_len > 9) ? 9 : num_str_len;
+        strncpy(num_str, (const char*)(sav + token->start), num_str_len);
+        psgdbg_get_tone()[0] = (uint16_t)atoi(num_str);
+
+        //[1]
+        token++;
+        memset(num_str, 0, 10);
+        num_str_len = token->end - token->start;
+        num_str_len = (num_str_len > 9) ? 9 : num_str_len;
+        strncpy(num_str, (const char*)(sav + token->start), num_str_len);
+        psgdbg_get_tone()[1] = (uint16_t)atoi(num_str);
+
+        //[2]
+        token++;
+        memset(num_str, 0, 10);
+        num_str_len = token->end - token->start;
+        num_str_len = (num_str_len > 9) ? 9 : num_str_len;
+        strncpy(num_str, (const char*)(sav + token->start), num_str_len);
+        psgdbg_get_tone()[2] = (uint16_t)atoi(num_str);
+
+        //[3]
+        token++;
+        memset(num_str, 0, 10);
+        num_str_len = token->end - token->start;
+        num_str_len = (num_str_len > 9) ? 9 : num_str_len;
+        strncpy(num_str, (const char*)(sav + token->start), num_str_len);
+        psgdbg_get_tone()[3] = (uint16_t)atoi(num_str);
+    }
+}
+
 int ss_restore(FILE* f){
     //Read file, 8MB should be enough for everyone
     uint8_t* sav_buffer = (uint8_t*) malloc((1024 * 1024 * 8) + 1);
@@ -230,8 +312,8 @@ int ss_restore(FILE* f){
     restore_mapper(tokens, sav_buffer);
     restore_io(tokens, sav_buffer);
     restore_peripheral(tokens, sav_buffer);
+    restore_psg(tokens, sav_buffer);
     /*
-    dump_peripheral(f);
     dump_psg(f);
     dump_z80(f);
     dump_vdp(f);
