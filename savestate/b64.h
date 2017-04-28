@@ -11,9 +11,9 @@
 extern "C" {
 #endif
 
-void b64_decodeblock(unsigned char *in, unsigned char *out);
+void b64_decodeblock(const unsigned char *in, unsigned char *out);
 
-void b64_encodeblock(unsigned char *in, unsigned char *out, int len);
+void b64_encodeblock(const unsigned char *in, unsigned char *out, int len);
 
 #ifdef __cplusplus
 }
