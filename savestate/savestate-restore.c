@@ -150,6 +150,21 @@ static void restore_mapper(const jsmntok_t* tokens, const uint8_t* sav) {
     *romdbg_get_slot(2) = atoi(num_str);
 }
 
+static void restore_io(const jsmntok_t* tokens, const uint8_t* sav) {
+    const jsmntok_t* token_io = find_token(tokens, sav, "io_stat");
+    assert(token_io);
+
+    char num_str[10];
+    int num_str_len;
+
+    //io stat.
+    memset(num_str, 0, 10);
+    num_str_len = token_io->end - token_io->start;
+    num_str_len = (num_str_len > 9) ? 9 : num_str_len;
+    strncpy(num_str, (const char*)(sav + token_io->start), num_str_len);
+    io_stat = (uint8_t) atoi(num_str);
+}
+
 int ss_restore(FILE* f){
     //Read file, 8MB should be enough for everyone
     uint8_t* sav_buffer = (uint8_t*) malloc((1024 * 1024 * 8) + 1);
@@ -178,9 +193,9 @@ int ss_restore(FILE* f){
     restore_rom(tokens, sav_buffer);
 
     restore_mapper(tokens, sav_buffer);
+    restore_io(tokens, sav_buffer);
 
     /*
-    dump_rom_mapper(f);
     dump_io(f);
     dump_peripheral(f);
     dump_psg(f);
