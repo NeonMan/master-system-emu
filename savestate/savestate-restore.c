@@ -70,6 +70,10 @@ static void decode_blob(const uint8_t* in, uint8_t* out, size_t str_size) {
     }
 }
 
+// ---------------------
+// --- Restore blobs ---
+// ---------------------
+
 #define MAX_RAM_STR_SIZE 10925
 static void restore_ram(const jsmntok_t* tokens, const uint8_t* sav) {
     //find the [root].ram token
@@ -109,6 +113,43 @@ static void restore_rom(const jsmntok_t* tokens, const uint8_t* sav) {
     decode_blob(sav + rom_object->start, (uint8_t*)romdbg_get_rom(), str_size);
 }
 
+// ----------------------
+// --- Restore states ---
+// ----------------------
+
+static void restore_mapper(const jsmntok_t* tokens, const uint8_t* sav) {
+    const jsmntok_t* token_slot0 = find_token(tokens, sav, "slot0");
+    const jsmntok_t* token_slot1 = find_token(tokens, sav, "slot1");
+    const jsmntok_t* token_slot2 = find_token(tokens, sav, "slot2");
+    assert(token_slot0);
+    assert(token_slot1);
+    assert(token_slot2);
+
+    char num_str[10];
+    int num_str_len;
+
+    //Slot0
+    memset(num_str, 0, 10);
+    num_str_len = token_slot0->end - token_slot0->start;
+    num_str_len = (num_str_len > 9) ? 9 : num_str_len;
+    strncpy(num_str, (const char*) (sav + token_slot0->start), num_str_len);
+    *romdbg_get_slot(0) = atoi(num_str);
+
+    //Slot1
+    memset(num_str, 0, 10);
+    num_str_len = token_slot1->end - token_slot1->start;
+    num_str_len = (num_str_len > 9) ? 9 : num_str_len;
+    strncpy(num_str, (const char*)(sav + token_slot1->start), num_str_len);
+    *romdbg_get_slot(1) = atoi(num_str);
+
+    //Slot2
+    memset(num_str, 0, 10);
+    num_str_len = token_slot2->end - token_slot2->start;
+    num_str_len = (num_str_len > 9) ? 9 : num_str_len;
+    strncpy(num_str, (const char*)(sav + token_slot2->start), num_str_len);
+    *romdbg_get_slot(2) = atoi(num_str);
+}
+
 int ss_restore(FILE* f){
     //Read file, 8MB should be enough for everyone
     uint8_t* sav_buffer = (uint8_t*) malloc((1024 * 1024 * 8) + 1);
@@ -135,6 +176,8 @@ int ss_restore(FILE* f){
     restore_ram(tokens, sav_buffer);
     restore_vram(tokens, sav_buffer);
     restore_rom(tokens, sav_buffer);
+
+    restore_mapper(tokens, sav_buffer);
 
     /*
     dump_rom_mapper(f);
