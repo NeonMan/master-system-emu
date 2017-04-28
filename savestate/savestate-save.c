@@ -29,6 +29,7 @@
 #include <psg/psg.h>
 #include <z80/z80.h>
 #include <z80/z80_macros.h>
+#include <z80/z80_internals.h>
 #include <vdp/vdp_internals.h>
 #include <glue/glue.h>
 #include "b64.h"
@@ -166,7 +167,63 @@ static int dump_psg(FILE* f){
 static int dump_z80(FILE* f){
     fprintf(f, "\t\"z80\": {\n");
     {
+        struct z80_s* z80_p = z80dbg_get_z80();
+        write_int(f, 2, "af", Z80_AF); WRITE_COMMA;
+        write_int(f, 2, "bc", Z80_BC); WRITE_COMMA;
+        write_int(f, 2, "de", Z80_DE); WRITE_COMMA;
+        write_int(f, 2, "hl", Z80_HL); WRITE_COMMA;
 
+        write_int(f, 2, "afp", Z80_AFp); WRITE_COMMA;
+        write_int(f, 2, "bcp", Z80_BCp); WRITE_COMMA;
+        write_int(f, 2, "dep", Z80_DEp); WRITE_COMMA;
+        write_int(f, 2, "hlp", Z80_HLp); WRITE_COMMA;
+
+        write_int(f, 2, "i", Z80_I); WRITE_COMMA;
+        write_int(f, 2, "r", Z80_R); WRITE_COMMA;
+
+        write_int(f, 2, "ix", Z80_IX); WRITE_COMMA;
+        write_int(f, 2, "iy", Z80_IY); WRITE_COMMA;
+
+        write_int(f, 2, "iff1", Z80_IFF1); WRITE_COMMA;
+        write_int(f, 2, "iff2", Z80_IFF2); WRITE_COMMA;
+
+        write_int(f, 2, "opcode_index", z80.opcode_index); WRITE_COMMA;
+        fprintf(f, "\t\t\"opcode\": [%d, %d, %d, %d]", z80.opcode[0], z80.opcode[1], z80.opcode[2], z80.opcode[3]); WRITE_COMMA;
+
+        write_int(f, 2, "int_mode", z80.int_mode); WRITE_COMMA;
+        write_int(f, 2, "int_stage", z80.stage); WRITE_COMMA;
+
+        write_int(f, 2, "m1_tick", z80.m1_tick_count); WRITE_COMMA;
+        write_int(f, 2, "m2_tick", z80.m2_tick_count); WRITE_COMMA;
+        write_int(f, 2, "m3_tick", z80.m3_tick_count); WRITE_COMMA;
+
+        write_int(f, 2, "read_address", z80.read_address); WRITE_COMMA;
+        fprintf(f, "\t\t\"read_buffer\": [%d, %d]", z80.read_buffer[0], z80.read_buffer[1]); WRITE_COMMA;
+        write_int(f, 2, "read_index", z80.read_index); WRITE_COMMA;
+        write_int(f, 2, "read_is_io", z80.read_is_io); WRITE_COMMA;
+
+        write_int(f, 2, "write_address", z80.write_address); WRITE_COMMA;
+        fprintf(f, "\t\t\"write_buffer\": [%d, %d]", z80.write_buffer[0], z80.write_buffer[1]); WRITE_COMMA;
+        write_int(f, 2, "write_index", z80.write_index); WRITE_COMMA;
+        write_int(f, 2, "write_is_io", z80.write_is_io); WRITE_COMMA;
+
+        //buses
+        write_int(f, 2, "data", z80_data); WRITE_COMMA;
+        write_int(f, 2, "data_latch", z80.data_latch); WRITE_COMMA;
+        write_int(f, 2, "address", z80_address); WRITE_COMMA;
+
+        write_int(f, 2, "n_rd", z80_n_rd); WRITE_COMMA;
+        write_int(f, 2, "n_wr", z80_n_wr); WRITE_COMMA;
+        write_int(f, 2, "n_ioreq", z80_n_ioreq); WRITE_COMMA;
+        write_int(f, 2, "n_mreq", z80_n_mreq); WRITE_COMMA;
+        write_int(f, 2, "n_rfsh", z80_n_rfsh); WRITE_COMMA;
+        write_int(f, 2, "n_m1", z80_n_m1); WRITE_COMMA;
+        write_int(f, 2, "n_int", z80_n_int); WRITE_COMMA;
+        write_int(f, 2, "n_nmi", z80_n_nmi); WRITE_COMMA;
+        write_int(f, 2, "n_reset", z80_n_reset); WRITE_COMMA;
+        write_int(f, 2, "n_wait", z80_n_wait); WRITE_COMMA;
+        write_int(f, 2, "n_busreq", z80_n_busreq); WRITE_COMMA;
+        write_int(f, 2, "n_busack", z80_n_busack); WRITE_NL;
     }
     fprintf(f, "\t}"); WRITE_COMMA;
     return 0;
