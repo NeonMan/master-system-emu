@@ -19,6 +19,12 @@
 extern "C" {
 #endif
 
+#ifndef HG_REVISION
+#define HG_REVISION "HG Unknown"
+#endif
+
+#define SRC_VERSION  __DATE__ " " __TIME__ " -- " HG_REVISION
+
 // --- Declarations here ---
 
 
