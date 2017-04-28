@@ -234,7 +234,9 @@ TEST(grp_savestate, z80) {
 }
 
 TEST(grp_savestate, mapper){
-
+    TEST_ASSERT_EQUAL_UINT8(VALUE_SLOT0, *romdbg_get_slot(0));
+    TEST_ASSERT_EQUAL_UINT8(VALUE_SLOT1, *romdbg_get_slot(1));
+    TEST_ASSERT_EQUAL_UINT8(VALUE_SLOT2, *romdbg_get_slot(2));
 }
 
 TEST_GROUP_RUNNER(grp_savestate) {
