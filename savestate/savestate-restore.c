@@ -80,15 +80,33 @@ static int get_json_integer(const jsmntok_t* tokens, const uint8_t* sav, const c
 static void decode_blob(const uint8_t* in, uint8_t* out, size_t str_size) {
     assert(in);
     assert(out);
+    assert((str_size % 4) == 0);
     ///@bug do some boundary check since it can be off-by-3 depending on b64 padding.
-    while (str_size > 3) {
+
+    //Decode all b64 blocks except the last
+    while (str_size > 4) {
         b64_decodeblock(in, out);
         in += 4;
         out += 3;
         str_size -= 4;
     }
-    if (str_size) {
-        b64_decodeblock(in, out);
+    //Decode last block to a temporary buffer
+    {
+        uint8_t last_block[3];
+        b64_decodeblock(in, last_block);
+        out[0] = last_block[0];
+        if (in[2] == '=') {
+            ;//Block contains one byte. Do nothing.
+        }
+        else if (in[3] == '=') {
+            //Block contains 2 bytes.
+            out[1] = last_block[1];
+        }
+        else {
+            //Block contains 3 bytes.
+            out[1] = last_block[1];
+            out[2] = last_block[2];
+        }
     }
 }
 
