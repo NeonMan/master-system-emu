@@ -109,8 +109,9 @@ TEST_TEAR_DOWN(grp_savestate_file){
     remove(SAVE_FILE_NAME);
 }
 
-TEST(grp_savestate_file, rom){
-    TEST_ASSERT_EQUAL_INT8_ARRAY(rom_pattern, romdbg_get_rom(), ROM_MAX_SIZE);
+IGNORE_TEST(grp_savestate_file, rom){
+    //Test wether the filename has been recovered.
+    //Can't do yet.
 }
 
 TEST_GROUP_RUNNER(grp_savestate_file){
