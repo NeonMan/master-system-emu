@@ -33,6 +33,7 @@
 #include <rom/rom.h>
 #include <z80/z80.h>
 #include <z80/z80_macros.h>
+#include <z80/z80_internals.h>
 #include <vdp/vdp.h>
 
 static const jsmntok_t* find_token(const jsmntok_t* tokens, const uint8_t* sav, const char* name) {
@@ -48,11 +49,32 @@ static const jsmntok_t* find_token(const jsmntok_t* tokens, const uint8_t* sav, 
             begin = tokens[i].start;
             size = tokens[i].end - begin;
             if (strncmp(name, (const char*)(sav + begin), strlen(name)) == 0) {
-                return tokens + i + 1;
+               if (size == strlen(name)) {
+                    return tokens + i + 1;
+               }
             }
         }
     }
     return 0;
+}
+
+static int get_token_int(const jsmntok_t* token, const uint8_t* sav) {
+    char num_str[10];
+    int num_str_len;
+
+    assert(token);
+    memset(num_str, 0, 10);
+    num_str_len = token->end - token->start;
+    num_str_len = (num_str_len > 9) ? 9 : num_str_len;
+    strncpy(num_str, (const char*)(sav + token->start), num_str_len);
+    return atoi(num_str);
+}
+
+static int get_json_integer(const jsmntok_t* tokens, const uint8_t* sav, const char* name) {
+    const jsmntok_t* token;
+    token = find_token(tokens, sav, name);
+    assert(token);
+    return get_token_int(token, sav);
 }
 
 static void decode_blob(const uint8_t* in, uint8_t* out, size_t str_size) {
@@ -104,13 +126,19 @@ static void restore_vram(const jsmntok_t* tokens, const uint8_t* sav) {
 static void restore_rom(const jsmntok_t* tokens, const uint8_t* sav) {
     //find the [root].rom token
     const jsmntok_t* rom_object = find_token(tokens, sav, "rom");
-    assert(rom_object);
 
-    //Copy at most 5592408 characters from the vram object content.
-    size_t str_size = rom_object->end - rom_object->start;
-    str_size = (str_size > MAX_ROM_STR_SIZE) ? MAX_ROM_STR_SIZE : str_size;
+    //If available, restore, if not, handle rom_name and skip.
+    if (rom_object) {
+        //Copy at most 5592408 characters from the vram object content.
+        size_t str_size = rom_object->end - rom_object->start;
+        str_size = (str_size > MAX_ROM_STR_SIZE) ? MAX_ROM_STR_SIZE : str_size;
 
-    decode_blob(sav + rom_object->start, (uint8_t*)romdbg_get_rom(), str_size);
+        decode_blob(sav + rom_object->start, (uint8_t*)romdbg_get_rom(), str_size);
+    }
+    else {
+        rom_object = find_token(tokens, sav, "rom_name");
+        assert(rom_object);
+    }
 }
 
 // ----------------------
@@ -118,86 +146,19 @@ static void restore_rom(const jsmntok_t* tokens, const uint8_t* sav) {
 // ----------------------
 
 static void restore_mapper(const jsmntok_t* tokens, const uint8_t* sav) {
-    const jsmntok_t* token_slot0 = find_token(tokens, sav, "slot0");
-    const jsmntok_t* token_slot1 = find_token(tokens, sav, "slot1");
-    const jsmntok_t* token_slot2 = find_token(tokens, sav, "slot2");
-    assert(token_slot0);
-    assert(token_slot1);
-    assert(token_slot2);
-
-    char num_str[10];
-    int num_str_len;
-
-    //Slot0
-    memset(num_str, 0, 10);
-    num_str_len = token_slot0->end - token_slot0->start;
-    num_str_len = (num_str_len > 9) ? 9 : num_str_len;
-    strncpy(num_str, (const char*) (sav + token_slot0->start), num_str_len);
-    *romdbg_get_slot(0) = atoi(num_str);
-
-    //Slot1
-    memset(num_str, 0, 10);
-    num_str_len = token_slot1->end - token_slot1->start;
-    num_str_len = (num_str_len > 9) ? 9 : num_str_len;
-    strncpy(num_str, (const char*)(sav + token_slot1->start), num_str_len);
-    *romdbg_get_slot(1) = atoi(num_str);
-
-    //Slot2
-    memset(num_str, 0, 10);
-    num_str_len = token_slot2->end - token_slot2->start;
-    num_str_len = (num_str_len > 9) ? 9 : num_str_len;
-    strncpy(num_str, (const char*)(sav + token_slot2->start), num_str_len);
-    *romdbg_get_slot(2) = atoi(num_str);
+    *romdbg_get_slot(0) = (uint8_t) get_json_integer(tokens, sav, "slot0");
+    *romdbg_get_slot(1) = (uint8_t)get_json_integer(tokens, sav, "slot1");
+    *romdbg_get_slot(2) = (uint8_t)get_json_integer(tokens, sav, "slot2");
 }
 
 static void restore_io(const jsmntok_t* tokens, const uint8_t* sav) {
-    const jsmntok_t* token_io = find_token(tokens, sav, "io_stat");
-    assert(token_io);
-
-    char num_str[10];
-    int num_str_len;
-
-    //io stat.
-    memset(num_str, 0, 10);
-    num_str_len = token_io->end - token_io->start;
-    num_str_len = (num_str_len > 9) ? 9 : num_str_len;
-    strncpy(num_str, (const char*)(sav + token_io->start), num_str_len);
-    io_stat = (uint8_t) atoi(num_str);
+    io_stat = (uint8_t)get_json_integer(tokens, sav, "io_stat");
 }
 
 static void restore_peripheral(const jsmntok_t* tokens, const uint8_t* sav) {
-    char num_str[10];
-    int num_str_len;
-    const jsmntok_t* token;
-
-    //control
-    token = find_token(tokens, sav, "control");
-    assert(token);
-    memset(num_str, 0, 10);
-    num_str_len = token->end - token->start;
-    num_str_len = (num_str_len > 9) ? 9 : num_str_len;
-    strncpy(num_str, (const char*)(sav + token->start), num_str_len);
-    *perdbg_reg_control() = (uint8_t) atoi(num_str);
-
-
-    //ab
-    token = find_token(tokens, sav, "ab");
-    assert(token);
-    memset(num_str, 0, 10);
-    num_str_len = token->end - token->start;
-    num_str_len = (num_str_len > 9) ? 9 : num_str_len;
-    strncpy(num_str, (const char*)(sav + token->start), num_str_len);
-    *perdbg_reg_ab() = (uint8_t)atoi(num_str);
-
-
-    //bm
-    token = find_token(tokens, sav, "bm");
-    assert(token);
-    memset(num_str, 0, 10);
-    num_str_len = token->end - token->start;
-    num_str_len = (num_str_len > 9) ? 9 : num_str_len;
-    strncpy(num_str, (const char*)(sav + token->start), num_str_len);
-    *perdbg_reg_bm() = (uint8_t)atoi(num_str);
+    *perdbg_reg_control() = (uint8_t)get_json_integer(tokens, sav, "control");
+    *perdbg_reg_ab() = (uint8_t)get_json_integer(tokens, sav, "ab");
+    *perdbg_reg_bm() = (uint8_t)get_json_integer(tokens, sav, "bm");
 }
 
 static void restore_psg(const jsmntok_t* tokens, const uint8_t* sav) {
@@ -283,135 +244,85 @@ static void restore_psg(const jsmntok_t* tokens, const uint8_t* sav) {
 }
 
 static void restore_z80_pins(const jsmntok_t* tokens, const uint8_t* sav) {
-    char num_str[10];
-    int num_str_len;
-    const jsmntok_t* token;
+    z80_n_rd = (uint8_t)get_json_integer(tokens, sav, "n_rd");
+    z80_n_wr = (uint8_t)get_json_integer(tokens, sav, "n_wr");
+    z80_n_mreq = (uint8_t)get_json_integer(tokens, sav, "n_mreq");
+    z80_n_ioreq = (uint8_t)get_json_integer(tokens, sav, "n_ioreq");
+    z80_n_rfsh = (uint8_t)get_json_integer(tokens, sav, "n_rfsh");
+    z80_n_m1 = (uint8_t)get_json_integer(tokens, sav, "n_m1");
+    z80_n_int = (uint8_t)get_json_integer(tokens, sav, "n_int");
+    z80_n_nmi = (uint8_t)get_json_integer(tokens, sav, "n_nmi");
+    z80_n_reset = (uint8_t)get_json_integer(tokens, sav, "n_reset");
+    z80_n_wait = (uint8_t)get_json_integer(tokens, sav, "n_wait");
+    z80_n_busreq = (uint8_t)get_json_integer(tokens, sav, "n_busreq");
+    z80_n_busack = (uint8_t)get_json_integer(tokens, sav, "n_busack");
+    z80_address = (uint16_t)get_json_integer(tokens, sav, "address");
+    z80_data = (uint8_t)get_json_integer(tokens, sav, "data");
+}
 
-    //!RD
-    token = find_token(tokens, sav, "n_rd");
-    assert(token);
-    memset(num_str, 0, 10);
-    num_str_len = token->end - token->start;
-    num_str_len = (num_str_len > 9) ? 9 : num_str_len;
-    strncpy(num_str, (const char*)(sav + token->start), num_str_len);
-    z80_n_rd = (uint8_t)atoi(num_str);
+static void restore_z80(const jsmntok_t* tokens, const uint8_t* sav) {
+    Z80_AF  = (uint16_t)get_json_integer(tokens, sav, "af");
+    Z80_BC  = (uint16_t)get_json_integer(tokens, sav, "bc");
+    Z80_DE  = (uint16_t)get_json_integer(tokens, sav, "de");
+    Z80_HL  = (uint16_t)get_json_integer(tokens, sav, "hl");
+    Z80_AFp = (uint16_t)get_json_integer(tokens, sav, "afp");
+    Z80_BCp = (uint16_t)get_json_integer(tokens, sav, "bcp");
+    Z80_DEp = (uint16_t)get_json_integer(tokens, sav, "dep");
+    Z80_HLp = (uint16_t)get_json_integer(tokens, sav, "hlp");
 
-    //!WR
-    token = find_token(tokens, sav, "n_wr");
-    assert(token);
-    memset(num_str, 0, 10);
-    num_str_len = token->end - token->start;
-    num_str_len = (num_str_len > 9) ? 9 : num_str_len;
-    strncpy(num_str, (const char*)(sav + token->start), num_str_len);
-    z80_n_wr = (uint8_t)atoi(num_str);
+    Z80_IX = (uint16_t)get_json_integer(tokens, sav, "ix");
+    Z80_IY = (uint16_t)get_json_integer(tokens, sav, "iy");
 
-    //!MREQ
-    token = find_token(tokens, sav, "n_mreq");
-    assert(token);
-    memset(num_str, 0, 10);
-    num_str_len = token->end - token->start;
-    num_str_len = (num_str_len > 9) ? 9 : num_str_len;
-    strncpy(num_str, (const char*)(sav + token->start), num_str_len);
-    z80_n_mreq = (uint8_t)atoi(num_str);
+    Z80_I = (uint8_t)get_json_integer(tokens, sav, "i");
+    Z80_R = (uint8_t)get_json_integer(tokens, sav, "r");
 
-    //!IOREQ
-    token = find_token(tokens, sav, "n_ioreq");
-    assert(token);
-    memset(num_str, 0, 10);
-    num_str_len = token->end - token->start;
-    num_str_len = (num_str_len > 9) ? 9 : num_str_len;
-    strncpy(num_str, (const char*)(sav + token->start), num_str_len);
-    z80_n_ioreq = (uint8_t)atoi(num_str);
+    Z80_SP = (uint16_t)get_json_integer(tokens, sav, "sp");
+    Z80_PC = (uint16_t)get_json_integer(tokens, sav, "pc");
 
-    //!RFSH
-    token = find_token(tokens, sav, "n_rfsh");
-    assert(token);
-    memset(num_str, 0, 10);
-    num_str_len = token->end - token->start;
-    num_str_len = (num_str_len > 9) ? 9 : num_str_len;
-    strncpy(num_str, (const char*)(sav + token->start), num_str_len);
-    z80_n_rfsh = (uint8_t)atoi(num_str);
+    z80.data_latch = (uint8_t)get_json_integer(tokens, sav, "data_latch");
+    Z80_IFF1 = (uint8_t)get_json_integer(tokens, sav, "iff1");
+    Z80_IFF2 = (uint8_t)get_json_integer(tokens, sav, "iff2");
+    z80.opcode_index = (uint8_t)get_json_integer(tokens, sav, "opcode_index");
+    //{Opcode buffer}
+    {
+        const jsmntok_t* tok = find_token(tokens, sav, "opcode");
+        assert(tok);
+        assert((tok->size) >= 4);
+        tok++;
+        z80.opcode[0] = get_token_int(tok, sav);
+        z80.opcode[1] = get_token_int(tok+1, sav);
+        z80.opcode[2] = get_token_int(tok+2, sav);
+        z80.opcode[3] = get_token_int(tok+3, sav);
+    }
+    z80.int_mode = (uint8_t)get_json_integer(tokens, sav, "int_mode");
+    z80.stage = (uint8_t)get_json_integer(tokens, sav, "stage");
+    z80.m1_tick_count = (uint16_t)get_json_integer(tokens, sav, "m1_tick");
+    z80.m2_tick_count = (uint16_t)get_json_integer(tokens, sav, "m2_tick");
+    z80.m3_tick_count = (uint16_t)get_json_integer(tokens, sav, "m3_tick");
 
-    //!M1
-    token = find_token(tokens, sav, "n_m1");
-    assert(token);
-    memset(num_str, 0, 10);
-    num_str_len = token->end - token->start;
-    num_str_len = (num_str_len > 9) ? 9 : num_str_len;
-    strncpy(num_str, (const char*)(sav + token->start), num_str_len);
-    z80_n_m1 = (uint8_t)atoi(num_str);
+    z80.read_address = (uint16_t)get_json_integer(tokens, sav, "read_address");
+    {
+        const jsmntok_t* tok = find_token(tokens, sav, "read_buffer");
+        assert(tok);
+        assert((tok->size) >= 2);
+        tok++;
+        z80.read_buffer[0] = get_token_int(tok, sav);
+        z80.read_buffer[1] = get_token_int(tok + 1, sav);
+    }
+    z80.read_index = (uint8_t)get_json_integer(tokens, sav, "read_index");
+    z80.read_is_io = (uint8_t)get_json_integer(tokens, sav, "read_is_io");
 
-    //!INT
-    token = find_token(tokens, sav, "n_int");
-    assert(token);
-    memset(num_str, 0, 10);
-    num_str_len = token->end - token->start;
-    num_str_len = (num_str_len > 9) ? 9 : num_str_len;
-    strncpy(num_str, (const char*)(sav + token->start), num_str_len);
-    z80_n_int = (uint8_t)atoi(num_str);
-
-    //!NMI
-    token = find_token(tokens, sav, "n_nmi");
-    assert(token);
-    memset(num_str, 0, 10);
-    num_str_len = token->end - token->start;
-    num_str_len = (num_str_len > 9) ? 9 : num_str_len;
-    strncpy(num_str, (const char*)(sav + token->start), num_str_len);
-    z80_n_nmi = (uint8_t)atoi(num_str);
-
-    //!RST
-    token = find_token(tokens, sav, "n_reset");
-    assert(token);
-    memset(num_str, 0, 10);
-    num_str_len = token->end - token->start;
-    num_str_len = (num_str_len > 9) ? 9 : num_str_len;
-    strncpy(num_str, (const char*)(sav + token->start), num_str_len);
-    z80_n_reset = (uint8_t)atoi(num_str);
-
-    //!WAIT
-    token = find_token(tokens, sav, "n_wait");
-    assert(token);
-    memset(num_str, 0, 10);
-    num_str_len = token->end - token->start;
-    num_str_len = (num_str_len > 9) ? 9 : num_str_len;
-    strncpy(num_str, (const char*)(sav + token->start), num_str_len);
-    z80_n_wait = (uint8_t)atoi(num_str);
-
-    //!BUSREQ
-    token = find_token(tokens, sav, "n_busreq");
-    assert(token);
-    memset(num_str, 0, 10);
-    num_str_len = token->end - token->start;
-    num_str_len = (num_str_len > 9) ? 9 : num_str_len;
-    strncpy(num_str, (const char*)(sav + token->start), num_str_len);
-    z80_n_busreq = (uint8_t)atoi(num_str);
-
-    //!BUSACK
-    token = find_token(tokens, sav, "n_busack");
-    assert(token);
-    memset(num_str, 0, 10);
-    num_str_len = token->end - token->start;
-    num_str_len = (num_str_len > 9) ? 9 : num_str_len;
-    strncpy(num_str, (const char*)(sav + token->start), num_str_len);
-    z80_n_busack = (uint8_t)atoi(num_str);
-
-    //ADDRESS
-    token = find_token(tokens, sav, "address");
-    assert(token);
-    memset(num_str, 0, 10);
-    num_str_len = token->end - token->start;
-    num_str_len = (num_str_len > 9) ? 9 : num_str_len;
-    strncpy(num_str, (const char*)(sav + token->start), num_str_len);
-    z80_address = (uint16_t)atoi(num_str);
-
-    //DATA
-    token = find_token(tokens, sav, "data");
-    assert(token);
-    memset(num_str, 0, 10);
-    num_str_len = token->end - token->start;
-    num_str_len = (num_str_len > 9) ? 9 : num_str_len;
-    strncpy(num_str, (const char*)(sav + token->start), num_str_len);
-    z80_data = (uint8_t)atoi(num_str);
+    z80.write_address = (uint16_t)get_json_integer(tokens, sav, "write_address");
+    {
+        const jsmntok_t* tok = find_token(tokens, sav, "write_buffer");
+        assert(tok);
+        assert((tok->size) >= 2);
+        tok++;
+        z80.write_buffer[0] = get_token_int(tok, sav);
+        z80.write_buffer[1] = get_token_int(tok + 1, sav);
+    }
+    z80.write_index = (uint8_t)get_json_integer(tokens, sav, "write_index");
+    z80.write_is_io = (uint8_t)get_json_integer(tokens, sav, "write_is_io");
 }
 
 int ss_restore(FILE* f){
@@ -446,8 +357,8 @@ int ss_restore(FILE* f){
     restore_peripheral(tokens, sav_buffer);
     restore_psg(tokens, sav_buffer);
     restore_z80_pins(tokens, sav_buffer);
+    restore_z80(tokens, sav_buffer);
     /*
-    dump_z80(f);
     dump_vdp(f);
     */
 

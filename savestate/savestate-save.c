@@ -184,6 +184,9 @@ static int dump_z80(FILE* f){
         write_int(f, 2, "ix", Z80_IX); WRITE_COMMA;
         write_int(f, 2, "iy", Z80_IY); WRITE_COMMA;
 
+        write_int(f, 2, "sp", Z80_SP); WRITE_COMMA;
+        write_int(f, 2, "pc", Z80_PC); WRITE_COMMA;
+
         write_int(f, 2, "iff1", Z80_IFF1); WRITE_COMMA;
         write_int(f, 2, "iff2", Z80_IFF2); WRITE_COMMA;
 
@@ -191,7 +194,7 @@ static int dump_z80(FILE* f){
         fprintf(f, "\t\t\"opcode\": [%d, %d, %d, %d]", z80.opcode[0], z80.opcode[1], z80.opcode[2], z80.opcode[3]); WRITE_COMMA;
 
         write_int(f, 2, "int_mode", z80.int_mode); WRITE_COMMA;
-        write_int(f, 2, "int_stage", z80.stage); WRITE_COMMA;
+        write_int(f, 2, "stage", z80.stage); WRITE_COMMA;
 
         write_int(f, 2, "m1_tick", z80.m1_tick_count); WRITE_COMMA;
         write_int(f, 2, "m2_tick", z80.m2_tick_count); WRITE_COMMA;
