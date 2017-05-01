@@ -25,6 +25,8 @@
 #include <io/io.h>
 #include <peripheral/peripheral.h>
 #include <rom/rom.h>
+#include <vdp/vdp.h>
+#include <vdp/vdp_internals.h>
 
 // --- Constants ---
 #define SAVE_FILE_NAME "SAMPLE.SAV"
@@ -62,8 +64,10 @@ static const uint8_t  psg_volume_pattern[4] = {0x18, 0x19, 0x1A, 0x1B};
 // --- Variables ---
 static struct z80_s z80_pattern;
 static struct z80_s z80_zero;
+static struct vdp_s vdp_pattern;
 
 static uint8_t ram_pattern[RAM_SIZE];
+static uint8_t vram_pattern[VDP_VRAM_SIZE];
 
 TEST_GROUP(grp_savestate);
 
@@ -73,15 +77,24 @@ TEST_SETUP(grp_savestate) {
     for (int i = 0; i < (sizeof(struct z80_s)); ++i) {
         ((uint8_t*)&z80_pattern)[i] = (uint8_t)i;
     }
+    for (int i = 0; i < sizeof(struct vdp_s); ++i) {
+        ((uint8_t*)&vdp_pattern)[i] = (uint8_t)i;
+    }
     for (int i = 0; i < RAM_SIZE; ++i) {
         ram_pattern[i] = (uint8_t)i;
     }
+    for (int i = 0; i < VDP_VRAM_SIZE; ++i) {
+        vram_pattern[i] = (uint8_t)i;
+    }
+
     //Initialize with zeros
     memset(&z80_zero, 0, sizeof(struct z80_s));
 
     //Initialize modules with pattern
     *z80dbg_get_z80() = z80_pattern;
+    vdp = vdp_pattern;
     memcpy(ramdbg_get_mem(), ram_pattern, RAM_SIZE);
+    memcpy(vdp_get_vram(), vram_pattern, VDP_VRAM_SIZE);
     z80_address = VALUE_ADDRESS;
     z80_data = VALUE_DATA;
     z80_n_rd = VALUE_RD;
@@ -123,7 +136,9 @@ TEST_SETUP(grp_savestate) {
 
     //Clear modules
     *z80dbg_get_z80() = z80_zero;
+    memset(&vdp, 0, sizeof(struct vdp_s));
     memset(ramdbg_get_mem(), 0, RAM_SIZE);
+    memset(vdp_get_vram(), 0, VDP_VRAM_SIZE);
     z80_address = 0;
     z80_data = 0;
     z80_n_rd = 0;
@@ -239,6 +254,14 @@ TEST(grp_savestate, mapper){
     TEST_ASSERT_EQUAL_UINT8(VALUE_SLOT2, *romdbg_get_slot(2));
 }
 
+TEST(grp_savestate, vram) {
+    TEST_ASSERT_EQUAL_UINT8_ARRAY(vram_pattern, vdp_get_vram(), VDP_VRAM_SIZE);
+}
+
+IGNORE_TEST(grp_savestate, vdp) {
+    
+}
+
 TEST_GROUP_RUNNER(grp_savestate) {
     RUN_TEST_CASE(grp_savestate, ram);
     RUN_TEST_CASE(grp_savestate, z80);
@@ -247,6 +270,8 @@ TEST_GROUP_RUNNER(grp_savestate) {
     RUN_TEST_CASE(grp_savestate, ioc);
     RUN_TEST_CASE(grp_savestate, peripheral);
     RUN_TEST_CASE(grp_savestate, mapper);
+    RUN_TEST_CASE(grp_savestate, vram);
+    RUN_TEST_CASE(grp_savestate, vdp);
 }
 
 // ----------------------
